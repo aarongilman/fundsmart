@@ -2,3 +2,5 @@
 *.log
 /accounts/migrations/
 .idea/
+/frontend/FundSmart/node_modules
+/frontend/FundSmart/.editorconfig
