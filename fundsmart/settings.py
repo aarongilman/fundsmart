@@ -43,9 +43,12 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
     'rest_auth.registration',
     'rest_framework',
     'rest_framework.authtoken',
+    'portfolios'
 ]
 
 SITE_ID = 1
@@ -149,6 +152,7 @@ OLD_PASSWORD_FIELD_ENABLED = True
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/rest-auth/login/'
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/rest-auth/login/'
