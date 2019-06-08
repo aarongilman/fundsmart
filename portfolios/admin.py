@@ -161,8 +161,7 @@ class FundDetailAdmin(admin.ModelAdmin):
 
     change_list_template = "portfolios/custom_changelist.html"
     list_display = ('asset_type', 'category', 'name', 'fund_id', 'benchmark',
-                    'aum', 'regular', 'direct', 'fund_exp_ratio',
-                    'return_1_year', 'return_3_year', 'return_5_year')
+                    'aum', 'regular', 'direct', 'fund_exp_ratio')
 
     def get_urls(self):
         urls = super().get_urls()
@@ -173,12 +172,12 @@ class FundDetailAdmin(admin.ModelAdmin):
             user = User.objects.get(username=request.user)
             data_file = request.FILES["data_file"]
             print(data_file)
-            wb = openpyxl.load_workbook(data_file)
+            wb = openpyxl.load_workbook(data_file, data_only=True)
             print(wb)
             worksheet = wb.active
             objects = []
             try:
-                for row in worksheet.iter_rows(min_row=3):
+                for row in worksheet.iter_rows(min_row=2):
                     objects.append(
                         FundDetail(asset_type=row[0].value, category=row[1].value,
                                    name=row[2].value, fund_id=row[3].value,

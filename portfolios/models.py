@@ -63,23 +63,25 @@ class FundDetail(models.Model):
     name = models.CharField(max_length=100)
     fund_id = models.CharField(max_length=30)
     benchmark = models.CharField(max_length=100)
-    aum = models.DecimalField(max_digits=7, decimal_places=3)
-    regular = models.DecimalField(max_digits=7, decimal_places=3)
-    direct = models.DecimalField(max_digits=7, decimal_places=3)
-    fund_exp_ratio = models.DecimalField(max_digits=7, decimal_places=3)
-    return_1_year = models.DecimalField(max_digits=7, decimal_places=3)
-    return_3_year = models.DecimalField(max_digits=7, decimal_places=3)
-    return_5_year = models.DecimalField(max_digits=7, decimal_places=3)
-    benchmark_1_year = models.DecimalField(max_digits=7, decimal_places=3)
-    benchmark_3_year = models.DecimalField(max_digits=7, decimal_places=3)
-    benchmark_5_year = models.DecimalField(max_digits=7, decimal_places=3)
-    return_over_bench_1_year = models.DecimalField(max_digits=7,
-                                                   decimal_places=3)
-    return_over_bench_3_year = models.DecimalField(max_digits=7,
-                                                   decimal_places=3)
-    return_over_bench_5_year = models.DecimalField(max_digits=7,
-                                                   decimal_places=3)
+    aum = models.DecimalField(max_digits=21, decimal_places=15)
+    regular = models.CharField(max_length=15)
+    direct = models.CharField(max_length=15)
+    fund_exp_ratio = models.CharField(max_length=15)
+    return_1_year = models.DecimalField(max_digits=21, decimal_places=15)
+    return_3_year = models.DecimalField(max_digits=21, decimal_places=15)
+    return_5_year = models.DecimalField(max_digits=21, decimal_places=15)
+    benchmark_1_year = models.DecimalField(max_digits=21, decimal_places=15)
+    benchmark_3_year = models.DecimalField(max_digits=21, decimal_places=15)
+    benchmark_5_year = models.DecimalField(max_digits=21, decimal_places=15)
+    return_over_bench_1_year = models.DecimalField(max_digits=21,
+                                                   decimal_places=15)
+    return_over_bench_3_year = models.DecimalField(max_digits=21,
+                                                   decimal_places=15)
+    return_over_bench_5_year = models.DecimalField(max_digits=21,
+                                                   decimal_places=15)
     for_recommendation = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Portfolio(models.Model):
