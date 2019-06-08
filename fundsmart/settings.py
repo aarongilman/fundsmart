@@ -26,7 +26,7 @@ SECRET_KEY = 'e=0%%+ll2eqpzjf$m#zi$s*p^#lc6tuxo=9q1+6772s=7njl1a'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+CORS_ORIGIN_ALLOW_ALL=True
 
 # Application definition
 
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'accounts',
     'rest_auth',
     'allauth',
+    'corsheaders',
     'allauth.account',
     'allauth.socialaccount',
     'rest_auth.registration',
@@ -57,6 +58,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'fundsmart.urls'
@@ -90,6 +93,7 @@ DATABASES = {
         'PORT': '3306',
         'NAME': 'fundsmart',
         'USER': 'root',
+        'PASSWORD': 'panqfLsb'
     }
 }
 

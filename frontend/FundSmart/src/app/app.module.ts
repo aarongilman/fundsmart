@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import {FormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeadSearchComponent } from './head-search/head-search.component';
@@ -13,6 +14,7 @@ import { FundCreateComponent } from './fund-create/fund-create.component';
 import { AllocationRecommendationComponent } from './allocation-recommendation/allocation-recommendation.component';
 import { AllocationFundAnalysisComponent } from './allocation-fund-analysis/allocation-fund-analysis.component';
 import {NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {ServercommunicationService} from './servercommunication.service';
 
 @NgModule({
   declarations: [
@@ -30,9 +32,11 @@ import {NgbModule } from '@ng-bootstrap/ng-bootstrap';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgbModule
+    NgbModule,
+    HttpClientModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [ServercommunicationService,],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
