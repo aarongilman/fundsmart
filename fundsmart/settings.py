@@ -26,7 +26,7 @@ SECRET_KEY = 'e=0%%+ll2eqpzjf$m#zi$s*p^#lc6tuxo=9q1+6772s=7njl1a'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+CORS_ORIGIN_ALLOW_ALL=True
 
 # Application definition
 
@@ -41,14 +41,12 @@ INSTALLED_APPS = [
     'accounts',
     'rest_auth',
     'allauth',
+    'corsheaders',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.google',
     'rest_auth.registration',
     'rest_framework',
     'rest_framework.authtoken',
-    'portfolios'
 ]
 
 SITE_ID = 1
@@ -60,6 +58,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'fundsmart.urls'
@@ -93,6 +93,7 @@ DATABASES = {
         'PORT': '3306',
         'NAME': 'fundsmart',
         'USER': 'root',
+        'PASSWORD': 'panqfLsb'
     }
 }
 
@@ -152,12 +153,13 @@ OLD_PASSWORD_FIELD_ENABLED = True
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
 )
+
 ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/rest-auth/login/'
 ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/rest-auth/login/'
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION ="optional"
+# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
 
 #email backend
