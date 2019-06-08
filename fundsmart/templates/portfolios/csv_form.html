@@ -1,0 +1,15 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+    <div class="colM" id="content">
+      <h1>Upload excel file</h1>
+      <div id="content-main">
+        <form action="" method="POST" enctype="multipart/form-data">
+            {{ form.as_p }}
+            {% csrf_token %}
+                <input type="submit" class="deletelink" value="Upload CSV"/>
+        </form>
+      </div>
+    </div>
+    <br />
+{% endblock %}

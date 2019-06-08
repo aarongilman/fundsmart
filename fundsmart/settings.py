@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'accounts',
     'rest_auth',
     'allauth',
+    'portfolios',
     'corsheaders',
     'allauth.account',
     'allauth.socialaccount',
@@ -154,14 +155,16 @@ AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
 )
-
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/rest-auth/login/'
-ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/rest-auth/login/'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/'
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/'
 ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_EMAIL_VERIFICATION ="optional"
 # ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_REQUIRED = True
 
-#email backend
-EMAIL_BACKEND="sgbackend.SendGridBackend"
-SENDGRID_API_KEY='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'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'noreply7jan@gmail.com'
+EMAIL_HOST_PASSWORD = 'primento@123'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

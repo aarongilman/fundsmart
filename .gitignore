@@ -4,3 +4,5 @@
 .idea/
 /frontend/FundSmart/node_modules
 /frontend/FundSmart/.editorconfig
+/portfolios/migrations/
+.idea/
