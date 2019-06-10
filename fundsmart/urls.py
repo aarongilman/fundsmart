@@ -19,7 +19,6 @@ from django.views.generic import TemplateView
 
 from allauth.account.views import confirm_email
 from rest_auth.registration.views import RegisterView
-from accounts.views import FacebookLogin, GoogleLogin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,6 +29,4 @@ urlpatterns = [
     re_path(r"^rest-auth/registration/account-confirm-email/(?P<key>[\s\d\w().+-_',:&]+)/$",
             confirm_email, name="account_confirm_email"),
     re_path(r'^accounts/', include('allauth.urls')),
-    re_path(r'^rest-auth/facebook/$', FacebookLogin.as_view(), name='fb_login'),
-    re_path(r'^rest-auth/google/$', GoogleLogin.as_view(), name='google_login'),
 ]

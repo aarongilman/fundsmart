@@ -18,7 +18,6 @@ import { ServercommunicationService } from './servercommunication.service';
 import { SocialLoginModule, AuthServiceConfig } from "angularx-social-login";
 import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-login";
 import { SocialloginService } from './sociallogin.service';
-import { HeaderComponent } from './header/header.component';
 
 let config = new AuthServiceConfig([
   {
@@ -48,8 +47,7 @@ export function provideConfig() {
     FundRecommendationComponent,
     FundCreateComponent,
     AllocationRecommendationComponent,
-    AllocationFundAnalysisComponent,
-    HeaderComponent
+    AllocationFundAnalysisComponent
   ],
   imports: [
     BrowserModule,
