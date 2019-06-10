@@ -4,6 +4,8 @@ import { User } from '../user';
 import * as $ from 'jquery';
 import { ServercommunicationService } from '../servercommunication.service';
 import { addToViewTree } from '@angular/core/src/render3/instructions';
+import { AuthService } from "angularx-social-login";
+import { FacebookLoginProvider, GoogleLoginProvider } from "angularx-social-login";
 
 @Component({
   selector: 'app-home',
@@ -31,9 +33,21 @@ export class HomeComponent implements OnInit {
   pass2 = '';
   username = '';
 
-  constructor(private modalService: NgbModal, private userservice: ServercommunicationService) { }
+  constructor(private modalService: NgbModal, private userservice: ServercommunicationService, private authService: AuthService) { }
 
   ngOnInit() {
+  }
+
+  signInWithGoogle(): void {
+    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
+  }
+
+  // signInWithFB(): void {
+  //   this.authService.signIn(FacebookLoginProvider.PROVIDER_ID);
+  // }
+
+  signOut(): void {
+    this.authService.signOut();
   }
 
   login() {

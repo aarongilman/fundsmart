@@ -26,5 +26,8 @@ export class ServercommunicationService {
     return this.http.post(this.login_link, body, { headers: this.httpHeaders });
   }
 
+  socialLogin(token: any) {
+    const body = { token: token };
+  }
 
 }
