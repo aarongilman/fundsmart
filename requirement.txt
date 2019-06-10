@@ -3,4 +3,3 @@ djangorestframework==3.9.4
 django-rest-auth==0.9.5
 django-allauth==0.39.1
 mysqlclient==1.4.2.post1
-openpyxl==2.6.2

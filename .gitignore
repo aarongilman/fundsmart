@@ -1,5 +1,8 @@
 *.pyc
 *.log
 /accounts/migrations/
+.idea/
+/frontend/FundSmart/node_modules
+/frontend/FundSmart/.editorconfig
 /portfolios/migrations/
 .idea/
