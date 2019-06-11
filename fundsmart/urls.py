@@ -16,9 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path, include
 from django.views.generic import TemplateView
-
 from allauth.account.views import confirm_email
 from rest_auth.registration.views import RegisterView
+
+from .routers import router
 from accounts.views import FacebookLogin, GoogleLogin
 
 urlpatterns = [
@@ -32,4 +33,5 @@ urlpatterns = [
     re_path(r'^accounts/', include('allauth.urls')),
     re_path(r'^rest-auth/facebook/$', FacebookLogin.as_view(), name='fb_login'),
     re_path(r'^rest-auth/google/$', GoogleLogin.as_view(), name='google_login'),
+    re_path(r'^api/', include(router.urls))
 ]

@@ -1,5 +1,7 @@
 # portfolios app admin.py
+import xlrd
 import openpyxl
+import logging
 
 from django import forms
 from django.urls import path
@@ -10,6 +12,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from accounts.models import User
 from .models import Security, Price, FXRate, FundHolding, FundDetail
+
+logger = logging.getLogger('fundsmart')
 
 
 class CsvImportForm(forms.Form):
@@ -43,9 +47,11 @@ class SecurityAdmin(admin.ModelAdmin):
                                  industry=row[8].value, rating=row[9].value,
                                  created_by=user))
                 Security.objects.bulk_create(objects, ignore_conflicts=True)
-                self.message_user(request, _("Your csv file has been imported"))
+                self.message_user(request, _("Your file has been imported"))
             except Exception as e:
-                self.message_user(request, _("Failed to import csv"))
+                logger.error(
+                    'Error {} occurred while uploading securities'.format(e))
+                self.message_user(request, _("Failed to import file"))
             return redirect(reverse('admin:portfolios_security_changelist'))
         form = CsvImportForm()
         return render(request, "portfolios/csv_form.html", {'form': form})
@@ -74,10 +80,11 @@ class PriceAdmin(admin.ModelAdmin):
                         Price(date=row[0].value, id_value=row[1].value,
                               price=row[2].value, created_by=user))
                 Price.objects.bulk_create(objects, ignore_conflicts=True)
-                self.message_user(request, _("Your csv file has been imported"))
+                self.message_user(request, _("Your file has been imported"))
             except Exception as e:
-                print(e)
-                self.message_user(request, _("Failed to import csv"))
+                logger.error(
+                    'Error {} occurred while uploading securities'.format(e))
+                self.message_user(request, _("Failed to import file"))
 
             return redirect(reverse('admin:portfolios_price_changelist'))
         form = CsvImportForm()
@@ -108,10 +115,11 @@ class FXRateAdmin(admin.ModelAdmin):
                                base=row[2].value, rate=row[3].value,
                                created_by=user))
                 FXRate.objects.bulk_create(objects, ignore_conflicts=True)
-                self.message_user(request, _("Your csv file has been imported"))
+                self.message_user(request, _("Your file has been imported"))
             except Exception as e:
-                print(e)
-                self.message_user(request, _("Failed to import csv"))
+                logger.error(
+                    'Error {} occurred while uploading securities'.format(e))
+                self.message_user(request, _("Failed to import file"))
 
             return redirect(reverse('admin:portfolios_fxrate_changelist'))
         form = CsvImportForm()
@@ -146,10 +154,11 @@ class FundHoldingAdmin(admin.ModelAdmin):
                                     net_asset_percentage=row[6].value,
                                     created_by=user))
                 FundHolding.objects.bulk_create(objects, ignore_conflicts=True)
-                self.message_user(request, _("Your csv file has been imported"))
+                self.message_user(request, _("Your file has been imported"))
             except Exception as e:
-                print(e)
-                self.message_user(request, _("Failed to import csv"))
+                logger.error(
+                    'Error {} occurred while uploading securities'.format(e))
+                self.message_user(request, _("Failed to import file"))
 
             return redirect(reverse('admin:portfolios_fundholding_changelist'))
         form = CsvImportForm()
@@ -171,35 +180,37 @@ class FundDetailAdmin(admin.ModelAdmin):
         if request.method == "POST":
             user = User.objects.get(username=request.user)
             data_file = request.FILES["data_file"]
-            print(data_file)
-            wb = openpyxl.load_workbook(data_file, data_only=True)
-            print(wb)
-            worksheet = wb.active
+            wb = xlrd.open_workbook(file_contents=data_file.read())
+            ws = wb.sheet_by_index(0)
+
             objects = []
             try:
-                for row in worksheet.iter_rows(min_row=2):
+                for i in range(2, ws.nrows):
+                    row = ws.row_values(i)
                     objects.append(
-                        FundDetail(asset_type=row[0].value, category=row[1].value,
-                                   name=row[2].value, fund_id=row[3].value,
-                                   benchmark=row[4].value, aum=row[5].value,
-                                   regular=row[6].value, direct=row[7].value,
-                                   fund_exp_ratio=row[8].value,
-                                   return_1_year=row[9].value,
-                                   return_3_year=row[10].value,
-                                   return_5_year=row[11].value,
-                                   benchmark_1_year=row[12].value,
-                                   benchmark_3_year=row[13].value,
-                                   benchmark_5_year=row[14].value,
-                                   return_over_bench_1_year=row[15].value,
-                                   return_over_bench_3_year=row[16].value,
-                                   return_over_bench_5_year=row[17].value,
-                                   for_recommendation=row[18].value,
+                        FundDetail(asset_type=row[0], category=row[1],
+                                   name=row[2], fund_id=row[3],
+                                   benchmark=row[4],
+                                   aum=row[5] if row[5] else None,
+                                   regular=row[6], direct=row[7],
+                                   fund_exp_ratio=row[8],
+                                   return_1_year=row[9] if row[9] else None,
+                                   return_3_year=row[10] if row[10] else None,
+                                   return_5_year=row[11] if row[11] else None,
+                                   benchmark_1_year=row[12] if row[12] else None,
+                                   benchmark_3_year=row[13] if row[13] else None,
+                                   benchmark_5_year=row[14] if row[14] else None,
+                                   return_over_bench_1_year=row[15] if row[15] else None,
+                                   return_over_bench_3_year=row[16] if row[16] else None,
+                                   return_over_bench_5_year=row[17] if row[17] else None,
+                                   for_recommendation=row[18] if row[18] else None,
                                    created_by=user))
                 FundDetail.objects.bulk_create(objects, ignore_conflicts=True)
-                self.message_user(request, _("Your csv file has been imported"))
+                self.message_user(request, _("Your file has been imported"))
             except Exception as e:
-                print(e)
-                self.message_user(request, _("Failed to import csv"))
+                logger.error(
+                    'Error {} occurred while uploading securities'.format(e))
+                self.message_user(request, _("Failed to import file"))
 
             return redirect(reverse('admin:portfolios_funddetail_changelist'))
         form = CsvImportForm()

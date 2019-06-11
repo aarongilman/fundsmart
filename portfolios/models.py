@@ -40,7 +40,7 @@ class FundHolding(models.Model):
 class Security(models.Model):
     """Security model class"""
     name = models.CharField(max_length=100)
-    isin = models.CharField(max_length=30)
+    isin = models.CharField(max_length=30, unique=True)
     id_value = models.CharField(max_length=50)
     date = models.DateField()
     ticker = models.CharField(max_length=30, null=True, blank=True)
@@ -87,12 +87,13 @@ class FundDetail(models.Model):
 class Portfolio(models.Model):
     """Portfolio model class"""
     name = models.CharField(max_length=80)
-    description = models.CharField(max_length=250)
-    owner_1 = models.CharField(max_length=100)
-    owner_2 = models.CharField(max_length=100)
-    type = models.CharField(max_length=100)
-    marginal_tax_range = models.DecimalField(max_digits=7, decimal_places=3)
-    location = models.CharField(max_length=80)
+    description = models.CharField(max_length=250, null=True, blank=True)
+    owner_1 = models.CharField(max_length=100, null=True, blank=True)
+    owner_2 = models.CharField(max_length=100, null=True, blank=True)
+    type = models.CharField(max_length=100, null=True, blank=True)
+    marginal_tax_range = models.DecimalField(max_digits=7, decimal_places=3,
+                                             null=True, blank=True)
+    location = models.CharField(max_length=80, null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE,
                                    related_name="created")
     created_at = models.DateTimeField(auto_now_add=True)
