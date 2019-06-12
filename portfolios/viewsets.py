@@ -1,5 +1,6 @@
 # portfolios viewsets.py
 import django_filters
+from rest_framework import filters
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -13,14 +14,14 @@ class SecurityViewSet(ModelViewSet):
     """
         A ViewSet for portfolio associated with the user.
     """
+    queryset = Security.objects.all()
     serializer_class = SecuritySerializer
-    filter_backends = (DjangoFilterBackend,)
-    filter_class = SecurityFilter
+    # filter_backends = (DjangoFilterBackend,)
+    # filter_class = SecurityFilter
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', 'isin', 'ticker')
     pagination_class = None
     permission_classes = []
-
-    def get_queryset(self):
-        return Security.objects.filter(created_by=self.request.user)
 
 
 class PortfolioViewSet(ModelViewSet):
