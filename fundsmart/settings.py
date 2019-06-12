@@ -145,6 +145,7 @@ REST_AUTH_REGISTER_SERIALIZERS = {
 }
 REST_AUTH_SERIALIZERS = {
     'PASSWORD_RESET_SERIALIZER': 'accounts.serializers.PasswordResetSerializer',
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.UserDetailsSerializer'
 }
 ACCOUNT_AUTHENTICATION_METHOD = "username"
 OLD_PASSWORD_FIELD_ENABLED = True

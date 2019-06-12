@@ -92,3 +92,11 @@ class PasswordResetSerializer(serializers.Serializer):
             'request': request,
         }
         self.reset_form.save(**opts)
+
+
+class UserDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email',
+                  'phone_number', )
+        read_only_fields = ('email',)
