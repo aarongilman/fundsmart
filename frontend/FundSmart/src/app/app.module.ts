@@ -18,6 +18,10 @@ import { ServercommunicationService } from './servercommunication.service';
 import { SocialLoginModule, AuthServiceConfig } from "angularx-social-login";
 import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-login";
 import { SocialloginService } from './sociallogin.service';
+import { HeaderComponent } from './header/header.component';
+import { IntercomponentCommunicationService } from './intercomponent-communication.service';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
+
 
 let config = new AuthServiceConfig([
   {
@@ -47,7 +51,9 @@ export function provideConfig() {
     FundRecommendationComponent,
     FundCreateComponent,
     AllocationRecommendationComponent,
-    AllocationFundAnalysisComponent
+    AllocationFundAnalysisComponent,
+    HeaderComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -55,9 +61,9 @@ export function provideConfig() {
     NgbModule,
     HttpClientModule,
     FormsModule,
-    SocialLoginModule
+    SocialLoginModule,
   ],
-  providers: [ServercommunicationService, SocialloginService, {
+  providers: [ServercommunicationService, SocialloginService, IntercomponentCommunicationService, {
     provide: AuthServiceConfig,
     useFactory: provideConfig
   }],

@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../user';
+
+
 import * as $ from 'jquery';
 import { ServercommunicationService } from '../servercommunication.service';
 import { AuthService, SocialUser } from "angularx-social-login";
-import { FacebookLoginProvider, GoogleLoginProvider } from "angularx-social-login";
+import { FacebookLoginProvider } from "angularx-social-login";
+import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 
 @Component({
   selector: 'app-home',
@@ -22,11 +25,11 @@ export class HomeComponent implements OnInit {
     password2: ''
   };
 
-  getuser: any;
+  currentUser: any;
 
   socialuser: SocialUser;
   loggedIn: boolean;
-  currentUser: User;
+
   closeResult: string;
   showdetail_flag = false;
   firstname = '';
@@ -37,12 +40,18 @@ export class HomeComponent implements OnInit {
   pass2 = '';
   username = '';
 
-  constructor(private modalService: NgbModal, private userservice: ServercommunicationService, private authService: AuthService) { }
+  constructor(private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
+    private userservice: ServercommunicationService, private authService: AuthService) {
+    this.interconn.componentMethodCalled$.subscribe(
+      () => {
+        this.setcurrent_user();
+      });
+  }
 
   ngOnInit() { }
 
   signInWithGoogle(): void {
-    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID);
+
     this.userservice.socialLogin().subscribe(data => {
       console.log(data);
       this.modalService.dismissAll('Log in Done');
@@ -85,10 +94,8 @@ export class HomeComponent implements OnInit {
           this.username = '';
           this.showdetail_flag = false;
           this.modalService.dismissAll('Registration Done');
-          this.userservice.getUser(data['key']).subscribe(userdata =>
-            {
-              console.log(userdata);
-            });
+          this.userservice.getUser(data['key']);
+
         },
           error => {
             alert('error occured');
@@ -103,11 +110,11 @@ export class HomeComponent implements OnInit {
     this.userservice.doLogin(this.username, this.pass1).subscribe(
       data => {
         console.log(data['key']);
-        this.userservice.getUser(data['key']).subscribe(userdata =>
-          {
-            console.log(userdata);
-          });
+        this.userservice.getUser(data['key']);
+        // this.interconn.callComponentMethod();
         this.modalService.dismissAll('Login Done');
+        this.username = '';
+        this.pass1 = '';
       },
       error => {
         alert('Wrong Credentials / Server Problem');
@@ -116,14 +123,24 @@ export class HomeComponent implements OnInit {
   }
 
   openmodal(modalid) {
-    this.modalService.open(modalid, { centered: true, ariaLabelledBy: 'app-home' }).result.then((result) => {
+    this.modalService.open(modalid, { ariaLabelledBy: 'app-home' }).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
   }
 
-  private getDismissReason(reason: any): string {
+  resetpassword() {
+    this.userservice.reset_pwd_sendemail(this.email).subscribe(data => {
+      console.log(data);
+    },
+      error => {
+        console.log(error);
+      });
+  }
+
+  getDismissReason(reason: any): string {
+    this.showdetail_flag = false;
     if (reason === ModalDismissReasons.ESC) {
       return 'by pressing ESC';
     } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
@@ -132,6 +149,16 @@ export class HomeComponent implements OnInit {
       return `with: ${reason}`;
     }
   }
+
+
+  resetpass_modal() {
+    // alert('click on forget password');
+    $(".forgot-password-wrap").addClass("show-forgot");
+    $(".login-content").addClass("hide-login");
+  }
+
+
+  setcurrent_user() {
+    this.currentUser = this.userservice.currentuser;
+  }
 }
-
-

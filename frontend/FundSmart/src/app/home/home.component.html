@@ -9,9 +9,9 @@
             <thead>
               <tr>
                 <th>Security</th>
-                <th>Quantity</th>
-                <th>Quantity</th>
-                <th>Quantity</th>
+                <th>Your Portfolio</th>
+                <th>Comparison1</th>
+                <th>Comparison2</th>
               </tr>
             </thead>
             <tbody>
@@ -349,10 +349,10 @@
           </ngb-pagination> -->
           <div class="upload-wrap">
             <form class="d-flex justify-content-end align-items-center">
-              <div class="input-file-wrap">
-                <button type="button"
+              <div class="input-file-wrap" [ngStyle]="{display : currentUser ? '' : 'none'}">
+                <button type="button" 
                   class="upload-btn trade-btn green-btn d-flex align-items-center justify-content-center"
-                  data-toggle="modal" (click)='openmodal(upload)' data-target="#uploadpop">
+                  data-toggle="modal" (click)='openmodal(upload)' >
                   <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 548.176 548.176"
                     style="enable-background:new 0 0 548.176 548.176;" xml:space="preserve">
@@ -378,7 +378,7 @@
                   </svg>
                   Upload</button>
               </div>
-              <button type="button" class="upload-icon-btn" href="javascript:void(0);">
+              <button type="button" [ngStyle]="{display : currentUser ? '' : 'none'}" class="upload-icon-btn" href="javascript:void(0);">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 491.86 491.86"
                   style="enable-background:new 0 0 491.86 491.86;" xml:space="preserve">
@@ -423,7 +423,7 @@
             </form>
           </div>
         </div>
-        <div class="block-container login-block">
+        <div class="block-container login-block" [ngStyle]="{display : currentUser ? 'none' : ''}">
           <p>With the same risk profile, we can improve performance by <span>5.43%</span> based on 1-year returns or
             $13,424 in dollar terms.</p>
           <p>Please login or register to analyze in full detials</p>
@@ -706,7 +706,7 @@
   <!-- upload pop up-->
 
   <!-- Login pop up -->
-  <ng-template #login let-modal role="document" class='"modal fade long-pop sign-pop"'>
+  <ng-template #login let-modal role="document" class='modal fade long-pop sign-pop'>
     <!-- <div class="modal fade long-pop sign-pop modal-content"> -->
 
     <div class="modal-dialog modal-dialog-centered modal-content">
@@ -824,7 +824,7 @@
                 <input type="password" class="form-control pwd" name='password' [(ngModel)]="pass1" placeholder="Password...">
               </div>
               <div class="forgot-password d-flex align-items-center justify-content-end">
-                <a href="javascript:void(0);">Forgot Password?</a>
+                <a (click)='resetpass_modal()'>Forgot Password?</a>
               </div>
               <button type="button" (click)='userlogin()' class="trade-btn green-btn d-flex align-items-center justify-content-center">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -872,15 +872,15 @@
           <div class="login-form trade-inputs">
             <form action="post">
               <div class="input-group">
-                <input type="text" class="form-control userid" placeholder="Email Id or User Id">
+                <input type="text" class="form-control userid" [(ngModel)]="email" name="email" placeholder="Email Id or User Id">
               </div>
-              <div class="input-group">
+              <!-- <div class="input-group">
                 <input type="text" class="form-control" placeholder="Email captcha from below block">
               </div>
               <div class="capcha-wrap">
                 <img src="img/captcha.jpg" />
-              </div>
-              <button type="button" class="trade-btn green-btn d-flex align-items-center justify-content-center">
+              </div> -->
+              <button type="button" (click)='resetpassword()' class="trade-btn green-btn d-flex align-items-center justify-content-center">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
                   style="enable-background:new 0 0 512 512;" xml:space="preserve">
