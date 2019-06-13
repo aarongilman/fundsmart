@@ -1,6 +1,8 @@
 # routerss.py fundsmart project
+from django.urls import re_path
 from rest_framework import routers
 
+from portfolios.views import ImportPortfolioFund
 from portfolios.viewsets import PortfolioViewSet, PortfolioFundViewSet,\
     SecurityViewSet
 
@@ -12,3 +14,8 @@ router.register(r'portfolio_fund', PortfolioFundViewSet, base_name='portfolio-fu
 router.register(r'security', SecurityViewSet, base_name='security')
 
 urlpatterns = router.urls
+
+urlpatterns += [
+    re_path(r'^import_portfolio_fund/$', ImportPortfolioFund.as_view(),
+            name='import-portfolio-fund')
+]

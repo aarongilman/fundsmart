@@ -1,6 +1,7 @@
 # portfolios app models.py file
 
 from django.db import models
+from django.core.validators import RegexValidator
 
 from accounts.models import User
 
@@ -106,7 +107,9 @@ class PortfolioFund(models.Model):
     """PortfolioFund model class"""
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
     security = models.ForeignKey(Security, on_delete=models.CASCADE)
-    quantity = models.CharField(max_length=20)
+    quantity = models.CharField(max_length=20, validators=[RegexValidator(
+        regex=r'^\d+(\%)?$', message='Only number and percentage value allowed.',
+        code='Invalid number')])
     created_by = models.ForeignKey(User, on_delete=models.CASCADE,
                                    related_name="created_by")
     created_at = models.DateTimeField(auto_now_add=True)
