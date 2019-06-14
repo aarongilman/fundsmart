@@ -1,0 +1,12 @@
+.picker {
+    font-size: initial;
+    text-align: initial;
+    line-height: initial;
+    color: initial;
+    position: initial;
+    z-index: initial;
+    -webkit-user-select: initial;
+    -moz-user-select: initial;
+    -ms-user-select: initial;
+    user-select: initial;
+  }

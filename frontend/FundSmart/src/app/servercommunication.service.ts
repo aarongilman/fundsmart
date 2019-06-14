@@ -18,6 +18,7 @@ export class ServercommunicationService {
   constructor(private http: HttpClient, private authService: AuthService,
     private interconn: IntercomponentCommunicationService) { }
   userkey: string;
+
   doRegistration(obj: User) {
     // console.log(obj);
     const body = {
@@ -34,16 +35,14 @@ export class ServercommunicationService {
     return this.http.post(this.login_link, body, { headers: this.httpHeaders });
   }
 
-  socialLogin() {
-    if (this.authService.signIn(GoogleLoginProvider.PROVIDER_ID)) {
-      this.authService.authState.subscribe((user) => {
-        this.socialuser = user;
-      });
-      if (this.socialuser != null) {
-        const body = { access_token: this.socialuser.authToken };
-        return this.http.post('http://127.0.0.1:8000/rest-auth/google/', body, { headers: this.httpHeaders });
-      }
-    }
+  socialLogin(user) {
+    this.socialuser = user;
+    const body = { access_token: user.authToken };
+    this.http.post('http://127.0.0.1:8000/rest-auth/google/', body, { headers: this.httpHeaders }).subscribe(data => {
+      console.log(data);
+      this.getUser(data['key']);
+    });
+
   }
 
   getUser(key: string) {
@@ -90,9 +89,12 @@ export class ServercommunicationService {
       phone_number: user.phone_number
     };
     return this.http.put('http://127.0.0.1:8000/rest-auth/user/',
-    body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })});
+      body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
+  uploadfile() {
+
+  }
 
 
 }

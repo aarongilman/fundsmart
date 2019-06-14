@@ -349,10 +349,11 @@
           </ngb-pagination> -->
           <div class="upload-wrap">
             <form class="d-flex justify-content-end align-items-center">
-              <div class="input-file-wrap" [ngStyle]="{display : currentUser ? '' : 'none'}">
-                <button type="button" 
+              <div class="input-file-wrap" >
+                <!-- [ngStyle]="{display : currentUser ? '' : 'none'}" -->
+                <button type="button"
                   class="upload-btn trade-btn green-btn d-flex align-items-center justify-content-center"
-                  data-toggle="modal" (click)='openmodal(upload)' >
+                  data-toggle="modal" (click)='openmodal(upload)'>
                   <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 548.176 548.176"
                     style="enable-background:new 0 0 548.176 548.176;" xml:space="preserve">
@@ -378,7 +379,9 @@
                   </svg>
                   Upload</button>
               </div>
-              <button type="button" [ngStyle]="{display : currentUser ? '' : 'none'}" class="upload-icon-btn" href="javascript:void(0);">
+              <button type="button"  class="upload-icon-btn"
+                href="javascript:void(0);">
+                <!-- [ngStyle]="{display : currentUser ? '' : 'none'}" -->
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 491.86 491.86"
                   style="enable-background:new 0 0 491.86 491.86;" xml:space="preserve">
@@ -579,9 +582,6 @@
 
   <!-- upload pop up -->
   <ng-template #upload let-modal>
-    <!-- <div class="modal fade" id="uploadpop">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content"> -->
     <div class="modal-header">
       <button type="button" class="close" data-dismiss="modal" (click)="modal.dismiss('Cross click')"
         aria-label="Close">
@@ -589,119 +589,119 @@
       </button>
     </div>
     <div class="modal-body">
-      <div class="upload-body">
+      <div class="upload-body" (click)="fileInput.click()" appDragDrop (onFileDropped)="uploadFile($event)">
         <form action="post" class="d-flex align-items-center justify-content-center">
           <p>Drag & Drop Files <br>(Excel or CSV)</p>
-          <input type="file">
+          <input type="file" #fileInput (change)="uploadFile($event.target.files)">
+
         </form>
-        <div class="upload-options ">
-          <ul class="d-flex align-items-center justify-content-between">
-            <li>
-              <a href="#">
-                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                  xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="475.078px" height="475.077px"
-                  viewBox="0 0 475.078 475.077" style="enable-background:new 0 0 475.078 475.077;" xml:space="preserve">
+      </div>
+      <div class="upload-options ">
+        <ul class="d-flex align-items-center justify-content-between">
+          <li>
+            <a href="#">
+              <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="475.078px" height="475.077px"
+                viewBox="0 0 475.078 475.077" style="enable-background:new 0 0 475.078 475.077;" xml:space="preserve">
+                <g>
                   <g>
-                    <g>
-                      <polygon points="139.899,353.459 237.539,272.087 96.501,185.005 0,262.382 		" />
-                      <polygon points="237.539,272.08 335.467,353.452 475.078,262.375 378.58,185.005 		" />
-                      <polygon
-                        points="238.111,289.786 238.111,289.212 237.827,289.499 237.539,289.212 237.539,289.786 139.899,370.871 97.928,343.463 97.928,374.293 237.539,457.951 237.539,458.235 237.827,457.951 238.111,458.235 238.111,457.951 378.008,374.293 378.008,343.463 336.036,370.871 		" />
-                      <polygon points="0,107.917 96.501,185.005 237.539,98.212 139.899,16.842 		" />
-                      <polygon points="335.467,16.842 237.539,98.212 378.58,185.005 475.078,107.917 		" />
-                    </g>
+                    <polygon points="139.899,353.459 237.539,272.087 96.501,185.005 0,262.382 		" />
+                    <polygon points="237.539,272.08 335.467,353.452 475.078,262.375 378.58,185.005 		" />
+                    <polygon
+                      points="238.111,289.786 238.111,289.212 237.827,289.499 237.539,289.212 237.539,289.786 139.899,370.871 97.928,343.463 97.928,374.293 237.539,457.951 237.539,458.235 237.827,457.951 238.111,458.235 238.111,457.951 378.008,374.293 378.008,343.463 336.036,370.871 		" />
+                    <polygon points="0,107.917 96.501,185.005 237.539,98.212 139.899,16.842 		" />
+                    <polygon points="335.467,16.842 237.539,98.212 378.58,185.005 475.078,107.917 		" />
                   </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                </svg>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                  xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 508.52 508.52"
-                  style="enable-background:new 0 0 508.52 508.52;" xml:space="preserve">
+                </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a (click)='drive_fileupload()'>
+              <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 508.52 508.52"
+                style="enable-background:new 0 0 508.52 508.52;" xml:space="preserve">
+                <g>
                   <g>
                     <g>
                       <g>
-                        <g>
-                          <polygon style="fill:#010002;"
-                            points="484.492,284.58 339.024,32.577 169.496,32.577 314.996,284.58 				" />
-                          <polygon style="fill:#010002;"
-                            points="145.437,74.276 0,326.279 84.764,473.05 230.169,221.143 				" />
-                          <polygon style="fill:#010002;"
-                            points="234.396,316.363 143.371,475.943 423.756,475.943 508.52,316.363 				" />
-                        </g>
+                        <polygon style="fill:#010002;"
+                          points="484.492,284.58 339.024,32.577 169.496,32.577 314.996,284.58 				" />
+                        <polygon style="fill:#010002;"
+                          points="145.437,74.276 0,326.279 84.764,473.05 230.169,221.143 				" />
+                        <polygon style="fill:#010002;"
+                          points="234.396,316.363 143.371,475.943 423.756,475.943 508.52,316.363 				" />
                       </g>
                     </g>
                   </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                </svg>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                  xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
-                  style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a>
+              <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
+                style="enable-background:new 0 0 512 512;" xml:space="preserve">
+                <g>
                   <g>
-                    <g>
-                      <path
-                        d="M450.959,275.302c-4.8-31.303-25.794-57.333-54.127-69.272C396.095,140.822,342.829,88,277.45,88 c-32.78,0-63.667,13.272-86.141,36.72c-6.484-1.276-13.082-1.92-19.709-1.92c-51.554,0-94.297,38.443-101.066,88.169 C30.558,217.688,0,252.543,0,294.4C0,341.048,37.952,379,84.6,379h28.681c11.597,26.461,38.027,45,68.719,45h255 c41.355,0,75-33.645,75-75C512,312.413,485.669,281.861,450.959,275.302z M107,349H84.6C54.494,349,30,324.506,30,294.4 s24.494-54.6,54.6-54.6h15v-15c0-39.701,32.299-72,72-72c6.99,0,13.932,1.015,20.634,3.016l9.588,2.864l6.326-7.753 C225.224,130.001,250.483,118,277.45,118c46.502,0,84.819,35.689,89.013,81.115C364.984,199.042,363.497,199,362,199 c-5.471,0-10.917,0.497-16.281,1.483C326.024,180.367,299.198,169,270.75,169c-57.897,0-105,47.103-105,105 c0,0.589,0.005,1.179,0.015,1.77C132.188,283.208,107,313.218,107,349z M437,394H182c-24.813,0-45-20.187-45-45 s20.188-45,45.001-45h17.728l-2.935-17.483c-0.693-4.129-1.044-8.341-1.044-12.517c0-41.355,33.645-75,75-75 c22.623,0,43.814,10.069,58.14,27.625l6.327,7.752l9.587-2.864C350.388,229.846,356.173,229,362,229c33.084,0,60,26.916,60,60v15 h15c24.813,0,45,20.187,45,45S461.813,394,437,394z" />
-                    </g>
+                    <path
+                      d="M450.959,275.302c-4.8-31.303-25.794-57.333-54.127-69.272C396.095,140.822,342.829,88,277.45,88 c-32.78,0-63.667,13.272-86.141,36.72c-6.484-1.276-13.082-1.92-19.709-1.92c-51.554,0-94.297,38.443-101.066,88.169 C30.558,217.688,0,252.543,0,294.4C0,341.048,37.952,379,84.6,379h28.681c11.597,26.461,38.027,45,68.719,45h255 c41.355,0,75-33.645,75-75C512,312.413,485.669,281.861,450.959,275.302z M107,349H84.6C54.494,349,30,324.506,30,294.4 s24.494-54.6,54.6-54.6h15v-15c0-39.701,32.299-72,72-72c6.99,0,13.932,1.015,20.634,3.016l9.588,2.864l6.326-7.753 C225.224,130.001,250.483,118,277.45,118c46.502,0,84.819,35.689,89.013,81.115C364.984,199.042,363.497,199,362,199 c-5.471,0-10.917,0.497-16.281,1.483C326.024,180.367,299.198,169,270.75,169c-57.897,0-105,47.103-105,105 c0,0.589,0.005,1.179,0.015,1.77C132.188,283.208,107,313.218,107,349z M437,394H182c-24.813,0-45-20.187-45-45 s20.188-45,45.001-45h17.728l-2.935-17.483c-0.693-4.129-1.044-8.341-1.044-12.517c0-41.355,33.645-75,75-75 c22.623,0,43.814,10.069,58.14,27.625l6.327,7.752l9.587-2.864C350.388,229.846,356.173,229,362,229c33.084,0,60,26.916,60,60v15 h15c24.813,0,45,20.187,45,45S461.813,394,437,394z" />
                   </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                  <g> </g>
-                </svg>
-              </a>
-            </li>
-          </ul>
-        </div>
+                </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+                <g> </g>
+              </svg>
+            </a>
+          </li>
+        </ul>
+        <!-- </div> -->
       </div>
     </div>
-    <!-- </div> -->
-    <!-- </div> -->
-    <!-- </div> -->
+
   </ng-template>
   <!-- upload pop up-->
 
@@ -754,7 +754,8 @@
         <div class="login-content">
           <div class="login-with-btn">
             <form class="d-flex align-items-center justify-content-center flex-wrap">
-              <button type="button" (click)='signInWithFB()' class="trade-btn fb-btn d-flex align-items-center justify-content-center">
+              <button type="button" (click)='signInWithFB()'
+                class="trade-btn fb-btn d-flex align-items-center justify-content-center">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
                   style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
@@ -780,7 +781,8 @@
                 </svg>
                 Login with Facebook
               </button>
-              <button type="button" (click)='signInWithGoogle()' class="trade-btn google-btn d-flex align-items-center justify-content-center">
+              <button type="button" (click)='signInWithGoogle()'
+                class="trade-btn google-btn d-flex align-items-center justify-content-center">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.828 96.827"
                   style="enable-background:new 0 0 96.828 96.827;" xml:space="preserve">
@@ -818,15 +820,18 @@
           <div class="login-form trade-inputs">
             <form action="post">
               <div class="input-group">
-                <input type="text" class="form-control userid" name='username' [(ngModel)]="username" placeholder="Email Id or User Id">
+                <input type="text" class="form-control userid" name='username' [(ngModel)]="username"
+                  placeholder="Email Id or User Id">
               </div>
               <div class="input-group">
-                <input type="password" class="form-control pwd" name='password' [(ngModel)]="pass1" placeholder="Password...">
+                <input type="password" class="form-control pwd" name='password' [(ngModel)]="pass1"
+                  placeholder="Password...">
               </div>
               <div class="forgot-password d-flex align-items-center justify-content-end">
                 <a (click)='resetpass_modal()'>Forgot Password?</a>
               </div>
-              <button type="button" (click)='userlogin()' class="trade-btn green-btn d-flex align-items-center justify-content-center">
+              <button type="button" (click)='userlogin()'
+                class="trade-btn green-btn d-flex align-items-center justify-content-center">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
                   style="enable-background:new 0 0 512 512;" xml:space="preserve">
@@ -872,7 +877,8 @@
           <div class="login-form trade-inputs">
             <form action="post">
               <div class="input-group">
-                <input type="text" class="form-control userid" [(ngModel)]="email" name="email" placeholder="Email Id or User Id">
+                <input type="text" class="form-control userid" [(ngModel)]="email" name="email"
+                  placeholder="Email Id or User Id">
               </div>
               <!-- <div class="input-group">
                 <input type="text" class="form-control" placeholder="Email captcha from below block">
@@ -880,7 +886,8 @@
               <div class="capcha-wrap">
                 <img src="img/captcha.jpg" />
               </div> -->
-              <button type="button" (click)='resetpassword()' class="trade-btn green-btn d-flex align-items-center justify-content-center">
+              <button type="button" (click)='resetpassword()'
+                class="trade-btn green-btn d-flex align-items-center justify-content-center">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
                   style="enable-background:new 0 0 512 512;" xml:space="preserve">
@@ -974,7 +981,8 @@
         <div class="modal-body">
           <div class="login-with-btn">
             <form class="d-flex align-items-center justify-content-center flex-wrap">
-              <button type="button" (click)='signInWithFB()' class="trade-btn fb-btn d-flex align-items-center justify-content-center">
+              <button type="button" (click)='signInWithFB()'
+                class="trade-btn fb-btn d-flex align-items-center justify-content-center">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.124 96.123"
                   style="enable-background:new 0 0 96.124 96.123;" xml:space="preserve">
@@ -1000,7 +1008,8 @@
                 </svg>
                 Login with Facebook
               </button>
-              <button type="button" (click)='signInWithGoogle()' class="trade-btn google-btn d-flex align-items-center justify-content-center">
+              <button type="button" (click)='signInWithGoogle()'
+                class="trade-btn google-btn d-flex align-items-center justify-content-center">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 96.828 96.827"
                   style="enable-background:new 0 0 96.828 96.827;" xml:space="preserve">
@@ -1039,30 +1048,37 @@
             <form id='regform' action="post">
               <div class="register-slide">
                 <div class="input-group">
-                  <input type="text" class="form-control fname" [(ngModel)]="firstname" name='firstname' placeholder="First Name">
+                  <input type="text" class="form-control fname" [(ngModel)]="firstname" name='firstname'
+                    placeholder="First Name">
                 </div>
                 <div class="input-group">
-                  <input type="text" class="form-control lname" [(ngModel)]="lastname" name='lastname' placeholder="Last Name">
+                  <input type="text" class="form-control lname" [(ngModel)]="lastname" name='lastname'
+                    placeholder="Last Name">
                 </div>
                 <div class="input-group">
-                  <input type="text" class="form-control userid" [(ngModel)]="email" name='email' placeholder="Email Id">
+                  <input type="text" class="form-control userid" [(ngModel)]="email" name='email'
+                    placeholder="Email Id">
                 </div>
                 <div class="input-group">
-                  <input type="text" class="form-control userid" [(ngModel)]="username" name='username' placeholder="Username">
+                  <input type="text" class="form-control userid" [(ngModel)]="username" name='username'
+                    placeholder="Username">
                 </div>
                 <div class="input-group">
-                    <input type="text" class="form-control phone" [(ngModel)]="phone" name='phone' placeholder="Phone number">
+                  <input type="text" class="form-control phone" [(ngModel)]="phone" name='phone'
+                    placeholder="Phone number">
                 </div>
                 <div class="input-group">
-                  <input type="password" class="form-control pwd" [(ngModel)]="pass1" name='pass1' placeholder="Password">
+                  <input type="password" class="form-control pwd" [(ngModel)]="pass1" name='pass1'
+                    placeholder="Password">
                 </div>
                 <div class="input-group">
-                    <input type="password" class="form-control pwd" [(ngModel)]="pass2" name='pass2' placeholder="Enter Password again">
+                  <input type="password" class="form-control pwd" [(ngModel)]="pass2" name='pass2'
+                    placeholder="Enter Password again">
                 </div>
 
               </div>
-              <button type="button"
-              (click)='registerUser()'  class="trade-btn green-btn d-flex align-items-center justify-content-center login-email">
+              <button type="button" (click)='registerUser()'
+                class="trade-btn green-btn d-flex align-items-center justify-content-center login-email">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
                   style="enable-background:new 0 0 512 512;" xml:space="preserve">
@@ -1111,3 +1127,4 @@
     </div>
   </div>
   <!-- register pop up -->
+  <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>

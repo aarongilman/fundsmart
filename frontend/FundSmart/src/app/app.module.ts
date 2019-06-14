@@ -21,7 +21,26 @@ import { SocialloginService } from './sociallogin.service';
 import { HeaderComponent } from './header/header.component';
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { DragAndDropDirective } from './drag-and-drop.directive';
+import { GetfileforuploadService } from './getfileforupload.service';
+import {
+  GoogleApiModule,
+  GoogleApiService,
+  GoogleAuthService,
+  NgGapiClientConfig,
+  NG_GAPI_CONFIG,
+  GoogleApiConfig
+} from 'ng-gapi';
 
+
+let gapiClientConfig: NgGapiClientConfig = {
+  client_id: "883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com",
+  discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+  scope: [
+    "https://www.googleapis.com/auth/userinfo.profile",
+    'https://www.googleapis.com/auth/drive',
+  ].join(" ")
+};
 
 let config = new AuthServiceConfig([
   {
@@ -53,7 +72,8 @@ export function provideConfig() {
     AllocationRecommendationComponent,
     AllocationFundAnalysisComponent,
     HeaderComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    DragAndDropDirective
   ],
   imports: [
     BrowserModule,
@@ -62,11 +82,18 @@ export function provideConfig() {
     HttpClientModule,
     FormsModule,
     SocialLoginModule,
+    GoogleApiModule.forRoot({
+      provide: NG_GAPI_CONFIG,
+      useValue: gapiClientConfig
+    }),
   ],
-  providers: [ServercommunicationService, SocialloginService, IntercomponentCommunicationService, {
+  providers: [ServercommunicationService, SocialloginService, GetfileforuploadService,
+    IntercomponentCommunicationService, {
     provide: AuthServiceConfig,
     useFactory: provideConfig
-  }],
+  },
+
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
