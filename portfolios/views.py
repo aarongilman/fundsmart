@@ -24,14 +24,16 @@ class ImportPortfolioFund(APIView):
             portfolios = Portfolio.objects.all()
             try:
                 if len(portfolios) < 3:
-                    portfolios = Portfolio.objects. \
-                        bulk_create([Portfolio(name="Portfolio1"),
-                                     Portfolio(name="Portfolio2"),
-                                     Portfolio(name="Portfolio3")])
+                    portfolios = Portfolio.objects.bulk_create(
+                        [Portfolio(name="Portfolio1", created_by=request.user),
+                         Portfolio(name="Portfolio2", created_by=request.user),
+                         Portfolio(name="Portfolio3", created_by=request.user)])
             except Exception as e:
                 logger.error(
                     'ImportPortfolioFund:Error {} occurred while creating\
                     portfolios'.format(e))
+                return Response("Failed to import funds",
+                                status.HTTP_400_BAD_REQUEST)
             try:
                 security_isin = ws.col_values(0)
                 securities = Security.objects.filter(isin__in=security_isin)
