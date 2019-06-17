@@ -92,9 +92,22 @@ export class ServercommunicationService {
       body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
-  uploadfile() {
+  uploadfile(file) {
 
+    // const body = { data_file: file };
+    return this.http.post('http://localhost:8000/api/import_portfolio_fund/', file, {
+      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    });
   }
 
+  get_portfolio_fund() {
+    return this.http.get('http://localhost:8000/api/portfolio_fund/', {
+      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    });
+  }
+
+  get_security() {
+    return this.http.get(' http://localhost:8000/api/security/', { headers: this.httpHeaders });
+  }
 
 }
