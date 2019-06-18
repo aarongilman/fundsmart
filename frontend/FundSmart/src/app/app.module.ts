@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
@@ -17,6 +18,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ServercommunicationService } from './servercommunication.service';
 import { SocialLoginModule, AuthServiceConfig } from "angularx-social-login";
 import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-login";
+import { ChartistModule } from 'ng-chartist';
 import { SocialloginService } from './sociallogin.service';
 import { HeaderComponent } from './header/header.component';
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
@@ -34,10 +36,10 @@ import {
 
 
 let gapiClientConfig: NgGapiClientConfig = {
-  client_id: "883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com",
+  client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
   discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
   scope: [
-    "https://www.googleapis.com/auth/userinfo.profile",
+    'https://www.googleapis.com/auth/userinfo.profile',
     'https://www.googleapis.com/auth/drive',
   ].join(" ")
 };
@@ -45,11 +47,11 @@ let gapiClientConfig: NgGapiClientConfig = {
 let config = new AuthServiceConfig([
   {
     id: GoogleLoginProvider.PROVIDER_ID,
-    provider: new GoogleLoginProvider("883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com")
+    provider: new GoogleLoginProvider('883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com')
   },
   {
     id: FacebookLoginProvider.PROVIDER_ID,
-    provider: new FacebookLoginProvider("1625784934400382")
+    provider: new FacebookLoginProvider('1625784934400382')
   }
 ]);
 
@@ -77,11 +79,13 @@ export function provideConfig() {
   ],
   imports: [
     BrowserModule,
+    CommonModule,
     AppRoutingModule,
     NgbModule,
     HttpClientModule,
     FormsModule,
     SocialLoginModule,
+    ChartistModule,
     GoogleApiModule.forRoot({
       provide: NG_GAPI_CONFIG,
       useValue: gapiClientConfig
@@ -89,9 +93,9 @@ export function provideConfig() {
   ],
   providers: [ServercommunicationService, SocialloginService, GetfileforuploadService,
     IntercomponentCommunicationService, {
-    provide: AuthServiceConfig,
-    useFactory: provideConfig
-  },
+      provide: AuthServiceConfig,
+      useFactory: provideConfig
+    },
 
   ],
   bootstrap: [AppComponent]

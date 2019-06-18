@@ -16,13 +16,35 @@
             </thead>
             <tbody *ngIf="userFunds.length > 0">
               <tr *ngFor="let item of userFunds">
-                <!-- <tr *ngFor="let item of items | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
+                <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
+
+                <td>
+                  <input *ngIf="item['security'] == undefined" [(ngModel)]="securityinput" name='security' style="width: 3cm" type="text">
+                  <div *ngIf="item['security'] != undefined">{{item['security']}}</div>
+                </td>
+                <td>
+                  <input *ngIf="item['yourPortfolio'] == undefined" [(ngModel)]="portfolioinput" style="width: 1cm" name='portfolio'
+                    type="text">
+                  <span *ngIf="item['yourPortfolio'] != undefined">{{item['yourPortfolio']}}</span>
+
+                </td>
+                <td>
+                  <input *ngIf="item['comparision1'] == undefined" [(ngModel)]="comp1input" name='comp1' style="width: 1cm" type="text">
+                  <span *ngIf="item['comparision2'] != undefined">{{item['comparision1']}}</span>
+
+                </td>
+                <td>
+                  <input *ngIf="item['comparision2'] == undefined" [(ngModel)]="comp2input" style="width: 1cm" name='comp2'
+                    type="text">
+                  <span *ngIf="item['comparision1'] != undefined">{{item['comparision2']}}</span>
+                </td>
+                <!--         
                 <td>{{item['security']}}</td>
                 <td>{{item['yourPortfolio']}}</td>
                 <td>{{item['comparision1']}}</td>
                 <td>{{item['comparision2']}}</td>
+         -->
               </tr>
-             
             </tbody>
           </table>
           <!-- <ngb-pagination [collectionSize]="70" [(page)]="page" aria-label="Custom pagination">
@@ -32,7 +54,7 @@
           </ngb-pagination> -->
           <div class="upload-wrap">
             <form class="d-flex justify-content-end align-items-center">
-              <div class="input-file-wrap" >
+              <div class="input-file-wrap">
                 <!-- [ngStyle]="{display : currentUser ? '' : 'none'}" -->
                 <button type="button"
                   class="upload-btn trade-btn green-btn d-flex align-items-center justify-content-center"
@@ -62,8 +84,7 @@
                   </svg>
                   Upload</button>
               </div>
-              <button type="button"  class="upload-icon-btn"
-                href="javascript:void(0);">
+              <button type="button" class="upload-icon-btn" (click)='addRow()'>
                 <!-- [ngStyle]="{display : currentUser ? '' : 'none'}" -->
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 491.86 491.86"
@@ -185,12 +206,12 @@
         </div>
       </div>
       <div class="col-lg-5">
-        <div class="block-container no-bdrs-top-right no-bdrs-botton-right semi-block">
+        <div *ngIf="currentUser" class="block-container no-bdrs-top-right no-bdrs-botton-right semi-block">
           <div class="hpd-table">
             <div class="heading">
               <h3>Historical Performance Difference</h3>
             </div>
-            <div class="responsive-table">
+            <div  class="responsive-table">
               <table class="trade-table">
                 <thead>
                   <th>Portfolio</th>
@@ -202,31 +223,33 @@
                 <tbody>
                   <tr class="normal-tr">
                     <td>Existing</td>
-                    <td>-1.73%</td>
-                    <td>-0.92%</td>
-                    <td>7.50%</td>
-                    <td>6.07%</td>
+                    <td>{{existing.annualexpense}}%</td>
+                    <td>{{existing.oneyear}}%</td>
+                    <td>{{existing.threeyear}}%</td>
+                    <td>{{existing.fiveyear}}%</td>
                   </tr>
                   <tr class="blue-tr">
                     <td>Recommended</td>
-                    <td>-1.10%</td>
-                    <td>2.88%</td>
-                    <td>11.26%</td>
-                    <td>3.25%</td>
+                    <td>{{recommended.annualexpense}}%</td>
+                    <td>{{recommended.oneyear}}%</td>
+                    <td>{{recommended.threeyear}}%</td>
+                    <td>{{recommended.fiveyear}}%</td>
                   </tr>
                   <tr class="total-tr">
                     <td>Differences</td>
-                    <td class="gain-green">1.62%</td>
-                    <td class="gain-green">3.80%</td>
-                    <td class="gain-green">3.76%</td>
-                    <td class="loss-red">-2.82%</td>
+                    <td class="gain-green">{{diffrence.annualexpense}}%</td>
+                    <td class="gain-green">{{diffrence.oneyear}}%</td>
+                    <td class="gain-green">{{diffrence.threeyear}}%</td>
+                    <td class="loss-red">{{diffrence.fiveyear}}%</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-        <div class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper semi-block">
+
+        <div *ngIf="currentUser"
+          class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper semi-block">
           <div class="ct-chart line-chart"></div>
           <div class="graph-labels">
             <ul>
@@ -235,23 +258,17 @@
             </ul>
           </div>
         </div>
-        <div
+        <div *ngIf="currentUser"
           class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
           <div class="graph-labels label-left">
-            <ul>
-              <li><span class="plot-5"></span>Financials</li>
-              <li><span class="plot-6"></span>Information technology</li>
-              <li><span class="plot-7"></span>consumer discretionary</li>
-              <li><span class="plot-8"></span>industrial</li>
-              <li><span class="plot-9"></span>Health care</li>
-              <li><span class="plot-10"></span>communication services</li>
-              <li><span class="plot-11"></span>Consumer staples</li>
-              <li><span class="plot-12"></span>Grand total</li>
-            </ul>
+
           </div>
-          <div class="ct-chart  do-nut-chart"></div>
+          <x-chartist *ngIf="currentUser" [type]="pietype" [data]="piedata" [options]="pieoptions" [events]="pieevents">
+          </x-chartist>
+          <!-- <div class="ct-chart  do-nut-chart"></div> -->
         </div>
-        <div class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+        <div *ngIf="currentUser"
+          class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
           <div class="ct-chart pie-chart"></div>
         </div>
       </div>

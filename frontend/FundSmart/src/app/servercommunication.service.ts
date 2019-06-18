@@ -110,4 +110,22 @@ export class ServercommunicationService {
     return this.http.get(' http://localhost:8000/api/security/', { headers: this.httpHeaders });
   }
 
+  get_home_pie_chart() {
+    return this.http.get('http://localhost:8000/api/dashboard_pie_chart/', {
+      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    });
+  }
+
+  get_deshboard_doughnut_chart() {
+    return this.http.get('http://localhost:8000/api/dashboard_doughnut_chart/', {
+      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    });
+  }
+
+  get_historical_perfomance() {
+    return this.http.get('http://localhost:8000/api/historical_performance_difference/', {
+      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    });
+  }
+
 }
