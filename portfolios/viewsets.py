@@ -39,8 +39,10 @@ class PortfolioFundViewSet(ModelViewSet):
         A ViewSet for portfolio fund associated with the user.
     """
     serializer_class = PortfolioFundSerializer
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
-    filterset_fields = ('portfolio',)
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,
+                       filters.SearchFilter,)
+    filterset_fields = ('portfolio', )
+    search_fields = ('security__name', )
 
     def get_queryset(self):
         return PortfolioFund.objects.filter(created_by=self.request.user)

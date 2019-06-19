@@ -30,9 +30,16 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
 class PortfolioFundSerializer(serializers.ModelSerializer):
     """PortfolioFund Model Serializer"""
+    security_name = serializers.SerializerMethodField('security', read_only=True)
+
+    def security(self, obj):
+        security_name = obj.security.name
+        return security_name
+
     class Meta:
         model = PortfolioFund
-        fields = '__all__'
+        fields = ("id", "quantity", "created_at", "updated_at", "portfolio",
+                  "security", "created_by", "updated_by", 'security_name')
 
 
 class ImportPortfolioFundSerializer(serializers.Serializer):
