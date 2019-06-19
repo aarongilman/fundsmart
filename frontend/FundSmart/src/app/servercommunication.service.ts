@@ -128,4 +128,15 @@ export class ServercommunicationService {
     });
   }
 
+  add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby) {
+    const body = { quantity: fquantity, portfolio: userportfolio, security: selectedsecurity, created_by: createdby };
+    return this.http.post('http://localhost:8000/api/portfolio_fund/', body,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  getUserPortfolio() {
+    return this.http.get('http://localhost:8000/api/portfolio/', { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+
 }

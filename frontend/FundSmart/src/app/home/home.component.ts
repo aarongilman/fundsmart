@@ -25,9 +25,24 @@ import * as Chartist from 'chartist';
 
 export class HomeComponent implements OnInit {
 
-  existing: HistoricalData;
-  recommended: HistoricalData;
-  diffrence: HistoricalData;
+  existing: HistoricalData = {
+    annualexpense: 0,
+    oneyear: 0,
+    threeyear: 0,
+    fiveyear: 0
+  };
+  recommended: HistoricalData = {
+    annualexpense: 0,
+    oneyear: 0,
+    threeyear: 0,
+    fiveyear: 0
+  };
+  diffrence: HistoricalData = {
+    annualexpense: 0,
+    oneyear: 0,
+    threeyear: 0,
+    fiveyear: 0
+  };
 
 
 
@@ -63,7 +78,11 @@ export class HomeComponent implements OnInit {
   portfolioinput: string;
   comp1input: string;
   comp2input: string;
+  lastkeydown1: number = 0;
 
+  portfolio1: any;
+  comparision1: any;
+  comparision2: any;
 
   pietype: ChartType;
   piedata: IChartistData;
@@ -172,10 +191,10 @@ export class HomeComponent implements OnInit {
 
   addRow() {
     let singlefund: portfolio_fund = {
-      security: undefined,
-      yourPortfolio: undefined,
-      comparision1: undefined,
-      comparision2: undefined
+      security: '',
+      yourPortfolio: '0.00',
+      comparision1: '0.00',
+      comparision2: '0.00'
     };
     this.userFunds.push(singlefund);
   }
@@ -280,46 +299,61 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  setfunds(fundlist) {
+  setfunds(fundlist, xportfolio1: any, xcomparision1: any, xcomparision2: any) {
 
     let obj;
-
     // tslint:disable-next-line: forin
-    // for (datalist in fundlist['results']) {
-    //   console.log("datalist" + fundlist['results'][datalist]['security']);
-
-    // console.log("Length of datalist ", datalist.length);
-
+    // console.log("Length of obj",fundlist['results'].length);    
     for (obj = 0; obj < fundlist['results'].length; obj++) {
+
       let singlefund: portfolio_fund = {
+        // created_by: 0
         security: '',
-        yourPortfolio: '',
-        comparision1: '',
-        comparision2: ''
+        yourPortfolio: '0.00',
+        comparision1: '0.00',
+        comparision2: '0.00'
       };
-      // console.log(obj);
-      // console.log(fundlist['results'][obj]['security']);
-
-      singlefund.security = fundlist['results'][obj]['security'];
-      singlefund.yourPortfolio = fundlist['results'][obj]['quantity'];
-      obj++;
-
-      if (singlefund.security == fundlist['results'][obj]['security']) {
+      singlefund.security = fundlist['results'][obj]['security_name'];
+      var portfoilo = fundlist['results'][obj]['portfolio'];
+      if (xportfolio1['id'] == fundlist['results'][obj]['portfolio']) {
+        singlefund.yourPortfolio = fundlist['results'][obj]['quantity'];
+      } else if (xcomparision1['id'] == fundlist['results'][obj]['portfolio']) {
         singlefund.comparision1 = fundlist['results'][obj]['quantity'];
-        obj++;
-      }
-
-
-
-      if (singlefund.security == fundlist['results'][obj]['security']) {
+      } else if (xcomparision2['id'] == fundlist['results'][obj]['portfolio']) {
         singlefund.comparision2 = fundlist['results'][obj]['quantity'];
       }
-      // console.log("Single fund", singlefund);
+      if (obj < fundlist['results'].length - 1) {
+        obj++;
+        if (singlefund.security == fundlist['results'][obj]['security_name']) {
+          if (portfoilo != fundlist['results'][obj]['portfolio']) {
+            if (xcomparision1['id'] == fundlist['results'][obj]['portfolio']) {
+              singlefund.comparision1 = fundlist['results'][obj]['quantity'];
+            } else if (xcomparision2['id'] == fundlist['results'][obj]['portfolio']) {
+              singlefund.comparision2 = fundlist['results'][obj]['quantity'];
+            }
+          } else {
+            obj--;
+          }
+        } else {
+          obj--;
+        }
+      }
+      if (obj < fundlist['results'].length - 1) {
+        obj++;
+        if (singlefund.security == fundlist['results'][obj]['security_name']) {
+          if (portfoilo != fundlist['results'][obj]['portfolio']) {
+            if (xcomparision2['id'] == fundlist['results'][obj]['portfolio']) {
+              singlefund.comparision2 = fundlist['results'][obj]['quantity'];
+            }
+          } else {
+            obj--;
+          }
+        } else {
+          obj--;
+        }
+      }
       this.userFunds.push(singlefund);
     }
-    // console.log("User funds array", this.userFunds);
-
-    // }
   }
 
   userlogin() {
@@ -330,18 +364,27 @@ export class HomeComponent implements OnInit {
         this.modalService.dismissAll('Login Done');
         this.username = '';
         this.pass1 = '';
-        this.userservice.get_portfolio_fund().subscribe(
-          fundlist => {
-            this.setfunds(fundlist);
-            // console.log(this.userFunds);
+        this.userservice.getUserPortfolio().subscribe(
+          data => {
+            this.portfolio1 = data['results']['0'];
+            this.comparision1 = data['results']['1'];
+            this.comparision2 = data['results']['2'];
+            this.userservice.get_portfolio_fund().subscribe(
+              fundlist => {
+                this.setfunds(fundlist, data['results']['0'], data['results']['1'], data['results']['2']);
+              },
+              error => {
+                console.log(error);
+              }
+            );
           },
           error => {
             console.log(error);
-          }
-        );
+          });
+
         this.userservice.get_historical_perfomance().subscribe(
           result => {
-            console.log(result);
+            // console.log(result);
             this.existing = {
               annualexpense: 0,
               oneyear: 0,
@@ -360,7 +403,7 @@ export class HomeComponent implements OnInit {
               threeyear: 0,
               fiveyear: 0
             };
-            console.log(Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2)));
+            // console.log(Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2)));
 
             this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
             this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
@@ -482,9 +525,78 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  deleteAttachment(index) {
-    this.files.splice(index, 1);
+  searchsecurity($event) {
+    // console.log(this.securityinput);
+    var securityList1 = [];
+    if (this.securityinput.length > 1) {
+      if ($event.timeStamp - this.lastkeydown1 > 200) {
+        securityList1 = this.searchFromArray(this.securitylist, this.securityinput);
+
+      }
+      // console.log(securityList1);
+    }
   }
+
+  searchFromArray(arr, regex) {
+    let matches = [];
+    let i;
+    for (i = 0; i < arr.length; i++) {
+      if (arr[i].name.match(regex)) {
+        matches.push(arr[i]);
+      }
+      if (arr[i].isin.match(regex)) {
+        matches.push(arr[i]);
+      }
+      if (arr[i].ticker != null) {
+        if (arr[i].ticker.match(regex)) {
+          matches.push(arr[i]);
+        }
+      }
+    }
+    // console.log(matches);
+    return matches;
+  }
+
+  addportfolioFund(string1,item) {
+    if (this.securityinput === undefined) {
+      alert('Plese select security first');
+    } else if (this.currentUser == undefined) {
+      alert("Please login first");
+    }
+    else {
+      var portfolio;
+      var quantity;
+      if (string1.match('portfolio')) {
+        portfolio = this.portfolio1.id;
+        quantity = this.portfolioinput;
+      } else if (string1.match('comp1')) {
+        portfolio = this.comparision1.id;
+        quantity = this.comp1input;
+      } else if (string1.match('comp2')) {
+        portfolio = this.comparision2.id;
+        quantity = this.comp2input;
+      }
+      var security = this.securitylist.find(x => x.name === this.securityinput);
+      // name = this.securityinput);
+      this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe(
+        data => {
+          // console.log(data);
+          this.userservice.get_portfolio_fund().subscribe(
+            fundlist => {
+              this.userFunds = [];
+              this.setfunds(fundlist, this.portfolio1, this.comparision1, this.comparision2);
+            },
+            error => {
+              console.log(error);
+            }
+          );
+        }, error => {
+          console.log(error);
+        }
+      )
+    }
+  }
+
 
   dropboxupload() {
     this.fileupload.getUserInfo();
