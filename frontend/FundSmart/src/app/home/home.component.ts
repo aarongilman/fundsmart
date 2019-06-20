@@ -1,7 +1,12 @@
-import { Component, OnInit, NgModule } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Observable } from 'rxjs';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { User } from '../user';
 import { portfolio_fund } from '../portfolio_fund';
+import { portfoliofundlist } from '../portfolio_fundlist';
+import { PortfoliofundhelperService } from '../portfoliofundhelper.service';
+import { SortableDirective, SortEvent } from '../sortable.directive';
 import { security } from '../security';
 import { DoughnutChart } from '../doughnut_chart';
 import * as $ from 'jquery';
@@ -13,17 +18,24 @@ import { GetfileforuploadService } from '../getfileforupload.service';
 import { IPieChartOptions, IChartistAnimationOptions, IChartistData, ILineChartOptions } from 'chartist';
 import { ChartEvent, ChartType } from 'ng-chartist';
 import { HistoricalData } from '../historicaldata';
-declare let $: any;
+// declare let ^: any;
 import * as Chartist from 'chartist';
+
+
 
 @Component({
 
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+  providers: [PortfoliofundhelperService, DecimalPipe]
 })
 
 export class HomeComponent implements OnInit {
+
+  funds$: Observable<portfolio_fund[]>;
+  total$;
+  @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
 
   existing: HistoricalData = {
     annualexpense: 0,
@@ -48,7 +60,7 @@ export class HomeComponent implements OnInit {
 
   doughnutchartData: DoughnutChart[] = [];
   securitylist: security[] = [];
-  userFunds: portfolio_fund[] = [];
+  userFunds = portfoliofundlist;
   reguser: User = {
     username: '',
     firstname: '',
@@ -93,11 +105,125 @@ export class HomeComponent implements OnInit {
   constructor(private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
     private userservice: ServercommunicationService,
     private fileupload: GetfileforuploadService,
-    private authService: AuthService) {
+    private authService: AuthService,
+    public portfolioservice: PortfoliofundhelperService) {
+
+    this.funds$ = portfolioservice.funds$;
+    this.portfolioservice.total$.subscribe(total => {
+      this.total$ = total;
+    });
+
+    this.interconn.logoutcomponentMethodCalled$.subscribe(
+      () => {
+        this.userFunds = [];
+        this.portfolioservice.resetfunds();
+        this.funds$ = this.portfolioservice.funds$;
+        this.portfolioservice.total$.subscribe(total => {
+          this.total$ = total;
+        });
+      }
+    );
+
+
     this.interconn.componentMethodCalled$.subscribe(
       () => {
+        // alert("In first method");
         this.setcurrent_user();
+
+        this.userservice.getUserPortfolio().subscribe(
+          data => {
+            this.portfolio1 = data['results']['0'];
+            this.comparision1 = data['results']['1'];
+            this.comparision2 = data['results']['2'];
+            this.userservice.get_portfolio_fund().subscribe(
+              fundlist => {
+                this.setfunds(fundlist, data['results']['0'], data['results']['1'], data['results']['2']);
+              },
+              error => {
+                console.log(error);
+              }
+            );
+          },
+          error => {
+            console.log(error);
+          });
+
+        this.userservice.get_historical_perfomance().subscribe(
+          result => {
+            // console.log(result);
+            this.existing = {
+              annualexpense: 0,
+              oneyear: 0,
+              threeyear: 0,
+              fiveyear: 0
+            };
+            this.recommended = {
+              annualexpense: 0,
+              oneyear: 0,
+              threeyear: 0,
+              fiveyear: 0
+            };
+            this.diffrence = {
+              annualexpense: 0,
+              oneyear: 0,
+              threeyear: 0,
+              fiveyear: 0
+            };
+
+            this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
+            this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
+            this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
+            this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
+
+            this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
+            this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
+            this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
+            this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['5-year']).toFixed(2));
+
+            this.diffrence.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['difference']['annual_expense']).toFixed(2));
+            this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['1-year']).toFixed(2));
+            this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
+            this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
+
+          },
+          error => {
+            console.log(error);
+          }
+        );
+        this.userservice.get_home_pie_chart().subscribe(
+          jsondata => {
+            // console.log(jsondata);
+            // tslint:disable-next-line: forin
+            for (var data in jsondata) {
+              this.pielable.push(jsondata[data]['security__asset_type']);
+              this.pieseries.push(jsondata[data]['total']);
+            }
+
+          },
+          error => {
+            console.log(error);
+          }
+        );
+        this.userservice.get_deshboard_doughnut_chart().subscribe(
+          jsondata => {
+            // console.log(jsondata);
+            // tslint:disable-next-line: forin
+            for (var data in jsondata) {
+              var doughnutobj: DoughnutChart = {
+                security__industry: '',
+                total: -1
+              }
+              // console.log(jsondata[data]['security__industry'], jsondata[data]['total']);
+              doughnutobj.security__industry = jsondata[data]['security__industry'];
+              doughnutobj.total = jsondata[data]['total'];
+              this.doughnutchartData.push(doughnutobj);
+            }
+          },
+          error => { console.log(error); }
+
+        );
       });
+    // alert(this.currentUser.name);
   }
 
   ngOnInit() {
@@ -120,6 +246,7 @@ export class HomeComponent implements OnInit {
         }
       }
     );
+    // this.userservice.checklogin();
   }
 
   signInWithGoogle(): void {
@@ -197,7 +324,14 @@ export class HomeComponent implements OnInit {
       comparision2: '0.00'
     };
     this.userFunds.push(singlefund);
+    this.portfolioservice.resetfunds();
+    this.funds$ = this.portfolioservice.funds$;
+    this.portfolioservice.total$.subscribe(total => {
+      this.total$ = total;
+    });
+    // portfoliofundlist.push(singlefund);
   }
+
 
   // generateDonotchart() {
   //   $(function () {
@@ -270,6 +404,7 @@ export class HomeComponent implements OnInit {
         this.reguser.password2 = this.pass2;
         this.reguser.username = this.username;
         this.userservice.doRegistration(this.reguser).subscribe(data => {
+          localStorage.setItem('authkey', data['key']);
           alert('registration successful');
           this.firstname = '';
           this.lastname = '';
@@ -353,113 +488,31 @@ export class HomeComponent implements OnInit {
         }
       }
       this.userFunds.push(singlefund);
+      // portfoliofundlist.push(singlefund);
+      // console.log(singlefund);
+
     }
+    this.portfolioservice.resetfunds();
+    this.funds$ = this.portfolioservice.funds$;
+    // this.total$ = this.portfolioservice.total$;
+    // this.portfolioservice.funds$.subscribe(result => this.funds$);
+    this.portfolioservice.total$.subscribe(total => {
+      this.total$ = total;
+    });
   }
 
   userlogin() {
     this.userservice.doLogin(this.username, this.pass1).subscribe(
       data => {
+        localStorage.setItem('authkey', data['key']);
         console.log(data['key']);
         this.userservice.getUser(data['key']);
         this.modalService.dismissAll('Login Done');
         this.username = '';
         this.pass1 = '';
-        this.userservice.getUserPortfolio().subscribe(
-          data => {
-            this.portfolio1 = data['results']['0'];
-            this.comparision1 = data['results']['1'];
-            this.comparision2 = data['results']['2'];
-            this.userservice.get_portfolio_fund().subscribe(
-              fundlist => {
-                this.setfunds(fundlist, data['results']['0'], data['results']['1'], data['results']['2']);
-              },
-              error => {
-                console.log(error);
-              }
-            );
-          },
-          error => {
-            console.log(error);
-          });
 
-        this.userservice.get_historical_perfomance().subscribe(
-          result => {
-            // console.log(result);
-            this.existing = {
-              annualexpense: 0,
-              oneyear: 0,
-              threeyear: 0,
-              fiveyear: 0
-            };
-            this.recommended = {
-              annualexpense: 0,
-              oneyear: 0,
-              threeyear: 0,
-              fiveyear: 0
-            };
-            this.diffrence = {
-              annualexpense: 0,
-              oneyear: 0,
-              threeyear: 0,
-              fiveyear: 0
-            };
-            // console.log(Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2)));
 
-            this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
-            this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
-            this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
-            this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
 
-            this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
-            this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
-            this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
-            this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['5-year']).toFixed(2));
-
-            this.diffrence.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['difference']['annual_expense']).toFixed(2));
-            this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['1-year']).toFixed(2));
-            this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
-            this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
-
-            // console.log("Existing", this.existing);
-            // console.log(this.recommended);
-            // console.log(this.diffrence);
-          },
-          error => {
-            console.log(error);
-          }
-        );
-        this.userservice.get_home_pie_chart().subscribe(
-          jsondata => {
-            // console.log(jsondata);
-            // tslint:disable-next-line: forin
-            for (var data in jsondata) {
-              this.pielable.push(jsondata[data]['security__asset_type']);
-              this.pieseries.push(jsondata[data]['total']);
-            }
-
-          },
-          error => {
-            console.log(error);
-          }
-        );
-        this.userservice.get_deshboard_doughnut_chart().subscribe(
-          jsondata => {
-            // console.log(jsondata);
-            // tslint:disable-next-line: forin
-            for (var data in jsondata) {
-              var doughnutobj: DoughnutChart = {
-                security__industry: '',
-                total: -1
-              }
-              // console.log(jsondata[data]['security__industry'], jsondata[data]['total']);
-              doughnutobj.security__industry = jsondata[data]['security__industry'];
-              doughnutobj.total = jsondata[data]['total'];
-              this.doughnutchartData.push(doughnutobj);
-            }
-          },
-          error => { console.log(error); }
-
-        );
       },
       error => {
         alert('Wrong Credentials / Server Problem');
@@ -467,8 +520,13 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  openmodal(modalid) {
-    this.modalService.open(modalid, { ariaLabelledBy: 'app-home' }).result.then((result) => {
+  openmodal(modalid, str) {
+    // alert("type of modal is" + typeof(modalid));
+    var addclass = '';
+    if (str == 'login' || str == 'register') {
+      addclass = 'long-pop sign-pop';
+    }
+    this.modalService.open(modalid, { centered: true, windowClass: addclass }).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
@@ -557,44 +615,48 @@ export class HomeComponent implements OnInit {
     return matches;
   }
 
-  addportfolioFund(string1,item) {
-    if (this.securityinput === undefined) {
-      alert('Plese select security first');
-    } else if (this.currentUser == undefined) {
-      alert("Please login first");
-    }
-    else {
-      var portfolio;
-      var quantity;
-      if (string1.match('portfolio')) {
-        portfolio = this.portfolio1.id;
-        quantity = this.portfolioinput;
-      } else if (string1.match('comp1')) {
-        portfolio = this.comparision1.id;
-        quantity = this.comp1input;
-      } else if (string1.match('comp2')) {
-        portfolio = this.comparision2.id;
-        quantity = this.comp2input;
-      }
-      var security = this.securitylist.find(x => x.name === this.securityinput);
-      // name = this.securityinput);
-      this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe(
-        data => {
-          // console.log(data);
-          this.userservice.get_portfolio_fund().subscribe(
-            fundlist => {
-              this.userFunds = [];
-              this.setfunds(fundlist, this.portfolio1, this.comparision1, this.comparision2);
-            },
-            error => {
-              console.log(error);
-            }
-          );
-        }, error => {
-          console.log(error);
-        }
-      )
-    }
+  addportfolioFund(string1, item) {
+    $('#input').on('keydown', function (e) {
+      if (e.which == 8 || e.which == 46) return false;
+    });
+    alert(item.security);
+    // if (this.securityinput === undefined || item.security === '') {
+    //   alert('Plese select security first');
+    // } else if (this.currentUser == undefined) {
+    //   alert("Please login first");
+    // }
+    // else {
+    //   var portfolio;
+    //   var quantity;
+    //   if (string1.match('portfolio')) {
+    //     portfolio = this.portfolio1.id;
+    //     quantity = this.portfolioinput;
+    //   } else if (string1.match('comp1')) {
+    //     portfolio = this.comparision1.id;
+    //     quantity = this.comp1input;
+    //   } else if (string1.match('comp2')) {
+    //     portfolio = this.comparision2.id;
+    //     quantity = this.comp2input;
+    //   }
+    //   var security = this.securitylist.find(x => x.name === this.securityinput);
+    // name = this.securityinput);
+    // this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe(
+    //   data => {
+    //     // console.log(data);
+    //     this.userservice.get_portfolio_fund().subscribe(
+    //       fundlist => {
+    // this.userFunds = [];
+    //         this.setfunds(fundlist, this.portfolio1, this.comparision1, this.comparision2);
+    //       },
+    //       error => {
+    //         console.log(error);
+    //       }
+    //     );
+    //   }, error => {
+    //     console.log(error);
+    //   }
+    // );
+    // }
   }
 
 
@@ -615,4 +677,23 @@ export class HomeComponent implements OnInit {
   setcurrent_user() {
     this.currentUser = this.userservice.currentuser;
   }
+
+
+
+  onSort({ column, direction }: SortEvent) {
+    // resetting other headers
+    this.headers.forEach(header => {
+      if (header.sortable !== column) {
+        header.direction = '';
+      }
+    });
+
+    this.portfolioservice.sortColumn = column;
+    this.portfolioservice.sortDirection = direction;
+  }
 }
+
+
+
+
+

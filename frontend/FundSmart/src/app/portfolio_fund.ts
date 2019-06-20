@@ -1,4 +1,4 @@
-export class portfolio_fund {
+export interface portfolio_fund {
     // created_by: number;
     security: string;
     yourPortfolio: string;

@@ -18,17 +18,25 @@ export class HeaderComponent implements OnInit {
   oldpass = '';
   newpass = '';
   confirmpass = '';
-  
+
 
   constructor(private modalService: NgbModal,
-              private service: ServercommunicationService,
-              private intercon: IntercomponentCommunicationService) {
+    private service: ServercommunicationService,
+    private intercon: IntercomponentCommunicationService) {
+
     this.intercon.componentMethodCalled$.subscribe(
       () => {
         this.setcurrent_user();
       });
+
+    this.intercon.logoutcomponentMethodCalled$.subscribe(
+      () => {
+        this.setcurrent_user();
+      }
+    );
   }
   ngOnInit() {
+    this.service.checklogin();
   }
   setcurrent_user() {
     this.currentuser = this.service.currentuser;
@@ -39,12 +47,21 @@ export class HeaderComponent implements OnInit {
     $(".user-drop-down").addClass("open-user-sub-menu");
   }
 
+  closeMenu() {
+    // alert("Hello");
+    $('.user-drop-down').removeClass("open-user-sub-menu");
+  }
+
   header_modals(modalid) {
     this.modalService.open(modalid, { ariaLabelledBy: 'app-home' }).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
     });
+  }
+
+  userlogout() {
+    this.service.logout();
   }
 
   private getDismissReason(reason: any): string {
@@ -76,9 +93,7 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  closeMenu() {
-    $(".user-drop-down").removeClass("open-user-sub-menu");
-  }
+
 
   updateuserprofile() {
     this.service.update_User(this.currentuser).subscribe(

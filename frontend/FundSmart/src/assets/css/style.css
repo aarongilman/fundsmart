@@ -11,7 +11,7 @@ body{
 .width-250{width: 250px !important;}
 .width-120{width: 120px !important;}
 .width-100{width: 100% !important;}
-a,a:hover{text-decoration: none; outline: none;}
+a,a:hover{text-decoration: none; outline: none; cursor: pointer;}
 input:focus,select:focus,button:focus{outline:none;box-shadow: none !important;}
 ul{ padding: 0; margin: 0; list-style-type: none; }
 .dashboard-content { margin-top: 50px; }

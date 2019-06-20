@@ -32,7 +32,6 @@
             ],
             "scripts": [
               "src/assets/js/jquery.min.js",
-              "src/assets/js/jquery.dataTables.min.js",
               "node_modules/chartist/dist/chartist.min.js",
               "src/assets/js/perfect-scrollbar.min.js",
               "src/assets/js/bootstrap-datepicker.js",

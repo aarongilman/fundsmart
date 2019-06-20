@@ -4,7 +4,6 @@ import { User } from './user';
 import { AuthService, SocialUser, GoogleLoginProvider } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
 import { $ } from 'protractor';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -136,6 +135,28 @@ export class ServercommunicationService {
 
   getUserPortfolio() {
     return this.http.get('http://localhost:8000/api/portfolio/', { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  checklogin() {
+    var userkey = null;
+    userkey = localStorage.getItem('authkey');
+    // alert(userkey);
+    if (userkey != null) {
+      // alert('Came for login');
+      this.getUser(userkey);
+    }
+  }
+
+  logout() {
+    localStorage.clear();
+    this.http.post('http://127.0.0.1:8000/rest-auth/logout/',
+      { headers: this.httpHeaders }).subscribe(
+        data => {
+          this.userkey = null;
+          this.currentuser = undefined;
+          this.interconn.afterlogout();
+        }
+      );
   }
 
 

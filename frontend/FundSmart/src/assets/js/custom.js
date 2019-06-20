@@ -64,21 +64,21 @@ $(document).ready(function(){
 /* Register slideDown and Forgot Password */
 
 /* DataTables */
-  var t = $('#security-table').DataTable({
-    "autoWidth": true,
-    "scrollY": "600px",
-    "ScrollX": "100%",
-    "scrollCollapse": true,
-    "paging": true,
-    "fixedHeader": false,
-    "responsive": true,
-    "fnInitComplete": function () {
-      var ps = new PerfectScrollbar('.dataTables_scrollBody');
-    },
-    "fnDrawCallback": function (oSettings) {
-      var ps = new PerfectScrollbar('.dataTables_scrollBody');
-    }
-  });
+  // var t = $('#security-table').DataTable({
+  //   "autoWidth": true,
+  //   "scrollY": "600px",
+  //   "ScrollX": "100%",
+  //   "scrollCollapse": true,
+  //   "paging": true,
+  //   "fixedHeader": false,
+  //   "responsive": true,
+  //   "fnInitComplete": function () {
+  //     var ps = new PerfectScrollbar('.dataTables_scrollBody');
+  //   },
+  //   "fnDrawCallback": function (oSettings) {
+  //     var ps = new PerfectScrollbar('.dataTables_scrollBody');
+  //   }
+  // });
 
   var t = $('#holding-table').DataTable({
     "autoWidth": true,

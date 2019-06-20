@@ -33,6 +33,7 @@ import {
   NG_GAPI_CONFIG,
   GoogleApiConfig
 } from 'ng-gapi';
+import { SortableDirective } from './sortable.directive';
 
 
 let gapiClientConfig: NgGapiClientConfig = {
@@ -75,7 +76,8 @@ export function provideConfig() {
     AllocationFundAnalysisComponent,
     HeaderComponent,
     ResetPasswordComponent,
-    DragAndDropDirective
+    DragAndDropDirective,
+    SortableDirective
   ],
   imports: [
     BrowserModule,
