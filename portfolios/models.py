@@ -1,4 +1,4 @@
-# portfolios app models.py file
+"""portfolios app models.py file"""
 
 from django.db import models
 from django.core.validators import RegexValidator
@@ -116,3 +116,14 @@ class PortfolioFund(models.Model):
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True,
                                    blank=True, related_name='updatde_by')
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class HoldingDetail(models.Model):
+    """HoldingDetail model class"""
+    fund = models.ForeignKey(PortfolioFund, on_delete=models.CASCADE)
+    currency = models.CharField(max_length=30, null=True, blank=True)
+    price = models.DecimalField(max_digits=7, decimal_places=3,
+                                null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    industry = models.CharField(max_length=100, null=True, blank=True)
+    rating = models.CharField(max_length=80, null=True, blank=True)

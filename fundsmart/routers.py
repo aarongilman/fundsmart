@@ -4,7 +4,7 @@ from rest_framework import routers
 
 from portfolios.views import HistoricalPerformanceDifference,\
     ImportPortfolioFund, DashboardLinePlotApi, DashboardDoughnutChart,\
-    DashboardPieChart
+    DashboardPieChart, HoldingDetailAPIView
 from portfolios.viewsets import PortfolioViewSet, PortfolioFundViewSet,\
     SecurityViewSet
 
@@ -25,5 +25,6 @@ urlpatterns += [
             HistoricalPerformanceDifference.as_view()),
     re_path(r'^dashboard_line_graph/$', DashboardLinePlotApi.as_view()),
     re_path(r'^dashboard_doughnut_chart/$', DashboardDoughnutChart.as_view()),
-    re_path(r'^dashboard_pie_chart/$', DashboardPieChart.as_view())
+    re_path(r'^dashboard_pie_chart/$', DashboardPieChart.as_view()),
+    re_path(r'^holding_detail/$', HoldingDetailAPIView.as_view())
 ]
