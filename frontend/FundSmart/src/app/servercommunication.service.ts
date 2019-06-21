@@ -8,12 +8,13 @@ import { $ } from 'protractor';
   providedIn: 'root'
 })
 export class ServercommunicationService {
-  reglink = 'http://127.0.0.1:8000/rest-auth/registration/';
-  login_link = 'http://127.0.0.1:8000/rest-auth/login/';
+  reglink = 'http://3.16.111.80/rest-auth/registration/';
+  login_link = 'http://3.16.111.80/rest-auth/login/';
   socialuser: SocialUser;
   currentuser: any;
   httpHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
   getHttpheader = new HttpHeaders({ 'Content-type': 'application/json' });
+  count = 0;
   constructor(private http: HttpClient, private authService: AuthService,
     private interconn: IntercomponentCommunicationService) { }
   userkey: string;
@@ -37,7 +38,7 @@ export class ServercommunicationService {
   socialLogin(user) {
     this.socialuser = user;
     const body = { access_token: user.authToken };
-    this.http.post('http://127.0.0.1:8000/rest-auth/google/', body, { headers: this.httpHeaders }).subscribe(data => {
+    this.http.post('http://3.16.111.80/rest-auth/google/', body, { headers: this.httpHeaders }).subscribe(data => {
       console.log(data);
       this.getUser(data['key']);
     });
@@ -46,7 +47,7 @@ export class ServercommunicationService {
 
   getUser(key: string) {
     this.userkey = key;
-    this.http.get('http://localhost:8000/rest-auth/user/', {
+    this.http.get('http://3.16.111.80/rest-auth/user/', {
       headers: new HttpHeaders({ Authorization: 'Token ' + key })
     }).subscribe(userdata => {
       this.currentuser = userdata;
@@ -60,14 +61,14 @@ export class ServercommunicationService {
       new_password1: newpass,
       new_password2: confirmpass
     };
-    return this.http.post('http://127.0.0.1:8000/rest-auth/password/change/', body, {
+    return this.http.post('http://3.16.111.80/rest-auth/password/change/', body, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
 
   reset_pwd_sendemail(emailid: string) {
     const body = { email: emailid };
-    return this.http.post('http://127.0.0.1:8000/rest-auth/password/reset/', body, { headers: this.httpHeaders });
+    return this.http.post('http://3.16.111.80/rest-auth/password/reset/', body, { headers: this.httpHeaders });
   }
 
   resetpassword_req(userid: string, usertoken: string, pass1: string, pass2: string) {
@@ -77,7 +78,7 @@ export class ServercommunicationService {
       new_password1: pass1,
       new_password2: pass2
     };
-    return this.http.post('http://127.0.0.1:8000/rest-auth/password/reset/confirm/', body, { headers: this.httpHeaders });
+    return this.http.post('http://3.16.111.80/rest-auth/password/reset/confirm/', body, { headers: this.httpHeaders });
   }
 
   update_User(user: any) {
@@ -87,54 +88,54 @@ export class ServercommunicationService {
       last_name: user.last_name,
       phone_number: user.phone_number
     };
-    return this.http.put('http://127.0.0.1:8000/rest-auth/user/',
+    return this.http.put('http://3.16.111.80/rest-auth/user/',
       body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
   uploadfile(file) {
 
     // const body = { data_file: file };
-    return this.http.post('http://localhost:8000/api/import_portfolio_fund/', file, {
+    return this.http.post('http://3.16.111.80/api/import_portfolio_fund/', file, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
 
   get_portfolio_fund() {
-    return this.http.get('http://localhost:8000/api/portfolio_fund/', {
+    return this.http.get('http://3.16.111.80/api/portfolio_fund/', {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
 
   get_security() {
-    return this.http.get(' http://localhost:8000/api/security/', { headers: this.httpHeaders });
+    return this.http.get('http://3.16.111.80/api/security/', { headers: this.httpHeaders });
   }
 
   get_home_pie_chart() {
-    return this.http.get('http://localhost:8000/api/dashboard_pie_chart/', {
+    return this.http.get('http://3.16.111.80/api/dashboard_pie_chart/', {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
 
   get_deshboard_doughnut_chart() {
-    return this.http.get('http://localhost:8000/api/dashboard_doughnut_chart/', {
+    return this.http.get('http://3.16.111.80/api/dashboard_doughnut_chart/', {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
 
   get_historical_perfomance() {
-    return this.http.get('http://localhost:8000/api/historical_performance_difference/', {
+    return this.http.get('http://3.16.111.80/api/historical_performance_difference/', {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
 
   add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby) {
     const body = { quantity: fquantity, portfolio: userportfolio, security: selectedsecurity, created_by: createdby };
-    return this.http.post('http://localhost:8000/api/portfolio_fund/', body,
+    return this.http.post('http://3.16.111.80/api/portfolio_fund/', body,
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
   getUserPortfolio() {
-    return this.http.get('http://localhost:8000/api/portfolio/', { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    return this.http.get('http://3.16.111.80/api/portfolio/', { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
   checklogin() {
@@ -149,7 +150,7 @@ export class ServercommunicationService {
 
   logout() {
     localStorage.clear();
-    this.http.post('http://127.0.0.1:8000/rest-auth/logout/',
+    this.http.post('http://3.16.111.80/rest-auth/logout/',
       { headers: this.httpHeaders }).subscribe(
         data => {
           this.userkey = null;
@@ -157,6 +158,32 @@ export class ServercommunicationService {
           this.interconn.afterlogout();
         }
       );
+  }
+  confirm_email(verificationkey) {
+    const body = { key: verificationkey };
+    return this.http.post('http://3.16.111.80/rest-auth/registration/verify-email/', body, { headers: this.httpHeaders });
+
+  }
+
+  createportfolio(number) {
+    var portfolioname = '';
+    if (this.count === 0 && number == 1) {
+      portfolioname = 'portfolio1';
+      this.count++;
+    }
+    if (this.count === 1 && number == 2) {
+      portfolioname = 'portfolio2';
+      this.count++;
+    }
+    if (this.count === 2 && number == 3) {
+      portfolioname = 'portfolio3';
+      this.count++;
+    }
+
+    const body = { name: portfolioname,created_by:this.currentuser.id };
+    return this.http.post('http://3.16.111.80/api/portfolio/', body,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+
   }
 
 

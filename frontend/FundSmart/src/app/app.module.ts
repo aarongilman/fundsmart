@@ -34,6 +34,7 @@ import {
   GoogleApiConfig
 } from 'ng-gapi';
 import { SortableDirective } from './sortable.directive';
+import { ConfirmemailComponent } from './confirmemail/confirmemail.component';
 
 
 let gapiClientConfig: NgGapiClientConfig = {
@@ -77,7 +78,8 @@ export function provideConfig() {
     HeaderComponent,
     ResetPasswordComponent,
     DragAndDropDirective,
-    SortableDirective
+    SortableDirective,
+    ConfirmemailComponent
   ],
   imports: [
     BrowserModule,

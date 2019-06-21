@@ -10,7 +10,7 @@ import { HeadSearchComponent } from './head-search/head-search.component';
 import { AllocationFundAnalysisComponent } from './allocation-fund-analysis/allocation-fund-analysis.component';
 import { AllocationRecommendationComponent } from './allocation-recommendation/allocation-recommendation.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-
+import { ConfirmemailComponent } from './confirmemail/confirmemail.component';
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
@@ -23,6 +23,7 @@ const routes: Routes = [
   { path: 'allocation_fund_analysis', component: AllocationFundAnalysisComponent },
   { path: 'allocation_recommendation', component: AllocationRecommendationComponent },
   { path: 'reset-password/:uid/:token', component: ResetPasswordComponent },
+  { path: 'accounts/confirm-email/:token', component: ConfirmemailComponent }
 ];
 
 @NgModule({

@@ -75,6 +75,7 @@ export class PortfoliofundhelperService {
   }
 
   resetfunds() {
+    // alert('came in resetfunds');
     this._search$.pipe(
       tap(() => this._loading$.next(true)),
       debounceTime(200),
@@ -82,6 +83,7 @@ export class PortfoliofundhelperService {
       delay(200),
       tap(() => this._loading$.next(false))
     ).subscribe(result => {
+      console.log("result is ====>", result);
       this._funds$.next(result.fundlist);
       this._total$.next(result.total);
     });

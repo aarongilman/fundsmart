@@ -115,12 +115,16 @@ export class HomeComponent implements OnInit {
 
     this.interconn.logoutcomponentMethodCalled$.subscribe(
       () => {
+        // alert('logout function');
+        this.currentUser = undefined;
         this.userFunds = [];
-        this.portfolioservice.resetfunds();
-        this.funds$ = this.portfolioservice.funds$;
-        this.portfolioservice.total$.subscribe(total => {
-          this.total$ = total;
-        });
+        // this.portfolioservice.resetfunds();
+        // this.funds$ = this.portfolioservice.funds$;
+        // this.portfolioservice.total$.subscribe(total => {
+        //   this.total$ = total;
+        //   console.log(this.total$);
+        this.total$ = 0;
+        // });
       }
     );
 
@@ -129,99 +133,7 @@ export class HomeComponent implements OnInit {
       () => {
         // alert("In first method");
         this.setcurrent_user();
-
-        this.userservice.getUserPortfolio().subscribe(
-          data => {
-            this.portfolio1 = data['results']['0'];
-            this.comparision1 = data['results']['1'];
-            this.comparision2 = data['results']['2'];
-            this.userservice.get_portfolio_fund().subscribe(
-              fundlist => {
-                this.setfunds(fundlist, data['results']['0'], data['results']['1'], data['results']['2']);
-              },
-              error => {
-                console.log(error);
-              }
-            );
-          },
-          error => {
-            console.log(error);
-          });
-
-        this.userservice.get_historical_perfomance().subscribe(
-          result => {
-            // console.log(result);
-            this.existing = {
-              annualexpense: 0,
-              oneyear: 0,
-              threeyear: 0,
-              fiveyear: 0
-            };
-            this.recommended = {
-              annualexpense: 0,
-              oneyear: 0,
-              threeyear: 0,
-              fiveyear: 0
-            };
-            this.diffrence = {
-              annualexpense: 0,
-              oneyear: 0,
-              threeyear: 0,
-              fiveyear: 0
-            };
-
-            this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
-            this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
-            this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
-            this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
-
-            this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
-            this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
-            this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
-            this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['5-year']).toFixed(2));
-
-            this.diffrence.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['difference']['annual_expense']).toFixed(2));
-            this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['1-year']).toFixed(2));
-            this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
-            this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
-
-          },
-          error => {
-            console.log(error);
-          }
-        );
-        this.userservice.get_home_pie_chart().subscribe(
-          jsondata => {
-            // console.log(jsondata);
-            // tslint:disable-next-line: forin
-            for (var data in jsondata) {
-              this.pielable.push(jsondata[data]['security__asset_type']);
-              this.pieseries.push(jsondata[data]['total']);
-            }
-
-          },
-          error => {
-            console.log(error);
-          }
-        );
-        this.userservice.get_deshboard_doughnut_chart().subscribe(
-          jsondata => {
-            // console.log(jsondata);
-            // tslint:disable-next-line: forin
-            for (var data in jsondata) {
-              var doughnutobj: DoughnutChart = {
-                security__industry: '',
-                total: -1
-              }
-              // console.log(jsondata[data]['security__industry'], jsondata[data]['total']);
-              doughnutobj.security__industry = jsondata[data]['security__industry'];
-              doughnutobj.total = jsondata[data]['total'];
-              this.doughnutchartData.push(doughnutobj);
-            }
-          },
-          error => { console.log(error); }
-
-        );
+        this.setdataindeshboard();
       });
     // alert(this.currentUser.name);
   }
@@ -248,6 +160,102 @@ export class HomeComponent implements OnInit {
     );
     // this.userservice.checklogin();
   }
+
+  setdataindeshboard() {
+    this.userservice.getUserPortfolio().subscribe(
+      data => {
+        // alert("portfolio data came");
+        this.portfolio1 = data['results']['0'];
+        this.comparision1 = data['results']['1'];
+        this.comparision2 = data['results']['2'];
+        this.userservice.get_portfolio_fund().subscribe(
+          fundlist => {
+            this.setfunds(fundlist, data['results']['0'], data['results']['1'], data['results']['2']);
+          },
+          error => {
+            console.log(error);
+          }
+        );
+      },
+      error => {
+        console.log(error);
+      });
+
+    this.userservice.get_historical_perfomance().subscribe(
+      result => {
+        // console.log(result);
+        this.existing = {
+          annualexpense: 0,
+          oneyear: 0,
+          threeyear: 0,
+          fiveyear: 0
+        };
+        this.recommended = {
+          annualexpense: 0,
+          oneyear: 0,
+          threeyear: 0,
+          fiveyear: 0
+        };
+        this.diffrence = {
+          annualexpense: 0,
+          oneyear: 0,
+          threeyear: 0,
+          fiveyear: 0
+        };
+
+        this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
+        this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
+        this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
+        this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
+
+        this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
+        this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
+        this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
+        this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['5-year']).toFixed(2));
+
+        this.diffrence.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['difference']['annual_expense']).toFixed(2));
+        this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['1-year']).toFixed(2));
+        this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
+        this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
+
+      },
+      error => {
+        console.log(error);
+      }
+    );
+    this.userservice.get_home_pie_chart().subscribe(
+      jsondata => {
+        // console.log(jsondata);
+        // tslint:disable-next-line: forin
+        for (var data in jsondata) {
+          this.pielable.push(jsondata[data]['security__asset_type']);
+          this.pieseries.push(jsondata[data]['total']);
+        }
+
+      },
+      error => {
+        console.log(error);
+      }
+    );
+    this.userservice.get_deshboard_doughnut_chart().subscribe(
+      jsondata => {
+        // console.log(jsondata);
+        // tslint:disable-next-line: forin
+        for (var data in jsondata) {
+          var doughnutobj: DoughnutChart = {
+            security__industry: '',
+            total: -1
+          }
+          // console.log(jsondata[data]['security__industry'], jsondata[data]['total']);
+          doughnutobj.security__industry = jsondata[data]['security__industry'];
+          doughnutobj.total = jsondata[data]['total'];
+          this.doughnutchartData.push(doughnutobj);
+        }
+      },
+      error => { console.log(error); }
+    );
+  }
+
 
   signInWithGoogle(): void {
     this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then((user) => {
@@ -327,6 +335,7 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.resetfunds();
     this.funds$ = this.portfolioservice.funds$;
     this.portfolioservice.total$.subscribe(total => {
+      // alert('came here to set new row');
       this.total$ = total;
     });
     // portfoliofundlist.push(singlefund);
@@ -405,7 +414,9 @@ export class HomeComponent implements OnInit {
         this.reguser.username = this.username;
         this.userservice.doRegistration(this.reguser).subscribe(data => {
           localStorage.setItem('authkey', data['key']);
-          alert('registration successful');
+          console.log("Key is", data['key']);
+
+          alert('registration successful. Plese confirm email');
           this.firstname = '';
           this.lastname = '';
           this.email = '';
@@ -415,18 +426,19 @@ export class HomeComponent implements OnInit {
           this.username = '';
           this.showdetail_flag = false;
           this.modalService.dismissAll('Registration Done');
-          this.userservice.getUser(data['key']);
-          this.userservice.get_portfolio_fund().subscribe(
-            fundlist => {
-              console.log(fundlist);
-            },
-            error => {
-              console.log(error);
-            }
-          );
+          // this.userservice.getUser(data['key']);
+          // this.userservice.get_portfolio_fund().subscribe(
+          //   fundlist => {
+          //     console.log(fundlist);
+          //   },
+          //   error => {
+          //     console.log(error);
+          //   }
+          // );
         },
           error => {
             alert('error occured');
+            console.log(error);
           });
       } else {
         alert('Password doesnot match');
@@ -489,11 +501,12 @@ export class HomeComponent implements OnInit {
       }
       this.userFunds.push(singlefund);
       // portfoliofundlist.push(singlefund);
-      // console.log(singlefund);
+      console.log(singlefund);
 
     }
     this.portfolioservice.resetfunds();
     this.funds$ = this.portfolioservice.funds$;
+    console.log(this.funds$);
     // this.total$ = this.portfolioservice.total$;
     // this.portfolioservice.funds$.subscribe(result => this.funds$);
     this.portfolioservice.total$.subscribe(total => {
@@ -515,6 +528,7 @@ export class HomeComponent implements OnInit {
 
       },
       error => {
+        console.log(error);
         alert('Wrong Credentials / Server Problem');
       }
     );
@@ -574,6 +588,7 @@ export class HomeComponent implements OnInit {
       this.userservice.uploadfile(formData).subscribe(
         res => {
           console.log(res);
+          this.setdataindeshboard();
         },
         error => {
           console.log(error);
@@ -616,47 +631,92 @@ export class HomeComponent implements OnInit {
   }
 
   addportfolioFund(string1, item) {
-    $('#input').on('keydown', function (e) {
-      if (e.which == 8 || e.which == 46) return false;
-    });
     alert(item.security);
-    // if (this.securityinput === undefined || item.security === '') {
-    //   alert('Plese select security first');
-    // } else if (this.currentUser == undefined) {
-    //   alert("Please login first");
-    // }
-    // else {
-    //   var portfolio;
-    //   var quantity;
-    //   if (string1.match('portfolio')) {
-    //     portfolio = this.portfolio1.id;
-    //     quantity = this.portfolioinput;
-    //   } else if (string1.match('comp1')) {
-    //     portfolio = this.comparision1.id;
-    //     quantity = this.comp1input;
-    //   } else if (string1.match('comp2')) {
-    //     portfolio = this.comparision2.id;
-    //     quantity = this.comp2input;
-    //   }
-    //   var security = this.securitylist.find(x => x.name === this.securityinput);
-    // name = this.securityinput);
-    // this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe(
-    //   data => {
-    //     // console.log(data);
-    //     this.userservice.get_portfolio_fund().subscribe(
-    //       fundlist => {
-    // this.userFunds = [];
-    //         this.setfunds(fundlist, this.portfolio1, this.comparision1, this.comparision2);
-    //       },
-    //       error => {
-    //         console.log(error);
-    //       }
-    //     );
-    //   }, error => {
-    //     console.log(error);
-    //   }
-    // );
-    // }
+    if (this.securityinput === undefined || item.security === '') {
+      alert('Plese select security first');
+    } else {
+      var portfolio;
+      var quantity;
+      if (string1.match('portfolio')) {
+        if (this.portfolio1 === undefined) {
+          this.userservice.createportfolio(1).subscribe(
+            data => {
+              console.log(data);
+              this.userservice.getUserPortfolio().subscribe(
+                data => {
+                  this.portfolio1 = data['results']['0'];
+                  portfolio = data['results']['0']['id'];
+                }
+              );
+            }, error => {
+              console.log(error);
+              this.userservice.count--;
+            }
+          );
+        } else {
+          portfolio = this.portfolio1.id;
+        }
+        quantity = this.portfolioinput;
+      } else if (string1.match('comp1')) {
+        if (this.portfolio1 === undefined) {
+          this.userservice.createportfolio(2).subscribe(
+            data => {
+              console.log(data);
+              this.userservice.getUserPortfolio().subscribe(
+                data => {
+                  this.comparision1 = data['results']['0'];
+                  portfolio = data['results']['1']['id'];
+                }
+              );
+            }, error => {
+              console.log(error);
+              this.userservice.count--;
+            }
+          );
+        } else {
+          portfolio = this.comparision1.id;
+        }
+        quantity = this.comp1input;
+      } else if (string1.match('comp2')) {
+        if (this.portfolio1 === undefined) {
+          this.userservice.createportfolio(3).subscribe(
+            data => {
+              console.log(data);
+              this.userservice.getUserPortfolio().subscribe(
+                data => {
+                  this.comparision2 = data['results']['0'];
+                  portfolio = data['results']['2']['id'];
+                }
+              );
+            }, error => {
+              console.log(error);
+              this.userservice.count--;
+            }
+          );
+        } else {
+          portfolio = this.comparision2.id;
+        }
+        quantity = this.comp2input;
+      }
+      var security = this.securitylist.find(x => x.name === this.securityinput);
+      // name = this.securityinput);
+      this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe(
+        data => {
+          // console.log(data);
+          this.userservice.get_portfolio_fund().subscribe(
+            fundlist => {
+              this.userFunds = [];
+              this.setfunds(fundlist, this.portfolio1, this.comparision1, this.comparision2);
+            },
+            error => {
+              console.log(error);
+            }
+          );
+        }, error => {
+          console.log(error);
+        }
+      );
+    }
   }
 
 

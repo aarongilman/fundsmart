@@ -6,21 +6,22 @@
       <div class="col-lg-7 ">
         <div class="block-container">
           <form>
-            Show
-            <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="portfolioservice.pageSize">
-              <option [ngValue]="10">10</option>
-              <option [ngValue]="25">25</option>
-              <option [ngValue]="50">50</option>
-              <option [ngValue]="100">100</option>
-            </select>
-            Entries
+            <div class='row'>
+              Show
+              <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="portfolioservice.pageSize">
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="25">25</option>
+                <option [ngValue]="50">50</option>
+                <option [ngValue]="100">100</option>
+              </select>
+              Entries
 
-            <span class="form-group form-inline">
-              Search: <input class="form-control search" type="text" name="searchTerm"
-                [(ngModel)]="portfolioservice.searchTerm" />
-              <span class="ml-3" *ngIf="portfolioservice.loading$ | async">Loading...</span>
-            </span>
-
+              <span class="form-group form-inline">
+                Search: <input class="form-control search" type="text" name="searchTerm"
+                  [(ngModel)]="portfolioservice.searchTerm" />
+                <span class="ml-3" *ngIf="portfolioservice.loading$ | async">Loading...</span>
+              </span>
+            </div>
 
             <table id="security-table" width="100%" class="width-100 trade-datatables ">
               <thead>
@@ -36,8 +37,9 @@
                   <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
 
                   <td>
-                    <input *ngIf="item['security'] == ''" style="width: auto" [(ngModel)]="item['security']"
-                      (keyup)="searchsecurity($event)" list="securityname" name='security' type="text">
+                    <input *ngIf="item['security'] == ''" style="width: auto" [(ngModel)]="securityinput"
+                      (keyup)="searchsecurity($event)" list="securityname" name='security' type="text"
+                      (blur)="item['security'] = securityinput">
                     <datalist id="securityname">
                       <option *ngFor="let security of securitylist" [ngValue]='security.name' [value]="security.name">
                         {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}</option>
@@ -45,27 +47,27 @@
                     <div *ngIf="item['security'] != ''">{{item['security']}}</div>
                   </td>
                   <td>
-                    <input *ngIf="item['yourPortfolio'] == '0.00'" [(ngModel)]="item['yourPortfolio']" style="width: 1cm"
-                      (change)="addportfolioFund('portfolio',item)" name='portfolio' type="text">
-                    <span *ngIf="item['yourPortfolio'] != '0.00'">{{item['yourPortfolio']}}</span>
+                    <input *ngIf="item['yourPortfolio'] == '0.00'" [(ngModel)]="portfolioinput" style="width: 1cm"
+                      (focusout)="addportfolioFund('portfolio',item)" name='portfolio' type="text">
 
                   </td>
                   <td>
-                    <input *ngIf="item['comparision1'] == '0.00'" [(ngModel)]="item['comparision1']" name='comp1'
-                      style="width: 1cm" (change)="addportfolioFund('comp1',item)" type="text">
+                    <input *ngIf="item['comparision1'] == '0.00'" [(ngModel)]="comp1input" name='comp1'
+                      style="width: 1cm" (focusout)="addportfolioFund('comp1',item)" type="text">
                     <span *ngIf="item['comparision1'] != '0.00'">{{item['comparision1']}}</span>
 
                   </td>
                   <td>
-                    <input *ngIf="item['comparision2'] == '0.00'" [(ngModel)]="item['comparision2']" style="width: 1cm"
-                      (change)="addportfolioFund('comp2',item)" name='comp2' type="text">
+                    <input *ngIf="item['comparision2'] == '0.00'" [(ngModel)]="comp2input" style="width: 1cm"
+                      (focusout)="addportfolioFund('comp2',item)" name='comp2' type="text">
                     <span *ngIf="item['comparision2'] != '0.00'">{{item['comparision2']}}</span>
                   </td>
 
-                  <!-- <td>{{item['security']}}</td>
-                <td>{{item['yourPortfolio']}}</td>
-                <td>{{item['comparision1']}}</td>
-                <td>{{item['comparision2']}}</td> -->
+                  <!-- <td>{{item['security']}}</td> -->
+                  <!-- <input #box type="text" [(ngModel)]="item['yourPortfolio']" name="userportfolio" style="width: 1cm"> -->
+                  <!-- <td {{item['yourPortfolio']}}</td>
+                  <td>{{item['comparision1']}}</td>
+                  <td>{{item['comparision2']}}</td> -->
 
                 </tr>
               </tbody>
@@ -152,7 +154,8 @@
             </form>
           </div>
         </div>
-        <div class="block-container login-block" [ngStyle]="{display : currentUser ? 'none' : ''}">
+        <div class="block-container login-block" *ngIf="!currentUser">
+          <!-- [ngStyle]="{display : currentUser ? 'none' : ''}" -->
           <p>With the same risk profile, we can improve performance by <span>5.43%</span> based on 1-year returns or
             $13,424 in dollar terms.</p>
           <p>Please login or register to analyze in full detials</p>
@@ -228,7 +231,8 @@
         </div>
       </div>
       <div class="col-lg-5">
-        <div *ngIf="currentUser" class="block-container no-bdrs-top-right no-bdrs-botton-right semi-block">
+        <div *ngIf="currentUser != undefined "
+          class="block-container no-bdrs-top-right no-bdrs-botton-right semi-block">
           <div class="hpd-table">
             <div class="heading">
               <h3>Historical Performance Difference</h3>
@@ -587,7 +591,7 @@
             <div class="terms-conditions">
               <p>By logging in, you agree to <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
                 of Trade</p>
-              <p>Don’t have an account? <a href="#">Sign up!</a></p>
+              <p>Don’t have an account? <a (click)="openmodal(register,'register')">Sign up!</a></p>
             </div>
           </form>
         </div>

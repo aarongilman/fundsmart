@@ -31,7 +31,9 @@ export class HeaderComponent implements OnInit {
 
     this.intercon.logoutcomponentMethodCalled$.subscribe(
       () => {
-        this.setcurrent_user();
+        // this.setcurrent_user();
+        this.currentuser = undefined;
+        // alert('logout function');
       }
     );
   }
