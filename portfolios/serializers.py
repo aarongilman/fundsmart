@@ -21,7 +21,8 @@ class PortfolioSerializer(serializers.ModelSerializer):
         """
         Check that maximum 3 portfolio will get created
         """
-        portfolios = Portfolio.objects.all()
+        portfolios = Portfolio.objects.filter(created_by=
+                                              self.context.get('request').user)
         if len(portfolios) >= 3:
             raise serializers.ValidationError(
                 "You can't create more than 3 Portfolios")
