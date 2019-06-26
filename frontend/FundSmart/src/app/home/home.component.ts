@@ -21,7 +21,7 @@ import { FormArray, FormBuilder, FormControl, Validators, FormGroup } from '@ang
 
 import { MustMatch } from '../must-match.validator';
 import { ignoreElements } from 'rxjs/operators';
-
+// import {newData} from './model';
 
 @Component({
 
@@ -96,18 +96,16 @@ export class HomeComponent implements OnInit {
   comparision1: any;
   comparision2: any;
 
-  // donuttype: ChartType;
-  // donutdata: IChartistData;
-  // donutoptions: IPieChartOptions;
-  // donutevents: ChartEvent;
-  // donutlable = [];
-  // donutseries = [];
 
-  pietype: 'PieChart';
+  pietype = 'PieChart';
   pietitle = '';
-  pielable = [];
-  pieseries = [];
   piedata = [];
+  pieoptions;
+  columnNames = [];
+  pieheight = 500;
+  piewidth = 500;
+
+
   constructor(private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
     private userservice: ServercommunicationService,
     private fileupload: GetfileforuploadService,
@@ -132,8 +130,7 @@ export class HomeComponent implements OnInit {
         //   this.total$ = total;
         //   // console.log(this.total$);
         this.total$ = 0;
-        this.pielable = [];
-        this.pieseries = [];
+        this.piedata = [];
         // });
       }
     );
@@ -245,8 +242,9 @@ export class HomeComponent implements OnInit {
         this.comparision2 = data['results']['2'];
         this.userservice.get_portfolio_fund().subscribe(
           fundlist => {
-            if (fundlist['count'] !== 0) {
-              this.setfunds(fundlist, data['results']['0'], data['results']['1'], data['results']['2']);
+            if (fundlist['count'] !== 0) {  
+            this.setfunds(fundlist, data['results']['0'], data['results']['1'], data['results']['2']);
+            
             }
           },
           error => {
@@ -304,18 +302,26 @@ export class HomeComponent implements OnInit {
     );
     this.userservice.get_home_pie_chart().subscribe(
       jsondata => {
-        this.pielable = [];
-        this.pieseries = [];
-        // // console.log(jsondata);
+        this.piedata = [];
         // tslint:disable-next-line: forin
         for (var data in jsondata) {
           var lable, series;
           lable = jsondata[data]['security__asset_type'];
           series = jsondata[data]['total'];
-          this.piedata.push(lable, series);
+          this.piedata.push([lable, series]);
         }
-
-        this.generatePieChart();
+        console.log(this.piedata);
+        this.pietitle = '';
+        this.pietype = 'PieChart';
+        this.columnNames = ['Security Industry', 'Total'];
+        this.pieoptions = {
+          animation: {
+            duration: 1000,
+            easing: 'out',
+          },
+          pieSliceText: 'label',
+          legend: 'none',
+        };
       },
       error => {
         // console.log(error);
@@ -326,11 +332,12 @@ export class HomeComponent implements OnInit {
         // // console.log(jsondata);
         // tslint:disable-next-line: forin
         for (var data in jsondata) {
-          console.log(jsondata[data]['security__industry'], jsondata[data]['total']);
+          // console.log(jsondata[data]['security__industry'], jsondata[data]['total']);
           // this.donutlable.push(jsondata[data]['security__industry']);
           // this.donutseries.push(jsondata[data]['total']);
         }
         // this.generateDonotchart();
+
       },
       error => { // console.log(error); }
       }
@@ -375,11 +382,7 @@ export class HomeComponent implements OnInit {
 
   generatePieChart() {
 
-    this.pietitle = '';
-    this.pietype = 'PieChart';
-    var data = this.piedata;
-    var columnNames = ['security__industry', 'total'];
-    var options = {};
+
 
     // this.pietype = 'Pie';
     // this.piedata = {
@@ -467,61 +470,61 @@ export class HomeComponent implements OnInit {
 
 
 
-    // $(function () {
-    //   const chart = new Chartist.Pie('.do-nut-chart', {
-    //     series: [10, 20, 50, 20, 5, 50, 15],
-    //     labels: [1, 2, 3, 4, 5, 6, 7]
-    //   }, {
-    //       donut: true,
-    //       showLabel: true
-    //     });
+  // $(function () {
+  //   const chart = new Chartist.Pie('.do-nut-chart', {
+  //     series: [10, 20, 50, 20, 5, 50, 15],
+  //     labels: [1, 2, 3, 4, 5, 6, 7]
+  //   }, {
+  //       donut: true,
+  //       showLabel: true
+  //     });
 
-    //   // tslint:disable-next-line: only-arrow-functions
-    //   chart.on('draw', function (data) {
-    //     if (data.type === 'slice') {
-    //       // Get the total path length in order to use for dash array animation
-    //       const pathLength = data.element._node.getTotalLength();
+  //   // tslint:disable-next-line: only-arrow-functions
+  //   chart.on('draw', function (data) {
+  //     if (data.type === 'slice') {
+  //       // Get the total path length in order to use for dash array animation
+  //       const pathLength = data.element._node.getTotalLength();
 
-    //       // Set a dasharray that matches the path length as prerequisite to animate dashoffset
-    //       data.element.attr({
-    //         'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
-    //       });
+  //       // Set a dasharray that matches the path length as prerequisite to animate dashoffset
+  //       data.element.attr({
+  //         'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+  //       });
 
-    //       // Create animation definition while also assigning an ID to the animation for later sync usage
-    //       const animationDefinition = {
-    //         'stroke-dashoffset': {
-    //           id: 'anim' + data.index,
-    //           dur: 1000,
-    //           from: -pathLength + 'px',
-    //           to: '0px',
-    //           easing: Chartist.Svg.Easing.easeOutQuint,
-    //           // We need to use `fill: 'freeze'` otherwise our animation will fall back to initial (not visible)
-    //           fill: 'freeze'
-    //         }
-    //       };
+  //       // Create animation definition while also assigning an ID to the animation for later sync usage
+  //       const animationDefinition = {
+  //         'stroke-dashoffset': {
+  //           id: 'anim' + data.index,
+  //           dur: 1000,
+  //           from: -pathLength + 'px',
+  //           to: '0px',
+  //           easing: Chartist.Svg.Easing.easeOutQuint,
+  //           // We need to use `fill: 'freeze'` otherwise our animation will fall back to initial (not visible)
+  //           fill: 'freeze'
+  //         }
+  //       };
 
-    //       // If this was not the first slice, we need to time the animation so that it uses the end sync event of the previous animation
-    //       if (data.index !== 0) {
-    //         animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
-    //       }
+  //       // If this was not the first slice, we need to time the animation so that it uses the end sync event of the previous animation
+  //       if (data.index !== 0) {
+  //         animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+  //       }
 
-    //       // We need to set an initial value before the animation starts as we are not in guided mode which would do that for us
-    //       data.element.attr({
-    //         'stroke-dashoffset': -pathLength + 'px'
-    //       });
+  //       // We need to set an initial value before the animation starts as we are not in guided mode which would do that for us
+  //       data.element.attr({
+  //         'stroke-dashoffset': -pathLength + 'px'
+  //       });
 
-    //       // We can't use guided mode as the animations need to rely on setting begin manually
-    //       // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
-    //       data.element.animate(animationDefinition, false);
-    //     }
-    //   });
+  //       // We can't use guided mode as the animations need to rely on setting begin manually
+  //       // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
+  //       data.element.animate(animationDefinition, false);
+  //     }
+  //   });
 
-    //   // For the sake of the example we update the chart every time it's created with a delay of 8 seconds
+  //   // For the sake of the example we update the chart every time it's created with a delay of 8 seconds
 
 
-    // });
+  // });
 
-  
+
 
   get f() { return this.registeruserForm.controls; }
 

@@ -294,29 +294,29 @@
             </ul>
           </div>
         </div>-->
-        <div *ngIf="currentUser"
+        <!-- <div *ngIf="currentUser"
           class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
           <div class="graph-labels label-left">
-          </div>
+          </div> -->
           <!-- <div class="ct-chart  do-nut-chart"></div> -->
          <!-- <x-chartist *ngIf="currentUser" [type]="donuttype" [data]="donutdata" [options]="donutoptions" [events]="donutevents">
           </x-chartist> -->
           <!-- {{donutlable}}
           {{donutseries}} -->
-        </div> 
+        <!-- </div>  -->
         <div *ngIf="currentUser"
           class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
           <div class="ct-chart pie-chart">
-            <!-- <x-chartist *ngIf="currentUser" [type]="pietype" [data]="piedata" [options]="pieoptions"
-              [events]="pieevents">
-            </x-chartist> -->
-            <google-chart #chart
+            <google-chart
             *ngIf="currentUser"
             [title]="pietitle"
             [type]="pietype"
             [data]="piedata"
+            [dynamicResize]="dynamicResize"
             [columnNames]="columnNames"
-            [options]="options">
+            [options]="pieoptions"
+            [width]="pieheight"
+            [height]="piewidth">
          </google-chart>
           </div>
         </div>
