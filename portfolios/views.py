@@ -91,61 +91,62 @@ class HistoricalPerformanceDifference(APIView):
             # fund details for existing funds
             portfolio_fund_details = fund_details.filter(fund_id__in=isin_list)
             # Annual expense calculation for existing funds
-            portfolio_annual_expense = [float(x) for x in portfolio_fund_details.
-                                        values_list('fund_exp_ratio', flat=True)]
-            portfolio_avg_annual_expense =\
-                sum(portfolio_annual_expense)/len(portfolio_annual_expense)
+            if portfolio_fund_details:
+                portfolio_annual_expense = [float(x) for x in portfolio_fund_details.
+                                            values_list('fund_exp_ratio', flat=True)]
+                portfolio_avg_annual_expense =\
+                    sum(portfolio_annual_expense)/len(portfolio_annual_expense)
 
-            # 1 year, 3 year and 5 year return for existing funds
-            portfolio_1_year = [float(x) for x in portfolio_fund_details.
-                                values_list('return_1_year', flat=True)]
-            portfolio_avg_1_year = sum(portfolio_1_year)/len(portfolio_1_year)
+                # 1 year, 3 year and 5 year return for existing funds
+                portfolio_1_year = [float(x) for x in portfolio_fund_details.
+                                    values_list('return_1_year', flat=True)]
+                portfolio_avg_1_year = sum(portfolio_1_year)/len(portfolio_1_year)
 
-            portfolio_3_year = [float(x) for x in portfolio_fund_details.
-                                values_list('return_3_year', flat=True)]
-            portfolio_avg_3_year = sum(portfolio_3_year)/len(portfolio_3_year)
+                portfolio_3_year = [float(x) for x in portfolio_fund_details.
+                                    values_list('return_3_year', flat=True)]
+                portfolio_avg_3_year = sum(portfolio_3_year)/len(portfolio_3_year)
 
-            portfolio_5_year = [float(x) for x in portfolio_fund_details.
-                                values_list('return_5_year', flat=True)]
-            portfolio_avg_5_year = sum(portfolio_5_year)/len(portfolio_5_year)
+                portfolio_5_year = [float(x) for x in portfolio_fund_details.
+                                    values_list('return_5_year', flat=True)]
+                portfolio_avg_5_year = sum(portfolio_5_year)/len(portfolio_5_year)
 
-            # recommended 4 funds
-            recommended_funds = fund_details[:4]#.filter(for_recommendation=True)[:4]
-            # Annual expense calculation for recommended
-            recommended_annual_expense = [float(x) for x in recommended_funds.
-                                          values_list('fund_exp_ratio', flat=True)]
-            recommended_avg_annual_expense = \
-                sum(recommended_annual_expense)/len(recommended_annual_expense)
+                # recommended 4 funds
+                recommended_funds = fund_details[:4]#.filter(for_recommendation=True)[:4]
+                # Annual expense calculation for recommended
+                recommended_annual_expense = [float(x) for x in recommended_funds.
+                                              values_list('fund_exp_ratio', flat=True)]
+                recommended_avg_annual_expense = \
+                    sum(recommended_annual_expense)/len(recommended_annual_expense)
 
-            # 1 year, 3 year and 5 year for existing
-            recommended_1_year = [float(x) for x in recommended_funds.
-                                  values_list('return_1_year', flat=True)]
-            recommended_avg_1_year = sum(recommended_1_year)/len(recommended_1_year)
+                # 1 year, 3 year and 5 year for existing
+                recommended_1_year = [float(x) for x in recommended_funds.
+                                      values_list('return_1_year', flat=True)]
+                recommended_avg_1_year = sum(recommended_1_year)/len(recommended_1_year)
 
-            recommended_3_year = [float(x) for x in recommended_funds.
-                                  values_list('return_3_year', flat=True)]
-            recommended_avg_3_year = sum(recommended_3_year)/len(recommended_3_year)
+                recommended_3_year = [float(x) for x in recommended_funds.
+                                      values_list('return_3_year', flat=True)]
+                recommended_avg_3_year = sum(recommended_3_year)/len(recommended_3_year)
 
-            recommended_5_year = [float(x) for x in recommended_funds.
-                                  values_list('return_5_year', flat=True)]
-            recommended_avg_5_year = sum(recommended_5_year)/len(recommended_5_year)
+                recommended_5_year = [float(x) for x in recommended_funds.
+                                      values_list('return_5_year', flat=True)]
+                recommended_avg_5_year = sum(recommended_5_year)/len(recommended_5_year)
 
-            exp_diff = recommended_avg_annual_expense - portfolio_avg_annual_expense
-            data = [{"existing": {'annual_expense': portfolio_avg_annual_expense,
-                                  '1-year': portfolio_avg_1_year,
-                                  '3-year': portfolio_avg_3_year,
-                                  '5-year': portfolio_avg_5_year},
-                     "recommended": {
-                         'annual_expense': recommended_avg_annual_expense,
-                         '1-year': recommended_avg_1_year,
-                         '3-year': recommended_avg_3_year,
-                         '5-year': recommended_avg_5_year},
-                     "difference": {
-                         'annual_expense': exp_diff,
-                         '1-year': recommended_avg_1_year-portfolio_avg_1_year,
-                         '3-year': recommended_avg_3_year-portfolio_avg_3_year,
-                         '5-year': recommended_avg_5_year-portfolio_avg_5_year}}]
-            return Response(data, status=200)
+                exp_diff = recommended_avg_annual_expense - portfolio_avg_annual_expense
+                data = [{"existing": {'annual_expense': portfolio_avg_annual_expense,
+                                      '1-year': portfolio_avg_1_year,
+                                      '3-year': portfolio_avg_3_year,
+                                      '5-year': portfolio_avg_5_year},
+                         "recommended": {
+                             'annual_expense': recommended_avg_annual_expense,
+                             '1-year': recommended_avg_1_year,
+                             '3-year': recommended_avg_3_year,
+                             '5-year': recommended_avg_5_year},
+                         "difference": {
+                             'annual_expense': exp_diff,
+                             '1-year': recommended_avg_1_year-portfolio_avg_1_year,
+                             '3-year': recommended_avg_3_year-portfolio_avg_3_year,
+                             '5-year': recommended_avg_5_year-portfolio_avg_5_year}}]
+                return Response(data, status=200)
         return Response([], status=200)
 
 
