@@ -6,9 +6,10 @@
       <div class="col-lg-7 ">
         <div class="block-container">
           <form>
-            <div class='row'>
+            <div class='row align-items-center ml-2 mr-2'>
               Show
-              <select class="custom-select" style="width: auto" name="pageSize" [(ngModel)]="portfolioservice.pageSize">
+              <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
+                [(ngModel)]="portfolioservice.pageSize">
                 <option [ngValue]="10">10</option>
                 <option [ngValue]="25">25</option>
                 <option [ngValue]="50">50</option>
@@ -16,8 +17,8 @@
               </select>
               Entries
 
-              <span class="form-group form-inline">
-                Search: <input class="form-control search" type="text" name="searchTerm"
+              <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
+                Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
                   [(ngModel)]="portfolioservice.searchTerm" />
                 <span class="ml-3" *ngIf="portfolioservice.loading$ | async">Loading...</span>
               </span>
@@ -32,39 +33,45 @@
                   <th scope="col" sortable="comparision2" (sort)="onSort($event)">Comparison2</th>
                 </tr>
               </thead>
-              <tbody *ngIf="total$ > 0;">
-                <tr *ngFor="let item of funds$ | async">
+              <tbody *ngIf="total$ > 0">
+                <tr *ngFor="let item of funds$ | async;let i = index;">
                   <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
+                  <!-- {{item|json}} -->
+                  <td >
+                    <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]" (keyup)="searchsecurity($event)"
+                      list="securityname" name='security_{{i}}'
+                      (blur)="currentUser ? item.security = securityinput[i] : openmodal(login,'login');item.security = securityinput[i]"
+                      type="text">
 
-                  <td>
-                    <input *ngIf="item['security'] == ''" style="width: auto" [(ngModel)]="securityinput"
-                      (keyup)="searchsecurity($event)" list="securityname" name='security' type="text"
-                      (blur)="item['security'] = securityinput">
                     <datalist id="securityname">
-                      <option *ngFor="let security of securitylist" [ngValue]='security.name' [value]="security.name">
+                      <option *ngFor="let security of securitylist" [ngValue]='security.name'
+                        title=" {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"
+                        [value]="security.name">
                         {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}</option>
                     </datalist>
-                    <div *ngIf="item['security'] != ''">{{item['security']}}</div>
+                    <span *ngIf="item.security != ''" style="width: 3cm">{{item.security}}</span>
                   </td>
                   <td>
-                    <input *ngIf="item['yourPortfolio'] == '0.00'" [(ngModel)]="portfolioinput" style="width: 1cm"
-                      (focusout)="addportfolioFund('portfolio',item)" name='portfolio' type="text">
+                    <input [(ngModel)]="item['yourPortfolio']" style="width: 3cm" (keypress)="numberOnly($event)"
+                      (blur)="currentUser; item['yourPortfolio'] != ''; item['yourPortfolio'] != '0' ? addportfolioFund('portfolio',item) : null"
+                      name='portfolio_{{i}}' type="text" >
+                  </td>
+                  <td>
+                    <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}' style="width: 3cm"
+                      (keypress)="numberOnly($event)"
+                      (blur)="currentUser;item['comparision1'] != ''; item['comparision1'] != '0' ? addportfolioFund('comp1',item) : null"
+                      type="text">
 
                   </td>
                   <td>
-                    <input *ngIf="item['comparision1'] == '0.00'" [(ngModel)]="comp1input" name='comp1'
-                      style="width: 1cm" (focusout)="addportfolioFund('comp1',item)" type="text">
-                    <span *ngIf="item['comparision1'] != '0.00'">{{item['comparision1']}}</span>
+                    <input [(ngModel)]="item['comparision2']" style="width: 3cm"
+                      (blur)="currentUser;item['comparision2'] != ''; item['comparision2'] != '0' ? addportfolioFund('comp2',item): null "
+                      name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
 
-                  </td>
-                  <td>
-                    <input *ngIf="item['comparision2'] == '0.00'" [(ngModel)]="comp2input" style="width: 1cm"
-                      (focusout)="addportfolioFund('comp2',item)" name='comp2' type="text">
-                    <span *ngIf="item['comparision2'] != '0.00'">{{item['comparision2']}}</span>
                   </td>
 
                   <!-- <td>{{item['security']}}</td> -->
-                  <!-- <input #box type="text" [(ngModel)]="item['yourPortfolio']" name="userportfolio" style="width: 1cm"> -->
+                  <!-- <input #box type="text" [(ngModel)]="item['yourPortfolio']"  name="userportfolio" style="width: 1cm"> -->
                   <!-- <td {{item['yourPortfolio']}}</td>
                   <td>{{item['comparision1']}}</td>
                   <td>{{item['comparision2']}}</td> -->
@@ -72,17 +79,20 @@
                 </tr>
               </tbody>
             </table>
-            <ngb-pagination [collectionSize]="total$" [(page)]="portfolioservice.page"
-              [pageSize]="portfolioservice.pageSize">
-            </ngb-pagination>
+            <div class="d-flex ">
+              <ngb-pagination class="ml-auto" [collectionSize]="total$" [(page)]="portfolioservice.page"
+                [pageSize]="portfolioservice.pageSize">
+              </ngb-pagination>
+            </div>
+
           </form>
           <div class="upload-wrap">
             <form class="d-flex justify-content-end align-items-center">
-              <div class="input-file-wrap">
+              <div class="input-file-wrap ml-auto">
                 <!-- [ngStyle]="{display : currentUser ? '' : 'none'}" -->
                 <button type="button"
                   class="upload-btn trade-btn green-btn d-flex align-items-center justify-content-center"
-                  data-toggle="modal" (click)='openmodal(upload,"upload")'>
+                  data-toggle="modal" (click)="currentUser ? openmodal(upload,'upload') : openmodal(login,'login')">
                   <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 548.176 548.176"
                     style="enable-background:new 0 0 548.176 548.176;" xml:space="preserve">
@@ -274,7 +284,7 @@
           </div>
         </div>
 
-        <div *ngIf="currentUser"
+        <!-- <div *ngIf="currentUser"
           class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper semi-block">
           <div class="ct-chart line-chart"></div>
           <div class="graph-labels">
@@ -283,19 +293,32 @@
               <li><span class="plot-3"></span>Portfolio</li>
             </ul>
           </div>
-        </div>
+        </div>-->
         <div *ngIf="currentUser"
           class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
           <div class="graph-labels label-left">
-
           </div>
-          <x-chartist *ngIf="currentUser" [type]="pietype" [data]="piedata" [options]="pieoptions" [events]="pieevents">
-          </x-chartist>
           <!-- <div class="ct-chart  do-nut-chart"></div> -->
-        </div>
+         <!-- <x-chartist *ngIf="currentUser" [type]="donuttype" [data]="donutdata" [options]="donutoptions" [events]="donutevents">
+          </x-chartist> -->
+          <!-- {{donutlable}}
+          {{donutseries}} -->
+        </div> 
         <div *ngIf="currentUser"
           class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
-          <div class="ct-chart pie-chart"></div>
+          <div class="ct-chart pie-chart">
+            <!-- <x-chartist *ngIf="currentUser" [type]="pietype" [data]="piedata" [options]="pieoptions"
+              [events]="pieevents">
+            </x-chartist> -->
+            <google-chart #chart
+            *ngIf="currentUser"
+            [title]="pietitle"
+            [type]="pietype"
+            [data]="piedata"
+            [columnNames]="columnNames"
+            [options]="options">
+         </google-chart>
+          </div>
         </div>
       </div>
 
@@ -542,14 +565,21 @@
           <p>or</p>
         </div>
         <div class="login-form trade-inputs">
-          <form action="post">
+          <form action="post" [formGroup]='loginForm'>
             <div class="input-group">
-              <input type="text" class="form-control userid" name='username' [(ngModel)]="username"
-                placeholder="Email Id or User Id">
+              <input type="text" class="form-control userid" name='username' required=true formControlName="username"
+                placeholder="User Id" [ngClass]="{ 'is-invalid': submitted && loginf.username.errors }">
+              <div *ngIf="submitted && loginf.username.errors" class="invalid-feedback">
+                <div *ngIf="loginf.username.errors.required">Username is required</div>
+              </div>
             </div>
             <div class="input-group">
-              <input type="password" class="form-control pwd" name='password' [(ngModel)]="pass1"
-                placeholder="Password...">
+              <input type="password" class="form-control pwd" name='password' required=true formControlName="password"
+                placeholder="Password..." [ngClass]="{ 'is-invalid': submitted && loginf.password.errors }">
+              <div *ngIf="submitted && loginf.password.errors" class="invalid-feedback">
+                <div *ngIf="loginf.password.errors.required">Password is required</div>
+                <div *ngIf="loginf.password.errors.minlength">Password must be at least 6 characters</div>
+              </div>
             </div>
             <div class="forgot-password d-flex align-items-center justify-content-end">
               <a (click)='resetpass_modal()'>Forgot Password?</a>
@@ -601,7 +631,7 @@
         <div class="login-form trade-inputs">
           <form action="post">
             <div class="input-group">
-              <input type="text" class="form-control userid" [(ngModel)]="email" name="email"
+              <input type="text" required=true class="form-control userid" [(ngModel)]="email" name="email"
                 placeholder="Email Id or User Id">
             </div>
             <!-- <div class="input-group">
@@ -765,32 +795,61 @@
         <p>or</p>
       </div>
       <div class="login-form trade-inputs">
-        <form id='regform' action="post">
+        <form id='regform' [formGroup]='registeruserForm' action="post">
           <div class="register-slide">
             <div class="input-group">
-              <input type="text" class="form-control fname" [(ngModel)]="firstname" name='firstname'
-                placeholder="First Name">
+              <input type="text" required=true class="form-control fname" formControlName="first_name" name='firstname'
+                placeholder="First Name" [ngClass]="{ 'is-invalid': submitted && f.first_name.errors }">
+              <div *ngIf="submitted && f.first_name.errors" class="invalid-feedback">
+                <div *ngIf="f.first_name.errors.required">First Name is required</div>
+              </div>
             </div>
             <div class="input-group">
-              <input type="text" class="form-control lname" [(ngModel)]="lastname" name='lastname'
-                placeholder="Last Name">
+              <input type="text" required=true class="form-control lname" formControlName="last_name" name='lastname'
+                placeholder="Last Name" [ngClass]="{ 'is-invalid': submitted && f.last_name.errors }">
+              <div *ngIf="submitted && f.last_name.errors" class="invalid-feedback">
+                <div *ngIf="f.last_name.errors.required">Last Name is required</div>
+              </div>
             </div>
             <div class="input-group">
-              <input type="text" class="form-control userid" [(ngModel)]="email" name='email' placeholder="Email Id">
+              <input type="text" required=true class="form-control userid" formControlName="email" name='email'
+                placeholder="Email Id" [ngClass]="{ 'is-invalid': submitted && f.email.errors }">
+              <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+                <div *ngIf="f.email.errors.required">Email is required</div>
+                <div *ngIf="f.email.errors.email">Email must be a valid email address</div>
+              </div>
             </div>
             <div class="input-group">
-              <input type="text" class="form-control userid" [(ngModel)]="username" name='username'
-                placeholder="Username">
+              <input type="text" required=true class="form-control userid" formControlName="username" name='username'
+                placeholder="Username" [ngClass]="{ 'is-invalid': submitted && f.username.errors }">
+              <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+                <div *ngIf="f.username.errors.required">username is required</div>
+              </div>
             </div>
             <div class="input-group">
-              <input type="text" class="form-control phone" [(ngModel)]="phone" name='phone' placeholder="Phone number">
+              <input type="text" required=true class="form-control phone" formControlName="phone_number" name='phone'
+                placeholder="Phone number" [ngClass]="{ 'is-invalid': submitted && f.phone_number.errors }">
+              <div *ngIf="submitted && f.phone_number.errors" class="invalid-feedback">
+                <div *ngIf="f.phone_number.errors.required">Phone number is required</div>
+                <div *ngIf="f.phone_number.errors.email">Phone number must be 10 digits.</div>
+
+              </div>
             </div>
             <div class="input-group">
-              <input type="password" class="form-control pwd" [(ngModel)]="pass1" name='pass1' placeholder="Password">
+              <input type="password" required=true class="form-control pwd" formControlName="password1" name='pass1'
+                placeholder="Password" [ngClass]="{ 'is-invalid': submitted && f.password1.errors }">
+              <div *ngIf="submitted && f.password1.errors" class="invalid-feedback">
+                <div *ngIf="f.password1.errors.required">Password is required</div>
+                <div *ngIf="f.password1.errors.minlength">Password must be at least 6 characters</div>
+              </div>
             </div>
             <div class="input-group">
-              <input type="password" class="form-control pwd" [(ngModel)]="pass2" name='pass2'
-                placeholder="Enter Password again">
+              <input type="password" required=true class="form-control pwd" formControlName="password2" name='pass2'
+                placeholder="Enter Password again" [ngClass]="{ 'is-invalid': submitted && f.password2.errors }">
+              <div *ngIf="submitted && f.password2.errors" class="invalid-feedback">
+                <div *ngIf="f.password2.errors.required">Confirm password is required</div>
+                <div *ngIf="f.password2.errors.mustMatch">Passwords must match</div>
+              </div>
             </div>
 
           </div>
@@ -804,15 +863,16 @@
                 d="M496.689,344.607c-8.561-19.15-27.845-31.558-49.176-31.607h-62.372c-0.045,0-0.087,0-0.133,0 c-22.5,0-42.13,13.26-50.029,33.807c-1.051,2.734-2.336,6.178-3.677,10.193H200.356c-5.407,0-10.583,2.189-14.35,6.068 l-34.356,35.388c-7.567,7.794-7.529,20.203,0.085,27.95l35,35.612c3.76,3.826,8.9,5.981,14.264,5.981h65c11.046,0,20-8.954,20-20 c0-11.046-8.954-20-20-20h-56.614l-15.428-15.698L208.814,397h137.491c9.214,0,17.235-6.295,19.426-15.244 c1.618-6.607,3.648-12.959,6.584-20.596c1.936-5.036,6.798-8.16,12.741-8.16c0.013,0,0.026,0,0.039,0h62.371 c5.656,0.013,10.524,3.053,12.705,7.932c5.369,12.012,11.78,30.608,11.828,50.986c0.048,20.529-6.356,39.551-11.739,51.894 c-2.17,4.978-7.079,8.188-12.56,8.188c-0.011,0-0.022,0-0.033,0h-63.125c-5.533-0.013-10.716-3.573-12.896-8.858 c-2.339-5.671-4.366-12.146-6.197-19.797c-2.571-10.742-13.367-17.366-24.105-14.796c-10.743,2.571-17.367,13.364-14.796,24.106 c2.321,9.699,4.978,18.118,8.121,25.738c8.399,20.364,27.939,33.555,49.827,33.606h63.125c0.043,0,0.083,0,0.126,0 c21.351-0.001,40.647-12.63,49.18-32.201c6.912-15.851,15.137-40.511,15.072-67.975 C511.935,384.434,503.638,360.153,496.689,344.607z" />
               <circle cx="431" cy="412" r="20" />
             </svg>
-            Login with Email
+            Register
           </button>
-          <div class="terms-conditions">
-            <p>By logging in, you agree to <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
-              of
-              Trade</p>
-            <p>Don’t have an account? <a href="#">Sign up!</a></p>
-          </div>
         </form>
+        <div class="terms-conditions">
+          <p>By logging in, you agree to <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+            of
+            Trade</p>
+
+        </div>
+
       </div>
     </div>
 

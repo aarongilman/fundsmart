@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { User } from './user';
 import { AuthService, SocialUser, GoogleLoginProvider } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
 import { $ } from 'protractor';
@@ -19,19 +18,13 @@ export class ServercommunicationService {
     private interconn: IntercomponentCommunicationService) { }
   userkey: string;
 
-  doRegistration(obj: User) {
-    // console.log(obj);
-    const body = {
-      username: obj.username, email: obj.email,
-      password1: obj.password1, first_name: obj.firstname,
-      last_name: obj.lastname, password2: obj.password2, phone_number: obj.phone
-    };
+  doRegistration(body) {
+    // // console.log(obj);
     return this.http.post(this.reglink, body, { headers: this.httpHeaders });
 
   }
 
-  doLogin(username: string, password: string) {
-    const body = { username: username, password: password };
+  doLogin(body) {
     return this.http.post(this.login_link, body, { headers: this.httpHeaders });
   }
 
@@ -39,7 +32,8 @@ export class ServercommunicationService {
     this.socialuser = user;
     const body = { access_token: user.authToken };
     this.http.post('http://3.16.111.80/rest-auth/google/', body, { headers: this.httpHeaders }).subscribe(data => {
-      console.log(data);
+      // console.log(data);
+      localStorage.setItem('authkey', data['key']);
       this.getUser(data['key']);
     });
 
@@ -167,24 +161,39 @@ export class ServercommunicationService {
 
   createportfolio(number) {
     var portfolioname = '';
-    if (this.count === 0 && number == 1) {
-      portfolioname = 'portfolio1';
-      this.count++;
-    }
-    if (this.count === 1 && number == 2) {
-      portfolioname = 'portfolio2';
-      this.count++;
-    }
-    if (this.count === 2 && number == 3) {
-      portfolioname = 'portfolio3';
-      this.count++;
+    if (this.count < 4) {
+      if (number === 1) {
+        portfolioname = 'portfolio1';
+        this.count++;
+      }
+      if (number === 2) {
+        portfolioname = 'portfolio2';
+        this.count++;
+      }
+      if (number === 3) {
+        portfolioname = 'portfolio3';
+        this.count++;
+      }
     }
 
-    const body = { name: portfolioname,created_by:this.currentuser.id };
+    const body = { name: portfolioname, created_by: this.currentuser.id };
     return this.http.post('http://3.16.111.80/api/portfolio/', body,
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
 
   }
 
+  updateportfoliofund(recid, fquantity, userportfolio, selectedsecurity, updatedby) {
+    const body = {
+      id: recid, quantity: Number.parseFloat(fquantity), portfolio: userportfolio,
+      security: selectedsecurity, updated_by: updatedby, created_by: this.currentuser.id
+    };
+    return this.http.put('http://3.16.111.80/api/portfolio_fund/' + recid + '/', body,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  getHoldingDetails() {
+    return this.http.get('http://127.0.0.1:8000/api/holding_detail/', 
+    { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
 
 }

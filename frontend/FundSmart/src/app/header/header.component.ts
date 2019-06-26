@@ -55,7 +55,10 @@ export class HeaderComponent implements OnInit {
   }
 
   header_modals(modalid) {
-    this.modalService.open(modalid, { ariaLabelledBy: 'app-home' }).result.then((result) => {
+    this.modalService.open(modalid, {
+      ariaLabelledBy: 'app-home',
+      windowClass: 'long-pop sign-pop', centered: true
+    }).result.then((result) => {
       this.closeResult = `Closed with: ${result}`;
     }, (reason) => {
       this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;

@@ -23,7 +23,7 @@ const routes: Routes = [
   { path: 'allocation_fund_analysis', component: AllocationFundAnalysisComponent },
   { path: 'allocation_recommendation', component: AllocationRecommendationComponent },
   { path: 'reset-password/:uid/:token', component: ResetPasswordComponent },
-  { path: 'accounts/confirm-email/:token', component: ConfirmemailComponent }
+  { path: 'confirm-email/:token', component: ConfirmemailComponent }
 ];
 
 @NgModule({

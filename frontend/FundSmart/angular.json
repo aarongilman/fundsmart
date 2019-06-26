@@ -27,14 +27,13 @@
               "node_modules/chartist/dist/chartist.css",
               "src/assets/css/perfect-scrollbar.css",
               "src/assets/css/style.css",
-              "src/assets/css/responsive.css",
-              "src/assets/css/datepicker.css"
+              "src/assets/css/responsive.css"
+              
             ],
             "scripts": [
               "src/assets/js/jquery.min.js",
               "node_modules/chartist/dist/chartist.min.js",
               "src/assets/js/perfect-scrollbar.min.js",
-              "src/assets/js/bootstrap-datepicker.js",
               "src/assets/js/custom.js"
             ],
             "es5BrowserSupport": true

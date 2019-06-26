@@ -75,7 +75,7 @@ export class PortfoliofundhelperService {
   }
 
   resetfunds() {
-    // alert('came in resetfunds');
+
     this._search$.pipe(
       tap(() => this._loading$.next(true)),
       debounceTime(200),
@@ -83,7 +83,7 @@ export class PortfoliofundhelperService {
       delay(200),
       tap(() => this._loading$.next(false))
     ).subscribe(result => {
-      console.log("result is ====>", result);
+      // console.log("result is ====>", result);
       this._funds$.next(result.fundlist);
       this._total$.next(result.total);
     });
@@ -113,7 +113,6 @@ export class PortfoliofundhelperService {
 
     // 1. sort
     let fundlist = sort(portfoliofundlist, sortColumn, sortDirection);
-
     // 2. filter
     fundlist = fundlist.filter(fund => matches(fund, searchTerm, this.pipe));
     const total = fundlist.length;

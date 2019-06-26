@@ -11,7 +11,7 @@
         <div class="col-lg-6 col-md-7 col-sm-6">
           <div class="row">
             <div class="col-lg-7 col-md-6 col-sm-4">
-              <form action="post">
+              <!-- <form action="post">
                 <div class="mobile-searh">
                   <a href="javascript:void(0);">
                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -65,13 +65,13 @@
                     </span>
                   </a>
                 </div>
-              </form>
+              </form> -->
             </div>
             <div class="col-lg-5 col-md-6 col-sm-8">
               <div class="logged-user d-flex align-items-center">
-                <div class="user-profile">
+                <div class="user-profile"  *ngIf="currentuser">
                   <a title="User Profile Image">
-                    <img src="assets/img/user.jpg" *ngIf="currentuser" alt="User Profile Image" />
+                    <img src="assets/img/userimage2.jpg" alt="User Profile Image" />
                   </a>
                 </div>
                 <div class="user-name" *ngIf="currentuser">
@@ -323,15 +323,15 @@
         <form action="post">
           <div class="input-group">
             <div class="input-group">
-              <input type="password" class="form-control pwd" [(ngModel)]="oldpass" name='oldpass'
+              <input type="password" required class="form-control pwd" [(ngModel)]="oldpass" name='oldpass'
                 placeholder="Enter old Password">
             </div>
             <div class="input-group">
-              <input type="password" class="form-control pwd" [(ngModel)]="newpass" name='newpass'
+              <input type="password" required class="form-control pwd" [(ngModel)]="newpass" name='newpass'
                 placeholder="Enter new password">
             </div>
             <div class="input-group">
-              <input type="password" class="form-control pwd" [(ngModel)]="confirmpass" name='confirmpass'
+              <input type="password" required class="form-control pwd" [(ngModel)]="confirmpass" name='confirmpass'
                 placeholder="Confirm password">
             </div>
 
@@ -429,19 +429,19 @@
         <form action="post">
           <div>
             <div class="input-group">
-              <input type="text" class="form-control fname" [(ngModel)]="currentuser.first_name" name='firstname'
+              <input type="text" required class="form-control fname" [(ngModel)]="currentuser.first_name" name='firstname'
                 placeholder="First Name">
             </div>
             <div class="input-group">
-              <input type="text" class="form-control lname" [(ngModel)]="currentuser.last_name" name='lastname'
+              <input type="text" required class="form-control lname" [(ngModel)]="currentuser.last_name" name='lastname'
                 placeholder="Last Name">
             </div>
             <div class="input-group">
-              <input type="text" class="form-control userid" [(ngModel)]="currentuser.username" name='username'
+              <input type="text" required class="form-control userid" [(ngModel)]="currentuser.username" name='username'
                 placeholder="Username">
             </div>
             <div class="input-group">
-              <input type="text" class="form-control phone" [(ngModel)]="currentuser.phone_number" name='phone'
+              <input type="text" required class="form-control phone" [(ngModel)]="currentuser.phone_number" name='phone'
                 placeholder="Phone number">
             </div>
            

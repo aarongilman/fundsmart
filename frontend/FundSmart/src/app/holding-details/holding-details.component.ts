@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ServercommunicationService } from '../servercommunication.service';
 
 @Component({
   selector: 'app-holding-details',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HoldingDetailsComponent implements OnInit {
 
-  constructor() { }
+  constructor(private userservice: ServercommunicationService) { }
 
   ngOnInit() {
+    this.userservice.getHoldingDetails().subscribe(data => {
+      console.log(data);
+    });
+
   }
 
 }

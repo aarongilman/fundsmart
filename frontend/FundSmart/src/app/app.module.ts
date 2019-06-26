@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -18,7 +18,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ServercommunicationService } from './servercommunication.service';
 import { SocialLoginModule, AuthServiceConfig } from "angularx-social-login";
 import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-login";
-import { ChartistModule } from 'ng-chartist';
+import { GoogleChartsModule } from 'angular-google-charts';
 import { SocialloginService } from './sociallogin.service';
 import { HeaderComponent } from './header/header.component';
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
@@ -88,8 +88,9 @@ export function provideConfig() {
     NgbModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
     SocialLoginModule,
-    ChartistModule,
+    GoogleChartsModule,
     GoogleApiModule.forRoot({
       provide: NG_GAPI_CONFIG,
       useValue: gapiClientConfig
