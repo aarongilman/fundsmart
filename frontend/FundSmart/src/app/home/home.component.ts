@@ -16,11 +16,10 @@ import { IntercomponentCommunicationService } from '../intercomponent-communicat
 import { GetfileforuploadService } from '../getfileforupload.service';
 
 import { HistoricalData } from '../historicaldata';
-import { FormArray, FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
 
 
 import { MustMatch } from '../must-match.validator';
-import { ignoreElements } from 'rxjs/operators';
 
 
 @Component({
@@ -71,8 +70,6 @@ export class HomeComponent implements OnInit {
     fiveyear: 0
   };
 
-
-
   doughnutchartData: DoughnutChart[] = [];
   securitylist: security[] = [];
   userFunds = portfoliofundlist;
@@ -96,18 +93,23 @@ export class HomeComponent implements OnInit {
   comparision1: any;
   comparision2: any;
 
-  // donuttype: ChartType;
-  // donutdata: IChartistData;
-  // donutoptions: IPieChartOptions;
-  // donutevents: ChartEvent;
-  // donutlable = [];
-  // donutseries = [];
-
-  pietype: 'PieChart';
+  pietype = 'PieChart';
   pietitle = '';
   pielable = [];
   pieseries = [];
   piedata = [];
+  pieoptions;
+  columnNames = [];
+  pieheight = 500;
+  piewidth = 500;
+
+  donutitle = '';
+  donutdata = [];
+  donutwidth = 550;
+  donutheight = 400;
+  donuttype = 'PieChart'
+  donutoptions;
+
   constructor(private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
     private userservice: ServercommunicationService,
     private fileupload: GetfileforuploadService,
@@ -297,44 +299,45 @@ export class HomeComponent implements OnInit {
           this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
           this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
         }
-      },
-      error => {
-        // console.log(error);
-      }
-    );
+      });
     this.userservice.get_home_pie_chart().subscribe(
       jsondata => {
-        this.pielable = [];
-        this.pieseries = [];
+        this.piedata = [];
         // // console.log(jsondata);
         // tslint:disable-next-line: forin
         for (var data in jsondata) {
           var lable, series;
           lable = jsondata[data]['security__asset_type'];
           series = jsondata[data]['total'];
-          this.piedata.push(lable, series);
+          this.piedata.push([lable, series]);
         }
-
-        this.generatePieChart();
-      },
-      error => {
-        // console.log(error);
-      }
-    );
+        //  console.log(this.piedata);
+        this.pietitle = '';
+        this.pietype = 'PieChart';
+        this.columnNames = ['Security Industry', 'Total'];
+        this.pieoptions = {
+          animation: {
+            duration: 1000,
+            easing: 'out',
+          },
+          pieSliceText: 'label',
+          legend: 'none',
+        };
+      });
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
-        // // console.log(jsondata);
+        // console.log("abc..", jsondata);
+        this.donutdata = [];
         // tslint:disable-next-line: forin
         for (var data in jsondata) {
           console.log(jsondata[data]['security__industry'], jsondata[data]['total']);
-          // this.donutlable.push(jsondata[data]['security__industry']);
-          // this.donutseries.push(jsondata[data]['total']);
+          this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
         }
-        // this.generateDonotchart();
-      },
-      error => { // console.log(error); }
-      }
-    );
+        this.donutoptions = {
+          pieHole: 0.8,
+          pieSliceText: 'none',
+        };
+      });
   }
 
   signInWithGoogle(): void {
@@ -373,43 +376,42 @@ export class HomeComponent implements OnInit {
     this.authService.signOut();
   }
 
-  generatePieChart() {
+  // generatePieChart() {
+  //   this.pietitle = '';
+  //   this.pietype = 'PieChart';
+  //   var data = this.piedata;
+  //   var columnNames = ['security__industry', 'total'];
+  //   var options = {};
 
-    this.pietitle = '';
-    this.pietype = 'PieChart';
-    var data = this.piedata;
-    var columnNames = ['security__industry', 'total'];
-    var options = {};
-
-    // this.pietype = 'Pie';
-    // this.piedata = {
-    //   labels: this.pielable,
-    //   series: this.pieseries,
-    // };
-    // this.pieoptions = {
-    //   donut: false,
-    //   showLabel: true,
-    //   width: '100%',
-    //   height: '300px'
-    // };
-    // this.pieevents = {
-    //   draw: (data) => {
-    //     const pathLength = data.element._node;
-    //     if (data.type === 'pie') {
-    //       data.element.animate({
-    //         y2: {
-    //           id: 'anim' + data.index,
-    //           dur: 1000,
-    //           from: -pathLength + 'px',
-    //           to: '0px',
-    //           easing: 'easeOutQuad',
-    //           fill: 'freeze'
-    //         } as IChartistAnimationOptions
-    //       });
-    //     }
-    //   }
-    // };
-  }
+  // this.pietype = 'Pie';
+  // this.piedata = {
+  //   labels: this.pielable,
+  //   series: this.pieseries,
+  // };
+  // this.pieoptions = {
+  //   donut: false,
+  //   showLabel: true,
+  //   width: '100%',
+  //   height: '300px'
+  // };
+  // this.pieevents = {
+  //   draw: (data) => {
+  //     const pathLength = data.element._node;
+  //     if (data.type === 'pie') {
+  //       data.element.animate({
+  //         y2: {
+  //           id: 'anim' + data.index,
+  //           dur: 1000,
+  //           from: -pathLength + 'px',
+  //           to: '0px',
+  //           easing: 'easeOutQuad',
+  //           fill: 'freeze'
+  //         } as IChartistAnimationOptions
+  //       });
+  //     }
+  //   }
+  // };
+  //  }
 
   addRow() {
     let singlefund: portfolio_fund = {
@@ -434,18 +436,20 @@ export class HomeComponent implements OnInit {
 
 
   // generateDonotchart() {
-
+  //   this.donutitle = '';
   //   this.donuttype = 'Pie';
-  //   this.donutdata = {
-  //     labels: this.donutlable,
-  //     series: this.donutseries,
-  //   };
-  //   this.donutoptions = {
-  //     donut: true,
-  //     showLabel: true,
-  //     width: '100%',
-  //     height: '300px'
-  //   };
+  //   var data = this.donutdata
+  // this.donutdata = {
+  //   labels: this.donutlable,
+  //   series: this.donutseries,
+  // };
+
+  // this.donutOptions = {
+  //   donut: true,
+  //   showLabel: true,
+  //   width: '100%',
+  //   height: '300px'
+  // };
   //   this.donutevents = {
   //     draw: (data) => {
   //       const pathLength = data.element._node;
@@ -462,66 +466,63 @@ export class HomeComponent implements OnInit {
   //         });
   //       }
   //     }
-  //   };
+  // };
+
+  // $(function () {
+  //   const chart = new Chartist.Pie('.do-nut-chart', {
+  //     series: [10, 20, 50, 20, 5, 50, 15],
+  //     labels: [1, 2, 3, 4, 5, 6, 7]
+  //   }, {
+  //       donut: true,
+  //       showLabel: true
+  //     });
+
+  //   // tslint:disable-next-line: only-arrow-functions
+  //   chart.on('draw', function (data) {
+  //     if (data.type === 'slice') {
+  //       // Get the total path length in order to use for dash array animation
+  //       const pathLength = data.element._node.getTotalLength();
+
+  //       // Set a dasharray that matches the path length as prerequisite to animate dashoffset
+  //       data.element.attr({
+  //         'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
+  //       });
+
+  //       // Create animation definition while also assigning an ID to the animation for later sync usage
+  //       const animationDefinition = {
+  //         'stroke-dashoffset': {
+  //           id: 'anim' + data.index,
+  //           dur: 1000,
+  //           from: -pathLength + 'px',
+  //           to: '0px',
+  //           easing: Chartist.Svg.Easing.easeOutQuint,
+  //           // We need to use `fill: 'freeze'` otherwise our animation will fall back to initial (not visible)
+  //           fill: 'freeze'
+  //         }
+  //       };
+
+  //       // If this was not the first slice, we need to time the animation so that it uses the end sync event of the previous animation
+  //       if (data.index !== 0) {
+  //         animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
+  //       }
+
+  //       // We need to set an initial value before the animation starts as we are not in guided mode which would do that for us
+  //       data.element.attr({
+  //         'stroke-dashoffset': -pathLength + 'px'
+  //       });
+
+  //       // We can't use guided mode as the animations need to rely on setting begin manually
+  //       // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
+  //       data.element.animate(animationDefinition, false);
+  //     }
+  //   });
+
+  //   // For the sake of the example we update the chart every time it's created with a delay of 8 seconds
 
 
+  // });
 
 
-    // $(function () {
-    //   const chart = new Chartist.Pie('.do-nut-chart', {
-    //     series: [10, 20, 50, 20, 5, 50, 15],
-    //     labels: [1, 2, 3, 4, 5, 6, 7]
-    //   }, {
-    //       donut: true,
-    //       showLabel: true
-    //     });
-
-    //   // tslint:disable-next-line: only-arrow-functions
-    //   chart.on('draw', function (data) {
-    //     if (data.type === 'slice') {
-    //       // Get the total path length in order to use for dash array animation
-    //       const pathLength = data.element._node.getTotalLength();
-
-    //       // Set a dasharray that matches the path length as prerequisite to animate dashoffset
-    //       data.element.attr({
-    //         'stroke-dasharray': pathLength + 'px ' + pathLength + 'px'
-    //       });
-
-    //       // Create animation definition while also assigning an ID to the animation for later sync usage
-    //       const animationDefinition = {
-    //         'stroke-dashoffset': {
-    //           id: 'anim' + data.index,
-    //           dur: 1000,
-    //           from: -pathLength + 'px',
-    //           to: '0px',
-    //           easing: Chartist.Svg.Easing.easeOutQuint,
-    //           // We need to use `fill: 'freeze'` otherwise our animation will fall back to initial (not visible)
-    //           fill: 'freeze'
-    //         }
-    //       };
-
-    //       // If this was not the first slice, we need to time the animation so that it uses the end sync event of the previous animation
-    //       if (data.index !== 0) {
-    //         animationDefinition['stroke-dashoffset'].begin = 'anim' + (data.index - 1) + '.end';
-    //       }
-
-    //       // We need to set an initial value before the animation starts as we are not in guided mode which would do that for us
-    //       data.element.attr({
-    //         'stroke-dashoffset': -pathLength + 'px'
-    //       });
-
-    //       // We can't use guided mode as the animations need to rely on setting begin manually
-    //       // See http://gionkunz.github.io/chartist-js/api-documentation.html#chartistsvg-function-animate
-    //       data.element.animate(animationDefinition, false);
-    //     }
-    //   });
-
-    //   // For the sake of the example we update the chart every time it's created with a delay of 8 seconds
-
-
-    // });
-
-  
 
   get f() { return this.registeruserForm.controls; }
 
