@@ -16,12 +16,10 @@ import { IntercomponentCommunicationService } from '../intercomponent-communicat
 import { GetfileforuploadService } from '../getfileforupload.service';
 
 import { HistoricalData } from '../historicaldata';
-import { FormArray, FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
 
 
 import { MustMatch } from '../must-match.validator';
-import { ignoreElements } from 'rxjs/operators';
-// import {newData} from './model';
 
 @Component({
 
@@ -71,8 +69,6 @@ export class HomeComponent implements OnInit {
     fiveyear: 0
   };
 
-
-
   doughnutchartData: DoughnutChart[] = [];
   securitylist: security[] = [];
   userFunds = portfoliofundlist;
@@ -96,7 +92,6 @@ export class HomeComponent implements OnInit {
   comparision1: any;
   comparision2: any;
 
-
   pietype = 'PieChart';
   pietitle = '';
   piedata = [];
@@ -105,6 +100,12 @@ export class HomeComponent implements OnInit {
   pieheight = 500;
   piewidth = 500;
 
+  donutitle = '';
+  donutdata = [];
+  donutwidth = 550;
+  donutheight = 400;
+  donuttype = 'PieChart'
+  donutoptions;
 
   constructor(private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
     private userservice: ServercommunicationService,
@@ -131,6 +132,7 @@ export class HomeComponent implements OnInit {
         //   // console.log(this.total$);
         this.total$ = 0;
         this.piedata = [];
+        this.donutdata = [];
         // });
       }
     );
@@ -295,11 +297,7 @@ export class HomeComponent implements OnInit {
           this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
           this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
         }
-      },
-      error => {
-        // console.log(error);
-      }
-    );
+      });
     this.userservice.get_home_pie_chart().subscribe(
       jsondata => {
         this.piedata = [];
@@ -310,7 +308,7 @@ export class HomeComponent implements OnInit {
           series = jsondata[data]['total'];
           this.piedata.push([lable, series]);
         }
-        console.log(this.piedata);
+        //  console.log(this.piedata);
         this.pietitle = '';
         this.pietype = 'PieChart';
         this.columnNames = ['Security Industry', 'Total'];
@@ -322,26 +320,21 @@ export class HomeComponent implements OnInit {
           pieSliceText: 'label',
           legend: 'none',
         };
-      },
-      error => {
-        // console.log(error);
-      }
-    );
+      });
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
-        // // console.log(jsondata);
+        // console.log("abc..", jsondata);
+        this.donutdata = [];
         // tslint:disable-next-line: forin
         for (var data in jsondata) {
-          // console.log(jsondata[data]['security__industry'], jsondata[data]['total']);
-          // this.donutlable.push(jsondata[data]['security__industry']);
-          // this.donutseries.push(jsondata[data]['total']);
+          console.log(jsondata[data]['security__industry'], jsondata[data]['total']);
+          this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
         }
-        // this.generateDonotchart();
-
-      },
-      error => { // console.log(error); }
-      }
-    );
+        this.donutoptions = {
+          pieHole: 0.8,
+          pieSliceText: 'none',
+        };
+      });
   }
 
   signInWithGoogle(): void {
@@ -380,39 +373,42 @@ export class HomeComponent implements OnInit {
     this.authService.signOut();
   }
 
-  generatePieChart() {
+  // generatePieChart() {
+  //   this.pietitle = '';
+  //   this.pietype = 'PieChart';
+  //   var data = this.piedata;
+  //   var columnNames = ['security__industry', 'total'];
+  //   var options = {};
 
-
-
-    // this.pietype = 'Pie';
-    // this.piedata = {
-    //   labels: this.pielable,
-    //   series: this.pieseries,
-    // };
-    // this.pieoptions = {
-    //   donut: false,
-    //   showLabel: true,
-    //   width: '100%',
-    //   height: '300px'
-    // };
-    // this.pieevents = {
-    //   draw: (data) => {
-    //     const pathLength = data.element._node;
-    //     if (data.type === 'pie') {
-    //       data.element.animate({
-    //         y2: {
-    //           id: 'anim' + data.index,
-    //           dur: 1000,
-    //           from: -pathLength + 'px',
-    //           to: '0px',
-    //           easing: 'easeOutQuad',
-    //           fill: 'freeze'
-    //         } as IChartistAnimationOptions
-    //       });
-    //     }
-    //   }
-    // };
-  }
+  // this.pietype = 'Pie';
+  // this.piedata = {
+  //   labels: this.pielable,
+  //   series: this.pieseries,
+  // };
+  // this.pieoptions = {
+  //   donut: false,
+  //   showLabel: true,
+  //   width: '100%',
+  //   height: '300px'
+  // };
+  // this.pieevents = {
+  //   draw: (data) => {
+  //     const pathLength = data.element._node;
+  //     if (data.type === 'pie') {
+  //       data.element.animate({
+  //         y2: {
+  //           id: 'anim' + data.index,
+  //           dur: 1000,
+  //           from: -pathLength + 'px',
+  //           to: '0px',
+  //           easing: 'easeOutQuad',
+  //           fill: 'freeze'
+  //         } as IChartistAnimationOptions
+  //       });
+  //     }
+  //   }
+  // };
+  //  }
 
   addRow() {
     let singlefund: portfolio_fund = {
@@ -437,18 +433,20 @@ export class HomeComponent implements OnInit {
 
 
   // generateDonotchart() {
-
+  //   this.donutitle = '';
   //   this.donuttype = 'Pie';
-  //   this.donutdata = {
-  //     labels: this.donutlable,
-  //     series: this.donutseries,
-  //   };
-  //   this.donutoptions = {
-  //     donut: true,
-  //     showLabel: true,
-  //     width: '100%',
-  //     height: '300px'
-  //   };
+  //   var data = this.donutdata
+  // this.donutdata = {
+  //   labels: this.donutlable,
+  //   series: this.donutseries,
+  // };
+
+  // this.donutOptions = {
+  //   donut: true,
+  //   showLabel: true,
+  //   width: '100%',
+  //   height: '300px'
+  // };
   //   this.donutevents = {
   //     draw: (data) => {
   //       const pathLength = data.element._node;
@@ -465,10 +463,7 @@ export class HomeComponent implements OnInit {
   //         });
   //       }
   //     }
-  //   };
-
-
-
+  // };
 
   // $(function () {
   //   const chart = new Chartist.Pie('.do-nut-chart', {
