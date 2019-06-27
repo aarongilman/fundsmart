@@ -2,7 +2,7 @@
 import logging
 import xlrd
 
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Min, Avg
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, status
@@ -157,12 +157,20 @@ class DashboardLinePlotApi(APIView):
         data = []
         portfolios = Portfolio.objects.filter(created_by=request.user)
         portfolio_funds = PortfolioFund.objects.filter(portfolio__in=portfolios)
-        fund_isin = portfolio_funds.values_list('security__id_value', flat=True)
+        fund_isin = portfolio_funds.values_list('security__id_value',
+                                                flat=True).distinct()
         price = Price.objects.filter(id_value__in=fund_isin)
-        # earliest_date = price.filter(date__gte=price.earliest('date').date)
-        # print(earliest_date.values_list('date', flat=True))
-        date = price.values('date__year', 'date__month').annotate(
-            count=Max('date')).distinct()
+        date_list = price.values_list('id_value').annotate(count=Min('date'))\
+            .distinct()
+        common_date = max([x[1] for x in date_list])
+        for isin in fund_isin:
+            temp_dict = {'isin': isin}
+            average = price.values_list('date__year').\
+                filter(id_value=isin, date__year__gte=common_date.year).\
+                annotate(avg=Avg('price')).distinct()
+            temp_dict.update({'label': [item[0] for item in average]})
+            temp_dict.update({'series': [item[1] for item in average]})
+            data.append(temp_dict)
         return Response(data, status=200)
 
 
