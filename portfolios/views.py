@@ -165,7 +165,7 @@ class DashboardLinePlotApi(APIView):
         common_date = max([x[1] for x in date_list])
         for portfolio in portfolios:
             funds = portfolio_funds.filter(portfolio=portfolio)
-            temp_dict = {'portfolio': portfolio.name, 'data': {}}
+            temp_dict = {'portfolio': portfolio.name, 'series': [], 'label': []}
             funds_avg_mkt_value = {}
             for fund in funds:
                 average = price.values_list('date__year').\
@@ -185,7 +185,8 @@ class DashboardLinePlotApi(APIView):
                         funds_avg_mkt_value.update({item[0]: [float(item[1])
                                                               * quantity]})
             for key, value in funds_avg_mkt_value.items():
-                temp_dict.get('data').update({key: sum(value)/len(value)})
+                temp_dict.get('label').append(key)
+                temp_dict.get('series').append(sum(value)/len(value))
             data.append(temp_dict)
         return Response(data, status=200)
 
