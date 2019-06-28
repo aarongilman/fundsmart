@@ -7,7 +7,6 @@ import { portfoliofundlist } from '../portfolio_fundlist';
 import { PortfoliofundhelperService } from '../portfoliofundhelper.service';
 import { SortableDirective, SortEvent } from '../sortable.directive';
 import { security } from '../security';
-import { DoughnutChart } from '../doughnut_chart';
 import * as $ from 'jquery';
 import { ServercommunicationService } from '../servercommunication.service';
 import { AuthService, SocialUser } from "angularx-social-login";
@@ -68,7 +67,7 @@ export class HomeComponent implements OnInit {
     fiveyear: 0
   };
 
-  doughnutchartData: DoughnutChart[] = [];
+  
   securitylist: security[] = [];
   userFunds = portfoliofundlist;
   files: any = [];
@@ -195,12 +194,14 @@ export class HomeComponent implements OnInit {
             id: -1,
             isin: '',
             name: '',
-            ticker: ''
+            ticker: '',
+            asset_type: ''
           };
           securityobj.id = securitylist[obj]['id'];
           securityobj.isin = securitylist[obj]['isin'];
           securityobj.name = securitylist[obj]['name'];
           securityobj.ticker = securitylist[obj]['ticker'];
+          securityobj.asset_type = securitylist[obj]['asset_type'];
           this.securitylist.push(securityobj);
         }
       }
@@ -330,6 +331,7 @@ export class HomeComponent implements OnInit {
           legend: 'none',
         };
       });
+
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
         // console.log("abc..", jsondata);
@@ -582,7 +584,7 @@ export class HomeComponent implements OnInit {
     // console.log("Length of obj", fundlist);
     for (obj = 0; obj < fundlist.length; obj++) {
 
-      console.log(fundlist[obj]);
+      // console.log(fundlist[obj]);
 
 
       let singlefund: portfolio_fund = {
@@ -596,7 +598,6 @@ export class HomeComponent implements OnInit {
         comparision1: '0',
         comparision2: '0'
       };
-      console.log(fundlist[obj]);
 
       singlefund.security = fundlist[obj]['security_name'];
       singlefund.security_id = fundlist[obj]['security'];

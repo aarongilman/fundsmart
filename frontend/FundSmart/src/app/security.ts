@@ -3,4 +3,5 @@ export class security {
     name: string;
     isin: string;
     ticker: string;
+    asset_type: string;
 }
