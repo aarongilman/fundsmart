@@ -163,13 +163,19 @@ class DashboardLinePlotApi(APIView):
         date_list = price.values_list('id_value').annotate(count=Min('date'))\
             .distinct()
         common_date = max([x[1] for x in date_list])
-        for isin in fund_isin:
+        for fund in portfolio_funds.distinct():
+            isin = fund.security.id_value
             temp_dict = {'isin': isin}
             average = price.values_list('date__year').\
                 filter(id_value=isin, date__year__gte=common_date.year).\
                 annotate(avg=Avg('price')).distinct()
             temp_dict.update({'label': [item[0] for item in average]})
-            temp_dict.update({'series': [item[1] for item in average]})
+            if '%' in fund.quantity:
+                quantity = (float(fund.quantity.replace("%", "")) / 100)*1000000
+            else:
+                quantity = float(fund.quantity)
+            temp_dict.update({'series': [float(item[1])*quantity for item
+                                         in average]})
             data.append(temp_dict)
         return Response(data, status=200)
 
@@ -202,7 +208,6 @@ class DashboardPieChart(APIView):
 
 class HoldingDetailAPIView(APIView):
     """APIView to import Portfolio"""
-    # serializer_class = HoldingDetailSerializer
 
     def get(self, request):
         """post method in HoldingDetailAPIView"""
@@ -218,14 +223,18 @@ class HoldingDetailAPIView(APIView):
                 basic_price = price.filter(id_value=fund.security.id_value,
                                            date=fund.portfolio.created_at.date()
                                            )[0].price
-                basis = float(fund.quantity)*float(basic_price)
+                if '%' in fund.quantity:
+                    quantity = (float(fund.quantity.replace("%", ""))/100) * \
+                               1000000
+                else:
+                    quantity = fund.quantity
+                basis = float(quantity)*float(basic_price)
                 # Quantity is different for mutual funds
                 if fund.security.asset_type == 'Mutual Fund':
                     aum = fund_details.get(fund_id=fund.security.id_value).aum
                     quantity = float(basis) / float(aum) * 1000000
                     basis = float(quantity) * float(basic_price)
-            except Exception as e:
-                print(e)
+            except Exception:
                 basic_price = 0
             try:
                 current_price = price.filter(id_value=fund.security.id_value)\
@@ -239,7 +248,7 @@ class HoldingDetailAPIView(APIView):
                                      float(aum)) * 1000000
                 market_value = float(quantity) * float(current_price)
             else:
-                market_value = float(fund.quantity) * float(current_price)
+                market_value = float(quantity) * float(current_price)
 
             data.append({'id': fund.id, 'portfolio': fund.portfolio.name,
                          'security': fund.security.name,
