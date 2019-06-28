@@ -6,3 +6,6 @@
 /frontend/FundSmart/.editorconfig
 /portfolios/migrations/
 .idea/
+/frontend/.DS_Store
+.DS_Store
+
