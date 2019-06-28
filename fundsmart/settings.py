@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'e=0%%+ll2eqpzjf$m#zi$s*p^#lc6tuxo=9q1+6772s=7njl1a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 CORS_ORIGIN_ALLOW_ALL=True
@@ -92,9 +92,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'localhost',
         'PORT': '3306',
-        'NAME': 'fundsmart',
+        'NAME': 'db_fund_smart',
         'USER': 'root',
-        'PASSWORD': 'panqfLsb'
+        'PASSWORD': ''
     }
 }
 

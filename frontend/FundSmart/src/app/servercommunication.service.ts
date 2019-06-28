@@ -122,6 +122,23 @@ export class ServercommunicationService {
     });
   }
 
+
+
+
+
+
+  get_lineplot_chart() {
+    return this.http.get('http://3.16.111.80/api/dashboard_line_graph/', {
+      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    });
+  }
+
+
+
+
+
+
+
   add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby) {
     const body = { quantity: fquantity, portfolio: userportfolio, security: selectedsecurity, created_by: createdby };
     return this.http.post('http://3.16.111.80/api/portfolio_fund/', body,

@@ -106,6 +106,11 @@ export class HomeComponent implements OnInit {
   donuttype = 'PieChart';
   donutoptions;
 
+  linetitle = '';
+  linedata = [];
+  lineoptions;
+  linetype = 'line'
+
   constructor(private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
     private userservice: ServercommunicationService,
     private fileupload: GetfileforuploadService,
@@ -333,8 +338,11 @@ export class HomeComponent implements OnInit {
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
         // console.log("abc..", jsondata);
+
+        //console.log("Data", jsondata);
         this.donutdata = [];
         for (var data in jsondata) {
+          console.log("Another", jsondata);
           if (jsondata[data]['security__industry'] !== null && jsondata[data]['total'] !== 0) {
             this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
           }
@@ -344,6 +352,32 @@ export class HomeComponent implements OnInit {
           pieSliceText: 'none',
         };
       });
+    this.userservice.get_lineplot_chart().subscribe(
+      jsondata => {
+        console.log("Data", jsondata);
+        this.linedata = [];
+        for (var data in jsondata) {
+          console.log("Only dara", data);
+          console.log("New", jsondata);
+
+          // if (jsondata[data][''] !== null && jsondata[data][''] !== 0) {
+          //   this.donutdata.push([jsondata[data][''], jsondata[data]['']]);
+        }
+        // this.lineoptions = {
+        //   legend: {
+        //     display: 'none'
+        //   },
+        //   scales: {
+        //     xAxes: [{
+        //       display: true
+        //     }],
+        //     yAxes: [{
+        //       display: true
+        //     }],
+        //   }
+        // }
+      }
+    )
   }
 
   signInWithGoogle(): void {
