@@ -163,19 +163,29 @@ class DashboardLinePlotApi(APIView):
         date_list = price.values_list('id_value').annotate(count=Min('date'))\
             .distinct()
         common_date = max([x[1] for x in date_list])
-        for fund in portfolio_funds.distinct():
-            isin = fund.security.id_value
-            temp_dict = {'isin': isin}
-            average = price.values_list('date__year').\
-                filter(id_value=isin, date__year__gte=common_date.year).\
-                annotate(avg=Avg('price')).distinct()
-            temp_dict.update({'label': [item[0] for item in average]})
-            if '%' in fund.quantity:
-                quantity = (float(fund.quantity.replace("%", "")) / 100)*1000000
-            else:
-                quantity = float(fund.quantity)
-            temp_dict.update({'series': [float(item[1])*quantity for item
-                                         in average]})
+        for portfolio in portfolios:
+            funds = portfolio_funds.filter(portfolio=portfolio)
+            temp_dict = {'portfolio': portfolio.name, 'data': {}}
+            funds_avg_mkt_value = {}
+            for fund in funds:
+                average = price.values_list('date__year').\
+                    filter(id_value=fund.security.id_value, date__year__gte=
+                           common_date.year).annotate(avg=Avg('price'))\
+                    .distinct()
+                if '%' in fund.quantity:
+                    quantity = (float(fund.quantity.replace("%", "")) / 100) *\
+                               1000000
+                else:
+                    quantity = float(fund.quantity)
+                for item in average:
+                    if funds_avg_mkt_value.get(item[0]):
+                        funds_avg_mkt_value.get(item[0]).append(float(item[1])
+                                                                * quantity)
+                    else:
+                        funds_avg_mkt_value.update({item[0]: [float(item[1])
+                                                              * quantity]})
+            for key, value in funds_avg_mkt_value.items():
+                temp_dict.get('data').update({key: sum(value)/len(value)})
             data.append(temp_dict)
         return Response(data, status=200)
 
