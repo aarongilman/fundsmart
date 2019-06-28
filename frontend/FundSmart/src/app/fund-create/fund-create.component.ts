@@ -31,7 +31,7 @@ export class FundCreateComponent implements OnInit {
   constructor(private modalService: NgbModal, private fileupload: GetfileforuploadService,
     private userservice: ServercommunicationService,
     private interconn: IntercomponentCommunicationService,
-    private fundservice: FundcreatesortService) {
+    public fundservice: FundcreatesortService) {
 
     this.interconn.componentMethodCalled$.subscribe(
       () => {
@@ -84,7 +84,6 @@ export class FundCreateComponent implements OnInit {
           this.fundservice.funds$.subscribe(
             fundlist => {
               this.fundlist = fundlist;
-              console.log(fundlist);
             });
           this.fundservice.total$.subscribe(
             total => {
@@ -104,8 +103,14 @@ export class FundCreateComponent implements OnInit {
     //   });
   }
 
-  resetfunds() {
+  updateprice(fund) {
+    this.userservice.postPrice(fund.id, fund.price).subscribe(data => {
+      this.getfunds();
 
+    });
+  }
+
+  resetfunds() {
     apiresultfundlist.length = 0;
     for (var i = 0; i < 10; i++) {
       apiresultfundlist.push({

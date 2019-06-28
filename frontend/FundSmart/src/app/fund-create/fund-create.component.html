@@ -17,26 +17,25 @@
                             <input type="text" class="form-control dateinp" ngbDatepicker #d="ngbDatepicker" />
                             <span class="input-group-addon"></span>
                         </div>
-
-                        <div class='row align-items-center ml-2 mr-2'>
-                            Show
-                            <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
-                                [(ngModel)]="fundservice.pageSize">
-                                <option [ngValue]="10">10</option>
-                                <option [ngValue]="25">25</option>
-                                <option [ngValue]="50">50</option>
-                                <option [ngValue]="100">100</option>
-                            </select>
-                            Entries
-
-                            <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
-                                Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
-                                    [(ngModel)]="fundservice.searchTerm" />
-                                <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
-                            </span>
-                        </div>
-
                     </div>
+                    <div class='row align-items-center ml-2 mr-2'>
+                        Show
+                        <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
+                            [(ngModel)]="fundservice.pageSize">
+                            <option [ngValue]="10">10</option>
+                            <option [ngValue]="25">25</option>
+                            <option [ngValue]="50">50</option>
+                            <option [ngValue]="100">100</option>
+                        </select>
+                        Entries
+
+                        <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
+                            Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
+                                [(ngModel)]="fundservice.searchTerm" />
+                            <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
+                        </span>
+                    </div>
+
                     <table id="security-table" class="width-100 trade-datatables ">
                         <thead>
                             <tr>
@@ -55,7 +54,8 @@
                                 <td>{{fund.isin}}</td>
                                 <td><input type="text" [(ngModel)]="fund.quantity" name='quantity_{{i}}'
                                         (keypress)="numberOnly($event)" (blur)='updatefundquantity(fund)'></td>
-                                <td>{{fund.price}}</td>
+                                <td><input type="text" [(ngModel)]="fund.price" name='quantity_{{i}}'
+                                    (keypress)="numberOnly($event)" (blur)='updateprice(fund)'></td>
                             </tr>
 
                         </tbody>
