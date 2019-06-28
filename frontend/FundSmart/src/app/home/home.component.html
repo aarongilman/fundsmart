@@ -301,7 +301,7 @@
           </div>
           <google-chart *ngIf="currentUser" [title]="donutitle" [type]="donuttype" [data]="donutdata"
             [columnNames]="columnNames" [options]="donutoptions" [height]="donutheight" [width]="donutwidth">
-        </google-chart>
+          </google-chart>
         </div>
 
         <div *ngIf="currentUser"
@@ -309,24 +309,24 @@
           <div class="ct-chart pie-chart">
             <div class="ct-chart pie-chart">
               <google-chart *ngIf="currentUser" [title]="pietitle" [type]="pietype" [data]="piedata"
-                [dynamicResize]="dynamicResize" [columnNames]="columnNames" [options]="pieoptions" [width]="piewidth"
+                [dynamicResize]="dynamicResize" [options]="pieoptions" [width]="piewidth"
                 [height]="pieheight">
               </google-chart>
             </div>
           </div>
         </div>
 
-        <!-- <div *ngIf="currentUser"
+        <div *ngIf="currentUser"
           class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
           <div class="ct-chart pie-chart">
             <div class="ct-chart pie-chart">
-              <google-chart *ngIf="currentUser" [title]="pietitle" [type]="linetype" [data]="linedata"
-                [dynamicResize]="dynamicResize" [columnNames]="columnNames" [options]="pieoptions" [width]="piewidth"
-                [height]="pieheight">
+              <google-chart *ngIf="currentUser" [title]="linetitle" [type]="linetype" [data]="linedata"
+                [options]="lineoptions" [width]="linewidth" [height]="lineheight" [columnNames]="linecolumnNames">
               </google-chart>
             </div>
           </div>
-        </div> -->
+        </div>
+        <!-- <div id="curve_chart" style="width: 900px; height: 500px"></div> -->
 
       </div>
       <!-- Dashboard content -->
