@@ -35,7 +35,7 @@ class PortfolioFundSerializer(serializers.ModelSerializer):
     security_name = serializers.SerializerMethodField(read_only=True)
     asset_type = serializers.SerializerMethodField(read_only=True)
     isin = serializers.SerializerMethodField(read_only=True)
-    market_value = serializers.SerializerMethodField(read_only=True)
+    price = serializers.SerializerMethodField(read_only=True)
 
     def get_security_name(self, obj):
         return obj.security.name
@@ -46,33 +46,28 @@ class PortfolioFundSerializer(serializers.ModelSerializer):
     def get_isin(self, obj):
         return obj.security.isin
 
-    def get_market_value(self, obj):
+    def get_price(self, obj):
         request = self.context.get('request')
         date = datetime.today().date()
-        price = None
+        price = 0
         if request.query_params.get('date'):
             date = request.query_params.get('date')
-        if '%' in obj.quantity:
-            quantity = (float(obj.quantity.replace("%", "")) / 100) * \
-                       1000000
-        else:
-            quantity = float(obj.quantity)
         try:
             price = HoldingDetail.objects.get(fund=obj).price
             if not price:
+                price = 0
                 raise Exception
         except Exception:
             price_obj = Price.objects.filter(date=date, id_value=obj.security.id_value)
             if price_obj:
                 price = price_obj[0].price
-        market_value = float(price) * quantity if price else 0
-        return market_value
+        return price
 
     class Meta:
         model = PortfolioFund
         fields = ("id", "quantity", "created_at", "updated_at", "portfolio",
                   "security", "created_by", "updated_by", 'security_name',
-                  'asset_type', 'isin', 'market_value')
+                  'asset_type', 'isin', 'price')
 
 
 class ImportPortfolioFundSerializer(serializers.Serializer):
