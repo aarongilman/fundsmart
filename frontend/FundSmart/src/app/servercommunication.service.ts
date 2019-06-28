@@ -124,6 +124,9 @@ export class ServercommunicationService {
     });
   }
 
+
+
+
   add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby) {
     const body = { quantity: fquantity, portfolio: userportfolio, security: selectedsecurity, created_by: createdby };
     return this.http.post('http://127.0.0.1:8000/api/portfolio_fund/', body,
@@ -206,4 +209,5 @@ export class ServercommunicationService {
   }
   // production api ----->3.16.111.80
 
+  // 3.16.111.80 server
 }

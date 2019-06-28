@@ -67,7 +67,6 @@ export class HomeComponent implements OnInit {
     fiveyear: 0
   };
 
-  
   securitylist: security[] = [];
   userFunds = portfoliofundlist;
   files: any = [];
@@ -104,6 +103,14 @@ export class HomeComponent implements OnInit {
   donutheight = 400;
   donuttype = 'PieChart';
   donutoptions;
+
+  linetitle = '';
+  linedata = [];
+  lineoptions;
+  linewidth = 550;
+  lineheight = 400;
+  linetype = 'LineChart';
+  linecolumnNames = [];
 
   constructor(private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
     private userservice: ServercommunicationService,
@@ -201,7 +208,6 @@ export class HomeComponent implements OnInit {
           securityobj.isin = securitylist[obj]['isin'];
           securityobj.name = securitylist[obj]['name'];
           securityobj.ticker = securitylist[obj]['ticker'];
-          securityobj.asset_type = securitylist[obj]['asset_type'];
           this.securitylist.push(securityobj);
         }
       }
@@ -318,7 +324,6 @@ export class HomeComponent implements OnInit {
           series = jsondata[data]['total'];
           this.piedata.push([lable, series]);
         }
-        //  console.log(this.piedata);
         this.pietitle = '';
         this.pietype = 'PieChart';
         this.columnNames = ['Security Industry', 'Total'];
@@ -331,10 +336,8 @@ export class HomeComponent implements OnInit {
           legend: 'none',
         };
       });
-
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
-        // console.log("abc..", jsondata);
         this.donutdata = [];
         for (var data in jsondata) {
           if (jsondata[data]['security__industry'] !== null && jsondata[data]['total'] !== 0) {
@@ -346,6 +349,61 @@ export class HomeComponent implements OnInit {
           pieSliceText: 'none',
         };
       });
+    this.userservice.get_lineplot_chart().subscribe(
+      (jsondata: any) => {
+        this.linedata = [];
+        this.linecolumnNames = ['label'];
+        const tempArray = [];
+        const mainObj = {};
+        for (let i = 0; i < jsondata.length; i++) {
+          const element = jsondata[i];
+          this.linecolumnNames.push(element.portfolio);
+          for (let k = 0; k < element['label'].length; k++) {
+            const label = element['label'][k];
+            if (tempArray.filter(x => x === label).length === 0) {
+              tempArray.push(label);
+            }
+            if (mainObj[label]) {
+              mainObj[label] = mainObj[label] + ',' + element.series[k];
+            } else {
+              mainObj[label] = element.series[k];
+            }
+          }
+        }
+
+        for (let i = 0; i < tempArray.length; i++) {
+          const element = tempArray[i];
+          const values = (mainObj[element].split(',')).filter(Boolean);
+          const valuesCollection = [];
+          valuesCollection.push(element.toString());
+          for (const iterator of values) {
+            valuesCollection.push(parseFloat(iterator));
+          }
+          this.linedata.push(valuesCollection);
+        }
+
+        // this.linecolumnNames = ['label', 'series'];
+
+        this.lineoptions = {
+          pointSize: 5,
+          curveType: 'function',
+          // legend: { position: 'bottom' }
+        };
+
+        // for (var data of jsondata) {
+        //   console.log(data);
+        //   if (jsondata[data]['portfolio'] !== null && jsondata[data]['series'] !== 0) {
+        //     this.linedata.push([jsondata[data]['label']], jsondata[data]['series']);
+        //   }
+        //   //    console.log("line", this.linedata);
+        //   this.linecolumnNames = ['label', 'series'];
+        //   //   console.log("displau", [jsondata[data]['data']]);
+        //   this.lineoptions = {
+        //     pointSize: 5
+        //   };
+        // }
+      }
+    )
   }
 
   signInWithGoogle(): void {
@@ -598,6 +656,7 @@ export class HomeComponent implements OnInit {
         comparision1: '0',
         comparision2: '0'
       };
+      //     console.log(fundlist[obj]);
 
       singlefund.security = fundlist[obj]['security_name'];
       singlefund.security_id = fundlist[obj]['security'];
