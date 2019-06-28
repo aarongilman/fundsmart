@@ -31,16 +31,25 @@ class PortfolioSerializer(serializers.ModelSerializer):
 
 class PortfolioFundSerializer(serializers.ModelSerializer):
     """PortfolioFund Model Serializer"""
-    security_name = serializers.SerializerMethodField('security', read_only=True)
+    security_name = serializers.SerializerMethodField(read_only=True)
+    asset_type = serializers.SerializerMethodField(read_only=True)
+    isin = serializers.SerializerMethodField(read_only=True)
 
-    def security(self, obj):
-        security_name = obj.security.name
-        return security_name
+    def get_security_name(self, obj):
+        return obj.security.name
+
+    def get_asset_type(self, obj):
+        return obj.security.asset_type
+
+    def get_isin(self, obj):
+        return obj.security.isin
+
 
     class Meta:
         model = PortfolioFund
         fields = ("id", "quantity", "created_at", "updated_at", "portfolio",
-                  "security", "created_by", "updated_by", 'security_name')
+                  "security", "created_by", "updated_by", 'security_name',
+                  'asset_type', 'isin')
 
 
 class ImportPortfolioFundSerializer(serializers.Serializer):
