@@ -10,33 +10,36 @@
                     </div>
 
                     <div class="date-picker-wrap">
-
-                        <div id="datepicker" class="input-group date trade-inputs" data-date-format="mm-dd-yyyy">
-                            <!-- <input class="form-control dateinp" ngbDatepicker #dp="ngbDatepicker" type="text"
-                                readonly /> -->
-                            <input type="text" class="form-control dateinp" ngbDatepicker #d="ngbDatepicker" />
-                            <span class="input-group-addon"></span>
+                        <div class="input-group">
+                            <input class="form-control" placeholder="yyyy-mm-dd" [(ngModel)]="model" #c="ngModel"
+                                ngbDatepicker #d="ngbDatepicker">
+                            <div class="input-group-append">
+                                <button type="button" (click)="d.toggle()">
+                                    <i class="fa fa-calendar"></i>
+                                </button>
+                            </div>
                         </div>
-
-                        <div class='row align-items-center ml-2 mr-2'>
-                            Show
-                            <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
-                                [(ngModel)]="fundservice.pageSize">
-                                <option [ngValue]="10">10</option>
-                                <option [ngValue]="25">25</option>
-                                <option [ngValue]="50">50</option>
-                                <option [ngValue]="100">100</option>
-                            </select>
-                            Entries
-
-                            <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
-                                Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
-                                    [(ngModel)]="fundservice.searchTerm" />
-                                <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
-                            </span>
-                        </div>
-
                     </div>
+
+                    <div class='row align-items-center ml-2 mr-2'>
+                        Show
+                        <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
+                            [(ngModel)]="fundservice.pageSize">
+                            <option [ngValue]="10">10</option>
+                            <option [ngValue]="25">25</option>
+                            <option [ngValue]="50">50</option>
+                            <option [ngValue]="100">100</option>
+                        </select>
+                        Entries
+
+                        <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
+                            Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
+                                [(ngModel)]="fundservice.searchTerm" />
+                            <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
+                        </span>
+                    </div>
+
+
                     <table id="security-table" class="width-100 trade-datatables ">
                         <thead>
                             <tr>
