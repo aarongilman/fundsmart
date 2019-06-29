@@ -100,7 +100,7 @@ export class ServercommunicationService {
 
   get_portfolio_fund() {
     if (this.userkey) {
-      return this.http.get(this.api_link + 'api/portfolio_fund/?date=2019-05-23', {
+      return this.http.get(this.api_link + 'api/portfolio_fund/', {
         headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
       });
     }

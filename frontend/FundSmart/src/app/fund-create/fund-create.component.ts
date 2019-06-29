@@ -10,6 +10,7 @@ import { apiresultfundlist } from '../apiresult_fundlist';
 import { funds } from '../funds';
 import { FundcreatesortService } from '../fundcreatesort.service';
 import { SortEvent, SortableDirective } from '../sortable.directive';
+import { securitylist } from '../securitylist';
 @Component({
   selector: 'app-fund-create',
   templateUrl: './fund-create.component.html',
@@ -20,7 +21,7 @@ export class FundCreateComponent implements OnInit {
   currentUser: any;
   fundlist = [];
   total = 0;
-  securitylist: security[] = [];
+
   securityinput: string[] = [];
   lastkeydown1: number = 0;
   closeResult: string;
@@ -69,9 +70,9 @@ export class FundCreateComponent implements OnInit {
             // console.log(data['results'][i]);
             var fund: funds = {
               id: -1,
-              quantity: -1,
-              portfolio: -1,
-              security: -1,
+              quantity: 0,
+              portfolio: 0,
+              security: 0,
               security_name: '',
               asset_type: '',
               isin: ''
@@ -93,6 +94,16 @@ export class FundCreateComponent implements OnInit {
       });
   }
 
+  setrowdata(fund, name) {
+    var sec: security;
+    sec = securitylist.find(x => x.name = name);
+    console.log(sec);
+    
+    // fund.security = name;
+
+  }
+
+
   updatefundquantity(item) {
     this.userservice.updateportfoliofund(item.id, item.quantity, item.portfolio, item.security, this.currentUser['id']).subscribe();
     // update list
@@ -109,6 +120,27 @@ export class FundCreateComponent implements OnInit {
 
     });
   }
+
+  addRow() {
+    let singlefund: funds = {
+      id: -1,
+      quantity: 0,
+      portfolio: 0,
+      security: 0,
+      security_name: '',
+      asset_type: '',
+      isin: ''
+    };
+    apiresultfundlist.push(singlefund);
+    this.fundservice.resetfunds();
+    this.fundservice.funds$.subscribe(list => {
+      this.fundlist = list;
+    });
+    this.fundservice.total$.subscribe(total => {
+      this.total = total;
+    });
+  }
+
 
   resetfunds() {
     apiresultfundlist.length = 0;
@@ -148,7 +180,7 @@ export class FundCreateComponent implements OnInit {
     var securityList1 = [];
     if (this.securityinput.length > 1) {
       if ($event.timeStamp - this.lastkeydown1 > 200) {
-        securityList1 = this.searchFromArray(this.securitylist, this.securityinput);
+        securityList1 = this.searchFromArray(securitylist, this.securityinput);
 
       }
       // // console.log(securityList1);

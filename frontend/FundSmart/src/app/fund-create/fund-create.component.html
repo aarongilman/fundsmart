@@ -10,12 +10,14 @@
                     </div>
 
                     <div class="date-picker-wrap">
-
-                        <div id="datepicker" class="input-group date trade-inputs" data-date-format="mm-dd-yyyy">
-                            <!-- <input class="form-control dateinp" ngbDatepicker #dp="ngbDatepicker" type="text"
-                                readonly /> -->
-                            <input type="text" class="form-control dateinp" ngbDatepicker #d="ngbDatepicker" />
-                            <span class="input-group-addon"></span>
+                        <div class="input-group">
+                            <input class="form-control" placeholder="yyyy-mm-dd" [(ngModel)]="model" #c="ngModel"
+                                ngbDatepicker #d="ngbDatepicker">
+                            <div class="input-group-append">
+                                <button type="button" (click)="d.toggle()">
+                                    <i class="fa fa-calendar"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class='row align-items-center ml-2 mr-2'>
@@ -49,7 +51,21 @@
                         <tbody>
 
                             <tr *ngFor="let fund of fundlist;let i = index;">
-                                <td>{{fund.security_name}}</td>
+                                    <td>
+                                            <input *ngIf="fund.security_name == '' " [(ngModel)]="securityinput[i]" (keyup)="searchsecurity($event)"
+                                              list="securityname" name='security_{{i}}'
+                                              (blur)="setrowdata(fund),securityinput[i]"
+                                              type="text">
+                        
+                                            <datalist id="securityname">
+                                              <option *ngFor="let security of securitylist" [ngValue]='security.name'
+                                                title=" {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"
+                                                [value]="security.name">
+                                                {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}</option>
+                                            </datalist>
+                                            <span *ngIf="fund.security_name != ''" style="width: 3cm">{{fund.security_name}}</span>
+                                          </td>
+                                <!-- <td>{{fund.security_name}}</td> -->
                                 <td>{{fund.asset_type}}</td>
                                 <td>{{fund.isin}}</td>
                                 <td><input type="text" [(ngModel)]="fund.quantity" name='quantity_{{i}}'
@@ -98,7 +114,7 @@
                                     </svg>
                                     Upload</button>
                             </div>
-                            <button type="button" class="upload-icon-btn" href="javascript:void(0);">
+                            <button type="button" class="upload-icon-btn" (click)='addRow()'>
                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                     viewBox="0 0 491.86 491.86" style="enable-background:new 0 0 491.86 491.86;"

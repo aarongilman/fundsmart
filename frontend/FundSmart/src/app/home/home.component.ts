@@ -18,7 +18,7 @@ import { groupBy, mergeAll } from 'rxjs/operators';
 import { HistoricalData } from '../historicaldata';
 import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
 import { MustMatch } from '../must-match.validator';
-
+import { securitylist } from '../securitylist';
 @Component({
 
   selector: 'app-home',
@@ -67,7 +67,6 @@ export class HomeComponent implements OnInit {
     fiveyear: 0
   };
 
-  securitylist: security[] = [];
   userFunds = portfoliofundlist;
   files: any = [];
   currentUser: any;
@@ -193,10 +192,10 @@ export class HomeComponent implements OnInit {
       });
 
     this.userservice.get_security().subscribe(
-      securitylist => {
+      datasecuritylist => {
         // // console.log(securitylist);
         // tslint:disable-next-line: forin
-        for (var obj in securitylist) {
+        for (var obj in datasecuritylist) {
           var securityobj: security = {
             id: -1,
             isin: '',
@@ -204,11 +203,12 @@ export class HomeComponent implements OnInit {
             ticker: '',
             asset_type: ''
           };
-          securityobj.id = securitylist[obj]['id'];
-          securityobj.isin = securitylist[obj]['isin'];
-          securityobj.name = securitylist[obj]['name'];
-          securityobj.ticker = securitylist[obj]['ticker'];
-          this.securitylist.push(securityobj);
+          securityobj.id = datasecuritylist[obj]['id'];
+          securityobj.isin = datasecuritylist[obj]['isin'];
+          securityobj.name = datasecuritylist[obj]['name'];
+          securityobj.ticker = datasecuritylist[obj]['ticker'];
+          securityobj.asset_type = datasecuritylist[obj]['asset_type'];
+          securitylist.push(securityobj);
         }
       }
     );
@@ -816,7 +816,7 @@ export class HomeComponent implements OnInit {
     var securityList1 = [];
     if (this.securityinput.length > 1) {
       if ($event.timeStamp - this.lastkeydown1 > 200) {
-        securityList1 = this.searchFromArray(this.securitylist, this.securityinput);
+        securityList1 = this.searchFromArray(securitylist, this.securityinput);
 
       }
       // // console.log(securityList1);
@@ -948,7 +948,7 @@ export class HomeComponent implements OnInit {
 
   createportfoliofundmethod(portfolio, quantity, item: portfolio_fund, recordid) {
     // alert('came in create portfolio fund');
-    var security = this.securitylist.find(x => x.name === item.security);
+    var security = securitylist.find(x => x.name === item.security);
     // name = this.securityinput);
     var recid;
     if (recordid === 'p1') {
