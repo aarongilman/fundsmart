@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
-import { Subject } from 'rxjs';
-import { DataTableDirective } from 'angular-datatables';
+
 
 
 @Component({
@@ -15,9 +14,6 @@ export class FundComponent implements OnInit {
     total = 0;
     closeResult: string;
     portfolio: any;
-    @ViewChild(DataTableDirective) dtElement: DataTableDirective;
-    dtTrigger = new Subject();
-   // dtOptions: DataTables.Settings = {};
 
     constructor(private userService: ServercommunicationService, private modalService: NgbModal
     ) { }
