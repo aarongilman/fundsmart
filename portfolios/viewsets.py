@@ -29,6 +29,8 @@ class PortfolioViewSet(ModelViewSet):
        A ViewSet for portfolio associated with the user.
     """
     serializer_class = PortfolioSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name', )
 
     def get_queryset(self):
         return Portfolio.objects.filter(created_by=self.request.user)
