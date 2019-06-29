@@ -51,27 +51,27 @@
                         <tbody>
 
                             <tr *ngFor="let fund of fundlist;let i = index;">
-                                    <td>
-                                            <input *ngIf="fund.security_name == '' " [(ngModel)]="securityinput[i]" (keyup)="searchsecurity($event)"
-                                              list="securityname" name='security_{{i}}'
-                                              (blur)="setrowdata(fund),securityinput[i]"
-                                              type="text">
-                        
-                                            <datalist id="securityname">
-                                              <option *ngFor="let security of securitylist" [ngValue]='security.name'
-                                                title=" {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"
-                                                [value]="security.name">
-                                                {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}</option>
-                                            </datalist>
-                                            <span *ngIf="fund.security_name != ''" style="width: 3cm">{{fund.security_name}}</span>
-                                          </td>
+                                <td>
+                                    <input *ngIf="fund.security_name == '' " [(ngModel)]="securityinput[i]"
+                                        (keyup)="searchsecurity($event)" list="securityname" name='security_{{i}}'
+                                        (blur)="setrowdata(fund,securityinput[i])" type="text">
+
+                                    <datalist id="securityname">
+                                        <option *ngFor="let security of securitylist" [ngValue]='security.name'
+                                            title=" {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"
+                                            [value]="security.name">
+                                            {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}</option>
+                                    </datalist>
+                                    <span *ngIf="fund.security_name != ''"
+                                        style="width: 3cm">{{fund.security_name}}</span>
+                                </td>
                                 <!-- <td>{{fund.security_name}}</td> -->
                                 <td>{{fund.asset_type}}</td>
                                 <td>{{fund.isin}}</td>
                                 <td><input type="text" [(ngModel)]="fund.quantity" name='quantity_{{i}}'
                                         (keypress)="numberOnly($event)" (blur)='updatefundquantity(fund)'></td>
                                 <td><input type="text" [(ngModel)]="fund.price" name='quantity_{{i}}'
-                                    (keypress)="numberOnly($event)" (blur)='updateprice(fund)'></td>
+                                        (keypress)="numberOnly($event)" (blur)='updateprice(fund)'></td>
                             </tr>
 
                         </tbody>
