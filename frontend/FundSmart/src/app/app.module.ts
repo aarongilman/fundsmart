@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule,ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,83 +26,85 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { DragAndDropDirective } from './drag-and-drop.directive';
 import { GetfileforuploadService } from './getfileforupload.service';
 import {
-  GoogleApiModule,
-  GoogleApiService,
-  GoogleAuthService,
-  NgGapiClientConfig,
-  NG_GAPI_CONFIG,
-  GoogleApiConfig
+    GoogleApiModule,
+    GoogleApiService,
+    GoogleAuthService,
+    NgGapiClientConfig,
+    NG_GAPI_CONFIG,
+    GoogleApiConfig
 } from 'ng-gapi';
 import { SortableDirective } from './sortable.directive';
 import { ConfirmemailComponent } from './confirmemail/confirmemail.component';
+import { FilterPipe } from './filter.pipe';
 
 
 let gapiClientConfig: NgGapiClientConfig = {
-  client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
-  discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-  scope: [
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/drive',
-  ].join(" ")
+    client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
+    discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+    scope: [
+        'https://www.googleapis.com/auth/userinfo.profile',
+        'https://www.googleapis.com/auth/drive',
+    ].join(" ")
 };
 
 let config = new AuthServiceConfig([
-  {
-    id: GoogleLoginProvider.PROVIDER_ID,
-    provider: new GoogleLoginProvider('883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com')
-  },
-  {
-    id: FacebookLoginProvider.PROVIDER_ID,
-    provider: new FacebookLoginProvider('1625784934400382')
-  }
+    {
+        id: GoogleLoginProvider.PROVIDER_ID,
+        provider: new GoogleLoginProvider('883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com')
+    },
+    {
+        id: FacebookLoginProvider.PROVIDER_ID,
+        provider: new FacebookLoginProvider('1625784934400382')
+    }
 ]);
 
 export function provideConfig() {
-  return config;
+    return config;
 }
 
 
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeadSearchComponent,
-    HomeComponent,
-    HoldingSummaryComponent,
-    HoldingDetailsComponent,
-    FundComponent,
-    FundRecommendationComponent,
-    FundCreateComponent,
-    AllocationRecommendationComponent,
-    AllocationFundAnalysisComponent,
-    HeaderComponent,
-    ResetPasswordComponent,
-    DragAndDropDirective,
-    SortableDirective,
-    ConfirmemailComponent
-  ],
-  imports: [
-    BrowserModule,
-    CommonModule,
-    AppRoutingModule,
-    NgbModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SocialLoginModule,
-    GoogleChartsModule.forRoot(),
-    GoogleApiModule.forRoot({
-      provide: NG_GAPI_CONFIG,
-      useValue: gapiClientConfig
-    }),
-  ],
-  providers: [ServercommunicationService, SocialloginService, GetfileforuploadService,
-    IntercomponentCommunicationService, {
-      provide: AuthServiceConfig,
-      useFactory: provideConfig
-    },
+    declarations: [
+        AppComponent,
+        HeadSearchComponent,
+        HomeComponent,
+        HoldingSummaryComponent,
+        HoldingDetailsComponent,
+        FundComponent,
+        FundRecommendationComponent,
+        FundCreateComponent,
+        AllocationRecommendationComponent,
+        AllocationFundAnalysisComponent,
+        HeaderComponent,
+        ResetPasswordComponent,
+        DragAndDropDirective,
+        SortableDirective,
+        ConfirmemailComponent,
+        FilterPipe
+    ],
+    imports: [
+        BrowserModule,
+        CommonModule,
+        AppRoutingModule,
+        NgbModule,
+        HttpClientModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SocialLoginModule,
+        GoogleChartsModule.forRoot(),
+        GoogleApiModule.forRoot({
+            provide: NG_GAPI_CONFIG,
+            useValue: gapiClientConfig
+        }),
+    ],
+    providers: [ServercommunicationService, SocialloginService, GetfileforuploadService,
+        IntercomponentCommunicationService, {
+            provide: AuthServiceConfig,
+            useFactory: provideConfig
+        },
 
-  ],
-  bootstrap: [AppComponent]
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -2,8 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 
-
-
 @Component({
     selector: 'app-fund',
     templateUrl: './fund.component.html',
@@ -11,28 +9,25 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 })
 export class FundComponent implements OnInit {
     result: any = [];
-    total = 0;
     closeResult: string;
-    portfolio: any;
+    _id: any;
+    fund: any;
 
-    constructor(private userService: ServercommunicationService, private modalService: NgbModal
-    ) { }
+    constructor(private userService: ServercommunicationService, private modalService: NgbModal) { }
 
     ngOnInit() {
         this.getFunds();
     }
 
-
-
     getFunds() {
         this.userService.getUserPortfolio().subscribe(
             fundlist => {
                 this.result = fundlist;
-                console.log("result", this.result);
-            })
+            });
     }
 
-    header_modals(modalid) {
+    header_modals(modalid, fund?) {
+        this.fund = fund;
         this.modalService.open(modalid, {
             ariaLabelledBy: 'app-fund',
             windowClass: 'long-pop sign-pop', centered: true
@@ -53,12 +48,18 @@ export class FundComponent implements OnInit {
         }
     }
 
-    updatePortfolio() {
-        this.userService.update_One_Object(this.portfolio).subscribe(
+    updatePortfolioData(_id) {
+        this.userService.update_One_Object(this.fund, _id).subscribe(
             data => {
-                console.log("data", data);
                 alert('Data Updated');
-            }
-        )
+            });
     }
+
+    delete_Portfolio(id) {
+        this.userService.delete_Portfolio(id).subscribe(
+            result => {
+                this.getFunds();
+            });
+    }
+
 }
