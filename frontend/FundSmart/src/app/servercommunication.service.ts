@@ -7,9 +7,9 @@ import { IntercomponentCommunicationService } from './intercomponent-communicati
     providedIn: 'root'
 })
 export class ServercommunicationService {
-     api_link = 'http://3.16.111.80/';
+    api_link = 'http://3.16.111.80/';
     // api_link = 'http://localhost:8000/';
- //   api_link = 'http://192.168.100.111:8000/';
+  //  api_link = 'http://192.168.100.111:8000/';
 
     // reglink = this.api_link + 'rest-auth/registration/';
     // login_link = this.api_link + 'rest-auth/login/';
@@ -146,11 +146,9 @@ export class ServercommunicationService {
     }
 
     delete_Portfolio(id) {
-        return this.http.delete(this.api_link + 'api/portfolio/7/?id=' + id,
+        return this.http.delete(this.api_link + 'api/portfolio/' + id + '/',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
-
-
 
     get_security() {
         return this.http.get(this.api_link + 'api/security/', { headers: this.httpHeaders });

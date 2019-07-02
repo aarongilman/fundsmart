@@ -339,6 +339,7 @@ export class HomeComponent implements OnInit {
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
         this.donutdata = [];
+        console.log(jsondata);
         for (var data in jsondata) {
           if (jsondata[data]['security__industry'] !== null && jsondata[data]['total'] !== 0) {
             this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
@@ -355,6 +356,9 @@ export class HomeComponent implements OnInit {
         this.linecolumnNames = ['label'];
         const tempArray = [];
         const mainObj = {};
+
+        console.log(jsondata);
+
         for (let i = 0; i < jsondata.length; i++) {
           const element = jsondata[i];
           this.linecolumnNames.push(element.portfolio);
@@ -373,35 +377,28 @@ export class HomeComponent implements OnInit {
 
         for (let i = 0; i < tempArray.length; i++) {
           const element = tempArray[i];
-          const values = (mainObj[element].split(',')).filter(Boolean);
+          let values;
           const valuesCollection = [];
           valuesCollection.push(element.toString());
-          for (const iterator of values) {
-            valuesCollection.push(parseFloat(iterator));
+          if (typeof mainObj[element] === 'number') {
+            values = mainObj[element]
+            valuesCollection.push(parseFloat(values));
+          } else {
+            values = (mainObj[element].split(',')).filter(Boolean);
+            for (const iterator of values) {
+              valuesCollection.push(parseFloat(iterator));
+            }
           }
           this.linedata.push(valuesCollection);
         }
-
-        // this.linecolumnNames = ['label', 'series'];
-
+       this.linedata = [];
+        if (this.linedata.length === 0) {
+          this.linedata.push(['No data copy', 0, 0]);
+        }
         this.lineoptions = {
           pointSize: 5,
           curveType: 'function',
-          // legend: { position: 'bottom' }
         };
-
-        // for (var data of jsondata) {
-        //   console.log(data);
-        //   if (jsondata[data]['portfolio'] !== null && jsondata[data]['series'] !== 0) {
-        //     this.linedata.push([jsondata[data]['label']], jsondata[data]['series']);
-        //   }
-        //   //    console.log("line", this.linedata);
-        //   this.linecolumnNames = ['label', 'series'];
-        //   //   console.log("displau", [jsondata[data]['data']]);
-        //   this.lineoptions = {
-        //     pointSize: 5
-        //   };
-        // }
       }
     )
   }

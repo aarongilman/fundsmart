@@ -12,6 +12,8 @@ export class FundComponent implements OnInit {
     closeResult: string;
     _id: any;
     fund: any;
+    searchText: string;
+    
 
     constructor(private userService: ServercommunicationService, private modalService: NgbModal) { }
 
