@@ -231,9 +231,16 @@ class HoldingDetailAPIView(APIView):
             fund_id__in=funds.values_list('security__id_value'))
         for fund in funds:
             try:
-                basic_price = price.filter(id_value=fund.security.id_value,
-                                           date=fund.portfolio.created_at.date()
-                                           )[0].price
+                try:
+                    holding_detail = HoldingDetail.objects.get(fund=fund)
+                except Exception as e:
+                    holding_detail = None
+                if holding_detail and holding_detail.price:
+                    basic_price = holding_detail.price
+                else:
+                    basic_price = price.filter(id_value=fund.security.id_value,
+                                               date=fund.portfolio.created_at.date()
+                                               )[0].price
                 if '%' in fund.quantity:
                     quantity = (float(fund.quantity.replace("%", ""))/100) * \
                                1000000
@@ -260,8 +267,23 @@ class HoldingDetailAPIView(APIView):
                 market_value = float(quantity) * float(current_price)
             else:
                 market_value = float(quantity) * float(current_price)
+            currency = fund.security.currency
+            if holding_detail and holding_detail.currency:
+                currency = holding_detail.currency
 
-            data.append({'id': fund.id, 'portfolio': fund.portfolio.name,
+            country = fund.security.country
+            if holding_detail and holding_detail.country:
+                country = holding_detail.country
+
+            industry = fund.security.industry
+            if holding_detail and holding_detail.industry:
+                industry = holding_detail.industry
+
+            rating = fund.security.rating
+            if holding_detail and holding_detail.rating:
+                rating = holding_detail.rating
+
+            data.append({'fund_id': fund.id, 'portfolio': fund.portfolio.name,
                          'security': fund.security.name,
                          'isin': fund.security.isin, 'quantity': fund.quantity,
                          'ticker': fund.security.isin,
@@ -269,10 +291,8 @@ class HoldingDetailAPIView(APIView):
                          'current_price': current_price,
                          'market_value': market_value,
                          'asset_class': fund.security.asset_type,
-                         'currency': fund.security.currency,
-                         'country': fund.security.country,
-                         'industry': fund.security.industry,
-                         'rating': fund.security.rating
+                         'currency': currency, 'country': country,
+                         'industry': industry, 'rating': rating
                          })
         return Response(data, status=204)
 
@@ -299,3 +319,148 @@ class HoldingDetailAPIView(APIView):
             LOGGER.error("Error {} occurred while saving holding details!".
                          format(e))
             return Response('Failed to save data!', status=204)
+
+
+def get_summary_data(request, type):
+    data = []
+    temp_dict = {}
+    key = None
+    if request.GET.get('portfolio_ids'):
+        portfolio_ids = request.GET.get('portfolio_ids').split(",")
+        portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
+                                              created_by=request.user)
+        funds = PortfolioFund.objects.filter(portfolio__in=portfolios)
+        fund_details = FundDetail.objects.all()
+        price = Price.objects.all()
+        for fund in funds:
+            price_obj = price.filter(id_value=fund.security.id_value). \
+                latest('date')
+            if '%' in fund.quantity:
+                quantity = (float(fund.quantity.replace("%", "")) / 100) * \
+                           1000000
+            else:
+                quantity = fund.quantity
+            market_value = float(quantity) * float(price_obj.price)
+            if fund.security.asset_type == 'Mutual Fund':
+                aum = fund_details.get(fund_id=fund.security.id_value).aum
+                quantity = float(market_value) / float(aum) * 1000000
+                market_value = float(quantity) * float(price_obj.price)
+            if type == 'asset_type':
+                key = fund.security.asset_type
+            if type == 'country':
+                key = fund.security.country
+            if type == 'industry':
+                key = fund.security.industry
+            if key:
+                if temp_dict.get(key):
+                    temp_dict.get(key).append(market_value)
+                else:
+                    temp_dict.update({key: [market_value]})
+        total = 0
+        if temp_dict:
+            for key, value in temp_dict.items():
+                total += sum(value) / len(value)
+                data.append({key: sum(value) / len(value)})
+            data.append({'total': total})
+        return data
+
+
+class HoldingSummaryByHoldingType(APIView):
+    """Holding summary APIView to display market value"""
+    def get(self, request):
+        data = get_summary_data(request, 'asset_type')
+        return Response(data, status=200)
+
+
+class HoldingSummaryByAssetClass(APIView):
+    """Holding summary APIView to display market value"""
+    def get(self, request):
+        data = get_summary_data(request, 'asset_type')
+        return Response(data, status=200)
+
+
+class HoldingSummaryByIndustry(APIView):
+    """Holding summary APIView to display market value"""
+    def get(self, request):
+        data = get_summary_data(request, 'industry')
+        return Response(data, status=200)
+
+
+class HoldingSummaryByCountry(APIView):
+    """Holding summary APIView to display market value"""
+    def get(self, request):
+        data = get_summary_data(request, 'country')
+        return Response(data, status=200)
+
+
+class HoldingSummaryHistoricalPerformanceDifference(APIView):
+    """APIView to get historical Performance difference-holding summary page"""
+    def get(self, request):
+        data = []
+        if request.GET.get('portfolio_ids'):
+            portfolio_ids = request.GET.get('portfolio_ids').split(',')
+            portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
+                                                  created_by=request.user)
+            portfolio_funds = PortfolioFund.objects.filter(portfolio__in=
+                                                           portfolios)
+            fund_details = FundDetail.objects.all()
+            total_annual_expense = 0
+            total_1_year = 0
+            total_3_year = 0
+            total_5_year = 0
+            for portfolio in portfolios:
+                isin_list = portfolio_funds.filter(
+                    portfolio=portfolio, created_by=request.user)\
+                    .values_list('security__id_value', flat=True)
+                portfolio_fund_details = fund_details.filter(fund_id__in=isin_list)
+                portfolio_annual_expense = [float(x) for x in
+                                            portfolio_fund_details.
+                                            values_list('fund_exp_ratio',
+                                                        flat=True)]
+                portfolio_avg_annual_expense = sum(portfolio_annual_expense) /\
+                                                len(portfolio_annual_expense)
+
+                # 1 year, 3 year and 5 year return for existing funds
+                portfolio_1_year = [float(x) for x in portfolio_fund_details.
+                                    values_list('return_1_year', flat=True)]
+                portfolio_avg_1_year = sum(portfolio_1_year) / len(
+                    portfolio_1_year)
+
+                portfolio_3_year = [float(x) for x in portfolio_fund_details.
+                                    values_list('return_3_year', flat=True)]
+                portfolio_avg_3_year = sum(portfolio_3_year) / len(
+                    portfolio_3_year)
+
+                portfolio_5_year = [float(x) for x in portfolio_fund_details.
+                    values_list('return_5_year', flat=True)]
+                portfolio_avg_5_year = sum(portfolio_5_year) / len(
+                    portfolio_5_year)
+                data.append({portfolio.name:
+                             {'annual_expense': portfolio_avg_annual_expense,
+                              '1-year': portfolio_avg_1_year,
+                              '3-year': portfolio_avg_3_year,
+                              '5-year': portfolio_avg_5_year}})
+                total_annual_expense += portfolio_avg_annual_expense
+                total_1_year += portfolio_avg_1_year
+                total_3_year += portfolio_avg_3_year
+                total_5_year += portfolio_avg_5_year
+            data.append({'total': {'total_annual_expense': total_annual_expense,
+                                   'total_1_year': total_1_year,
+                                   'total_3_year': total_3_year,
+                                   'total_5_year': total_5_year}})
+        return Response(data, status=200)
+
+
+class FundRecommendationHistoricalPerformanceDiff(APIView):
+    """APIView to display historical performance difference"""
+    def get(self, request):
+        data = []
+        if request.GET.get('portfolio_ids'):
+            portfolio_ids = request.GET.get('portfolio_ids').split(',')
+            existing_funds = PortfolioFund.objects.filter(
+                portfolio__in=portfolio_ids, security__asset_type='Mutual Fund',
+                created_by=request.user)
+            fund_details = FundDetail.objects.all()
+            recommended_funds = fund_details[:4]
+            print(existing_funds, recommended_funds)
+        return Response(data, status=200)
