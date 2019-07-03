@@ -11,8 +11,7 @@ export class ServercommunicationService {
   // api_link = 'http://localhost:8000/';
   api_link = 'http://192.168.100.111:8000/';
 
-  // reglink = this.api_link + 'rest-auth/registration/';
-  // login_link = this.api_link + 'rest-auth/login/';
+
   socialuser: SocialUser;
   currentuser: any;
   httpHeaders = new HttpHeaders({ 'Content-type': 'application/json' });
@@ -90,6 +89,7 @@ export class ServercommunicationService {
       body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
+
   uploadfile(file) {
 
     // const body = { data_file: file };
@@ -105,6 +105,7 @@ export class ServercommunicationService {
       });
     }
   }
+
 
   get_portfolio_fund_by_date(date) {
     if (this.userkey) {

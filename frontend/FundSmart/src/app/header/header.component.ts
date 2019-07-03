@@ -98,6 +98,14 @@ export class HeaderComponent implements OnInit {
     }
   }
 
+  resetpass_modal() {
+    // alert('click on forget password');
+    $(".forgot-password-wrap").addClass("show-forgot");
+    $(".login-content").addClass("hide-login");
+    $(".forgot-password-title").addClass("show-forgot");
+    $(".login-title").addClass("d-none");
+  }
+
 
 
   updateuserprofile() {

@@ -341,7 +341,7 @@ export class HomeComponent implements OnInit {
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
         this.donutdata = [];
-        // console.log(jsondata);
+      //  console.log(jsondata);
         for (var data in jsondata) {
           if (jsondata[data]['security__industry'] !== null && jsondata[data]['total'] !== 0) {
             this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
@@ -359,7 +359,7 @@ export class HomeComponent implements OnInit {
         const tempArray = [];
         const mainObj = {};
 
-        // console.log(jsondata);
+       // console.log(jsondata);
 
         for (let i = 0; i < jsondata.length; i++) {
           const element = jsondata[i];
@@ -784,6 +784,8 @@ export class HomeComponent implements OnInit {
     // alert('click on forget password');
     $(".forgot-password-wrap").addClass("show-forgot");
     $(".login-content").addClass("hide-login");
+    $(".forgot-password-title").addClass("show-forgot");
+    $(".login-title").addClass("d-none");
   }
 
 
@@ -868,8 +870,8 @@ export class HomeComponent implements OnInit {
           // alert('create portfolio1 called');
           this.userservice.createportfolio(1).subscribe(
             data => {
-              // console.log(data);
               this.portfolio1 = data;
+              console.log("DATA",this.portfolio1);
               portfolio = data['id'];
               quantity = portfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
               this.createportfoliofundmethod(portfolio, quantity, item, 'p1');
