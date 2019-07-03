@@ -7,9 +7,9 @@ import { IntercomponentCommunicationService } from './intercomponent-communicati
   providedIn: 'root'
 })
 export class ServercommunicationService {
-  // api_link = 'http://3.16.111.80/';
+  api_link = 'http://3.16.111.80/';
   // api_link = 'http://localhost:8000/';
-  api_link = 'http://192.168.100.111:8000/';
+  // api_link = 'http://192.168.100.111:8000/';
 
 
   socialuser: SocialUser;

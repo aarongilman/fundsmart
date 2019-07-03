@@ -34,7 +34,7 @@
                                 </tr>
                             </thead>
                             <tbody *ngIf="total$ > 0">
-                                <tr *ngFor="let item of funds$ | async;let i = index;">
+                                <tr *ngFor="let item of funds$  ;let i = index;">
                                     <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
                                     <!-- {{item|json}} -->
                                     <td>

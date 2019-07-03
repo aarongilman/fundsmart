@@ -14,7 +14,7 @@ import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-logi
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { GetfileforuploadService } from '../getfileforupload.service';
 import { from } from 'rxjs/observable/from';
-import { groupBy, mergeAll } from 'rxjs/operators';
+import { groupBy, mergeAll, mergeMap, toArray } from 'rxjs/operators';
 import { HistoricalData } from '../historicaldata';
 import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
 import { MustMatch } from '../must-match.validator';
@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit {
 
   // end form conversion
 
-  funds$: Observable<portfolio_fund[]>;
+  funds$: portfolio_fund[];
   total$;
   @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
 
@@ -120,7 +120,9 @@ export class HomeComponent implements OnInit {
     private formBuilder: FormBuilder,
     public portfolioservice: PortfoliofundhelperService) {
 
-    this.funds$ = portfolioservice.funds$;
+    this.portfolioservice.funds$.subscribe(f => {
+      this.funds$ = f;
+    });
     this.portfolioservice.total$.subscribe(total => {
       this.total$ = total;
     });
@@ -132,7 +134,9 @@ export class HomeComponent implements OnInit {
 
         this.resetfundlist();
         this.portfolioservice.resetfunds();
-        this.funds$ = this.portfolioservice.funds$;
+        this.portfolioservice.funds$.subscribe(f => {
+          this.funds$ = f;
+        });
         // this.portfolioservice.total$.subscribe(total => {
         //   this.total$ = total;
         //   // console.log(this.total$);
@@ -149,7 +153,9 @@ export class HomeComponent implements OnInit {
         // alert("In first method");
         this.setcurrent_user();
         this.setdataindeshboard();
-        this.funds$ = this.portfolioservice.funds$;
+        this.portfolioservice.funds$.subscribe(f => {
+          this.funds$ = f;
+        });
         this.portfolioservice.total$.subscribe(total => {
           this.total$ = total;
         });
@@ -236,12 +242,7 @@ export class HomeComponent implements OnInit {
   }
 
   setdataindeshboard() {
-    // portfoliofundlist.length = 0;
-    // this.portfolioservice.resetfunds();
-    // this.funds$ = this.portfolioservice.funds$;
-    // this.portfolioservice.total$.subscribe(total => {
-    //   this.total$ = total;
-    // });
+
     this.userservice.getUserPortfolio().subscribe(
       data => {
         // alert("portfolio data came");
@@ -257,12 +258,18 @@ export class HomeComponent implements OnInit {
               const fundlist2 = fundlist['results'];
               const source = from(fundlist2);
               const result = source.pipe(groupBy(fundlist2 => fundlist2['security']),
-                mergeAll(100));
+                // mergeAll());
+                mergeMap(group => group.pipe(toArray())));
               result.subscribe(
                 x => {
-                  datalist.push(x);
+                  let item: any;
+                  // tslint:disable-next-line: forin
+                  for (item in x) {
+                    datalist.push(x[item]);
+                  }
                 }
               );
+              // console.log("Data list is", datalist);
               this.setfunds(datalist, data['results']['0'], data['results']['1'], data['results']['2']);
 
             }
@@ -341,7 +348,7 @@ export class HomeComponent implements OnInit {
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
         this.donutdata = [];
-      //  console.log(jsondata);
+        //  console.log(jsondata);
         for (var data in jsondata) {
           if (jsondata[data]['security__industry'] !== null && jsondata[data]['total'] !== 0) {
             this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
@@ -359,7 +366,7 @@ export class HomeComponent implements OnInit {
         const tempArray = [];
         const mainObj = {};
 
-       // console.log(jsondata);
+        // console.log(jsondata);
 
         for (let i = 0; i < jsondata.length; i++) {
           const element = jsondata[i];
@@ -393,7 +400,7 @@ export class HomeComponent implements OnInit {
           }
           this.linedata.push(valuesCollection);
         }
-       this.linedata = [];
+        this.linedata = [];
         if (this.linedata.length === 0) {
           this.linedata.push(['No data copy', 0, 0]);
         }
@@ -402,7 +409,7 @@ export class HomeComponent implements OnInit {
           curveType: 'function',
         };
       }
-    )
+    );
   }
 
   signInWithGoogle(): void {
@@ -410,14 +417,7 @@ export class HomeComponent implements OnInit {
       this.userservice.socialLogin(user);
       this.setcurrent_user();
       this.modalService.dismissAll('Log in Done');
-      this.userservice.get_portfolio_fund().subscribe(
-        fundlist => {
-          // console.log(fundlist);
-        },
-        error => {
-          // console.log(error);
-        }
-      );
+      this.setdataindeshboard();
     });
   }
 
@@ -426,14 +426,7 @@ export class HomeComponent implements OnInit {
       this.userservice.socialLogin(user);
       this.setcurrent_user();
       this.modalService.dismissAll('Log in Done');
-      this.userservice.get_portfolio_fund().subscribe(
-        fundlist => {
-          // console.log(fundlist);
-        },
-        error => {
-          // console.log(error);
-        }
-      );
+      this.setdataindeshboard();
     });
   }
 
@@ -491,7 +484,9 @@ export class HomeComponent implements OnInit {
     };
     portfoliofundlist.push(singlefund);
     this.portfolioservice.resetfunds();
-    this.funds$ = this.portfolioservice.funds$;
+    this.portfolioservice.funds$.subscribe(f => {
+      this.funds$ = f;
+    });
     this.portfolioservice.total$.subscribe(total => {
       // alert('came here to set new row');
       this.total$ = total;
@@ -632,7 +627,9 @@ export class HomeComponent implements OnInit {
   setfunds(fundlist, xportfolio1: any, xcomparision1: any, xcomparision2: any) {
     portfoliofundlist.length = 0;
     this.portfolioservice.resetfunds();
-    this.funds$ = this.portfolioservice.funds$;
+    this.portfolioservice.funds$.subscribe(f => {
+      this.funds$ = f;
+    });
     this.portfolioservice.total$.subscribe(total => {
       this.total$ = total;
     });
@@ -711,9 +708,8 @@ export class HomeComponent implements OnInit {
     }
     // console.log(portfoliofundlist);
     this.portfolioservice.resetfunds();
-    this.funds$ = this.portfolioservice.funds$;
-    this.funds$.subscribe(data => {
-      // alert(data);
+    this.portfolioservice.funds$.subscribe(f => {
+      this.funds$ = f;
     });
     this.portfolioservice.total$.subscribe(total => {
       this.total$ = total;
@@ -871,7 +867,7 @@ export class HomeComponent implements OnInit {
           this.userservice.createportfolio(1).subscribe(
             data => {
               this.portfolio1 = data;
-              console.log("DATA",this.portfolio1);
+              console.log("DATA", this.portfolio1);
               portfolio = data['id'];
               quantity = portfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
               this.createportfoliofundmethod(portfolio, quantity, item, 'p1');
@@ -951,7 +947,7 @@ export class HomeComponent implements OnInit {
     // alert('came in create portfolio fund');
     var security = securitylist.find(x => x.name === item.security);
     // console.log(security);
-    
+
     // name = this.securityinput);
     var recid;
     if (recordid === 'p1') {
