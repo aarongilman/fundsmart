@@ -19,6 +19,7 @@
                             </div>
                         </div>
                     </div>
+                    <p></p>
                     <div class='row align-items-center ml-2 mr-2'>
                         Show
                         <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
@@ -67,9 +68,9 @@
                                 <!-- <td>{{fund.security_name}}</td> -->
                                 <td>{{fund.asset_type}}</td>
                                 <td>{{fund.isin}}</td>
-                                <td><input type="text" [(ngModel)]="fund.quantity" name='quantity_{{i}}'
+                                <td><input type="text" class="form-control" style="text-align: center ; width: 3cm" [(ngModel)]="fund.quantity" name='quantity_{{i}}'
                                         (keypress)="numberOnly($event)" (blur)='updatefundquantity(fund)'></td>
-                                <td><input type="text" [(ngModel)]="fund.price" name='quantity_{{i}}'
+                                <td><input type="text" class="form-control" style="text-align: center ; width: 3cm" [(ngModel)]="fund.price" name='quantity_{{i}}'
                                         (keypress)="numberOnly($event)" (blur)='updateprice(fund)'></td>
                             </tr>
 
