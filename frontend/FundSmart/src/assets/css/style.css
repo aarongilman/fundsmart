@@ -52,13 +52,13 @@ ul {
     border: 0;
 }
 
-.no-bdrs-top-right {
+/* .no-bdrs-top-right {
     border-top-right-radius: 0 !important;
 }
 
 .no-bdrs-botton-right {
     border-bottom-right-radius: 0 !important;
-}
+} */
 
 .no-bdrs-top-left {
     border-top-left-radius: 0 !important;
@@ -68,9 +68,9 @@ ul {
     border-bottom-left-radius: 0 !important;
 }
 
-.no-padding-right {
+/* .no-padding-right {
     padding-right: 0 !important;
-}
+} */
 
 .d-flex {
     display: -webkit-box !important;
@@ -663,7 +663,7 @@ select {
     text-transform: uppercase;
     font-weight   : 600 !important;
     letter-spacing: 1px;
-    padding       : 10px 20px !important;
+    padding       : 10px !important;
     border-bottom : 0 !important;
 }
 
@@ -1147,8 +1147,8 @@ div.custom-sidebar {
 
 /*Right Panel*/
 .right-panel-wrap {
-    padding-left : 150px;
-    padding-right: 50px;
+    padding-left : 130px;
+    padding-right: 30px;
     padding-top  : 30px;
 }
 
@@ -1156,7 +1156,7 @@ div.custom-sidebar {
     background               : #000034;
     content                  : "";
     display                  : block;
-    width                    : 100%;
+    /* width                    : 100%; */
     height                   : 350px;
     border-bottom-left-radius: 100px;
     position                 : absolute;
@@ -1164,6 +1164,7 @@ div.custom-sidebar {
     z-index                  : -1;
     left                     : 100px;
     right                    : 0;
+    border-bottom-right-radius: 100px;
 }
 
 /*Right Panel*/
@@ -1662,7 +1663,7 @@ a.close-menu svg path {
     width          : 180px;
     height         : 50px;
     line-height    : 50px;
-    padding        : 10px;
+    /* padding        : 10px; */
     box-shadow     : 0 0px 7px 0 rgba(0, 0, 0, 0.1);
     display        : block;
     margin         : 0 5px;
@@ -1919,3 +1920,7 @@ td.loss-red.info-red {
 }
 
 /* Fund Recommendation */
+
+.main-body{
+    position: relative;
+}
