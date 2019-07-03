@@ -7,7 +7,7 @@ from portfolios.views import HistoricalPerformanceDifference,\
     DashboardPieChart, HoldingDetailAPIView, HoldingSummaryByHoldingType,\
     HoldingSummaryByAssetClass, HoldingSummaryByIndustry,\
     HoldingSummaryByCountry, HoldingSummaryHistoricalPerformanceDifference,\
-    FundRecommendationHistoricalPerformanceDiff
+    FundRecommendationHistoricalPerformanceDiff, HoldingSummaryLineGraph
 
 from portfolios.viewsets import PortfolioViewSet, PortfolioFundViewSet,\
     SecurityViewSet
@@ -38,7 +38,8 @@ urlpatterns += [
     re_path(r'^country_holding_summary/$', HoldingSummaryByCountry.as_view()),
     re_path(r'^historical_performance_holding_summary/$',
             HoldingSummaryHistoricalPerformanceDifference.as_view()),
-
+    re_path(r'^line_graph_holding_summary/',
+            HoldingSummaryLineGraph.as_view()),
     re_path(r'^historical_performance_fund_recommendation/$',
             FundRecommendationHistoricalPerformanceDiff.as_view())
 ]
