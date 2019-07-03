@@ -42,6 +42,7 @@ export class HomeComponent implements OnInit {
   fundrowForm: FormGroup;
 
 
+
   // end form conversion
 
   funds$: Observable<portfolio_fund[]>;
@@ -110,6 +111,7 @@ export class HomeComponent implements OnInit {
   lineheight = 400;
   linetype = 'LineChart';
   linecolumnNames = [];
+  securitylist = securitylist;
 
   constructor(private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
     private userservice: ServercommunicationService,

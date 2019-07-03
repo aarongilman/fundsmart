@@ -97,14 +97,14 @@ $(document).ready(function(){
     
   // });
 
-  $('.upload-icon-btn').on( 'click', function () {
-    t.row.add([
-      "Security",
-      "Quantity",
-      "Quantity",
-      "Quantity"
-    ]).draw( false );
-  });
+  // $('.upload-icon-btn').on( 'click', function () {
+  //   t.row.add([
+  //     "Security",
+  //     "Quantity",
+  //     "Quantity",
+  //     "Quantity"
+  //   ]).draw( false );
+  // });
 /* DataTables */
  
 /* Line chart */

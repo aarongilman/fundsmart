@@ -8,8 +8,8 @@ import { $ } from 'protractor';
 })
 export class ServercommunicationService {
   // api_link = 'http://3.16.111.80/';
-  api_link = 'http://localhost:8000/';
-  // api_link = 'http://192.168.100.111:8000/';
+  // api_link = 'http://localhost:8000/';
+  api_link = 'http://192.168.100.111:8000/';
 
   // reglink = this.api_link + 'rest-auth/registration/';
   // login_link = this.api_link + 'rest-auth/login/';
@@ -101,6 +101,14 @@ export class ServercommunicationService {
   get_portfolio_fund() {
     if (this.userkey) {
       return this.http.get(this.api_link + 'api/portfolio_fund/', {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    }
+  }
+
+  get_portfolio_fund_by_date(date) {
+    if (this.userkey) {
+      return this.http.get(this.api_link + 'api/portfolio_fund/?date=' + date, {
         headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
       });
     }
@@ -212,6 +220,7 @@ export class ServercommunicationService {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
+
 
 
   getHoldingDetails() {

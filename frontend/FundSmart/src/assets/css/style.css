@@ -52,13 +52,13 @@ ul {
     border: 0;
 }
 
-.no-bdrs-top-right {
+/* .no-bdrs-top-right {
     border-top-right-radius: 0 !important;
-}
+} */
 
-.no-bdrs-botton-right {
+/* .no-bdrs-botton-right {
     border-bottom-right-radius: 0 !important;
-}
+} */
 
 .no-bdrs-top-left {
     border-top-left-radius: 0 !important;
@@ -68,9 +68,9 @@ ul {
     border-bottom-left-radius: 0 !important;
 }
 
-.no-padding-right {
+/* .no-padding-right {
     padding-right: 0 !important;
-}
+} */
 
 .d-flex {
     display: -webkit-box !important;
@@ -399,6 +399,10 @@ body.menu-overlay:after {
 .color-plot-12,
 .color-plot-total {
     border-color: #d92120;
+}
+
+.scrollauto{
+    overflow: auto;
 }
 
 /* Graph Colors */

@@ -44,6 +44,7 @@
                       type="text">
 
                     <datalist id="securityname">
+                     
                       <option *ngFor="let security of securitylist" [ngValue]='security.name'
                         title=" {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"
                         [value]="security.name">
@@ -247,7 +248,7 @@
             <div class="heading">
               <h3>Historical Performance Difference</h3>
             </div>
-            <div class="responsive-table">
+            <div class="responsive-table" class="scrollauto">
               <table class="trade-table">
                 <thead>
                   <th>Portfolio</th>
@@ -285,13 +286,11 @@
         </div>
 
         <div *ngIf="currentUser"
-        class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
-        <div class="ct-chart pie-chart">
-          <div class="ct-chart pie-chart">
-            <google-chart *ngIf="currentUser" [title]="linetitle" [type]="linetype" [data]="linedata"
+        class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper semi-block">
+        <div class="ct-chart line-chart d-flex justify-content-center">
+          <google-chart *ngIf="currentUser" [title]="linetitle" [type]="linetype" [data]="linedata"
               [options]="lineoptions" [width]="linewidth" [height]="lineheight" [columnNames]="linecolumnNames">
             </google-chart>
-          </div>
         </div>
       </div>
       <!-- <div id="curve_chart" style="width: 900px; height: 500px"></div> -->
@@ -299,7 +298,7 @@
 
         <div *ngIf="currentUser"
           class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
-          <div class="graph-labels label-left">
+          <div class="graph-labels">
           </div>
           <google-chart *ngIf="currentUser" [title]="donutitle" [type]="donuttype" [data]="donutdata"
             [columnNames]="columnNames" [options]="donutoptions" [height]="donutheight" [width]="donutwidth">
@@ -308,14 +307,12 @@
 
         <div *ngIf="currentUser"
           class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
-          <div class="ct-chart pie-chart">
             <div class="ct-chart pie-chart">
               <google-chart *ngIf="currentUser" [title]="pietitle" [type]="pietype" [data]="piedata"
                 [dynamicResize]="dynamicResize" [options]="pieoptions" [width]="piewidth"
                 [height]="pieheight">
               </google-chart>
             </div>
-          </div>
         </div>
 
       

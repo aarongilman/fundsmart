@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
-import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons, NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { security } from '../security';
 import * as $ from 'jquery';
 import { DecimalPipe } from '@angular/common';
@@ -21,12 +21,19 @@ export class FundCreateComponent implements OnInit {
   currentUser: any;
   fundlist = [];
   total = 0;
-
+  securitylist = securitylist;
   securityinput: string[] = [];
   lastkeydown1: number = 0;
   closeResult: string;
   showdetail_flag = false;
   files: any = [];
+  // maxdate = (date:NgbDate, current: {month:number})
+
+  portfolio1: any;
+  comparision1: any;
+  comparision2: any;
+  selectedp: any;
+  selectedDate: any;
 
   @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
   constructor(private modalService: NgbModal, private fileupload: GetfileforuploadService,
@@ -50,6 +57,28 @@ export class FundCreateComponent implements OnInit {
 
   ngOnInit() {
 
+    this.userservice.get_security().subscribe(
+      datasecuritylist => {
+        securitylist.length = 0;
+        // tslint:disable-next-line: forin
+        for (var obj in datasecuritylist) {
+          var securityobj: security = {
+            id: -1,
+            isin: '',
+            name: '',
+            ticker: '',
+            asset_type: ''
+          };
+          securityobj.id = datasecuritylist[obj]['id'];
+          securityobj.isin = datasecuritylist[obj]['isin'];
+          securityobj.name = datasecuritylist[obj]['name'];
+          securityobj.ticker = datasecuritylist[obj]['ticker'];
+          securityobj.asset_type = datasecuritylist[obj]['asset_type'];
+          securitylist.push(securityobj);
+        }
+      }
+    );
+
     this.setcurrent_user();
     if (this.userservice.currentuser !== null) {
       this.getfunds();
@@ -60,36 +89,58 @@ export class FundCreateComponent implements OnInit {
     this.currentUser = this.userservice.currentuser;
   }
 
+  setfunds(data) {
+    apiresultfundlist.length = 0;
+    // console.log(data['results']);
+    for (var i = 0; i < data['results'].length; i++) {
+      // console.log(data['results'][i]);
+      var fund: funds = {
+        id: -1,
+        quantity: 0,
+        portfolio: 0,
+        security: 0,
+        security_name: '',
+        asset_type: '',
+        isin: ''
+      };
+      fund = data['results'][i];
+      apiresultfundlist.push(fund);
+    }
+    // console.log(apiresultfundlist);
+    this.fundservice.resetfunds();
+    this.fundservice.funds$.subscribe(
+      fundlist => {
+        this.fundlist = fundlist;
+      });
+    this.fundservice.total$.subscribe(
+      total => {
+        this.total = total;
+      });
+
+  }
+
   getfunds() {
     this.userservice.get_portfolio_fund().subscribe(
       data => {
         if (data['count'] > 0) {
-          apiresultfundlist.length = 0;
-          // console.log(data['results']);
-          for (var i = 0; i < data['results'].length; i++) {
-            // console.log(data['results'][i]);
-            var fund: funds = {
-              id: -1,
-              quantity: 0,
-              portfolio: 0,
-              security: 0,
-              security_name: '',
-              asset_type: '',
-              isin: ''
-            };
-            fund = data['results'][i];
-            apiresultfundlist.push(fund);
-          }
-          // console.log(apiresultfundlist);
-          this.fundservice.resetfunds();
-          this.fundservice.funds$.subscribe(
-            fundlist => {
-              this.fundlist = fundlist;
-            });
-          this.fundservice.total$.subscribe(
-            total => {
-              this.total = total;
-            });
+          this.setfunds(data);
+        }
+      });
+  }
+
+  onDateSelect($event) {
+    var date;
+    // console.log("type of month is ", typeof(this.selectedDate.month));
+    if (this.selectedDate.month < 10) {
+      date = this.selectedDate.year + '-0' + this.selectedDate.month + '-' + this.selectedDate.day;
+    } else {
+      date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
+    }
+    // console.log(this.selectedDate, date);
+    this.userservice.get_portfolio_fund_by_date(date).subscribe(
+      data => {
+        if (data['count'] > 0) {
+          this.setfunds(data);
         }
       });
   }
@@ -97,8 +148,11 @@ export class FundCreateComponent implements OnInit {
   setrowdata(fund, name) {
     var sec: security;
     sec = securitylist.find(x => x.name = name);
-    console.log(sec);
-    
+    // console.log("Security is", sec);
+    fund.security = sec.id;
+    fund.asset_type = sec.asset_type;
+    fund.isin = sec.isin;
+    fund.security_name = sec.name;
     // fund.security = name;
 
   }
@@ -121,24 +175,32 @@ export class FundCreateComponent implements OnInit {
     });
   }
 
-  addRow() {
-    let singlefund: funds = {
-      id: -1,
-      quantity: 0,
-      portfolio: 0,
-      security: 0,
-      security_name: '',
-      asset_type: '',
-      isin: ''
-    };
-    apiresultfundlist.push(singlefund);
-    this.fundservice.resetfunds();
-    this.fundservice.funds$.subscribe(list => {
-      this.fundlist = list;
-    });
-    this.fundservice.total$.subscribe(total => {
-      this.total = total;
-    });
+  addRow(obj) {
+    this.openmodal(obj, 'select portfolio')
+    this.userservice.getUserPortfolio().subscribe(
+      data => {
+        this.portfolio1 = data['results']['0'];
+        this.comparision1 = data['results']['1'];
+        this.comparision2 = data['results']['2'];
+        let singlefund: funds = {
+          id: -1,
+          quantity: 0,
+          portfolio: 0,
+          security: 0,
+          security_name: '',
+          asset_type: '',
+          isin: ''
+        };
+        apiresultfundlist.push(singlefund);
+        this.fundservice.resetfunds();
+        this.fundservice.funds$.subscribe(list => {
+          this.fundlist = list;
+        });
+        this.fundservice.total$.subscribe(total => {
+          this.total = total;
+        });
+      }
+    );
   }
 
 
@@ -176,7 +238,8 @@ export class FundCreateComponent implements OnInit {
   }
 
   searchsecurity($event) {
-    // // console.log(this.securityinput);
+    // console.log(securitylist);
+    console.log(this.securityinput);
     var securityList1 = [];
     if (this.securityinput.length > 1) {
       if ($event.timeStamp - this.lastkeydown1 > 200) {
@@ -197,13 +260,16 @@ export class FundCreateComponent implements OnInit {
       if (arr[i].isin.match(regex)) {
         matches.push(arr[i]);
       }
+      if (arr[i].asset_type.match(regex)) {
+        matches.push(arr[i]);
+      }
       if (arr[i].ticker != null) {
         if (arr[i].ticker.match(regex)) {
           matches.push(arr[i]);
         }
       }
     }
-    // // console.log(matches);
+    // console.log(matches);
     return matches;
   }
 
@@ -253,7 +319,7 @@ export class FundCreateComponent implements OnInit {
   openmodal(modalid, str) {
     // alert("type of modal is" + typeof(modalid));
     var addclass = '';
-    if (str == 'login' || str == 'register') {
+    if (str == 'select portfolio' || str == 'register') {
       addclass = 'long-pop sign-pop';
     }
     this.modalService.open(modalid, { centered: true, windowClass: addclass }).result.then((result) => {
