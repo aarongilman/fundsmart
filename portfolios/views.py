@@ -457,7 +457,6 @@ def get_historical_performance(request):
             return_1_yr = []
             return_3_yr = []
             return_5_yr = []
-            print(isin_list)
             for isin in isin_list:
                 end_price_1_year = price.filter(id_value=isin,
                                                 date=str(
@@ -483,9 +482,6 @@ def get_historical_performance(request):
                                                 date=str(
                                                     date(date.today().year -
                                                          6, 12, 31)))
-                print(end_price_1_year, beg_price_1_year, end_price_3_year,
-                      beg_price_3_year,
-                      end_price_5_year, beg_price_5_year)
                 if end_price_1_year and beg_price_1_year:
                     return_1_yr.append((end_price_1_year[0].price -
                                         beg_price_1_year[0].price) /
@@ -538,12 +534,13 @@ class HoldingSummaryLineGraph(APIView):
     def get(self, request):
         result = get_historical_performance(request)
         data = []
-        temp_dict = {'label': [], 'series': []}
-        for key, value in result[0].items():
-            print(key, value)
-            temp_dict.get('label').append(key)
-            temp_dict.get('series').append(value)
-        data.append(temp_dict)
+        for item in result:
+            temp_dict = {"name": None, 'label': [], 'series': []}
+            for key, value in item.items():
+                temp_dict.update({'name': key})
+                temp_dict.get('label').append(value.keys())
+                temp_dict.get('series').append(value.values())
+                data.append(temp_dict)
         return Response(data, status=200)
 
 
@@ -558,5 +555,4 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
                 created_by=request.user)
             fund_details = FundDetail.objects.all()
             recommended_funds = fund_details[:4]
-            print(existing_funds, recommended_funds)
         return Response(data, status=200)
