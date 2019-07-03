@@ -615,7 +615,7 @@
               <div class="terms-conditions">
                 <p>By logging in, you agree to <a href="#">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
                   of Trade</p>
-                <p>Don’t have an account? <a (click)="openmodal(register,'register')">Sign up!</a></p>
+                <p>Don’t have an account? <a (click)="modal.dismiss('Register Open'); openmodal(register,'register')">Sign up!</a></p>
               </div>
             </form>
           </div>

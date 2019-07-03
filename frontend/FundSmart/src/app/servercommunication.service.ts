@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService, SocialUser, GoogleLoginProvider } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
-import { $ } from 'protractor';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -227,6 +227,54 @@ export class ServercommunicationService {
     return this.http.get(this.api_link + 'api/holding_detail/',
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
+
+  update_One_Object(user: any, id) {
+    const body = {
+      id: user.id,
+      name: user.name,
+      description: user.description,
+      owner_1: user.owner_1,
+      owner_2: user.owner_2,
+      marginal_tax_range: user.marginal_tax_range,
+      location: user.location,
+      created_at: user.created_at,
+      created_by: user.created_by,
+    };
+    return this.http.put(this.api_link + 'api/portfolio/' + id + '/',
+      body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+
+
+  get_Fund() {
+
+    if (this.userkey) {
+      return this.http.get(this.api_link + 'api/portfolio/', {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    }
+  }
+
+  get_One_Object(id) {
+    if (this.userkey) {
+      return this.http.get(this.api_link + 'api/portfolio/?id=' + id, {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    }
+  }
+
+  post_create_fund() {
+    const body = { created_by: this.currentuser.id };
+    return this.http.post(this.api_link + 'api/portfolio/', body,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  delete_Portfolio(id) {
+    return this.http.delete(this.api_link + 'api/portfolio/' + id + '/',
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+
   // production api ----->3.16.111.80
 
   // 3.16.111.80 server

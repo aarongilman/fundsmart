@@ -45,6 +45,7 @@ export class FundCreateComponent implements OnInit {
       () => {
         // alert("In first method");
         this.setcurrent_user();
+        this.getUserPortfolios();
         // this.getfunds();
       });
     // alert(this.currentUser.name);
@@ -52,11 +53,14 @@ export class FundCreateComponent implements OnInit {
     this.interconn.logoutcomponentMethodCalled$.subscribe(
       () => {
         this.resetfunds();
+        this.portfolio1 = undefined;
+        this.comparision1 = undefined;
+        this.comparision2 = undefined;
       });
   }
 
   ngOnInit() {
-
+    this.getUserPortfolios();
     this.userservice.get_security().subscribe(
       datasecuritylist => {
         securitylist.length = 0;
@@ -76,6 +80,7 @@ export class FundCreateComponent implements OnInit {
           securityobj.asset_type = datasecuritylist[obj]['asset_type'];
           securitylist.push(securityobj);
         }
+        // console.log(securitylist);
       }
     );
 
@@ -146,9 +151,12 @@ export class FundCreateComponent implements OnInit {
   }
 
   setrowdata(fund, name) {
+    // console.log(name);
     var sec: security;
-    sec = securitylist.find(x => x.name = name);
+    sec = securitylist.find(x => x.name === name);
     // console.log("Security is", sec);
+    // console.log(sec.id);
+
     fund.security = sec.id;
     fund.asset_type = sec.asset_type;
     fund.isin = sec.isin;
@@ -159,13 +167,31 @@ export class FundCreateComponent implements OnInit {
 
 
   updatefundquantity(item) {
-    this.userservice.updateportfoliofund(item.id, item.quantity, item.portfolio, item.security, this.currentUser['id']).subscribe();
+    if (item.id === -1) {
+      this.userservice.add_portfolio_fund(item.quantity, item.portfolio, item.security, this.currentUser['id']).subscribe(
+        res => {
+          this.getfunds();
+          // this.setfunds();
+        }
+      );
+    } else {
+      this.userservice.updateportfoliofund(item.id, item.quantity, item.portfolio, item.security, this.currentUser['id']).subscribe();
+    }
     // update list
     // data => {
     //   var y = this.fundlist.find(x => x.id === item.id);
     //   y = data;
     //   console.log(this.fundlist.find(x => x.id === item.id));
     //   });
+  }
+
+  getUserPortfolios() {
+    this.userservice.getUserPortfolio().subscribe(
+      data => {
+        this.portfolio1 = data['results']['0'];
+        this.comparision1 = data['results']['1'];
+        this.comparision2 = data['results']['2'];
+      });
   }
 
   updateprice(fund) {
@@ -175,32 +201,26 @@ export class FundCreateComponent implements OnInit {
     });
   }
 
-  addRow(obj) {
-    this.openmodal(obj, 'select portfolio')
-    this.userservice.getUserPortfolio().subscribe(
-      data => {
-        this.portfolio1 = data['results']['0'];
-        this.comparision1 = data['results']['1'];
-        this.comparision2 = data['results']['2'];
-        let singlefund: funds = {
-          id: -1,
-          quantity: 0,
-          portfolio: 0,
-          security: 0,
-          security_name: '',
-          asset_type: '',
-          isin: ''
-        };
-        apiresultfundlist.push(singlefund);
-        this.fundservice.resetfunds();
-        this.fundservice.funds$.subscribe(list => {
-          this.fundlist = list;
-        });
-        this.fundservice.total$.subscribe(total => {
-          this.total = total;
-        });
-      }
-    );
+  addRow() {
+    // alert(this.selectedp);
+    const singlefund: funds = {
+      id: -1,
+      quantity: 0,
+      portfolio: this.selectedp,
+      security: 0,
+      security_name: '',
+      asset_type: '',
+      isin: ''
+    };
+    apiresultfundlist.push(singlefund);
+    this.fundservice.resetfunds();
+    this.fundservice.funds$.subscribe(list => {
+      this.fundlist = list;
+    });
+    this.fundservice.total$.subscribe(total => {
+      this.total = total;
+    });
+
   }
 
 
@@ -239,7 +259,7 @@ export class FundCreateComponent implements OnInit {
 
   searchsecurity($event) {
     // console.log(securitylist);
-    console.log(this.securityinput);
+    // console.log(this.securityinput);
     var securityList1 = [];
     if (this.securityinput.length > 1) {
       if ($event.timeStamp - this.lastkeydown1 > 200) {
