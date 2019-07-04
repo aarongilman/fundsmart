@@ -80,9 +80,9 @@ export class HomeComponent implements OnInit {
   email2: string;
 
   securityinput: string[] = [];
-  portfolioinput: string;
-  comp1input: string;
-  comp2input: string;
+  portfolioinput: string[] = [];
+  comp1input: string[] = [];
+  comp2input: string[] = [];
   lastkeydown1: number = 0;
 
   portfolio1: any;
@@ -152,6 +152,7 @@ export class HomeComponent implements OnInit {
       () => {
         // alert("In first method");
         this.setcurrent_user();
+        this.createFundlist();
         this.setdataindeshboard();
         this.portfolioservice.funds$.subscribe(f => {
           this.funds$ = f;
@@ -166,8 +167,8 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.setcurrent_user();
     // this.resetfundlist();
+    this.createFundlist();
     this.setdataindeshboard();
-
     this.portfolio1Form = this.formBuilder.group({
       quantity: new FormControl('', Validators.required),
       security: new FormControl('', Validators.required),
@@ -233,16 +234,15 @@ export class HomeComponent implements OnInit {
         p1record: -1,
         p2record: -1,
         p3record: -1,
-        yourPortfolio: '0',
-        comparision1: '0',
-        comparision2: '0'
+        yourPortfolio: '',
+        comparision1: '',
+        comparision2: ''
       };
       portfoliofundlist.push(singlefund);
     }
   }
 
-  setdataindeshboard() {
-
+  createFundlist() {
     this.userservice.getUserPortfolio().subscribe(
       data => {
         // alert("portfolio data came");
@@ -283,7 +283,9 @@ export class HomeComponent implements OnInit {
         // alert('Portfolio fetch failed');
         // console.log(error);
       });
+  }
 
+  setdataindeshboard() {
     this.userservice.get_historical_perfomance().subscribe(
       result => {
         // // console.log(result);
@@ -417,7 +419,8 @@ export class HomeComponent implements OnInit {
       this.userservice.socialLogin(user);
       this.setcurrent_user();
       this.modalService.dismissAll('Log in Done');
-      this.setdataindeshboard();
+      // this.setdataindeshboard();
+      // this.createFundlist();
     });
   }
 
@@ -426,7 +429,8 @@ export class HomeComponent implements OnInit {
       this.userservice.socialLogin(user);
       this.setcurrent_user();
       this.modalService.dismissAll('Log in Done');
-      this.setdataindeshboard();
+      // this.setdataindeshboard();
+      // this.createFundlist();
     });
   }
 
@@ -478,9 +482,9 @@ export class HomeComponent implements OnInit {
       p1record: -1,
       p2record: -1,
       p3record: -1,
-      yourPortfolio: '0',
-      comparision1: '0',
-      comparision2: '0'
+      yourPortfolio: '',
+      comparision1: '',
+      comparision2: ''
     };
     portfoliofundlist.push(singlefund);
     this.portfolioservice.resetfunds();
@@ -648,9 +652,9 @@ export class HomeComponent implements OnInit {
         p1record: -1,
         p2record: -1,
         p3record: -1,
-        yourPortfolio: '0',
-        comparision1: '0',
-        comparision2: '0'
+        yourPortfolio: '',
+        comparision1: '',
+        comparision2: ''
       };
       //     console.log(fundlist[obj]);
 
@@ -798,7 +802,9 @@ export class HomeComponent implements OnInit {
       this.userservice.uploadfile(formData).subscribe(
         res => {
           // console.log(res);
+          this.createFundlist();
           this.setdataindeshboard();
+
         },
         error => {
           // console.log(error);
