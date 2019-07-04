@@ -40,7 +40,7 @@
                                     <td>
                                         <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
                                             (keyup)="searchsecurity($event)" list="securityname" name='security_{{i}}'
-                                            (blur)="currentUser ? item.security = securityinput[i] : openmodal(login,'login');"
+                                            (change)="currentUser ? item.security = securityinput[i] : openmodal(login,'login');item.security = securityinput[i]"
                                             type="text">
 
                                         <datalist id="securityname">
@@ -54,19 +54,18 @@
                                     </td>
                                     <td>
                                         <input [(ngModel)]="item['yourPortfolio']"
-                                            style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)" 
+                                            style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)"
                                             (change)="currentUser ? addportfolioFund('portfolio',item) : null"
                                             name='portfolio_{{i}}' type="text">
                                     </td>
                                     <td>
-                                        <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}' 
+                                        <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
                                             style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
-                                            (change)="currentUser ? addportfolioFund('comp1',item) : null"
-                                            type="text">
+                                            (change)="currentUser ? addportfolioFund('comp1',item) : null" type="text">
 
                                     </td>
                                     <td>
-                                        <input [(ngModel)]="item['comparision2']" 
+                                        <input [(ngModel)]="item['comparision2']"
                                             style="text-align: center ; width: 3cm"
                                             (change)="currentUser? addportfolioFund('comp2',item): null "
                                             name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">

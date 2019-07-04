@@ -19,6 +19,7 @@ import { HistoricalData } from '../historicaldata';
 import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
 import { MustMatch } from '../must-match.validator';
 import { securitylist } from '../securitylist';
+import { element } from '@angular/core/src/render3';
 @Component({
 
   selector: 'app-home',
@@ -152,6 +153,19 @@ export class HomeComponent implements OnInit {
       () => {
         // alert("In first method");
         this.setcurrent_user();
+        portfoliofundlist.forEach(element => {
+          console.log(element);
+
+          if (element.security !== '') {
+            if (element.yourPortfolio !== '') {
+              this.addportfolioFund('portfolio', element);
+            } else if (element.comparision1 !== '') {
+              this.addportfolioFund('comp1', element);
+            } else if (element.comparision2 !== '') {
+              this.addportfolioFund('comp2', element);
+            }
+          }
+        });
         this.createFundlist();
         this.setdataindeshboard();
         this.portfolioservice.funds$.subscribe(f => {
@@ -165,10 +179,11 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+
     this.setcurrent_user();
     // this.resetfundlist();
-    this.createFundlist();
-    this.setdataindeshboard();
+    // this.createFundlist();
+    // this.setdataindeshboard();
     this.portfolio1Form = this.formBuilder.group({
       quantity: new FormControl('', Validators.required),
       security: new FormControl('', Validators.required),
@@ -253,25 +268,8 @@ export class HomeComponent implements OnInit {
         this.comparision2 = data['results']['2'];
         this.userservice.get_portfolio_fund().subscribe(
           fundlist => {
-            var datalist = [];
             if (fundlist['count'] !== 0) {
-              const fundlist2 = fundlist['results'];
-              const source = from(fundlist2);
-              const result = source.pipe(groupBy(fundlist2 => fundlist2['security']),
-                // mergeAll());
-                mergeMap(group => group.pipe(toArray())));
-              result.subscribe(
-                x => {
-                  let item: any;
-                  // tslint:disable-next-line: forin
-                  for (item in x) {
-                    datalist.push(x[item]);
-                  }
-                }
-              );
-              // console.log("Data list is", datalist);
-              this.setfunds(datalist, data['results']['0'], data['results']['1'], data['results']['2']);
-
+              this.setfunds(fundlist['results'], data['results']['0'], data['results']['1'], data['results']['2']);
             }
           },
           error => {
@@ -419,6 +417,7 @@ export class HomeComponent implements OnInit {
       this.userservice.socialLogin(user);
       this.setcurrent_user();
       this.modalService.dismissAll('Log in Done');
+
       // this.setdataindeshboard();
       // this.createFundlist();
     });
@@ -611,15 +610,18 @@ export class HomeComponent implements OnInit {
         this.showdetail_flag = false;
         this.modalService.dismissAll('Registration Done');
         this.registeruserForm.reset();
-        // this.userservice.getUser(data['key']);
-        // this.userservice.get_portfolio_fund().subscribe(
-        //   fundlist => {
-        //     // console.log(fundlist);
-        //   },
-        //   error => {
-        //     // console.log(error);
-        //   }
-        // );
+        portfoliofundlist.forEach(element => {
+          if (element.security !== '') {
+            if (element.yourPortfolio !== '') {
+              this.addportfolioFund('portfolio', element);
+            } else if (element.comparision1 !== '') {
+              this.addportfolioFund('comp1', element);
+            } else if (element.comparision2 !== '') {
+              this.addportfolioFund('comp2', element);
+            }
+          }
+        });
+
       },
         error => {
           // alert('error occured');
@@ -637,80 +639,100 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.total$.subscribe(total => {
       this.total$ = total;
     });
-    let obj;
+    let obj, abc: any;
     // tslint:disable-next-line: forin
     // console.log("Length of obj", fundlist);
-    for (obj = 0; obj < fundlist.length; obj++) {
-
-      // console.log(fundlist[obj]);
-
-
-      let singlefund: portfolio_fund = {
-        // created_by: 0
-        security: '',
-        security_id: -1,
-        p1record: -1,
-        p2record: -1,
-        p3record: -1,
-        yourPortfolio: '',
-        comparision1: '',
-        comparision2: ''
-      };
-      //     console.log(fundlist[obj]);
-
-      singlefund.security = fundlist[obj]['security_name'];
-      singlefund.security_id = fundlist[obj]['security'];
-      var portfolio = fundlist[obj]['portfolio'];
-
-      if (xportfolio1['id'] == fundlist[obj]['portfolio']) {
-        singlefund.yourPortfolio = fundlist[obj]['quantity'];
-        singlefund.p1record = fundlist[obj]['id'];
-      } else if (xcomparision1['id'] == fundlist[obj]['portfolio']) {
-        singlefund.comparision1 = fundlist[obj]['quantity'];
-        singlefund.p2record = fundlist[obj]['id'];
-      } else if (xcomparision2['id'] == fundlist[obj]['portfolio']) {
-        singlefund.comparision2 = fundlist[obj]['quantity'];
-        singlefund.p3record = fundlist[obj]['id'];
-      }
-      if (obj < fundlist.length - 1) {
-        obj++;
-        if (singlefund.security == fundlist[obj]['security_name']) {
-          if (portfolio != fundlist[obj]['portfolio']) {
-            if (xcomparision1['id'] == fundlist[obj]['portfolio']) {
-              singlefund.comparision1 = fundlist[obj]['quantity'];
-              singlefund.p2record = fundlist[obj]['id'];
-            } else if (xcomparision2['id'] == fundlist[obj]['portfolio']) {
-              singlefund.comparision2 = fundlist[obj]['quantity'];
-              singlefund.p3record = fundlist[obj]['id'];
-            }
-          } else {
-            obj--;
-          }
-        } else {
-          obj--;
-        }
-      }
-      if (obj < fundlist.length - 1) {
-        obj++;
-        if (singlefund.security == fundlist[obj]['security_name']) {
-          if (portfolio != fundlist[obj]['portfolio']) {
-            if (xcomparision2['id'] == fundlist[obj]['portfolio']) {
-              singlefund.comparision2 = fundlist[obj]['quantity'];
-              singlefund.p3record = fundlist[obj]['id'];
-            }
-          } else {
-            obj--;
-          }
-        } else {
-          obj--;
-        }
-      }
-      // this.userFunds.push(singlefund);
-      portfoliofundlist.push(singlefund);
-      // // console.log(singlefund);
-
+    var secur = [];
+    // tslint:disable-next-line: forin
+    for (var item in fundlist) {
+      secur.push(fundlist[item]['security']);
     }
-    // console.log(portfoliofundlist);
+    var seclist: any;
+    seclist = new Set(secur);
+    console.log(seclist);
+    seclist.forEach(element => {
+      // console.log(element);
+      abc = fundlist.filter(x => x.security === element);
+      abc = abc.sort((a, b) => parseFloat(a.security) - parseFloat(b.security));
+      console.log(abc);
+      debugger
+      // tslint:disable-next-line: forin
+      for (var item = 0; item < abc.length; item++) {
+
+        let singlefund: portfolio_fund = {
+          // created_by: 0
+          security: '',
+          security_id: -1,
+          p1record: -1,
+          p2record: -1,
+          p3record: -1,
+          yourPortfolio: '',
+          comparision1: '',
+          comparision2: ''
+        };
+        console.log(abc[item]);
+
+        singlefund.security = abc[item]['security_name'];
+        singlefund.security_id = abc[item]['security'];
+        var portfolio = abc[item]['portfolio'];
+
+        if (xportfolio1['id'] == abc[item]['portfolio']) {
+          singlefund.yourPortfolio = abc[item]['quantity'];
+          singlefund.p1record = abc[item]['id'];
+        } else if (xcomparision1['id'] == abc[item]['portfolio']) {
+          singlefund.comparision1 = abc[item]['quantity'];
+          singlefund.p2record = abc[item]['id'];
+        } else if (xcomparision2['id'] == abc[item]['portfolio']) {
+          singlefund.comparision2 = abc[item]['quantity'];
+          singlefund.p3record = abc[item]['id'];
+        }
+        if (item < abc.length - 1) {
+          item++;
+          if (singlefund.security == abc[item]['security_name']) {
+            if (portfolio != abc[item]['portfolio']) {
+              if (xcomparision1['id'] == abc[item]['portfolio']) {
+                singlefund.comparision1 = abc[item]['quantity'];
+                singlefund.p2record = abc[item]['id'];
+              } else if (xcomparision2['id'] == abc[item]['portfolio']) {
+                singlefund.comparision2 = abc[item]['quantity'];
+                singlefund.p3record = abc[item]['id'];
+              }
+            } else {
+              item--;
+            }
+          } else {
+            item--;
+          }
+        }
+        if (item < abc.length - 1) {
+          item++;
+          if (singlefund.security == abc[item]['security_name']) {
+            if (portfolio != abc[item]['portfolio']) {
+              if (xcomparision2['id'] == abc[item]['portfolio']) {
+                singlefund.comparision2 = abc[item]['quantity'];
+                singlefund.p3record = abc[item]['id'];
+              }
+            } else {
+              item--;
+            }
+          } else {
+            item--;
+          }
+        }
+        // this.userFunds.push(singlefund);
+        portfoliofundlist.push(singlefund);
+        // console.log(singlefund);
+
+      }
+
+      const hash = new Map();
+      fundlist.concat(fundlist).forEach((obj:any) => {
+        hash.set(obj.security, Object.assign(hash.get(obj.security) || {}, obj));
+      });
+      const a3 = Array.from(hash.values());
+      console.log(a3);
+
+    });
     this.portfolioservice.resetfunds();
     this.portfolioservice.funds$.subscribe(f => {
       this.funds$ = f;
@@ -718,6 +740,89 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.total$.subscribe(total => {
       this.total$ = total;
     });
+
+
+
+    // console.log("seclist", seclist);
+
+    // for (obj = 0; obj < fundlist.length; obj++) {
+
+    //   console.log(fundlist[obj]);
+
+
+    //   // let singlefund: portfolio_fund = {
+    //   //   // created_by: 0
+    //   //   security: '',
+    //   //   security_id: -1,
+    //   //   p1record: -1,
+    //   //   p2record: -1,
+    //   //   p3record: -1,
+    //   //   yourPortfolio: '',
+    //   //   comparision1: '',
+    //   //   comparision2: ''
+    //   // };
+    //   // //     console.log(fundlist[obj]);
+
+    //   // singlefund.security = fundlist[obj]['security_name'];
+    //   // singlefund.security_id = fundlist[obj]['security'];
+    //   // var portfolio = fundlist[obj]['portfolio'];
+
+    //   // if (xportfolio1['id'] == fundlist[obj]['portfolio']) {
+    //   //   singlefund.yourPortfolio = fundlist[obj]['quantity'];
+    //   //   singlefund.p1record = fundlist[obj]['id'];
+    //   // } else if (xcomparision1['id'] == fundlist[obj]['portfolio']) {
+    //   //   singlefund.comparision1 = fundlist[obj]['quantity'];
+    //   //   singlefund.p2record = fundlist[obj]['id'];
+    //   // } else if (xcomparision2['id'] == fundlist[obj]['portfolio']) {
+    //   //   singlefund.comparision2 = fundlist[obj]['quantity'];
+    //   //   singlefund.p3record = fundlist[obj]['id'];
+    //   // }
+    //   // if (obj < fundlist.length - 1) {
+    //   //   obj++;
+    //   //   if (singlefund.security == fundlist[obj]['security_name']) {
+    //   //     if (portfolio != fundlist[obj]['portfolio']) {
+    //   //       if (xcomparision1['id'] == fundlist[obj]['portfolio']) {
+    //   //         singlefund.comparision1 = fundlist[obj]['quantity'];
+    //   //         singlefund.p2record = fundlist[obj]['id'];
+    //   //       } else if (xcomparision2['id'] == fundlist[obj]['portfolio']) {
+    //   //         singlefund.comparision2 = fundlist[obj]['quantity'];
+    //   //         singlefund.p3record = fundlist[obj]['id'];
+    //   //       }
+    //   //     } else {
+    //   //       obj--;
+    //   //     }
+    //   //   } else {
+    //   //     obj--;
+    //   //   }
+    //   // }
+    //   // if (obj < fundlist.length - 1) {
+    //   //   obj++;
+    //   //   if (singlefund.security == fundlist[obj]['security_name']) {
+    //   //     if (portfolio != fundlist[obj]['portfolio']) {
+    //   //       if (xcomparision2['id'] == fundlist[obj]['portfolio']) {
+    //   //         singlefund.comparision2 = fundlist[obj]['quantity'];
+    //   //         singlefund.p3record = fundlist[obj]['id'];
+    //   //       }
+    //   //     } else {
+    //   //       obj--;
+    //   //     }
+    //   //   } else {
+    //   //     obj--;
+    //   //   }
+    //   // }
+    //   // this.userFunds.push(singlefund);
+    //   // portfoliofundlist.push(singlefund);
+    //   // // console.log(singlefund);
+
+    // }
+    // console.log(portfoliofundlist);
+    // this.portfolioservice.resetfunds();
+    // this.portfolioservice.funds$.subscribe(f => {
+    //   this.funds$ = f;
+    // });
+    // this.portfolioservice.total$.subscribe(total => {
+    //   this.total$ = total;
+    // });
   }
 
   get loginf() { return this.loginForm.controls; }
@@ -735,6 +840,7 @@ export class HomeComponent implements OnInit {
         this.userservice.getUser(data['key']);
         this.modalService.dismissAll('Login Done');
         this.loginForm.reset();
+
 
 
 
