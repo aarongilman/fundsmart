@@ -69,9 +69,11 @@
                                 <td>{{fund.asset_type}}</td>
                                 <td>{{fund.isin}}</td>
                                 <td><input type="text" [(ngModel)]="fund.quantity" name='quantity_{{i}}'
-                                        (keypress)="numberOnly($event)" (blur)='updatefundquantity(fund)'></td>
+                                        style="text-align: center; width: 130px" (keypress)="numberOnly($event)"
+                                        (blur)='updatefundquantity(fund)'></td>
                                 <td><input type="text" [(ngModel)]="fund.price" name='quantity_{{i}}'
-                                        (keypress)="numberOnly($event)" (blur)='updateprice(fund)'></td>
+                                        style="text-align: center; width: 130px" (keypress)="numberOnly($event)"
+                                        (blur)='updateprice(fund)'></td>
                             </tr>
 
                         </tbody>
@@ -115,7 +117,7 @@
                                     Upload</button>
                             </div>
                             <button type="button" class="upload-icon-btn"
-                                (click)="openmodal(selectPortfolio, 'select portfolio')">
+                                (click)="openmodal(selectPortfolio, 'select portfolio')" style="cursor: pointer">
                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                     viewBox="0 0 491.86 491.86" style="enable-background:new 0 0 491.86 491.86;"
@@ -168,7 +170,7 @@
 
         <ng-template #selectPortfolio let-modal>
             <div class="modal-header">
-                <h4 class="modal-title" id="modal-basic-title">Select portfolio</h4>
+                <h4 class="modal-title" id="modal-basic-title" style="color: white">Select portfolio</h4>
                 <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -177,8 +179,9 @@
                 <div class='login-form trade-inputs'>
                     <form>
                         <div class="input-group">
-                            <label>Select Portfolio : </label>
-                            <select id='portfolio' name='selected' title="Select Portfolio" [(ngModel)]="selectedp">
+                            <label style="color: black">Select Portfolio : &nbsp;&nbsp;</label>
+                            <select style="width:130px" id='portfolio' name='selected' title="Select Portfolio"
+                                [(ngModel)]="selectedp">
                                 <option [ngValue]='portfolio1.id' title="portfolio1" [value]="portfolio1.id" name='p1'>
                                     {{portfolio1.name}} </option>
                                 <option [ngValue]='comparision1.id' title="comparision1" [value]="comparision1.id"

@@ -1,6 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-fund',
@@ -14,8 +15,11 @@ export class FundComponent implements OnInit {
     fund: any;
     searchText: string;
     
-
-    constructor(private userService: ServercommunicationService, private modalService: NgbModal) { }
+    constructor(
+        private userService: ServercommunicationService, 
+        private modalService: NgbModal,
+        private toastr: ToastrService,
+        ) { }
 
     ngOnInit() {
         this.getFunds();
@@ -53,7 +57,7 @@ export class FundComponent implements OnInit {
     updatePortfolioData(_id) {
         this.userService.update_One_Object(this.fund, _id).subscribe(
             data => {
-                alert('Data Updated');
+               this.toastr.success('Updated Portfolio','Updated Portfolio');
             });
     }
 
