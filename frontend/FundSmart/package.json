@@ -33,6 +33,7 @@
     "ng-chartist": "^4.1.0",
     "ng-gapi": "0.0.73",
     "ng-sidebar": "^8.0.0",
+    "ngx-toastr": "^10.0.4",
     "popper": "^1.0.1",
     "popper.js": "^1.15.0",
     "rxjs": "~6.5.2",

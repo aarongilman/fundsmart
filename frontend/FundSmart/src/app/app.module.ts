@@ -25,17 +25,12 @@ import { IntercomponentCommunicationService } from './intercomponent-communicati
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { DragAndDropDirective } from './drag-and-drop.directive';
 import { GetfileforuploadService } from './getfileforupload.service';
-import {
-    GoogleApiModule,
-    GoogleApiService,
-    GoogleAuthService,
-    NgGapiClientConfig,
-    NG_GAPI_CONFIG,
-    GoogleApiConfig
-} from 'ng-gapi';
+import { GoogleApiModule, NgGapiClientConfig, NG_GAPI_CONFIG } from 'ng-gapi';
 import { SortableDirective } from './sortable.directive';
 import { ConfirmemailComponent } from './confirmemail/confirmemail.component';
 import { FilterPipe } from './filter.pipe';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 let gapiClientConfig: NgGapiClientConfig = {
@@ -85,12 +80,14 @@ export function provideConfig() {
     ],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         CommonModule,
         AppRoutingModule,
         NgbModule,
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
+        ToastrModule.forRoot(),
         SocialLoginModule,
         GoogleChartsModule.forRoot(),
         GoogleApiModule.forRoot({
