@@ -39,6 +39,7 @@ export class HeaderComponent implements OnInit {
   }
   ngOnInit() {
     this.service.checklogin();
+    this.setcurrent_user();
   }
   setcurrent_user() {
     this.currentuser = this.service.currentuser;
