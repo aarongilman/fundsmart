@@ -7,7 +7,8 @@ from portfolios.views import HistoricalPerformanceDifference,\
     DashboardPieChart, HoldingDetailAPIView, HoldingSummaryByHoldingType,\
     HoldingSummaryByAssetClass, HoldingSummaryByIndustry,\
     HoldingSummaryByCountry, HoldingSummaryHistoricalPerformanceDifference,\
-    FundRecommendationHistoricalPerformanceDiff, HoldingSummaryLineGraph
+    FundRecommendationHistoricalPerformanceDiff, HoldingSummaryLineGraph,\
+    BarPlotFundRecommendation, LineGraphFundRecommendation
 
 from portfolios.viewsets import PortfolioViewSet, PortfolioFundViewSet,\
     SecurityViewSet
@@ -41,5 +42,9 @@ urlpatterns += [
     re_path(r'^line_graph_holding_summary/',
             HoldingSummaryLineGraph.as_view()),
     re_path(r'^historical_performance_fund_recommendation/$',
-            FundRecommendationHistoricalPerformanceDiff.as_view())
+            FundRecommendationHistoricalPerformanceDiff.as_view()),
+    re_path(r'^bar_plot_fund_recommendation/$',
+            BarPlotFundRecommendation.as_view()),
+    re_path(r'^line_graph_fund_recommendation/$',
+            LineGraphFundRecommendation.as_view())
 ]

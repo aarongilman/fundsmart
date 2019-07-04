@@ -10,7 +10,7 @@ from rest_framework import authentication, status
 
 from .serializers import ImportPortfolioFundSerializer
 from .models import Security, Portfolio, PortfolioFund, FundDetail, Price,\
-    HoldingDetail
+    HoldingDetail, FundHolding
 
 LOGGER = logging.getLogger('fundsmart')
 
@@ -553,6 +553,130 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
             existing_funds = PortfolioFund.objects.filter(
                 portfolio__in=portfolio_ids, security__asset_type='Mutual Fund',
                 created_by=request.user)
-            fund_details = FundDetail.objects.all()
-            recommended_funds = fund_details[:4]
+            if existing_funds:
+                existing_fund_ids = existing_funds.values_list('security__id_value',
+                                                               flat=True)
+                fund_details = FundDetail.objects.all()
+                recommended_funds = fund_details[:4]
+                recommended_fund_ids = recommended_funds.values_list('fund_id',
+                                                                     flat=True)
+                price_objects = Price.objects.filter(
+                    id_value__in=list(existing_fund_ids) +
+                                 list(recommended_fund_ids))
+                existing_funds_market_values = []
+                for fund in existing_funds:
+                    try:
+                        price_obj = price_objects.filter(
+                            id_value=fund.security.id_value).latest('date')
+                        price_value = price_obj.price
+                    except Exception as e:
+                        price_value = None
+                    if '%' in fund.quantity:
+                        quantity = (float(fund.quantity.replace("%", "")) / 100) * \
+                                   1000000
+                    else:
+                        quantity = fund.quantity
+                    if price_value:
+                        market_value = float(quantity) * float(price_value)
+                        if fund.security.asset_type == 'Mutual Fund':
+                            aum = fund_details.get(fund_id=fund.security.id_value).aum
+                            quantity = float(market_value) / float(aum) * 1000000
+                            market_value = float(quantity) * float(price_value)
+                    else:
+                        market_value = None
+                    existing_funds_market_values.append(market_value)
+
+                portfolio_annual_expense = 0
+                for value in filter(None, existing_funds_market_values):
+                    portfolio_annual_expense +=\
+                        (value/sum(filter(None, existing_funds_market_values))) * value
+                existing_fund_details = fund_details.filter(fund_id__in=
+                                                            existing_fund_ids)
+                portfolio_1_year = [float(x) for x in existing_fund_details.
+                                    values_list('return_1_year', flat=True)]
+                portfolio_avg_1_year = sum(portfolio_1_year) / len(portfolio_1_year)
+
+                portfolio_3_year = [float(x) for x in existing_fund_details.
+                                    values_list('return_3_year', flat=True)]
+                portfolio_avg_3_year = sum(portfolio_3_year) / len(portfolio_3_year)
+
+                portfolio_5_year = [float(x) for x in existing_fund_details.
+                                    values_list('return_5_year', flat=True)]
+                portfolio_avg_5_year = sum(portfolio_5_year) / len(portfolio_5_year)
+                recommended_annual_exp = [float(x) for x in recommended_funds.
+                                          values_list('fund_exp_ratio', flat=True)]
+                recommended_avg_annual_exp = \
+                    sum(recommended_annual_exp) / len(recommended_annual_exp)
+                recommended_1_year = [float(x) for x in recommended_funds.
+                                      values_list('return_1_year', flat=True)]
+                recommended_avg_1_year = sum(recommended_1_year) / len(recommended_1_year)
+
+                recommended_3_year = [float(x) for x in recommended_funds.
+                                      values_list('return_3_year', flat=True)]
+                recommended_avg_3_year = sum(recommended_3_year) / len(recommended_3_year)
+
+                recommended_5_year = [float(x) for x in recommended_funds.
+                                      values_list('return_5_year', flat=True)]
+                recommended_avg_5_year = sum(recommended_5_year) / len(recommended_5_year)
+                data.append(
+                    {"existing":
+                         {'annual_expense': portfolio_annual_expense,
+                          '1-year': portfolio_avg_1_year,
+                          '3-year': portfolio_avg_3_year,
+                          '5-year': portfolio_avg_5_year},
+                     "recommended":
+                         {'annual_expense': recommended_avg_annual_exp,
+                          '1-year': recommended_avg_1_year,
+                          '3-year': recommended_avg_3_year,
+                          '5-year': recommended_avg_5_year},
+                     "difference":
+                         {'annual_expense': portfolio_annual_expense -
+                                            recommended_avg_annual_exp,
+                          '1-year':
+                              portfolio_avg_1_year - recommended_avg_1_year,
+                          '3-year':
+                              portfolio_avg_3_year - recommended_avg_3_year,
+                          '5-year':
+                              portfolio_avg_5_year - recommended_avg_5_year
+                         }
+                    })
+        return Response(data, status=200)
+
+
+class BarPlotFundRecommendation(APIView):
+    """APIView to display bar plot graph"""
+    def get(self, request):
+        data = [{'existing': {}, 'recommended': {}}]
+        if request.GET.get('portfolio_ids'):
+            portfolio_ids = request.GET.get('portfolio_ids').split(',')
+            existing_funds = PortfolioFund.objects.filter(
+                portfolio__in=portfolio_ids, security__asset_type='Mutual Fund',
+                created_by=request.user)
+            existing_fund_ids = list(existing_funds.values_list('security__id_value',
+                                                           flat=True))
+
+            recommended_fund_ids = list(FundDetail.objects.values_list('fund_id',
+                                                                  flat=True)[:4])
+            fund_inclued = FundHolding.objects.values_list('id_value', flat=True)\
+                .filter(fund_id__in=existing_fund_ids)
+            existing_quantity = Security.objects.values_list('asset_type').\
+                filter(id_value__in=fund_inclued).annotate(
+                count=Count('asset_type'))
+
+            fund_in_recommended = FundHolding.objects.values_list('id_value', flat=True)\
+                .filter(fund_id__in=recommended_fund_ids)
+            recommended_quantity = Security.objects.values_list('asset_type'). \
+                filter(id_value__in=fund_in_recommended).annotate(
+                count=Count('asset_type'))
+            for item in existing_quantity:
+                data[0].get('existing').update({item[0]: item[1]})
+            for item in recommended_quantity:
+                data[0].get('recommended').update({item[0]: item[1]})
+        return Response(data, status=200)
+
+
+class LineGraphFundRecommendation(APIView):
+    """APIView to display Line graph in fund recommendation page"""
+    def get(self, request):
+        data = []
         return Response(data, status=200)
