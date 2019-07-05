@@ -290,7 +290,7 @@ class HoldingDetailAPIView(APIView):
             data.append({'fund_id': fund.id, 'portfolio': fund.portfolio.name,
                          'security': fund.security.name,
                          'isin': fund.security.isin, 'quantity': fund.quantity,
-                         'ticker': fund.security.isin,
+                         'ticker': fund.security.ticker,
                          'basic_price': basic_price, 'basis': basis,
                          'current_price': current_price,
                          'market_value': market_value,
@@ -298,7 +298,7 @@ class HoldingDetailAPIView(APIView):
                          'currency': currency, 'country': country,
                          'industry': industry, 'rating': rating
                          })
-        return Response(data, status=204)
+        return Response(data, status=200)
 
     def post(self, request):
         """post method in HoldingDetailAPIView"""
@@ -675,8 +675,102 @@ class BarPlotFundRecommendation(APIView):
         return Response(data, status=200)
 
 
+def get_market_values(request, funds):
+    """function to get market values"""
+    market_values = []
+    fund_details = FundDetail.objects.all()
+    price = Price.objects.all()
+    for fund in funds:
+        try:
+            price_obj = price.filter(
+                id_value=fund.security.id_value).latest('date')
+            price_value = price_obj.price
+        except Exception as e:
+            price_value = 0
+        if '%' in fund.quantity:
+            quantity = (float(fund.quantity.replace("%", "")) / 100) * \
+                       1000000
+        else:
+            quantity = fund.quantity
+        if price_value:
+            market_value = float(quantity) * float(price_value)
+            if fund.security.asset_type == 'Mutual Fund':
+                aum = fund_details.get(fund_id=fund.security.id_value).aum
+                quantity = float(market_value) / float(aum) * 1000000
+                market_value = float(quantity) * float(price_value)
+            market_values.append(market_value)
+    return market_values
+
+
 class LineGraphFundRecommendation(APIView):
     """APIView to display Line graph in fund recommendation page"""
     def get(self, request):
         data = []
+        existing_fund_mkt_value = []
+        if request.GET.get('portfolio_ids'):
+            portfolio_ids = request.GET.get('portfolio_ids').split(",")
+            portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
+                                                  created_by=request.user)
+            funds = PortfolioFund.objects.filter(portfolio__in=portfolios,
+                                             security__asset_type='Mutual Fund',
+                                             created_by=request.user)
+            fund_details = FundDetail.objects.all()
+            price = Price.objects.all()
+
+            existing_fund_mkt_value = get_market_values(request, funds)
+            recommended_funds = list(fund_details[:4].values_list('fund_id',
+                                                                  flat=True))
+            recommended_mkt_value = FundHolding.objects.values_list\
+                ('market_value', flat=True).filter(fund_id__in=recommended_funds)
+            print(sum(existing_fund_mkt_value), sum(recommended_mkt_value))
+        return Response(data, status=200)
+
+
+class PortfolioPerformanceAPI(APIView):
+    """APIView to display portfolio performance"""
+    def get(self, request):
+        data = []
+        if request.GET.get('portfolio_ids'):
+            portfolio_ids = request.GET.get('portfolio_ids').split(",")
+            portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
+                                                  created_by=request.user)
+            fund_ids = PortfolioFund.objects.values_list('security__id_value')\
+                .filter(portfolio__in=portfolios, created_by=request.user,
+                        security__asset_type='Mutual Fund')
+            funds = FundDetail.objects.filter(fund_id__in=fund_ids)
+            for fund in funds:
+                data.append({'scheme': fund.name,
+                             'portfolio_1_year': fund.return_1_year,
+                             'portfolio_3_year': fund.return_3_year,
+                             'portfolio_5_year': fund.return_5_year,
+                             'benchmark_1_year': fund.benchmark_1_year,
+                             'benchmark_3_year': fund.benchmark_3_year,
+                             'benchmark_5_year': fund.benchmark_5_year,
+                             'diff_1_year': fund.return_1_year -
+                                                    fund.benchmark_1_year,
+                             'diff_3_year': fund.return_3_year -
+                                                    fund.benchmark_3_year,
+                             'diff_5_year': fund.return_5_year -
+                                                    fund.benchmark_5_year
+                             })
+        return Response(data, status=200)
+
+
+class RecommendedPerformanceAPI(APIView):
+    """APIView to display portfolio performance"""
+    def get(self):
+        data = []
+        funds = FundDetail.objects.all()[:4]
+        for fund in funds:
+            data.append({
+                'scheme': fund.name, 'portfolio_1_year': fund.return_1_year,
+                'portfolio_3_year': fund.return_3_year,
+                'portfolio_5_year': fund.return_5_year,
+                'benchmark_1_year': fund.benchmark_1_year,
+                'benchmark_3_year': fund.benchmark_3_year,
+                'benchmark_5_year': fund.benchmark_5_year,
+                'diff_1_year': fund.return_1_year - fund.benchmark_1_year,
+                'diff_3_year': fund.return_3_year - fund.benchmark_3_year,
+                'diff_5_year': fund.return_5_year - fund.benchmark_5_year
+             })
         return Response(data, status=200)
