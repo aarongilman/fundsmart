@@ -761,7 +761,7 @@ class PortfolioPerformanceAPI(APIView):
 
 class RecommendedPerformanceAPI(APIView):
     """APIView to display portfolio performance"""
-    def get(self):
+    def get(self, request):
         data = []
         funds = FundDetail.objects.all()[:4]
         for fund in funds:
@@ -785,7 +785,8 @@ class PortfolioFundData(APIView):
         data = []
         portfolios = Portfolio.objects.filter(created_by=request.user)
         portfolio_fund = list(PortfolioFund.objects.values_list('security')\
-            .filter(portfolio__in=portfolios).annotate(id=F('id')))
+            .filter(portfolio__in=portfolios, created_by=request.user)
+                              .annotate(id=F('id')))
         temp_dict = {}
         for k, g in itertools.groupby(portfolio_fund, operator.itemgetter(0)):
             if temp_dict.get(k):
