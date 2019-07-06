@@ -1,8 +1,11 @@
 """views.py in portfolios app"""
-import logging
 import xlrd
+import logging
+import operator
+import itertools
 from datetime import date
 
+from django.db.models import F
 from django.db.models import Count, Max, Min, Avg
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -773,4 +776,23 @@ class RecommendedPerformanceAPI(APIView):
                 'diff_3_year': fund.return_3_year - fund.benchmark_3_year,
                 'diff_5_year': fund.return_5_year - fund.benchmark_5_year
              })
+        return Response(data, status=200)
+
+
+class PortfolioFundData(APIView):
+    """APIView to display Portfolio fund data on dashboard"""
+    def get(self, request):
+        data = []
+        portfolios = Portfolio.objects.filter(created_by=request.user)
+        portfolio_fund = list(PortfolioFund.objects.values_list('security')\
+            .filter(portfolio__in=portfolios).annotate(id=F('id')))
+        temp_dict = {}
+        for k, g in itertools.groupby(portfolio_fund, operator.itemgetter(0)):
+            if temp_dict.get(k):
+                temp_dict.get(k).extend(list(list(zip(*g))[1]))
+            else:
+                temp_dict.update({k: list(list(zip(*g))[1])})
+        for value in temp_dict.values():
+            data.extend([value[i * 3:(i + 1) * 3] for i in
+                         range((len(value) + 3 - 1) // 3)])
         return Response(data, status=200)

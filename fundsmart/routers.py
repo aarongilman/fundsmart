@@ -8,7 +8,7 @@ from portfolios.views import HistoricalPerformanceDifference,\
     HoldingSummaryByAssetClass, HoldingSummaryByIndustry,\
     HoldingSummaryByCountry, HoldingSummaryHistoricalPerformanceDifference,\
     FundRecommendationHistoricalPerformanceDiff, HoldingSummaryLineGraph,\
-    BarPlotFundRecommendation, LineGraphFundRecommendation,\
+    BarPlotFundRecommendation, LineGraphFundRecommendation, PortfolioFundData,\
     PortfolioPerformanceAPI, RecommendedPerformanceAPI
 
 from portfolios.viewsets import PortfolioViewSet, PortfolioFundViewSet,\
@@ -49,5 +49,6 @@ urlpatterns += [
     re_path(r'^line_graph_fund_recommendation/$',
             LineGraphFundRecommendation.as_view()),
     re_path(r'^portfolio_performance/$', PortfolioPerformanceAPI.as_view()),
-    re_path(r'^recommended_performance/$', RecommendedPerformanceAPI.as_view())
+    re_path(r'^recommended_performance/$', RecommendedPerformanceAPI.as_view()),
+    re_path(r'^portfolio_fund_data/$', PortfolioFundData.as_view())
 ]
