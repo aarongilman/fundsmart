@@ -31,7 +31,7 @@ import { ConfirmemailComponent } from './confirmemail/confirmemail.component';
 import { FilterPipe } from './filter.pipe';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { MatMenuModule } from '@angular/material';
 
 let gapiClientConfig: NgGapiClientConfig = {
     client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
@@ -87,6 +87,7 @@ export function provideConfig() {
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule,
+        MatMenuModule,
         ToastrModule.forRoot(),
         SocialLoginModule,
         GoogleChartsModule.forRoot(),

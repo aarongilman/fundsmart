@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { MatMenuTrigger } from '@angular/material';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-fund',
@@ -9,20 +11,34 @@ import { ToastrService } from 'ngx-toastr';
     styleUrls: ['./fund.component.css']
 })
 export class FundComponent implements OnInit {
+    @ViewChild(MatMenuTrigger)
+    contextMenu: MatMenuTrigger;
     result: any = [];
     closeResult: string;
     _id: any;
     fund: any;
+    SelectedIDs: any = [];
     searchText: string;
-    
+    contextMenuPosition = { x: '0px', y: '0px' };
+
+
     constructor(
-        private userService: ServercommunicationService, 
+        private userService: ServercommunicationService,
         private modalService: NgbModal,
         private toastr: ToastrService,
-        ) { }
+        private router: Router
+    ) { }
 
     ngOnInit() {
         this.getFunds();
+    }
+
+    onContextMenu(event: MouseEvent, item: Item) {
+        event.preventDefault();
+        this.contextMenuPosition.x = event.clientX + 'px';
+        this.contextMenuPosition.y = event.clientY + 'px';
+        this.contextMenu.menuData = { 'item': item };
+        this.contextMenu.openMenu();
     }
 
     getFunds() {
@@ -57,7 +73,7 @@ export class FundComponent implements OnInit {
     updatePortfolioData(_id) {
         this.userService.update_One_Object(this.fund, _id).subscribe(
             data => {
-               this.toastr.success('Updated Portfolio','Updated Portfolio');
+                this.toastr.success('Portfolio Updated!', 'Portfolio Updated!');
             });
     }
 
@@ -68,4 +84,37 @@ export class FundComponent implements OnInit {
             });
     }
 
+    selectID(item) {
+        if (this.SelectedIDs.find(x => x == item)) {
+            this.SelectedIDs.splice(this.SelectedIDs.indexOf(item), 1);
+            //console.log(this.SelectedIDs);
+        } else {
+            this.SelectedIDs.push(item)
+           // console.log(this.SelectedIDs);
+        }
+    }
+
+    onContextMenuAction1() {
+        // this is query params 
+
+        this.router.navigate(['/holding_summary'], { queryParams: { id: this.SelectedIDs } });
+
+        // console.log('hiiiiii', this.SelectedIDs);
+
+    }
+
+    onContextMenuAction2() {
+        this.router.navigate(['/holding_details']);
+    }
+
+    onContextMenuAction3() {
+        this.router.navigate(['/fund_reccommendation']);
+    }
+
+    onContextMenuAction4() {
+        this.router.navigate(['/allocation_recommendation']);
+    }
+
 }
+
+export interface Item { }
