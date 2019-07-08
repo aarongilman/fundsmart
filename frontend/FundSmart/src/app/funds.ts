@@ -6,4 +6,5 @@ export interface funds {
     security_name: string;
     asset_type: string;
     isin: string;
+    price: string;
 }

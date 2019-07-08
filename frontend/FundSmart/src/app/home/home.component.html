@@ -38,6 +38,21 @@
                                     <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
                                     <!-- {{item|json}} -->
                                     <td>
+                                        <!-- <ng-select *ngIf="item.security == '' " [items]="securitylist"
+                                            class="form-control " bindLabel="name" style="overflow:visible"
+                                            placeholder="Select Security" [(ngModel)]="securityinput[i]"
+                                            [searchFn]='searchsecurity()' bindValue="id"
+                                            (change)="currentUser ? item.security = securityinput[i] : openmodal(login,'login');item.security = securityinput[i]">
+                                        
+                                            <ng-template ng-label-tmp let-item="item">
+                                                    <span [ngOptionHighlight]="search">{{ item.id }} {{ item.name }} {{item.isin}} {{item.ticker}} </span>
+                                                  </ng-template>
+                                
+                                                  <ng-template ng-option-tmp let-item="item" let-search="searchTerm" let-index="index">
+                                                    <span [ngOptionHighlight]="search">{{ item.id }} {{ item.name }} {{item.isin}} {{item.ticker}}</span>
+                                                  </ng-template>
+                                        
+                                        </ng-select> -->
                                         <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
                                             (keyup)="searchsecurity($event)" list="securityname" name='security_{{i}}'
                                             (change)="currentUser ? item.security = securityinput[i] : openmodal(login,'login');item.security = securityinput[i]"
@@ -248,6 +263,27 @@
                         </form>
                     </div>
                 </div>
+
+                <div *ngIf="currentUser"
+                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+                    <div class="curve_chart">
+                        <google-chart *ngIf="currentUser" [title]="linetitle" [type]="linetype" [data]="linedata"
+                            [options]="lineoptions" [width]="linewidth" [height]="lineheight"
+                            [columnNames]="linecolumnNames">
+                        </google-chart>
+                    </div>
+                </div>
+
+                <!-- <div *ngIf="currentUser"
+                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
+                    <div class="donutchart">
+                        <google-chart *ngIf="currentUser" [title]="donutitle" [type]="donuttype" [data]="donutdata"
+                            [columnNames]="columnNames" [options]="donutoptions" [height]="donutheight"
+                            [width]="donutwidth">
+                        </google-chart>
+                    </div>
+                </div> -->
+
             </div>
             <div class="col-lg-5">
                 <div *ngIf="currentUser != undefined "
@@ -293,7 +329,7 @@
                     </div>
                 </div>
 
-                <div *ngIf="currentUser"
+                <!-- <div *ngIf="currentUser"
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
                     <div class="curve_chart">
                         <google-chart *ngIf="currentUser" [title]="linetitle" [type]="linetype" [data]="linedata"
@@ -301,8 +337,8 @@
                             [columnNames]="linecolumnNames">
                         </google-chart>
                     </div>
-                </div>
-            
+                </div> -->
+
                 <div *ngIf="currentUser"
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
                     <div class="donutchart">
@@ -324,7 +360,7 @@
 
             </div>
         </div>
-    
+
         <ng-template #upload let-modal>
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" (click)="modal.dismiss('Cross click')"
@@ -590,6 +626,9 @@
                             </div>
                             <div class="forgot-password d-flex align-items-center justify-content-end">
                                 <a (click)='resetpass_modal()'>Forgot Password?</a>
+                            </div>
+                            <div id='Loginerror' class="hidden">
+                                <label>Invalid Login Credentials</label>
                             </div>
                             <button type="button" (click)='userlogin()'
                                 class="trade-btn green-btn d-flex align-items-center justify-content-center">

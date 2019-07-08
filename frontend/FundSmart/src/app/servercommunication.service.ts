@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService, SocialUser, GoogleLoginProvider } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
+import { Observable } from 'rxjs';
+import { holdindDetail } from './holding-details/holdingDetail';
 
 @Injectable({
   providedIn: 'root'
@@ -222,13 +224,6 @@ export class ServercommunicationService {
     });
   }
 
-
-
-  getHoldingDetails() {
-    return this.http.get(this.api_link + 'api/holding_detail/',
-      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-  }
-
   update_One_Object(user: any, id) {
     const body = {
       id: user.id,
@@ -275,6 +270,37 @@ export class ServercommunicationService {
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
+  getHoldings() {
+    return this.http.get(this.api_link + 'api/holding_detail/',
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  UpdateHoldingDetails(obj: holdindDetail) {
+    const body = {
+      id: obj.fund_id,
+      portfolio: obj.portfolio,
+      security: obj.security,
+      isin: obj.isin,
+      quantity: obj.quantity,
+      ticker: obj.ticker,
+      price: obj.basic_price,
+      basis: obj.basis,
+      current_price: obj.current_price,
+      market_value: obj.market_value,
+      asset_class: obj.asset_class,
+      currency: obj.currency,
+      country: obj.country,
+      industry: obj.industry,
+      rating: obj.rating
+    };
+    return this.http.post(this.api_link + 'api/holding_detail/', body,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  dashboardDataTable() {
+    return this.http.get(this.api_link + 'api/portfolio_fund_data/',
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
 
   // production api ----->3.16.111.80
 

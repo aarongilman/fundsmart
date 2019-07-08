@@ -11,6 +11,7 @@ import { AllocationFundAnalysisComponent } from './allocation-fund-analysis/allo
 import { AllocationRecommendationComponent } from './allocation-recommendation/allocation-recommendation.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { ConfirmemailComponent } from './confirmemail/confirmemail.component';
+import { TestingdataComponent } from './testingdata/testingdata.component';
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
@@ -23,7 +24,8 @@ const routes: Routes = [
   { path: 'allocation_fund_analysis', component: AllocationFundAnalysisComponent },
   { path: 'allocation_recommendation', component: AllocationRecommendationComponent },
   { path: 'reset-password/:uid/:token', component: ResetPasswordComponent },
-  { path: 'confirm-email/:token', component: ConfirmemailComponent }
+  { path: 'confirm-email/:token', component: ConfirmemailComponent },
+  { path: 'abc', component: TestingdataComponent }
 ];
 
 @NgModule({

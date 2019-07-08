@@ -86,7 +86,9 @@ export class FundCreateComponent implements OnInit {
 
     this.setcurrent_user();
     if (this.userservice.currentuser !== null) {
+      apiresultfundlist.length = 0;
       this.getfunds();
+
     }
   }
 
@@ -106,7 +108,8 @@ export class FundCreateComponent implements OnInit {
         security: 0,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
       };
       fund = data['results'][i];
       apiresultfundlist.push(fund);
@@ -210,9 +213,10 @@ export class FundCreateComponent implements OnInit {
       security: 0,
       security_name: '',
       asset_type: '',
-      isin: ''
+      isin: '',
+      price: ''
     };
-    apiresultfundlist.push(singlefund);
+    apiresultfundlist.unshift(singlefund);
     this.fundservice.resetfunds();
     this.fundservice.funds$.subscribe(list => {
       this.fundlist = list;
@@ -234,7 +238,8 @@ export class FundCreateComponent implements OnInit {
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
       });
     }
     this.fundservice.resetfunds();

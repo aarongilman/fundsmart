@@ -8,7 +8,8 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     },
     {
         id: -1,
@@ -17,7 +18,8 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     },
     {
         id: -1,
@@ -26,7 +28,8 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     },
     {
         id: -1,
@@ -35,7 +38,8 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     },
     {
         id: -1,
@@ -44,7 +48,8 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     },
     {
         id: -1,
@@ -53,7 +58,8 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     },
     {
         id: -1,
@@ -62,7 +68,8 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     },
     {
         id: -1,
@@ -71,7 +78,8 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     },
     {
         id: -1,
@@ -80,7 +88,8 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     },
     {
         id: -1,
@@ -89,6 +98,7 @@ export let apiresultfundlist: funds[] = [
         security: -1,
         security_name: '',
         asset_type: '',
-        isin: ''
+        isin: '',
+        price: ''
     }
 ];

@@ -31,7 +31,8 @@ import { ConfirmemailComponent } from './confirmemail/confirmemail.component';
 import { FilterPipe } from './filter.pipe';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { TestingdataComponent } from './testingdata/testingdata.component';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 let gapiClientConfig: NgGapiClientConfig = {
     client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
@@ -76,7 +77,8 @@ export function provideConfig() {
         DragAndDropDirective,
         SortableDirective,
         ConfirmemailComponent,
-        FilterPipe
+        FilterPipe,
+        TestingdataComponent
     ],
     imports: [
         BrowserModule,
@@ -86,6 +88,7 @@ export function provideConfig() {
         NgbModule,
         HttpClientModule,
         FormsModule,
+        NgSelectModule,
         ReactiveFormsModule,
         ToastrModule.forRoot(),
         SocialLoginModule,

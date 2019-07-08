@@ -1,14 +1,16 @@
 import { Injectable, PipeTransform } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 
-import { portfolio_fund } from './portfolio_fund';
-import { portfoliofundlist } from './portfolio_fundlist';
+import { holdindDetail } from './holdingDetail';
+import { holdingList } from './holdingList';
 import { DecimalPipe } from '@angular/common';
 import { debounceTime, delay, switchMap, tap } from 'rxjs/operators';
-import { SortDirection } from './sortable.directive';
+import { SortDirection } from '../sortable.directive';
+
+
 
 interface SearchResult {
-  fundlist: portfolio_fund[];
+  holdinglist: holdindDetail[];
   total: number;
 }
 
@@ -24,40 +26,41 @@ function compare(v1, v2) {
   return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
 }
 
-function sort(fundlist: portfolio_fund[], column: string, direction: string): portfolio_fund[] {
+function sort(holdinglist: holdindDetail[], column: string, direction: string): holdindDetail[] {
   if (direction === '') {
-    return fundlist;
+    return holdinglist;
   } else {
-    return [...fundlist].sort((a, b) => {
+    return [...holdinglist].sort((a, b) => {
       const res = compare(a[column], b[column]);
       return direction === 'asc' ? res : -res;
     });
   }
 }
 
-function matches(fund: portfolio_fund, term: string, pipe: PipeTransform) {
-  if (fund.yourPortfolio === null) {
-    fund.yourPortfolio = '';
-  }
-  if (fund.comparision1 === null) {
-    fund.comparision1 = '';
-  }
-  if (fund.comparision2 === null) {
-    fund.comparision2 = '';
-  }
-  return fund.security.toLowerCase().includes(term)
-    || pipe.transform(fund.yourPortfolio).includes(term)
-    || pipe.transform(fund.comparision1).includes(term)
-    || pipe.transform(fund.comparision2).includes(term);
+function matches(holding: holdindDetail, term: string, pipe: PipeTransform) {
+  return holding.security.toLowerCase().includes(term)
+    || holding.isin.toLocaleLowerCase().includes(term)
+    || holding.rating.toLocaleLowerCase().includes(term)
+    || holding.asset_class.toLocaleLowerCase().includes(term)
+    || pipe.transform(holding.basic_price).includes(term)
+    || pipe.transform(holding.basis).includes(term)
+    || holding.country.toLocaleLowerCase().includes(term)
+    || holding.currency.toLocaleLowerCase().includes(term)
+    || pipe.transform(holding.current_price).includes(term)
+    || holding.industry.toLocaleLowerCase().includes(term)
+    || pipe.transform(holding.market_value).includes(term)
+    || holding.portfolio.toLocaleLowerCase().includes(term)
+    || holding.quantity.toLocaleLowerCase().includes(term)
+    || holding.ticker.toLocaleLowerCase().includes(term);
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class PortfoliofundhelperService {
+export class HoldingdetailsSortService {
   private _loading$ = new BehaviorSubject<boolean>(true);
   private _search$ = new Subject<void>();
-  private _funds$ = new BehaviorSubject<portfolio_fund[]>([]);
+  private _holdings$ = new BehaviorSubject<holdindDetail[]>([]);
   private _total$ = new BehaviorSubject<number>(0);
 
   private _state: State = {
@@ -76,15 +79,14 @@ export class PortfoliofundhelperService {
       delay(200),
       tap(() => this._loading$.next(false))
     ).subscribe(result => {
-      this._funds$.next(result.fundlist);
+      this._holdings$.next(result.holdinglist);
       this._total$.next(result.total);
     });
 
     this._search$.next();
   }
 
-  resetfunds() {
-
+  resetHoldingDetails() {
     this._search$.pipe(
       tap(() => this._loading$.next(true)),
       debounceTime(200),
@@ -93,13 +95,13 @@ export class PortfoliofundhelperService {
       tap(() => this._loading$.next(false))
     ).subscribe(result => {
       // console.log("result is ====>", result);
-      this._funds$.next(result.fundlist);
+      this._holdings$.next(result.holdinglist);
       this._total$.next(result.total);
     });
     this._search$.next();
   }
 
-  get funds$() { return this._funds$.asObservable(); }
+  get hlist$() { return this._holdings$.asObservable(); }
   get total$() { return this._total$; }
   get loading$() { return this._loading$.asObservable(); }
   get page() { return this._state.page; }
@@ -121,13 +123,15 @@ export class PortfoliofundhelperService {
     const { sortColumn, sortDirection, pageSize, page, searchTerm } = this._state;
 
     // 1. sort
-    let fundlist = sort(portfoliofundlist, sortColumn, sortDirection);
+    let holdinglist = sort(holdingList, sortColumn, sortDirection);
     // 2. filter
-    fundlist = fundlist.filter(fund => matches(fund, searchTerm, this.pipe));
-    const total = fundlist.length;
+    holdinglist = holdinglist.filter(holding =>
+      matches(holding, searchTerm, this.pipe)
+    );
+    const total = holdinglist.length;
 
     // 3. paginate
-    fundlist = fundlist.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
-    return of({ fundlist, total });
+    holdinglist = holdinglist.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
+    return of({ holdinglist, total });
   }
 }
