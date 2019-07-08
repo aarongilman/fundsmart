@@ -370,7 +370,7 @@ def get_summary_data(request, type):
             for key, value in temp_dict.items():
                 total += sum(value)
                 data.append({key: sum(value)})
-            data.append({'total': total})
+            data.append({'Total': total})
         return data
 
 
@@ -414,7 +414,7 @@ class HoldingSummaryByHoldingType(APIView):
                 for key, value in temp_dict.items():
                     total += sum(value)
                     data.append({key: sum(value)})
-                data.append({'total': total})
+                data.append({'Total': total})
         return Response(data, status=200)
 
 
@@ -516,12 +516,12 @@ def get_historical_performance(request):
             total_1_year.append(return_1_year)
             total_3_year.append(return_3_year)
             total_5_year.append(return_5_year)
-        data.append({'total': {'total_annual_expense': total_annual_expense,
-                               'total_1_year': sum(
+        data.append({'total': {'annual_expense': total_annual_expense,
+                               '1-year': sum(
                                    list(filter(None, total_1_year))),
-                               'total_3_year': sum(
+                               '3-year': sum(
                                    list(filter(None, total_3_year))),
-                               'total_5_year': sum(
+                               '5-year': sum(
                                    list(filter(None, total_5_year)))}})
         return data
 
@@ -779,21 +779,47 @@ class RecommendedPerformanceAPI(APIView):
         return Response(data, status=200)
 
 
+from operator import itemgetter
 class PortfolioFundData(APIView):
     """APIView to display Portfolio fund data on dashboard"""
     def get(self, request):
         data = []
         portfolios = Portfolio.objects.filter(created_by=request.user)
-        portfolio_fund = list(PortfolioFund.objects.values_list('security')\
+        portfolio_funds = PortfolioFund.objects\
             .filter(portfolio__in=portfolios, created_by=request.user)
-                              .annotate(id=F('id')))
-        temp_dict = {}
-        for k, g in itertools.groupby(portfolio_fund, operator.itemgetter(0)):
-            if temp_dict.get(k):
-                temp_dict.get(k).extend(list(list(zip(*g))[1]))
-            else:
-                temp_dict.update({k: list(list(zip(*g))[1])})
-        for value in temp_dict.values():
-            data.extend([value[i * 3:(i + 1) * 3] for i in
-                         range((len(value) + 3 - 1) // 3)])
-        return Response(data, status=200)
+        securities = portfolio_funds.values_list('security__id', flat=True).distinct()
+        security_list = Security.objects.filter(id__in=securities)
+        for security in securities:
+            temp_dict = {'security_id': security}
+            count = 1
+            for portfolio in portfolios:
+                obj_list = portfolio_funds.values_list('id', 'quantity', 'portfolio')\
+                    .filter(portfolio=portfolio, security_id=security)
+                temp_dict.update({'portfolio'+str(count): list(obj_list)})
+                count = count + 1
+            data.append(temp_dict)
+        final_data = []
+        for dict in data:
+            print("====================",dict)
+            security_id = dict.pop('security_id')
+            details = list(itertools.zip_longest(*dict.values()))
+            for portfolio_data in details:
+                try:
+                    security_name = security_list.get(id=security_id).name
+                except:
+                    security_name = None
+                temp_dict = {}
+                temp_dict.update({'security_id': security_id,
+                                  'security_name': security_name})
+                count = 1
+                for data in portfolio_data:
+                    portfolio_fund_id = None
+                    quantity = None
+                    if data:
+                        portfolio_fund_id = data[0]
+                        quantity = data[1]
+                    temp_dict.update({'portfolio_id_'+str(count): portfolio_fund_id,
+                                      'quantity'+str(count): quantity})
+                    count = count+1
+                final_data.append(temp_dict)
+        return Response(final_data, status=200)
