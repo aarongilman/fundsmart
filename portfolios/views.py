@@ -221,13 +221,13 @@ class DashboardPieChart(APIView):
             order_by('total')
         return Response(data, status=200)
 
+
 def get_holding_detail_data(fund):
     try:
         fund_detail = FundDetail.objects.get(fund_id=fund.security.id_value)
     except Exception as e:
         LOGGER.error("Error {} occurred: get holding details!". format(e))
     price = Price.objects.filter(id_value=fund.security.id_value)
-    print(price.latest('date'), "================")
     try:
         try:
             holding_detail = HoldingDetail.objects.get(fund=fund)
@@ -401,9 +401,9 @@ class HoldingDetailAPIView(APIView):
             if request.data.get('currency'):
                 holding_detail.currency = request.data.get('currency')
             if request.data.get('basic_price'):
-                holding_detail.price = request.data.get('basic_price')
+                holding_detail.basic_price = request.data.get('basic_price')
             if request.data.get('current_price'):
-                holding_detail.price = request.data.get('current_price')
+                holding_detail.current_price = request.data.get('current_price')
             if request.data.get('country'):
                 holding_detail.country = request.data.get('country')
             if request.data.get('industry'):
