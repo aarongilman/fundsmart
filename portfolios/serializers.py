@@ -50,13 +50,12 @@ class PortfolioFundSerializer(serializers.ModelSerializer):
     def get_price(self, obj):
         request = self.context.get('request')
         date = datetime.today().date()
-        price = 0
+        price = None
         if request.query_params.get('date'):
             date = request.query_params.get('date')
         try:
-            price = HoldingDetail.objects.get(fund=obj).price
+            price = HoldingDetail.objects.get(fund=obj).current_price
             if not price:
-                price = 0
                 raise Exception
         except Exception:
             price_obj = Price.objects.filter(date=date, id_value=obj.security.id_value)

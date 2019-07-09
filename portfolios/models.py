@@ -122,7 +122,9 @@ class HoldingDetail(models.Model):
     """HoldingDetail model class"""
     fund = models.ForeignKey(PortfolioFund, on_delete=models.CASCADE)
     currency = models.CharField(max_length=30, null=True, blank=True)
-    price = models.DecimalField(max_digits=7, decimal_places=3,
+    basic_price = models.DecimalField(max_digits=7, decimal_places=3,
+                                null=True, blank=True)
+    current_price = models.DecimalField(max_digits=7, decimal_places=3,
                                 null=True, blank=True)
     country = models.CharField(max_length=100, null=True, blank=True)
     industry = models.CharField(max_length=100, null=True, blank=True)

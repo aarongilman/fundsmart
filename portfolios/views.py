@@ -240,8 +240,8 @@ class HoldingDetailAPIView(APIView):
                     holding_detail = HoldingDetail.objects.get(fund=fund)
                 except Exception as e:
                     holding_detail = None
-                if holding_detail and holding_detail.price:
-                    basic_price = holding_detail.price
+                if holding_detail and holding_detail.basic_price:
+                    basic_price = holding_detail.basic_price
                 else:
                     basic_price = price.filter(id_value=fund.security.id_value,
                                                date=fund.portfolio.created_at.date()
@@ -249,31 +249,43 @@ class HoldingDetailAPIView(APIView):
             except Exception as e:
                 LOGGER.error("Error {} occurred:holding details!".
                              format(e))
-                basic_price = 0
+                basic_price = None
             if '%' in fund.quantity:
                 quantity = (float(fund.quantity.replace("%", "")) / 100) * \
                            1000000
             else:
                 quantity = fund.quantity
-            basis = float(quantity) * float(basic_price)
+            basis = float(quantity) * float(basic_price) if basic_price else None
+
             # Quantity is different for mutual funds
             if fund.security.asset_type == 'Mutual Fund':
                 aum = fund_details.get(fund_id=fund.security.id_value).aum
-                quantity = float(basis) / float(aum) * 1000000
-                basis = float(quantity) * float(basic_price)
+                if basis:
+                    quantity = float(basis) / float(aum) * 1000000
+                    basis = float(quantity) * float(basic_price)
+                else:
+                    basis = None
             try:
-                current_price = price.filter(id_value=fund.security.id_value)\
-                    .latest('date').price
-            except:
-                current_price = 0
-            if fund.security.asset_type == 'Mutual Fund':
+                if holding_detail and holding_detail.current_price:
+                    current_price = holding_detail.current_price
+                else:
+                    current_price = price.filter(id_value=fund.security.id_value)\
+                        .latest('date').current_price
+            except Exception as e:
+                LOGGER.error("Error {} occurred:holding details!".
+                             format(e))
+                current_price = None
+            market_value = None
+            if current_price:
                 if fund.security.asset_type == 'Mutual Fund':
-                    aum = fund_details.get(fund_id=fund.security.id_value).aum
-                    quantity = float(float(fund.quantity) * float(basic_price) /
-                                     float(aum)) * 1000000
-                market_value = float(quantity) * float(current_price)
-            else:
-                market_value = float(quantity) * float(current_price)
+                    if basic_price:
+                        aum = fund_details.get(fund_id=fund.security.id_value).aum
+                        quantity = float(float(fund.quantity) * float(basic_price) /
+                                         float(aum)) * 1000000
+                    else:
+                        quantity = None
+                if quantity:
+                    market_value = float(quantity) * float(current_price)
             currency = fund.security.currency
             if holding_detail and holding_detail.currency:
                 currency = holding_detail.currency
@@ -310,8 +322,10 @@ class HoldingDetailAPIView(APIView):
                 fund_id=int(request.data.get('id')))
             if request.data.get('currency'):
                 holding_detail.currency = request.data.get('currency')
-            if request.data.get('price'):
-                holding_detail.price = request.data.get('price')
+            if request.data.get('basic_price'):
+                holding_detail.price = request.data.get('basic_price')
+            if request.data.get('current_price'):
+                holding_detail.price = request.data.get('current_price')
             if request.data.get('country'):
                 holding_detail.country = request.data.get('country')
             if request.data.get('industry'):
@@ -516,7 +530,7 @@ def get_historical_performance(request):
             total_1_year.append(return_1_year)
             total_3_year.append(return_3_year)
             total_5_year.append(return_5_year)
-        data.append({'total': {'annual_expense': total_annual_expense,
+        data.append({'Total': {'annual_expense': total_annual_expense,
                                '1-year': sum(
                                    list(filter(None, total_1_year))),
                                '3-year': sum(
