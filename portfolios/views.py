@@ -632,9 +632,9 @@ class HoldingSummaryLineGraph(APIView):
         result = get_historical_performance(request)
         data = []
         for item in result:
-            temp_dict = {"name": None, 'label': [], 'series': []}
+            temp_dict = {"portfolio": None, 'series': [], 'label': []}
             for key, value in item.items():
-                temp_dict.update({'name': key})
+                temp_dict.update({'portfolio': key})
                 temp_dict.get('label').append(value.keys())
                 temp_dict.get('series').append(value.values())
                 data.append(temp_dict)
