@@ -32,6 +32,8 @@ import { FilterPipe } from './filter.pipe';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatMenuModule } from '@angular/material';
+import { CheckboxModule } from 'primeng/checkbox';
+
 
 let gapiClientConfig: NgGapiClientConfig = {
     client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
@@ -86,6 +88,7 @@ export function provideConfig() {
         NgbModule,
         HttpClientModule,
         FormsModule,
+        CheckboxModule,
         ReactiveFormsModule,
         MatMenuModule,
         ToastrModule.forRoot(),

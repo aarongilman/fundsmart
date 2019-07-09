@@ -17,29 +17,18 @@ export class HoldingSummaryComponent implements OnInit {
     country: any = [];
     industry: any = [];
     graph = [];
-    data: any;
+    linedata = [];
+    linetype = 'LineChart';
+
+
     linecolumnNames = [];
     lineoptions;
-    final = [];
-
-    Portfolio23: HistoricalData = {
-        annualexpense: 0,
-        oneyear: 0,
-        threeyear: 0,
-        fiveyear: 0
-    };
-    Portfolio256: HistoricalData = {
-        annualexpense: 0,
-        oneyear: 0,
-        threeyear: 0,
-        fiveyear: 0
-    };
-    total: HistoricalData = {
-        annualexpense: 0,
-        oneyear: 0,
-        threeyear: 0,
-        fiveyear: 0
-    };
+    total = {};
+    total1 = {};
+    total2 = {};
+    total3 = {};
+    total4 = {};
+    total5 = {};
 
     constructor(
         private service: ServercommunicationService,
@@ -59,127 +48,142 @@ export class HoldingSummaryComponent implements OnInit {
         this.getLineGraph();
     }
 
-    getAssets() {
-        this.service.holding_summary_asset(this.id).subscribe(
-            (result: any) => {
-                for (let i = 0; i < result.length; i++) {
-                    const element = result[i];
-                    const value = Object.values(element);
-                    const name = Object.keys(element);
-                    this.result.push({
-                        name: name[0],
-                        value: value[0]
-                    });
+    getFund() {
+        this.service.holding_summary_fund(this.id).subscribe((fundData: any) => {
+            fundData.forEach(fund => {
+                const names = Object.keys(fund);
+                const FundObj = {
+                    name: names[0],
+                    value: fund[names[0]]
+                }
+                if (names[0] !== 'Total') {
+                    this.fund.push(FundObj);
+                } else {
+                    this.total = FundObj;
                 }
             });
+        });
+    }
+
+    getAssets() {
+        this.service.holding_summary_asset(this.id).subscribe((resultData: any) => {
+            resultData.forEach(result => {
+                const names = Object.keys(result);
+                const ResultObj = {
+                    name: names[0],
+                    value: result[names[0]]
+                }
+                if (names[0] !== 'Total') {
+                    this.result.push(ResultObj);
+                } else {
+                    this.total1 = ResultObj;
+                }
+            });
+        });
     }
 
     getCountry() {
-        this.service.holding_summary_country(this.id).subscribe(
-            (country: any) => {
-                for (let i = 0; i < country.length; i++) {
-                    const element = country[i];
-                    const value = Object.values(element);
-                    const name = Object.keys(element);
-                    this.country.push({
-                        name: name[0],
-                        value: value[0]
-                    })
+        this.service.holding_summary_country(this.id).subscribe((countryData: any) => {
+            countryData.forEach(country => {
+                const names = Object.keys(country);
+                const CountryObj = {
+                    name: names[0],
+                    value: country[names[0]]
+                }
+                if (names[0] !== 'Total') {
+                    this.country.push(CountryObj);
+                } else {
+                    this.total2 = CountryObj;
                 }
             });
+        });
     }
 
-    getFund() {
-        this.service.holding_summary_fund(this.id).subscribe(
-            (fund: any) => {
-                for (let i = 0; i < fund.length; i++) {
-                    const element = fund[i];
-                    const value = Object.values(element);
-                    const name = Object.keys(element);
-                    this.fund.push({
-                        name: name[0],
-                        value: value[0]
-                    })
-                }
-            });
-    }
+
 
     getIndustry() {
-        this.service.holding_summary_industry(this.id).subscribe(
-            (industry: any) => {
-                for (let i = 0; i < industry.length; i++) {
-                    const element = industry[i];
-                    const value = Object.values(element);
-                    const name = Object.keys(element);
-                    this.industry.push({
-                        name: name[0],
-                        value: value[0]
-                    });
+        this.service.holding_summary_industry(this.id).subscribe((industryData: any) => {
+            industryData.forEach(industry => {
+                const names = Object.keys(industry);
+                const industryObj = {
+                    name: names[0],
+                    value: industry[names[0]]
                 }
-                //  console.log("Indsutr", this.industry);
+                if (names[0] !== 'Total') {
+                    this.industry.push(industryObj);
+                } else {
+                    this.total3 = industryObj;
+                }
             });
+        });
     }
 
     getHistoricalPerformance() {
-        this.service.holding_summary_historicalPerformance(this.id).subscribe(
-            (historical: any) => {
-                for (let i = 0; i < historical.length; i++) {
-
-                    const element = historical[i];
-                    //        const final = historical.pop();
-                    // this.final = final;
-                    //      console.log("final@@@",final);
-                    //    console.log("historical", this.historical);
-                    const value = Object.values(element);
-                    const name = Object.keys(element);
-                    // console.log("element", element);
-                    this.historical.push({
-                        name: name[0],
-                        value: value[0]
-                    });
+        this.service.holding_summary_historicalPerformance(this.id).subscribe((historicalData: any) => {
+            historicalData.forEach(historical => {
+                const names = Object.keys(historical);
+                const historicalObj = {
+                    name: names[0],
+                    value: historical[names[0]]
                 }
-
+                if (names[0] !== 'Total') {
+                    this.historical.push(historicalObj);
+                } else {
+                    this.total4 = historicalObj;
+                }
             });
+        });
     }
 
     getLineGraph() {
-        //     this.service.holding_summary_lineGraph(this.id).subscribe(
-        //         (jsondata: any) => {
-        //             const tempArray = [];
-        //             const mainObj = {};
-        //             for (let i = 0; i < jsondata.length; i++) {
-        //                 const element = jsondata[i];
-        //                 for (let k = 0; k < element['label'].length; k++) {
-        //                     const label = element['label'];
-        //                     if (tempArray.filter(x => x === label).length === 0) {
-        //                         tempArray.push(label);
-        //                     }
-        //                     if (mainObj[label]) {
-        //                         mainObj[label] = mainObj[label] + ',' + element.series[k];
-        //                     } else {
-        //                         mainObj[label] = element.series[k];
-        //                     }
-        //                 }
-        //             }
-        //             console.log(tempArray);
-        //             for (let i = 0; i < tempArray.length; i++) {
-        //                 const element = tempArray[i];
-        //                 const values = (mainObj[element]);
-        //                 const valuesCollection = [];
-        //                 valuesCollection.push(element.toString());
-        //                 for (const iterator of values) {
-        //                     if (iterator && iterator !== NaN) {
-        //                         valuesCollection.push(parseFloat(iterator));
-        //                     } else {
-        //                         valuesCollection.push(0);
-        //                     }
-        //                 }
-        //                 this.graph.push(valuesCollection);
-        //             }
-        //             // this.graph = graph;
-        //             console.log("Line", this.graph);
+        this.service.holding_summary_lineGraph(this.id).subscribe(
+            (jsondata: any) => {
+                this.linedata = [];
+                this.linecolumnNames = ['label'];
+                const tempArray = [];
+                const mainObj = {};
+                if (this.linedata == []) {
+                    this.linedata.push(['No data copy', 0, 0]);
+                } else {
+                    for (let i = 0; i < jsondata.length; i++) {
+                        const element = jsondata[i];
+                        if (this.linedata !== null) {
+                            this.linecolumnNames.push(element.portfolio);
+                        }
+                        for (let k = 0; k < element['label'].length; k++) {
+                            const label = element['label'][k];
+                            if (tempArray.filter(x => x === label).length === 0) {
+                                tempArray.push(label);
+                            }
+                            // debugger
+                            if (mainObj[label] || mainObj[label] === 0) {
+                                mainObj[label] = mainObj[label] + ',' + ((element.series[k]) ? element.series[k] : 0);
+                            } else {
+                                mainObj[label] = (element.series[k]) ? element.series[k] : 0;
+                            }
+                        }
+                    }
+                    for (let i = 0; i < tempArray.length; i++) {
+                        const element = tempArray[i]; // let me check
+                        const values = (mainObj[element].split(',')).filter(Boolean);
+                        // const values = (mainObj[element]);
+                        const valuesCollection = [];
+                        valuesCollection.push(element);
+                        for (const iterator of values) {
+                            valuesCollection.push(parseFloat(iterator));
+                        }
+                        this.linedata.push(valuesCollection);
+                    }
+                    // // debugger;
+                    console.log("Line", this.linedata);
 
-        //         });
+                }
+                this.lineoptions = {
+                    pointSize: 5,
+                    curveType: 'function',
+                };
+
+            }
+        )
     }
-
 }

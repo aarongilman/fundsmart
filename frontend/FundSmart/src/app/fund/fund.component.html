@@ -39,7 +39,8 @@
 										style="color: #5ace9f;font-size:25px"></i></a>&nbsp;&nbsp;&nbsp;
 								<a (click)="delete_Portfolio(fund.id)"> <i class="fa fa-times" aria-hidden="true"
 										style="color: red;font-size:25px"></i></a>&nbsp;&nbsp;&nbsp;
-								<a><input (contextmenu)="onContextMenu($event, item)" type="checkbox" class="checkbox"
+								<a><input style=" width: 17px; height: 17px;"
+										(contextmenu)="onContextMenu($event, item)" type="checkbox" class="checkbox"
 										(change)="selectID(fund.id)">
 								</a>
 								<div style="position: fixed" [style.left]="contextMenuPosition.x"

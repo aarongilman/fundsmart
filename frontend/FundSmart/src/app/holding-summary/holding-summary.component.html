@@ -77,7 +77,7 @@
                       <g> </g>
                       <g> </g>
                     </svg>
-                    country
+                    Country
                   </a>
                 </li>
                 <li routerLinkActive="active">
@@ -111,7 +111,7 @@
                       <g> </g>
                       <g> </g>
                     </svg>
-                    industry
+                    Industry
                   </a>
                 </li>
               </ul>
@@ -120,18 +120,18 @@
               <div id="holdingType" class="item active" data-title="Tab 1">
                 <div class="summary-tab-content">
                   <div class="heading">
-                    <h3>Holding Type</h3>
+                    <h3 style="color: #5ace9f">Holding Type</h3>
                   </div>
                   <div class="summary-content">
                     <ul>
-                      <li *ngFor="let item of industry">
+                      <li *ngFor="let item of fund">
                         <div class="holding-label">
                           <p>{{item.name}}</p>
                         </div>
                         <div class="holding-graph">
                           <div class="progress">
                             <div class="progress-bar plot-9" role="progressbar" [attr.aria-valuenow]="item.value"
-                              aria-valuemin="0" aria-valuemax="1000000000000">
+                              aria-valuemin="0">
                             </div>
                             <div class="progess-value-block">
                               <span class="progress-value plot-9"></span>
@@ -142,16 +142,20 @@
                       </li>
                     </ul>
                   </div>
+                  <div *ngFor="let data of (total | keyvalue)">
+                    <p>{{data.name}}</p>
+                    <p>{{data.value}}</p>
+                  </div>
                 </div>
               </div>
               <div id="assestClass" class="item" data-title="Tab 2">
                 <div class="summary-tab-content">
                   <div class="heading">
-                    <h3>Assest Class</h3>
+                    <h3 style="color: #5ace9f">Assest Class</h3>
                   </div>
                   <div class="summary-content">
                     <ul>
-                      <li *ngFor="let item of result;let i = index;">
+                      <li *ngFor="let item of result">
                         <div class="holding-label">
                           <p>{{item.name}}</p>
                         </div>
@@ -168,13 +172,17 @@
                         </div>
                       </li>
                     </ul>
+                    <div *ngFor="let data of (total1 | keyvalue)">
+                      <p>{{data.name}}</p>
+                      <p>{{data.value}}</p>
+                    </div>
                   </div>
                 </div>
               </div>
               <div id="country" class="item" data-title="Tab 3">
                 <div class="summary-tab-content">
                   <div class="heading">
-                    <h3>Country</h3>
+                    <h3 style="color: #5ace9f">Country</h3>
                   </div>
                   <div class="summary-content">
                     <ul>
@@ -184,6 +192,10 @@
                           <p>{{data.value}}</p>
                         </div>
                       </li>
+                      <div *ngFor="let item of (total2 | keyvalue)">
+                        <p>{{item.name}}</p>
+                        <p>{{item.value}}</p>
+                      </div>
                     </ul>
                     <div class="country-map">
                       <img src="assets/img/country-map.png" alt="Country Map">
@@ -194,7 +206,7 @@
               <div id="industry" class="item" data-title="Tab 3">
                 <div class="summary-tab-content">
                   <div class="heading">
-                    <h3>Assest Class</h3>
+                    <h3 style="color: #5ace9f">Industry</h3>
                   </div>
                   <div class="summary-content">
                     <ul>
@@ -214,6 +226,10 @@
                         </div>
                       </li>
                     </ul>
+                    <div *ngFor="let item of (total3 | keyvalue)">
+                      <p>{{item.name}}</p>
+                      <p>{{item.value}}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -225,7 +241,7 @@
         <div class="block-container no-bdrs-top-right no-bdrs-botton-right semi-block">
           <div class="hpd-table">
             <div class="heading">
-              <h3>Historical Performance Difference</h3>
+              <h3 style="color: #5ace9f">Historical Performance Difference</h3>
             </div>
             <div class="responsive-table">
               <table class="trade-table">
@@ -244,46 +260,24 @@
                     <td>{{data.value['3-year']}}%</td>
                     <td>{{data.value['5-year']}}%</td>
                   </tr>
+                  <tr *ngIf="total4" class="total-tr">
+                    <td class="gain-green">Total</td>
+                    <td class="gain-green">{{total4.value['annual_expense']}}%</td>
+                    <td class="gain-green">{{total4.value['1-year']}}%</td>
+                    <td class="gain-green">{{total4.value['3-year']}}%</td>
+                    <td class="loss-red">{{total4.value['5-year']}}%</td>
+                  </tr>
                 </tbody>
-                <!-- <tr class="normal-tr">
-                    <td>Existing</td> 
-                    <td>{{data.Portfolio23['annual_expense']}}%</td>
-                    <td>{{data.Portfolio23['1-year']}}%</td>
-                    <td>{{data.Portfolio23['3-year']}}%</td>
-                    <td>{{data.Portfolio23['5-year']}}%</td>
-                  </tr> -->
-                <!-- <tr class="blue-tr">
-                    <td>Recommended</td>
-                    <td *ngFor="let data of historical;  let i = index">{{data.Portfolio256.annual_expense}}%</td>
-                    <td *ngFor="let data of historical;  let i = index">{{data.Portfolio256['1-year']}}%</td>
-                    <td *ngFor="let data of historical;  let i = index">{{data.Portfolio256['3-year']}}%</td>
-                    <td *ngFor="let data of historical;  let i = index">{{data.Portfolio256['5-year']}}%</td>
-                  </tr> -->
-                <!-- <tr class="total-tr">
-                    <td>Differences</td>
-                    <td *ngFor="let data of historical;  let i = index" class="gain-green">
-                      {{data.total.total_annual_expense}}%</td>
-                    <td *ngFor="let data of historical;  let i = index" class="gain-green">{{data.total.total_1_year}}%
-                    </td>
-                    <td *ngFor="let data of historical;  let i = index" class="gain-green">{{data.total.total_3_year}}%
-                    </td>
-                    <td *ngFor="let data of historical;  let i = index" class="loss-red">{{data.total.total_5_year}}%
-                    </td>
-                  </tr> -->
               </table>
             </div>
           </div>
         </div>
         <div class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper semi-block">
-          <div class="ct-chart line-chart"></div>
-          <div class="graph-labels">
-            <ul>
-              <li><span class="yellow-bubble"></span>S & P 500</li>
-              <li><span class="green-bubble"></span>Portfolio</li>
-            </ul>
-            <div class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+          <div class="ct-chart line-chart">
+            <div class="graph-labels">
               <div class="curve_chart">
-                <google-chart [data]="graph" [options]="lineoptions">
+                <google-chart [title]="linetitle" [type]="linetype" [data]="linedata" [options]="lineoptions"
+                  [width]="linewidth" [height]="lineheight" [columnNames]="linecolumnNames">
                 </google-chart>
               </div>
             </div>
