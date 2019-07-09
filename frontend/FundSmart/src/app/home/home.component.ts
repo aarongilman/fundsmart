@@ -307,16 +307,24 @@ export class HomeComponent implements OnInit {
           this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
           this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
 
+          // console.log("Existing", result[0]['existing']['annual_expense'], result[0]['existing']['1-year'],
+          //  result[0]['existing']['3-year'],
+          //   result[0]['existing']['5-year']);
 
           this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
           this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
           this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
           this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['5-year']).toFixed(2));
+          // console.log("recommended", result[0]['recommended']['annual_expense'], result[0]['recommended']['1-year'],
+          //   result[0]['recommended']['3-year'], result[0]['recommended']['5-year']);
 
           this.diffrence.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['difference']['annual_expense']).toFixed(2));
           this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['1-year']).toFixed(2));
           this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
           this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
+          // console.log("difference", result[0]['difference']['annual_expense'], result[0]['difference']['1-year'],
+          //   result[0]['difference']['3-year'], result[0]['difference']['5-year']);
+
         }
       });
     this.userservice.get_home_pie_chart().subscribe(
@@ -521,6 +529,15 @@ export class HomeComponent implements OnInit {
         comparision1: element['quantity2'],
         comparision2: element['quantity3']
       };
+      if (element['quantity1'] === null) {
+        singlefund.yourPortfolio = '';
+      }
+      if (element['quantity2'] === null) {
+        singlefund.comparision1 = '';
+      }
+      if (element['quantity3'] === null) {
+        singlefund.comparision2 = '';
+      }
       portfoliofundlist.push(singlefund);
     });
     this.portfolioservice.resetfunds();
@@ -682,6 +699,7 @@ export class HomeComponent implements OnInit {
     } else {
       var portfolio;
       var quantity;
+      const Tempportfoliofundlist = JSON.parse(JSON.stringify(portfoliofundlist));
       if (string1.match('portfolio')) {
         // alert(this.portfolio1);
         if (this.portfolio1 === undefined) {
@@ -691,7 +709,7 @@ export class HomeComponent implements OnInit {
               this.portfolio1 = data;
               console.log("DATA", this.portfolio1);
               portfolio = data['id'];
-              quantity = portfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
+              quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
               this.createportfoliofundmethod(portfolio, quantity, item, 'p1');
               // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
             }, error => {
@@ -701,7 +719,7 @@ export class HomeComponent implements OnInit {
           );
         } else {
           portfolio = this.portfolio1.id;
-          quantity = portfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
+          quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
           this.createportfoliofundmethod(portfolio, quantity, item, 'p1');
           // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
         }
@@ -716,7 +734,7 @@ export class HomeComponent implements OnInit {
               // console.log(data);
               this.comparision1 = data;
               portfolio = data['id'];
-              quantity = portfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
+              quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
               this.createportfoliofundmethod(portfolio, quantity, item, 'p2');
 
               // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
@@ -727,7 +745,7 @@ export class HomeComponent implements OnInit {
           );
         } else {
           portfolio = this.comparision1.id;
-          quantity = portfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
+          quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
           this.createportfoliofundmethod(portfolio, quantity, item, 'p2');
 
           // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
@@ -742,7 +760,7 @@ export class HomeComponent implements OnInit {
               // alert(data['id']);
               this.comparision2 = data;
               portfolio = data['id'];
-              quantity = portfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+              quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
               this.createportfoliofundmethod(portfolio, quantity, item, 'p3');
 
               // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
@@ -754,7 +772,8 @@ export class HomeComponent implements OnInit {
           );
         } else {
           portfolio = this.comparision2.id;
-          quantity = portfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+
+          quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
           this.createportfoliofundmethod(portfolio, quantity, item, 'p3');
 
           // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
@@ -786,25 +805,12 @@ export class HomeComponent implements OnInit {
     } else {
       if (recid === null) {
         // alert('post method');
-        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe(
-          data => {
-            // // console.log(data);
-            this.setdataindeshboard();
-          }, error => {
-            // console.log(error);
-          }
-        );
+        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
       } else {
         // alert('put method');
-        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe(
-          data => {
-            // // console.log(data);
-            this.setdataindeshboard();
-          }, error => {
-            // console.log(error);
-          }
-        );
+        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
       }
+      this.setdataindeshboard();
     }
   }
 

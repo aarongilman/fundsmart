@@ -36,15 +36,6 @@ function sort(fundlist: portfolio_fund[], column: string, direction: string): po
 }
 
 function matches(fund: portfolio_fund, term: string, pipe: PipeTransform) {
-  if (fund.yourPortfolio === null) {
-    fund.yourPortfolio = '';
-  }
-  if (fund.comparision1 === null) {
-    fund.comparision1 = '';
-  }
-  if (fund.comparision2 === null) {
-    fund.comparision2 = '';
-  }
   return fund.security.toLowerCase().includes(term)
     || pipe.transform(fund.yourPortfolio).includes(term)
     || pipe.transform(fund.comparision1).includes(term)

@@ -49,8 +49,12 @@ export class HoldingDetailsComponent implements OnInit {
   HoldingDetailForm: FormGroup;
   submitted = false;
 
-
-
+  currentprice = [];
+  basicprice = [];
+  currency = [];
+  country = [];
+  industry = [];
+  rating = [];
   constructor(private userservice: ServercommunicationService,
     public sortlist: HoldingdetailsSortService,
     private formBuilder: FormBuilder,
@@ -117,6 +121,14 @@ export class HoldingDetailsComponent implements OnInit {
         }
       );
     }
+    this.userservice.getUserPortfolio().subscribe(
+      data => {
+        // alert("portfolio data came");
+        // console.log(data);
+        this.portfolio1 = data['results']['0'];
+        this.comparision1 = data['results']['1'];
+        this.comparision2 = data['results']['2'];
+      });
     if (this.userservice.currentuser) {
       this.getHoldingdetail();
     }
@@ -158,7 +170,7 @@ export class HoldingDetailsComponent implements OnInit {
     new ngxCsv(holdingList, "Holding_Summary", this.option);
   }
 
-  get f() { return this.HoldingDetailForm.controls; }
+  get f() { return this.fundForm.controls; }
 
   AddDetail() {
 
@@ -208,15 +220,43 @@ export class HoldingDetailsComponent implements OnInit {
             basis: null,
             current_price: null,
             market_value: null,
-            asset_class: '',
-            currency: '',
-            country: '',
-            industry: '',
-            rating: ''
+            asset_class: null,
+            currency: null,
+            country: null,
+            industry: null,
+            rating: null
           };
+          // this.UpdateHoldingDetails(holding, -1);
           this.userservice.UpdateHoldingDetails(holding).subscribe(
             sucess => {
               console.log(sucess);
+              var successdata: holdindDetail = {
+                fund_id: sucess['fund_id'],
+                portfolio: sucess['portfolio'],
+                security: sucess['security'],
+                isin: sucess['isin'],
+                quantity: sucess['quantity'],
+                ticker: sucess['ticker'],
+                basic_price: sucess['basic_price'],
+                basis: sucess['basis'],
+                current_price: sucess['current_price'],
+                market_value: sucess['market_value'],
+                asset_class: sucess['asset_class'],
+                currency: sucess['currency'],
+                country: sucess['country'],
+                industry: sucess['industry'],
+                rating: sucess['rating']
+              };
+
+              // holdingList.unshift(successdata);
+              this.HoldingDetailList.unshift(successdata);
+              this.sortlist.resetHoldingDetails();
+              this.sortlist.hlist$.subscribe(f => {
+                this.HoldingDetailList = f;
+              });
+              this.sortlist.total$.subscribe(total => {
+                this.total = total;
+              });
             },
             error => {
               console.log(error);
@@ -226,8 +266,8 @@ export class HoldingDetailsComponent implements OnInit {
         }
       );
 
-
-
+    this.modalService.dismissAll('Record Inserted');
+    this.fundForm.reset();
 
     //   var holding: holdindDetail = {
     //     fund_id: null,
@@ -255,16 +295,36 @@ export class HoldingDetailsComponent implements OnInit {
     //     this.total = total;
     //   });
     // }
-    // UpdateHoldingDetails(item) {
-    //   this.userservice.UpdateHoldingDetails(item).subscribe(
-    //     res => {
-    //       console.log(res);
-    //     },
-    //     error => {
-    //       console.log(error);
+  }
 
-    //     }
-    //   );
+  UpdateHoldingDetails(item, i) {
+    this.userservice.UpdateHoldingDetails(item).subscribe(
+      res => {
+        this.currentprice[i] = null;
+        this.basicprice[i] = null;
+        this.currency[i] = null;
+        this.country[i] = null;
+        this.industry[i] = null;
+        this.rating[i] = null;
+        // console.log(res);
+        let toUpdate = this.HoldingDetailList.find(x => x.fund_id === res['fund_id']);
+        let index = this.HoldingDetailList.indexOf(toUpdate);
+        this.HoldingDetailList[index].currency = res['currency'];
+        this.HoldingDetailList[index].basic_price = res['basic_price'];
+        this.HoldingDetailList[index].basis = res['basis'];
+        this.HoldingDetailList[index].current_price = res['current_price'];
+        this.HoldingDetailList[index].market_value = res['market_value'];
+        this.HoldingDetailList[index].rating = res['rating'];
+        this.HoldingDetailList[index].industry = res['industry'];
+        // holdingList[index].country = res['country'];
+        // holdingList[index].country = res['country'];
+
+      },
+      error => {
+        console.log(error);
+
+      }
+    );
   }
 
   onSort({ column, direction }: SortEvent) {
@@ -336,21 +396,6 @@ export class HoldingDetailsComponent implements OnInit {
     return matches;
   }
 
-  numberOnly(event): boolean {
 
-    const charCode = (event.which) ? event.which : event.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-      return false;
-    }
-    return true;
-
-  }
-
-  // openNgSelectDialog() {
-
-  //   const dialogRef = this.dialog.open(this.dialogNgSelect, {
-  //     maxHeight: '500px', width: '800px', panelClass: 'custom-dialog-container'
-  //   });
-  // }
 
 }

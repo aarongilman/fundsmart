@@ -25,7 +25,7 @@ $(document).ready(function(){
 
 
   /* Holding Summary Tabs*/
-  $('.fund-tabs ul li a').click(function(){
+  $(document).on('click', '.fund-tabs ul li a', function(){
     var tab_id = $(this).attr('data-tab');
     $(".fund-tabs li").removeClass('active');
     $('.item').removeClass('active');

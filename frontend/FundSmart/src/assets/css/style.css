@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700');
 @import '~ngx-toastr/toastr.css';
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 /*Common Css*/
 html {
@@ -882,7 +883,7 @@ body .dataTables_wrapper .dataTables_paginate a.paginate_button.current,
 }
 
 .green-btn {
-    background: #5ace9f;
+    background: #0c7c59;
 }
 
 .green-btn:after {

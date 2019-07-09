@@ -33,6 +33,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TestingdataComponent } from './testingdata/testingdata.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { MatMenuModule } from '@angular/material';
 
 let gapiClientConfig: NgGapiClientConfig = {
     client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
@@ -90,6 +91,7 @@ export function provideConfig() {
         FormsModule,
         NgSelectModule,
         ReactiveFormsModule,
+        MatMenuModule,
         ToastrModule.forRoot(),
         SocialLoginModule,
         GoogleChartsModule.forRoot(),

@@ -40,18 +40,18 @@ function sort(holdinglist: holdindDetail[], column: string, direction: string): 
 function matches(holding: holdindDetail, term: string, pipe: PipeTransform) {
   return holding.security.toLowerCase().includes(term)
     || holding.isin.toLocaleLowerCase().includes(term)
-    || holding.rating.toLocaleLowerCase().includes(term)
+    // || holding.rating.toLocaleLowerCase().includes(term)
     || holding.asset_class.toLocaleLowerCase().includes(term)
-    || pipe.transform(holding.basic_price).includes(term)
-    || pipe.transform(holding.basis).includes(term)
-    || holding.country.toLocaleLowerCase().includes(term)
-    || holding.currency.toLocaleLowerCase().includes(term)
-    || pipe.transform(holding.current_price).includes(term)
-    || holding.industry.toLocaleLowerCase().includes(term)
-    || pipe.transform(holding.market_value).includes(term)
+    // || pipe.transform(holding.basic_price).includes(term)
+    // || pipe.transform(holding.basis).includes(term)
+    // || holding.country.toLocaleLowerCase().includes(term)
+    // || holding.currency.toLocaleLowerCase().includes(term)
+    // || pipe.transform(holding.current_price).includes(term)
+    // || holding.industry.toLocaleLowerCase().includes(term)
+    // || pipe.transform(holding.market_value).includes(term)
     || holding.portfolio.toLocaleLowerCase().includes(term)
-    || holding.quantity.toLocaleLowerCase().includes(term)
-    || holding.ticker.toLocaleLowerCase().includes(term);
+    || holding.quantity.toLocaleLowerCase().includes(term);
+    // || holding.ticker.toLocaleLowerCase().includes(term);
 }
 
 @Injectable({

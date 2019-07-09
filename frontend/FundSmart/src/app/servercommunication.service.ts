@@ -139,9 +139,6 @@ export class ServercommunicationService {
     });
   }
 
-
-
-
   add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby) {
     const body = { quantity: fquantity, portfolio: userportfolio, security: selectedsecurity, created_by: createdby };
     return this.http.post(this.api_link + 'api/portfolio_fund/', body,
@@ -173,11 +170,12 @@ export class ServercommunicationService {
         }
       );
   }
+
   confirm_email(verificationkey) {
     const body = { key: verificationkey };
     return this.http.post(this.api_link + 'rest-auth/registration/verify-email/', body, { headers: this.httpHeaders });
-
   }
+
 
   createportfolio(number) {
     var portfolioname = '';
@@ -194,12 +192,13 @@ export class ServercommunicationService {
         portfolioname = 'portfolio3';
         this.count++;
       }
+
+
+      const body = { name: portfolioname, created_by: this.currentuser.id };
+      return this.http.post(this.api_link + 'api/portfolio/', body,
+        { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+
     }
-
-    const body = { name: portfolioname, created_by: this.currentuser.id };
-    return this.http.post(this.api_link + 'api/portfolio/', body,
-      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-
   }
 
   updateportfoliofund(recid, fquantity, userportfolio, selectedsecurity, updatedby) {
@@ -211,11 +210,7 @@ export class ServercommunicationService {
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
-  get_lineplot_chart() {
-    return this.http.get(this.api_link + 'api/dashboard_line_graph/', {
-      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    });
-  }
+
 
   postPrice(fundid, fundprice) {
     const body = { id: fundid, price: fundprice };
@@ -285,6 +280,7 @@ export class ServercommunicationService {
       ticker: obj.ticker,
       price: obj.basic_price,
       basis: obj.basis,
+      basic_price: obj.basic_price,
       current_price: obj.current_price,
       market_value: obj.market_value,
       asset_class: obj.asset_class,
@@ -302,6 +298,56 @@ export class ServercommunicationService {
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
+
+
+  get_lineplot_chart() {
+    return this.http.get(this.api_link + 'api/dashboard_line_graph/', {
+      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    });
+  }
+
+
+
+  getHoldingDetails() {
+    return this.http.get(this.api_link + 'api/holding_detail/',
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  holding_summary_asset(ids) {
+    return this.http.get(this.api_link + 'api/asset_class_holding_summary/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  holding_summary_industry(ids) {
+    return this.http.get(this.api_link + 'api/industry_holding_summary/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  holding_summary_country(ids) {
+    return this.http.get(this.api_link + 'api/country_holding_summary/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  holding_summary_fund(ids) {
+    return this.http.get(this.api_link + 'api/fund_holding_summary/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  holding_summary_historicalPerformance(ids) {
+    return this.http.get(this.api_link + 'api/historical_performance_holding_summary/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  holding_summary_lineGraph(ids) {
+    return this.http.get(this.api_link + 'api/line_graph_holding_summary/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  hanny_api() {
+    return this.http.get(this.api_link + 'api/holding_detail/',
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+
+  }
   // production api ----->3.16.111.80
 
   // 3.16.111.80 server
