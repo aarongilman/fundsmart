@@ -221,6 +221,84 @@ class DashboardPieChart(APIView):
             order_by('total')
         return Response(data, status=200)
 
+def get_holding_detail_data(fund):
+    try:
+        fund_detail = FundDetail.objects.get(fund_id=fund.security.id_value)
+    except Exception as e:
+        LOGGER.error("Error {} occurred: get holding details!". format(e))
+    price = Price.objects.filter(id_value=fund.security.id_value)
+    print(price.latest('date'), "================")
+    try:
+        try:
+            holding_detail = HoldingDetail.objects.get(fund=fund)
+        except Exception as e:
+            holding_detail = None
+        if holding_detail and holding_detail.basic_price:
+            basic_price = holding_detail.basic_price
+        else:
+            basic_price = price.filter(date=fund.portfolio.created_at.date()
+                                       )[0].price
+    except Exception as e:
+        LOGGER.error("Error {} occurred:holding details!".
+                     format(e))
+        basic_price = None
+    if '%' in fund.quantity:
+        quantity = (float(fund.quantity.replace("%", "")) / 100) * \
+                   1000000
+    else:
+        quantity = fund.quantity
+    basis = float(quantity) * float(basic_price) if basic_price else None
+
+    # Quantity is different for mutual funds
+    if fund.security.asset_type == 'Mutual Fund':
+        aum = fund_detail.aum
+        if basis:
+            quantity = float(basis) / float(aum) * 1000000
+            basis = float(quantity) * float(basic_price)
+        else:
+            basis = None
+    try:
+        if holding_detail and holding_detail.current_price:
+            current_price = holding_detail.current_price
+        else:
+            current_price = price.latest('date').current_price
+    except Exception as e:
+        LOGGER.error("Error {} occurred:holding details!".
+                     format(e))
+        current_price = None
+    market_value = None
+    if current_price:
+        if fund.security.asset_type == 'Mutual Fund':
+            if basic_price:
+                aum = fund_detail.aum
+                quantity = float(float(fund.quantity) * float(basic_price) /
+                                 float(aum)) * 1000000
+            else:
+                quantity = None
+        if quantity:
+            market_value = float(quantity) * float(current_price)
+    currency = fund.security.currency
+    if holding_detail and holding_detail.currency:
+        currency = holding_detail.currency
+
+    country = fund.security.country
+    if holding_detail and holding_detail.country:
+        country = holding_detail.country
+
+    industry = fund.security.industry
+    if holding_detail and holding_detail.industry:
+        industry = holding_detail.industry
+
+    rating = fund.security.rating
+    if holding_detail and holding_detail.rating:
+        rating = holding_detail.rating
+    return {'fund_id': fund.id, 'portfolio': fund.portfolio.name,
+            'security': fund.security.name, 'isin': fund.security.isin,
+            'quantity': fund.quantity, 'ticker': fund.security.ticker,
+            'basic_price': basic_price, 'basis': basis,
+            'current_price': current_price, 'market_value': market_value,
+            'asset_class': fund.security.asset_type, 'currency': currency,
+            'country': country,  'industry': industry, 'rating': rating}
 
 class HoldingDetailAPIView(APIView):
     """APIView to import Portfolio"""
@@ -333,7 +411,9 @@ class HoldingDetailAPIView(APIView):
             if request.data.get('rating'):
                 holding_detail.rating = request.data.get('rating')
             holding_detail.save()
-            return Response('data saved successfully!', status=204)
+            fund = PortfolioFund.objects.get(id=request.data.get('id'))
+            data = get_holding_detail_data(fund)
+            return Response(data, status=200)
         except Exception as e:
             LOGGER.error("Error {} occurred while saving holding details!".
                          format(e))
