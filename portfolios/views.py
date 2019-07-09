@@ -635,8 +635,8 @@ class HoldingSummaryLineGraph(APIView):
             temp_dict = {"portfolio": None, 'series': [], 'label': []}
             for key, value in item.items():
                 temp_dict.update({'portfolio': key})
-                temp_dict.get('label').append(value.keys())
-                temp_dict.get('series').append(value.values())
+                temp_dict.get('label').extend(value.keys())
+                temp_dict.get('series').extend(value.values())
                 data.append(temp_dict)
         return Response(data, status=200)
 
@@ -873,7 +873,6 @@ class RecommendedPerformanceAPI(APIView):
         return Response(data, status=200)
 
 
-from operator import itemgetter
 class PortfolioFundData(APIView):
     """APIView to display Portfolio fund data on dashboard"""
     def get(self, request):
