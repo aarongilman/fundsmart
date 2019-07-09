@@ -4,6 +4,7 @@ import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { MatMenuTrigger } from '@angular/material';
 import { Router } from '@angular/router';
+import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 
 @Component({
     selector: 'app-fund',
@@ -26,10 +27,13 @@ export class FundComponent implements OnInit {
         private userService: ServercommunicationService,
         private modalService: NgbModal,
         private toastr: ToastrService,
-        private router: Router
+        private router: Router,
+        private interconn: IntercomponentCommunicationService
     ) { }
 
     ngOnInit() {
+        this.interconn.titleSettermethod("Funds");
+
         this.getFunds();
     }
 
@@ -119,14 +123,14 @@ export class FundComponent implements OnInit {
         // alert("type of modal is" + typeof(modalid));
         var addclass = '';
         if (str == 'login' || str == 'register') {
-          addclass = 'long-pop sign-pop';
+            addclass = 'long-pop sign-pop';
         }
         this.modalService.open(modalid, { centered: true, windowClass: addclass }).result.then((result) => {
-          this.closeResult = `Closed with: ${result}`;
+            this.closeResult = `Closed with: ${result}`;
         }, (reason) => {
-          this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+            this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
         });
-      }
+    }
 }
 
 export interface Item { }

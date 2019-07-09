@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 
 @Component({
   selector: 'app-fund-recommendation',
@@ -7,9 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FundRecommendationComponent implements OnInit {
 
-  constructor() { }
+  constructor(private interconn: IntercomponentCommunicationService) { }
 
   ngOnInit() {
+    this.interconn.titleSettermethod('Fund Recommendation');
   }
 
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { ActivatedRoute, Params } from '@angular/router';
 import { HistoricalData } from '../historicaldata';
+import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 
 @Component({
     selector: 'app-holding-summary',
@@ -19,8 +20,9 @@ export class HoldingSummaryComponent implements OnInit {
     graph = [];
     linedata = [];
     linetype = 'LineChart';
-
-
+    linetitle = '';
+    linewidth = '450px';
+    lineheight = '500px';
     linecolumnNames = [];
     lineoptions;
     total = {};
@@ -31,6 +33,7 @@ export class HoldingSummaryComponent implements OnInit {
     total5 = {};
 
     constructor(
+        private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
         private activatedRoute: ActivatedRoute
     ) {
@@ -40,6 +43,8 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.interconn.titleSettermethod("Holding Summary");
+
         this.getAssets();
         this.getHistoricalPerformance();
         this.getFund();

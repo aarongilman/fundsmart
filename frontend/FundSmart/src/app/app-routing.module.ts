@@ -17,7 +17,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'funds', component: FundComponent },
   { path: 'create_fund', component: FundCreateComponent },
-  { path: 'fund_reccommendation', component: FundRecommendationComponent },
+  { path: 'fund_recommendation', component: FundRecommendationComponent },
   { path: 'holding_details', component: HoldingDetailsComponent },
   { path: 'holding_summary', component: HoldingSummaryComponent },
   { path: 'headsearch', component: HeadSearchComponent },

@@ -98,6 +98,7 @@ export class HoldingDetailsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.interconn.titleSettermethod('Holding Details');
     if (securitylist.length === 0) {
       this.userservice.get_security().subscribe(
         datasecuritylist => {

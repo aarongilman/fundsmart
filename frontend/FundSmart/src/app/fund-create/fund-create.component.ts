@@ -60,6 +60,7 @@ export class FundCreateComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.interconn.titleSettermethod("Create Fund");
     this.getUserPortfolios();
     this.userservice.get_security().subscribe(
       datasecuritylist => {

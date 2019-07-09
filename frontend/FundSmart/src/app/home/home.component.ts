@@ -213,7 +213,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
 
-    this.interconn.titleSettermethod();
+    this.interconn.titleSettermethod("Multi Portfolio Analyzer");
 
     if (this.userservice.currentuser) {
       this.setcurrent_user();

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class IntercomponentCommunicationService {
   private componentMethodCallSource = new Subject<any>();
   private logoutcomponentMethodCallSource = new Subject<any>();
   private reloadAfterfileuploadSource = new Subject<any>();
-  private titlesetterSource = new Subject<any>();
+  private titlesetterSource = new BehaviorSubject('Multi Portfolio Analyzer');
   // Observable string streams
   componentMethodCalled$ = this.componentMethodCallSource.asObservable();
   logoutcomponentMethodCalled$ = this.logoutcomponentMethodCallSource.asObservable();
@@ -23,8 +23,8 @@ export class IntercomponentCommunicationService {
     this.componentMethodCallSource.next();
   }
 
-  titleSettermethod() {
-    this.titlesetterSource.next();
+  titleSettermethod(message: string) {
+    this.titlesetterSource.next(message);
   }
 
   afterfileupload() {

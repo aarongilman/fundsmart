@@ -24,9 +24,7 @@ export class HeaderComponent implements OnInit {
     private service: ServercommunicationService,
     private intercon: IntercomponentCommunicationService) {
 
-    this.intercon.titlesettercalled$.subscribe(() => {
-this.title = 'Mult';
-    });
+    this.intercon.titlesettercalled$.subscribe(msg => this.title = msg);
 
     this.intercon.componentMethodCalled$.subscribe(
       () => {
