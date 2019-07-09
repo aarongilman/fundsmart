@@ -213,7 +213,7 @@ export class ServercommunicationService {
 
 
   postPrice(fundid, fundprice) {
-    const body = { id: fundid, price: fundprice };
+    const body = { id: fundid, current_price: fundprice };
     return this.http.post(this.api_link + 'api/holding_detail/', body, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });

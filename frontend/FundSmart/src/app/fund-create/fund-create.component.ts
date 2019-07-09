@@ -103,7 +103,7 @@ export class FundCreateComponent implements OnInit {
       // console.log(data['results'][i]);
       var fund: funds = {
         id: -1,
-        quantity: 0,
+        quantity: null,
         portfolio: 0,
         security: 0,
         security_name: '',
@@ -148,6 +148,8 @@ export class FundCreateComponent implements OnInit {
     this.userservice.get_portfolio_fund_by_date(date).subscribe(
       data => {
         if (data['count'] > 0) {
+          console.log(data);
+          
           this.setfunds(data);
         }
       });
@@ -172,20 +174,24 @@ export class FundCreateComponent implements OnInit {
   updatefundquantity(item) {
     if (item.id === -1) {
       this.userservice.add_portfolio_fund(item.quantity, item.portfolio, item.security, this.currentUser['id']).subscribe(
-        res => {
-          this.getfunds();
-          // this.setfunds();
+        data => {
+          let resfund = this.fundlist.find(x => x === item);
+          let index = this.fundlist.indexOf(resfund);
+          apiresultfundlist[index]['id'] = data['id'];
+          apiresultfundlist[index]['quantity'] = data['quantity'];
+          apiresultfundlist[index]['portfolio'] = data['portfolio'];
+          apiresultfundlist[index]['security'] = data['security'];
+          apiresultfundlist[index]['security_name'] = data['security_name'];
+          apiresultfundlist[index]['asset_type'] = data['asset_type'];
+          apiresultfundlist[index]['isin'] = data['isin'];
+          apiresultfundlist[index]['price'] = data['price'];
+
+          console.log("After setting data", apiresultfundlist[index]);
         }
       );
     } else {
       this.userservice.updateportfoliofund(item.id, item.quantity, item.portfolio, item.security, this.currentUser['id']).subscribe();
     }
-    // update list
-    // data => {
-    //   var y = this.fundlist.find(x => x.id === item.id);
-    //   y = data;
-    //   console.log(this.fundlist.find(x => x.id === item.id));
-    //   });
   }
 
   getUserPortfolios() {
@@ -198,8 +204,15 @@ export class FundCreateComponent implements OnInit {
   }
 
   updateprice(fund) {
+    // console.log(fund);
     this.userservice.postPrice(fund.id, fund.price).subscribe(data => {
-      this.getfunds();
+      // console.log("Update price",data);
+      let resfund = this.fundlist.find(x => x === fund);
+      let index = this.fundlist.indexOf(resfund);
+
+      apiresultfundlist[index]['price'] = data['current_price'];
+
+      // console.log("After setting data", apiresultfundlist[index]);
 
     });
   }
@@ -208,7 +221,7 @@ export class FundCreateComponent implements OnInit {
     // alert(this.selectedp);
     const singlefund: funds = {
       id: -1,
-      quantity: 0,
+      quantity: null,
       portfolio: this.selectedp,
       security: 0,
       security_name: '',

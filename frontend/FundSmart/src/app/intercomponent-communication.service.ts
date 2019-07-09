@@ -11,14 +11,26 @@ export class IntercomponentCommunicationService {
   // Observable string sources
   private componentMethodCallSource = new Subject<any>();
   private logoutcomponentMethodCallSource = new Subject<any>();
+  private reloadAfterfileuploadSource = new Subject<any>();
+  private titlesetterSource = new Subject<any>();
   // Observable string streams
   componentMethodCalled$ = this.componentMethodCallSource.asObservable();
   logoutcomponentMethodCalled$ = this.logoutcomponentMethodCallSource.asObservable();
-
+  reloadmethodcalled$ = this.reloadAfterfileuploadSource.asObservable();
+  titlesettercalled$ = this.titlesetterSource.asObservable();
   // Service message commands
   callComponentMethod() {
     this.componentMethodCallSource.next();
   }
+
+  titleSettermethod() {
+    this.titlesetterSource.next();
+  }
+
+  afterfileupload() {
+    this.reloadAfterfileuploadSource.next();
+  }
+
 
   afterlogout() {
     this.logoutcomponentMethodCallSource.next();

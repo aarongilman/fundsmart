@@ -173,42 +173,18 @@ export class HoldingDetailsComponent implements OnInit {
   get f() { return this.fundForm.controls; }
 
   AddDetail() {
-
     this.submitted = true;
-
     // stop here if form is invalid
     if (this.fundForm.invalid) {
       return;
     }
-
-    // console.log(this.fundForm.value);
-    // console.log("Portfolio", this.fundForm.controls['selectedPortfolio'].value);
-    // console.log("Security", this.fundForm.controls['selectedSecurity'].value);
-
-    // let portfolio: number;
-    // if (this.fundForm.controls['selectedPortfolio'].value === this.portfolio1['name']) {
-    //   portfolio = this.fundForm.controls['selectedPortfolio'].value;
-    // } else if (this.fundForm.controls['selectedPortfolio'].value === this.comparision1['name']) {
-    //   portfolio = this.fundForm.controls['selectedPortfolio'].value;
-    // } else if (this.fundForm.controls['selectedPortfolio'].value === this.comparision2['name']) {
-    //   portfolio = this.fundForm.controls['selectedPortfolio'].value;
-    // }
-
-    // this.HoldingDetailForm = this.formBuilder.group(
-    //   {
-    //     portfolio: new FormControl(this.fundForm.controls['selectedPortfolio'].value),
-    //     security: new FormControl(this.fundForm.controls['selectedSecurity'].value),
-    //     quantity: new FormControl(this.fundForm.controls['quantity'].value),
-    //   });
-    // console.log(this.HoldingDetailForm.value);
     this.userservice.add_portfolio_fund(this.fundForm.controls['quantity'].value,
       this.fundForm.controls['selectedPortfolio'].value,
       this.fundForm.controls['selectedSecurity'].value, this.userservice.currentuser.id).subscribe(
         res => {
-          console.log(res);
+          // console.log(res);
           let mysecurity: security;
           mysecurity = securitylist.find(x => x.id === res['security']);
-
           var holding: holdindDetail = {
             fund_id: res['id'],
             portfolio: res['portfolio'],
@@ -229,7 +205,7 @@ export class HoldingDetailsComponent implements OnInit {
           // this.UpdateHoldingDetails(holding, -1);
           this.userservice.UpdateHoldingDetails(holding).subscribe(
             sucess => {
-              console.log(sucess);
+              // console.log(sucess);
               var successdata: holdindDetail = {
                 fund_id: sucess['fund_id'],
                 portfolio: sucess['portfolio'],
@@ -248,18 +224,20 @@ export class HoldingDetailsComponent implements OnInit {
                 rating: sucess['rating']
               };
 
-              // holdingList.unshift(successdata);
-              this.HoldingDetailList.unshift(successdata);
+              holdingList.unshift(successdata);
+              // this.HoldingDetailList.unshift(successdata);
               this.sortlist.resetHoldingDetails();
-              this.sortlist.hlist$.subscribe(f => {
-                this.HoldingDetailList = f;
-              });
-              this.sortlist.total$.subscribe(total => {
-                this.total = total;
-              });
+              // this.sortlist.hlist$.subscribe(f => {
+              //   console.log('resetting list');
+
+              //   this.HoldingDetailList = f;
+              // });
+              // this.sortlist.total$.subscribe(total => {
+              //   this.total = total;
+              // });
             },
             error => {
-              console.log(error);
+              // console.log(error);
 
             }
           );
@@ -321,7 +299,7 @@ export class HoldingDetailsComponent implements OnInit {
 
       },
       error => {
-        console.log(error);
+        // console.log(error);
 
       }
     );

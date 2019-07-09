@@ -128,6 +128,19 @@ export class HomeComponent implements OnInit {
       this.total$ = total;
     });
 
+    this.interconn.reloadmethodcalled$.subscribe(
+      () => {
+        this.createFundlist();
+        this.setdataindeshboard();
+        this.portfolioservice.funds$.subscribe(f => {
+          this.funds$ = f;
+        });
+        this.portfolioservice.total$.subscribe(total => {
+          this.total$ = total;
+        });
+      }
+    );
+
     this.interconn.logoutcomponentMethodCalled$.subscribe(
       () => {
         // alert('logout function');
@@ -174,6 +187,14 @@ export class HomeComponent implements OnInit {
                   this.addportfolioFund('comp2', element);
                 }
               }
+            });
+            this.createFundlist();
+            this.setdataindeshboard();
+            this.portfolioservice.funds$.subscribe(f => {
+              this.funds$ = f;
+            });
+            this.portfolioservice.total$.subscribe(total => {
+              this.total$ = total;
             });
           }
         );
@@ -437,6 +458,8 @@ export class HomeComponent implements OnInit {
 
 
   addRow() {
+    // debugger
+
     let singlefund: portfolio_fund = {
       security: '',
       security_id: -1,
@@ -447,7 +470,8 @@ export class HomeComponent implements OnInit {
       comparision1: '',
       comparision2: ''
     };
-    portfoliofundlist.unshift(singlefund);
+    portfoliofundlist.push(singlefund);
+    // portfoliofundlist.unshift(singlefund);
     this.portfolioservice.resetfunds();
     this.portfolioservice.funds$.subscribe(f => {
       this.funds$ = f;
@@ -457,6 +481,11 @@ export class HomeComponent implements OnInit {
       this.total$ = total;
     });
     // portfoliofundlist.push(singlefund);
+    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+
+    console.log(pageno);
+    // ()
+    this.portfolioservice.page = pageno + 1;
   }
 
 

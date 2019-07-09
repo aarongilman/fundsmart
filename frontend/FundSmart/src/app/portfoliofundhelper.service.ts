@@ -36,10 +36,10 @@ function sort(fundlist: portfolio_fund[], column: string, direction: string): po
 }
 
 function matches(fund: portfolio_fund, term: string, pipe: PipeTransform) {
-  return fund.security.toLowerCase().includes(term)
-    || pipe.transform(fund.yourPortfolio).includes(term)
-    || pipe.transform(fund.comparision1).includes(term)
-    || pipe.transform(fund.comparision2).includes(term);
+  return fund.security.toLowerCase().includes(term);
+    // || pipe.transform(fund.yourPortfolio).includes(term)
+    // || pipe.transform(fund.comparision1).includes(term)
+    // || pipe.transform(fund.comparision2).includes(term);
 }
 
 @Injectable({

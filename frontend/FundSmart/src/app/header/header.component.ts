@@ -18,11 +18,15 @@ export class HeaderComponent implements OnInit {
   oldpass = '';
   newpass = '';
   confirmpass = '';
-
+  title = '';
 
   constructor(private modalService: NgbModal,
     private service: ServercommunicationService,
     private intercon: IntercomponentCommunicationService) {
+
+    this.intercon.titlesettercalled$.subscribe(() => {
+this.title = 'Mult';
+    });
 
     this.intercon.componentMethodCalled$.subscribe(
       () => {

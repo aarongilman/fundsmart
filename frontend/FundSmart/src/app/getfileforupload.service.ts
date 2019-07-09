@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ServercommunicationService } from './servercommunication.service';
+import { IntercomponentCommunicationService } from './intercomponent-communication.service';
 declare const google: any;
 
 
@@ -25,7 +26,8 @@ export class GetfileforuploadService {
   // onedrive
 
 
-  constructor(private http: HttpClient, private userservice: ServercommunicationService) { }
+  constructor(private http: HttpClient, private interconn: IntercomponentCommunicationService,
+    private userservice: ServercommunicationService) { }
 
 
   // dropboxlogin() {
@@ -103,6 +105,7 @@ export class GetfileforuploadService {
           self.userservice.uploadfile(formData).subscribe(
             resp => {
               console.log(resp);
+              this.interconn.afterfileupload();
             },
             error => {
               console.log(error);
