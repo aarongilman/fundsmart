@@ -212,6 +212,9 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.interconn.titleSettermethod();
+
     if (this.userservice.currentuser) {
       this.setcurrent_user();
       // this.resetfundlist();
