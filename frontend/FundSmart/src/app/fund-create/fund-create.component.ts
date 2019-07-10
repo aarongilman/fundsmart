@@ -28,7 +28,7 @@ export class FundCreateComponent implements OnInit {
   showdetail_flag = false;
   files: any = [];
   // maxdate = (date:NgbDate, current: {month:number})
-
+  portfoliolist = [];
   portfolio1: any;
   comparision1: any;
   comparision2: any;
@@ -53,9 +53,7 @@ export class FundCreateComponent implements OnInit {
     this.interconn.logoutcomponentMethodCalled$.subscribe(
       () => {
         this.resetfunds();
-        this.portfolio1 = undefined;
-        this.comparision1 = undefined;
-        this.comparision2 = undefined;
+        this.portfoliolist.length = 0;
       });
   }
 
@@ -106,13 +104,23 @@ export class FundCreateComponent implements OnInit {
         id: -1,
         quantity: null,
         portfolio: 0,
+        portfolio_name: '',
         security: 0,
         security_name: '',
         asset_type: '',
         isin: '',
         price: ''
       };
-      fund = data['results'][i];
+      fund.id = data['results'][i]['id'];
+      fund.isin = data['results'][i]['isin'];
+      fund.asset_type = data['results'][i]['asset_type'];
+      fund.portfolio = data['results'][i]['portfolio'];
+      fund.portfolio_name = this.portfoliolist.find(p => p.id === Number.parseInt(data['results'][i]['portfolio'])).name;
+      fund.security = data['results'][i]['security'];
+      fund.security_name = data['results'][i]['security_name'];
+      fund.price = data['results'][i]['price'];
+      fund.quantity = data['results'][i]['quantity'];
+
       apiresultfundlist.push(fund);
     }
     // console.log(apiresultfundlist);
@@ -150,25 +158,31 @@ export class FundCreateComponent implements OnInit {
       data => {
         if (data['count'] > 0) {
           console.log(data);
-          
+
           this.setfunds(data);
         }
       });
   }
 
-  setrowdata(fund, name) {
+  setrowdata(fund, i) {
+    var opt = $('option[value="' + $('#security_' + i).val() + '"]');
+    var secid = Number.parseInt(opt.attr('id'));
+
     // console.log(name);
     var sec: security;
-    sec = securitylist.find(x => x.name === name);
-    // console.log("Security is", sec);
-    // console.log(sec.id);
+    try {
+      sec = securitylist.find(x => x.id === secid);
+      // console.log("Security is", sec);
+      // console.log(sec.id);
 
-    fund.security = sec.id;
-    fund.asset_type = sec.asset_type;
-    fund.isin = sec.isin;
-    fund.security_name = sec.name;
-    // fund.security = name;
-
+      fund.security = sec.id;
+      fund.asset_type = sec.asset_type;
+      fund.isin = sec.isin;
+      fund.security_name = sec.name;
+      // fund.security = name;
+    } catch {
+      return null;
+    }
   }
 
 
@@ -187,7 +201,7 @@ export class FundCreateComponent implements OnInit {
           apiresultfundlist[index]['isin'] = data['isin'];
           apiresultfundlist[index]['price'] = data['price'];
 
-          console.log("After setting data", apiresultfundlist[index]);
+          // console.log("After setting data", apiresultfundlist[index]);
         }
       );
     } else {
@@ -198,9 +212,14 @@ export class FundCreateComponent implements OnInit {
   getUserPortfolios() {
     this.userservice.getUserPortfolio().subscribe(
       data => {
-        this.portfolio1 = data['results']['0'];
-        this.comparision1 = data['results']['1'];
-        this.comparision2 = data['results']['2'];
+        this.portfoliolist.length = 0;
+        // tslint:disable-next-line: forin
+        for (let d in data['results']) {
+          this.portfoliolist.push(data['results'][d]);
+        }
+        // this.portfolio1 = data['results']['0'];
+        // this.comparision1 = data['results']['1'];
+        // this.comparision2 = data['results']['2'];
       });
   }
 
@@ -219,17 +238,20 @@ export class FundCreateComponent implements OnInit {
   }
 
   addRow() {
-    // alert(this.selectedp);
+    // alert(typeof (this.selectedp));
     const singlefund: funds = {
       id: -1,
       quantity: null,
       portfolio: this.selectedp,
+      portfolio_name: this.portfoliolist.find(p => p.id === Number.parseInt(this.selectedp)).name,
       security: 0,
       security_name: '',
       asset_type: '',
       isin: '',
       price: ''
     };
+    // console.log(singlefund);
+
     apiresultfundlist.unshift(singlefund);
     this.fundservice.resetfunds();
     this.fundservice.funds$.subscribe(list => {
@@ -249,6 +271,7 @@ export class FundCreateComponent implements OnInit {
         id: -1,
         quantity: 0,
         portfolio: -1,
+        portfolio_name: '',
         security: -1,
         security_name: '',
         asset_type: '',
