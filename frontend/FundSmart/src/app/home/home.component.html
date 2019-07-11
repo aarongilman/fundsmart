@@ -38,7 +38,7 @@
                                     <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
                                     <!-- {{item|json}} -->
                                     <td>
-                                        <<<<<<< HEAD <!-- <ng-select *ngIf="item.security == '' " [items]="securitylist"
+                                        <!-- <ng-select *ngIf="item.security == '' " [items]="securitylist"
                                             class="form-control " bindLabel="name" style="overflow:visible"
                                             placeholder="Select Security" [(ngModel)]="securityinput[i]"
                                             [searchFn]='searchsecurity()' bindValue="id"
@@ -56,7 +56,7 @@
                                             </ng-template>
 
                                             </ng-select> -->
-                                            <!-- <select [(ngModel)]="securityinput[i]" class="form-control"
+                                        <!-- <select [(ngModel)]="securityinput[i]" class="form-control"
                                             (keyup)="searchsecurity($event)" name='security_{{i}}'>
                                             <div *ngFor="let security of securitylist">
                                                 <option [value]="security.name">
@@ -66,23 +66,22 @@
                                         </select> -->
 
 
-                                            <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
-                                                id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
-                                                name='security_{{i}}'
-                                                (change)="currentUser ? serAttribute(item,i) : openmodal(login,'login');serAttribute(item,i)"
-                                                type="text">
+                                        <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
+                                            id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
+                                            name='security_{{i}}'
+                                            (change)="currentUser ? serAttribute(item,i) : openmodal(login,'login');serAttribute(item,i)"
+                                            type="text">
 
-                                            <datalist id="securityname">
-                                                <!-- data-value={{security.id}} -->
-                                                <option *ngFor="let security of securitylist;let d = index"
-                                                    data-value='{{security.name}}' data-id={{security.id}}>
-                                                    <!-- title="{{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"> -->
-                                                    Name:{{security.name}} Isin:{{security.isin}}
-                                                    Ticker:{{security.ticker}}
-                                                </option>
-                                            </datalist>
-                                            <span *ngIf="item.security != ''"
-                                                style="width: 3cm">{{item.security}}</span>
+                                        <datalist id="securityname">
+                                            <!-- data-value={{security.id}} -->
+                                            <option *ngFor="let security of securitylist;let d = index"
+                                                data-value='{{security.name}}' data-id={{security.id}}>
+                                                <!-- title="{{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"> -->
+                                                Name:{{security.name}} Isin:{{security.isin}}
+                                                Ticker:{{security.ticker}}
+                                            </option>
+                                        </datalist>
+                                        <span *ngIf="item.security != ''" style="width: 3cm">{{item.security}}</span>
                                     </td>
                                     <td>
                                         <input [(ngModel)]="item['yourPortfolio']"
