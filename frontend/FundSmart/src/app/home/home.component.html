@@ -53,36 +53,47 @@
                                                   </ng-template>
                                         
                                         </ng-select> -->
+                                        <!-- <select [(ngModel)]="securityinput[i]" class="form-control"
+                                            (keyup)="searchsecurity($event)" name='security_{{i}}'>
+                                            <div *ngFor="let security of securitylist">
+                                                <option [value]="security.name">
+                                                    {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}
+                                                </option>
+                                            </div>
+                                        </select> -->
+
                                         <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
                                             (keyup)="searchsecurity($event)" list="securityname" name='security_{{i}}'
                                             (change)="currentUser ? item.security = securityinput[i] : openmodal(login,'login');item.security = securityinput[i]"
                                             type="text">
 
                                         <datalist id="securityname">
-                                            <option *ngFor="let security of securitylist" [ngValue]='security.name'
-                                                title=" {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"
-                                                [value]="security.name">
-                                                {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}
-                                            </option>
+                                            <div *ngFor="let security of securitylist">
+                                                <option [ngValue]='security.name'
+                                                    title=" {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"
+                                                    [value]="security.name">
+                                                    {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}
+                                                </option>
+                                            </div>
                                         </datalist>
                                         <span *ngIf="item.security != ''" style="width: 3cm">{{item.security}}</span>
                                     </td>
                                     <td>
                                         <input [(ngModel)]="item['yourPortfolio']"
                                             style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)"
-                                            (change)="currentUser ? addportfolioFund('portfolio',item) : null"
+                                            (change)="currentUser ? addportfolioFund('portfolio',item,i): null"
                                             name='portfolio_{{i}}' type="text">
                                     </td>
                                     <td>
                                         <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
                                             style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
-                                            (change)="currentUser ? addportfolioFund('comp1',item) : null" type="text">
+                                            (change)="currentUser ? addportfolioFund('comp1',item,i): null" type="text">
 
                                     </td>
                                     <td>
                                         <input [(ngModel)]="item['comparision2']"
                                             style="text-align: center ; width: 3cm"
-                                            (change)="currentUser? addportfolioFund('comp2',item): null "
+                                            (change)="currentUser? addportfolioFund('comp2',item,i): null "
                                             name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
 
                                     </td>

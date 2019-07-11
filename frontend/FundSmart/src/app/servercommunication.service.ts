@@ -9,9 +9,9 @@ import { holdindDetail } from './holding-details/holdingDetail';
   providedIn: 'root'
 })
 export class ServercommunicationService {
-  // api_link = 'http://3.16.111.80/';
+  api_link = 'http://3.16.111.80/';
   // api_link = 'http://localhost:8000/';
-  api_link = 'http://192.168.100.111:8000/';
+  // api_link = 'http://192.168.100.111:8000/';
 
 
   socialuser: SocialUser;
@@ -194,6 +194,7 @@ export class ServercommunicationService {
       }
 
 
+      //this.currentuser.id = 1;
       const body = { name: portfolioname, created_by: this.currentuser.id };
       return this.http.post(this.api_link + 'api/portfolio/', body,
         { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
@@ -347,6 +348,98 @@ export class ServercommunicationService {
     return this.http.get(this.api_link + 'api/holding_detail/',
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
 
+  }
+
+  storedata(data) {
+    var alldata = [];
+    if (data) {
+      let format = { 'recordId': data.recordId, 'portfolio': '', 'recid': data.recid, 'COMPARISON1': '', 'COMPARISON2': '', 'securityId': data.securityId }
+      let localData = JSON.parse(localStorage.getItem('securityData'));
+
+      //check portfolio
+      if (data.key == 'p1') {
+        format.portfolio = data.quantity;
+        if (localData) {
+          var resultObject = this.getDimensionsByFind(localData, data.recordId);
+          if (resultObject) {
+            format.recordId = resultObject.recordId;
+            format.portfolio = data.quantity;
+            format.recid = resultObject.recid;
+            format.COMPARISON1 = resultObject.COMPARISON1;
+            format.COMPARISON2 = resultObject.COMPARISON2;
+            format.securityId = resultObject.securityId;
+
+            localData.forEach((key, value) => {
+              if ((localData[value].recordId == data.recordId)) { // if same recid then update data
+                localData[value] = format;
+              }
+            });
+          } else {
+            localData.push(format);
+          }
+        }
+      }
+
+      //check COMPARISON1
+      if (data.key == 'p2') {
+        format.COMPARISON1 = data.quantity;
+        if (localData) {
+          var resultObject = this.getDimensionsByFind(localData, data.recordId);
+          if (resultObject) {
+            format.recordId = resultObject.recordId;
+            format.portfolio = resultObject.portfolio;
+            format.recid = resultObject.recid;
+            format.COMPARISON1 = data.quantity;
+            format.COMPARISON2 = resultObject.COMPARISON2;
+            format.securityId = resultObject.securityId;
+
+            localData.forEach((key, value) => {
+              if ((localData[value].recordId == data.recordId)) { // if same recid then update data
+                localData[value] = format;
+              }
+            });
+          } else {
+            localData.push(format);
+          }
+        }
+      }
+
+      //check COMPARISON2
+      if (data.key == 'p3') {
+        format.COMPARISON2 = data.quantity;
+        if (localData) {
+          var resultObject = this.getDimensionsByFind(localData, data.recordId);
+          if (resultObject) {
+            format.recordId = resultObject.recordId;
+            format.portfolio = resultObject.portfolio;
+            format.recid = resultObject.recid;
+            format.COMPARISON1 = resultObject.COMPARISON1;
+            format.COMPARISON2 = data.quantity;
+            format.securityId = resultObject.securityId;
+
+            localData.forEach((key, value) => {
+              if ((localData[value].recordId == data.recordId)) { // if same recid then update data
+                localData[value] = format;
+              }
+            });
+          } else {
+            localData.push(format);
+          }
+        }
+      }
+
+      if (localData) {
+        localStorage.setItem('securityData', JSON.stringify(localData));
+      } else {
+        alldata.push(format);
+        localStorage.setItem('securityData', JSON.stringify(alldata));
+      }
+    }
+  }
+
+  //Use for find record in array object
+  getDimensionsByFind(arrayValue, recordId) {
+    return arrayValue.find(x => x.recordId === recordId);
   }
   // production api ----->3.16.111.80
 
