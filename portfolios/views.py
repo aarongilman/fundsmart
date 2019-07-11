@@ -88,7 +88,7 @@ class HistoricalPerformanceDifference(APIView):
         base_currency = 'INR'
         fund_details = FundDetail.objects.all()
         fx_rate = FXRate.objects.all()
-        data = request.POST.get('data')
+        data = request.data.get('data')
         LOGGER.error("Error {} ==============".format(data))
         temp_list = []
         try:
