@@ -38,6 +38,7 @@ function sort(fundlist: funds[], column: string, direction: string): funds[] {
 function matches(fund: funds, term: string, pipe: PipeTransform) {
   return fund.security_name.toLowerCase().includes(term)
     || fund.asset_type.toLocaleLowerCase().includes(term)
+    || fund.portfolio_name.toLocaleLowerCase().includes(term)
     || fund.isin.toLocaleLowerCase().includes(term)
     || pipe.transform(fund.quantity).includes(term);
 }
@@ -115,7 +116,7 @@ export class FundcreatesortService {
 
     // 1. sort
     let fundlist = sort(apiresultfundlist, sortColumn, sortDirection);
- 
+
     // 2. filter
 
     fundlist = fundlist.filter(fund => matches(fund, searchTerm, this.pipe));

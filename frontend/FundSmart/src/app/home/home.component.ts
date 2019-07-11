@@ -42,7 +42,7 @@ export class HomeComponent implements OnInit {
   comparision2Form: FormGroup;
   fundrowForm: FormGroup;
 
-
+  clickedSecurity: any;
 
   // end form conversion
 
@@ -322,6 +322,17 @@ export class HomeComponent implements OnInit {
       });
   }
 
+  serAttribute(item, i) {
+    var opt = $('option[value="' + $('#security_' + i).val() + '"]');
+    item.security_id = Number.parseInt(opt.attr('id'));
+    try {
+      item.security = securitylist.find(s => s.id === item.security_id).name;
+    } catch {
+      return null;
+    }
+
+  }
+
   setdataindeshboard() {
     this.userservice.get_historical_perfomance().subscribe(
       result => {
@@ -501,13 +512,14 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.total$.subscribe(total => {
       // alert('came here to set new row');
       this.total$ = total;
+      const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize) + 1;
+      this.portfolioservice.page = pageno;
     });
     // portfoliofundlist.push(singlefund);
-    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-
     //console.log(pageno);
     // ()
-    this.portfolioservice.page = pageno + 1;
+    //this.portfolioservice.page = pageno + 1;
+
   }
 
 
@@ -839,8 +851,10 @@ export class HomeComponent implements OnInit {
 
   createportfoliofundmethod(portfolio, quantity, item: portfolio_fund, recordid, i) {
     // alert('came in create portfolio fund');
-    var security = securitylist.find(x => x.name === item.security);
-    // console.log(security);
+    // console.log(item.security_id);
+
+    // var security = securitylist.find(x => x.id === item.security_id);
+    // console.log(security, portfolio, quantity);
 
     // name = this.securityinput);
     var recid;
@@ -852,18 +866,18 @@ export class HomeComponent implements OnInit {
       recid = item.p3record;
     }
 
-    if (security === undefined) {
+    if (item.security_id === undefined) {
       // alert("Please select valid security");
       return null;
     } else {
       if (recid === null) {
         // alert('post method');
-        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+        this.userservice.add_portfolio_fund(quantity, portfolio, item.security_id, this.currentUser['id']).subscribe();
       } else {
         // alert('put method');
-        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+        this.userservice.updateportfoliofund(recid, quantity, portfolio, item.security_id, this.currentUser['id']).subscribe();
       }
-      this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": security.id });
+      this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": item.security_id });
       this.setdataindeshboard();
     }
   }
