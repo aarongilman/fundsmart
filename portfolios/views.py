@@ -89,6 +89,7 @@ class HistoricalPerformanceDifference(APIView):
         fund_details = FundDetail.objects.all()
         fx_rate = FXRate.objects.all()
         data = request.POST.get('data')
+        LOGGER.error("Error {} ==============".format(data))
         temp_list = []
         try:
             securities = Security.objects.filter(id__in=map(
@@ -131,16 +132,20 @@ class HistoricalPerformanceDifference(APIView):
             existing_return_5_year = 0
             for item in temp_list:
                 if item.get('market_value'):
-                    annual_expense = (item.get('market_value')/sum(existing_mkt_values)
+                    annual_expense = (item.get('market_value')/
+                                      sum(filter(None, existing_mkt_values))
                                       )*float(item.get('annual_expense'))
                     existing_annual_expense = existing_annual_expense + annual_expense
-                    return_1_year = (item.get('market_value') / sum(existing_mkt_values)
+                    return_1_year = (item.get('market_value') /
+                                     sum(filter(None, existing_mkt_values))
                                      )*float(item.get('1-year'))
                     existing_return_1_year = existing_return_1_year + return_1_year
-                    return_3_year = (item.get('market_value') / sum(existing_mkt_values)
+                    return_3_year = (item.get('market_value') /
+                                     sum(filter(None, existing_mkt_values))
                                      )*float(item.get('3-year'))
                     existing_return_3_year = existing_return_3_year + return_3_year
-                    return_5_year = (item.get('market_value') / sum(existing_mkt_values)
+                    return_5_year = (item.get('market_value') /
+                                     sum(filter(None, existing_mkt_values))
                                      )*float(item.get('5-year'))
                     existing_return_5_year = existing_return_5_year + return_5_year
             recommended_funds = fund_details.filter(for_recommendation=True)[:4]
