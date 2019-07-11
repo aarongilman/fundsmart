@@ -402,6 +402,7 @@ export class FundCreateComponent implements OnInit {
     // alert('abc');
     this.fileupload.onApiLoad();
     this.modalService.dismissAll('File upload');
+    this.getfunds();
   }
 
   onSort({ column, direction }: SortEvent) {

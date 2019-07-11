@@ -30,21 +30,6 @@ export class GetfileforuploadService {
     private userservice: ServercommunicationService) { }
 
 
-  // dropboxlogin() {
-  //   this.http.get<any>('https://www.dropbox.com/oauth2/authorize', {
-  //     responseType: 'token' as 'json',
-  //     params: { client_id: 'thwqni27y9hfknh' }
-
-  //   }).subscribe(
-  //     result => {
-  //       console.log(result);
-  //     },
-  //     error => {
-  //       console.log(error);
-
-  //     }
-  //   );
-  // }
 
 
 
@@ -144,6 +129,18 @@ export class GetfileforuploadService {
 
 
   // drop box file upload
+
+  dropboxlogin() {
+    this.http.get<any>('https://www.dropbox.com/oauth2/authorize?client_id=thwqni27y9hfknh&response_type=code').subscribe(
+      result => {
+        console.log(result);
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
 
   setAccessToken(token) {
     this.accessToken = token;
