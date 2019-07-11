@@ -20,7 +20,33 @@ import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms'
 import { MustMatch } from '../must-match.validator';
 import { securitylist } from '../securitylist';
 import { element } from '@angular/core/src/render3';
-import { Dropbox } from 'dropbox';
+// import { Dropbox } from 'dropbox';
+
+
+
+declare var Dropbox: Dropbox;
+
+interface Dropbox {
+  choose(options: DropboxChooseOptions): void;
+}
+
+interface DropboxChooseOptions {
+  success(files: DropboxFile[]);
+  cancel?(): void;
+  linkType: "direct";
+  multiselect: boolean;
+  extensions?: string[];
+}
+
+interface DropboxFile {
+  name: string;
+  link: string;
+  bytes: number;
+  icon: string;
+  thumbnailLink?: string;
+  isDir: boolean;
+}
+
 @Component({
 
   selector: 'app-home',
@@ -42,7 +68,7 @@ export class HomeComponent implements OnInit {
   comparision2Form: FormGroup;
   fundrowForm: FormGroup;
 
-  clickedSecurity: any;
+
 
   // end form conversion
 
@@ -301,17 +327,6 @@ export class HomeComponent implements OnInit {
       });
   }
 
-  serAttribute(item, i) {
-    var opt = $('option[value="' + $('#security_' + i).val() + '"]');
-    item.security_id = Number.parseInt(opt.attr('id'));
-    try {
-      item.security = securitylist.find(s => s.id === item.security_id).name;
-    } catch {
-      return null;
-    }
-
-  }
-
   setdataindeshboard() {
     this.userservice.get_historical_perfomance().subscribe(
       result => {
@@ -491,11 +506,13 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.total$.subscribe(total => {
       // alert('came here to set new row');
       this.total$ = total;
-      const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize) + 1;
-      this.portfolioservice.page = pageno;
     });
     // portfoliofundlist.push(singlefund);
+    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
 
+    console.log(pageno);
+    // ()
+    this.portfolioservice.page = pageno + 1;
   }
 
 
@@ -826,10 +843,8 @@ export class HomeComponent implements OnInit {
 
   createportfoliofundmethod(portfolio, quantity, item: portfolio_fund, recordid) {
     // alert('came in create portfolio fund');
-    // console.log(item.security_id);
-
-    // var security = securitylist.find(x => x.id === item.security_id);
-    // console.log(security, portfolio, quantity);
+    var security = securitylist.find(x => x.name === item.security);
+    // console.log(security);
 
     // name = this.securityinput);
     var recid;
@@ -841,7 +856,7 @@ export class HomeComponent implements OnInit {
       recid = item.p3record;
     }
 
-    if (item.security_id === undefined) {
+    if (security === undefined) {
       // alert("Please select valid security");
       return null;
     } else {
@@ -849,60 +864,53 @@ export class HomeComponent implements OnInit {
 
       if (recid === null) {
         // alert('post method');
-        this.userservice.add_portfolio_fund(quantity, portfolio, item.security_id, this.currentUser['id']).subscribe();
+        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
       } else {
         // alert('put method');
-        this.userservice.updateportfoliofund(recid, quantity, portfolio, item.security_id, this.currentUser['id']).subscribe();
+        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
       }
       this.setdataindeshboard();
     }
   }
 
-
   dropboxupload() {
-    const options = {
+    let url: any;
+    // document.getElementById("OpenDropboxFilePicker").addEventListener("click", e => {
+    var options: DropboxChooseOptions = {
+      success: (files) => {
+        let that = this;
+        for (const file of files) {
+          const name = file.name;
+          console.log(typeof (file), "type of fie", file);
+          url = file.link;
+          // console.log({ name: name, url: url });
+          fetch(url).then(response => response.blob()).then(filedata => {
+            // TODO do something useful with the blob
 
-      // Required. Called when a user selects an item in the Chooser.
-      success: function (files) {
-        alert("Here's the file link: " + files[0].link)
+            // For instance, display the image
+            // console.log("blob is ", filedata.type);
+            const formData = new FormData();
+            const blob = new Blob([filedata], { type: filedata.type });
+            const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
+            formData.append('data_file', myfile);
+            that.userservice.uploadfile(formData).subscribe(
+              resp => {
+                // console.log(resp);
+                that.interconn.afterfileupload();
+                this.modalService.dismissAll('File uploaded');
+              }
+            );
+          });
+        }
       },
-
-      // Optional. Called when the user closes the dialog without selecting a file
-      // and does not include any parameters.
-      cancel: function () {
-
+      cancel: () => {
       },
-
-      // Optional. "preview" (default) is a preview link to the document for sharing,
-      // "direct" is an expiring link to download the contents of the file. For more
-      // information about link types, see Link types below.
-      linkType: "direct", // or "direct"
-
-      // Optional. A value of false (default) limits selection to a single file, while
-      // true enables multiple file selection.
-      multiselect: false, // or true
-
-      // Optional. This is a list of file extensions. If specified, the user will
-      // only be able to select files with these extensions. You may also specify
-      // file types, such as "video" or "images" in the list. For more information,
-      // see File types below. By default, all extensions are allowed.
-      extensions: ['.csv', '.xlsx', '.xls'],
-
-      // Optional. A value of false (default) limits selection to files,
-      // while true allows the user to select both folders and files.
-      // You cannot specify `linkType: "direct"` when using `folderselect: true`.
-      folderselect: false, // or true
-
-      // Optional. A limit on the size of each file that may be selected, in bytes.
-      // If specified, the user will only be able to select files with size
-      // less than or equal to this limit.
-      // For the purposes of this option, folders have size zero.
-      sizeLimit: 1024, // or any positive number
+      linkType: "direct",
+      multiselect: false,
+      extensions: ['.xlsx', '.xls', '.csv'],
     };
 
-    // let dropboxapi = Dropbox(options);
-
-    // this.fileupload.dropboxlogin();
+    Dropbox.choose(options);
   }
 
   onedrivefileupload() {

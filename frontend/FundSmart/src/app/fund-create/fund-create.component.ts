@@ -11,6 +11,31 @@ import { funds } from '../funds';
 import { FundcreatesortService } from '../fundcreatesort.service';
 import { SortEvent, SortableDirective } from '../sortable.directive';
 import { securitylist } from '../securitylist';
+
+
+declare var Dropbox: Dropbox;
+
+interface Dropbox {
+  choose(options: DropboxChooseOptions): void;
+}
+
+interface DropboxChooseOptions {
+  success(files: DropboxFile[]);
+  cancel?(): void;
+  linkType: "direct";
+  multiselect: boolean;
+  extensions?: string[];
+}
+
+interface DropboxFile {
+  name: string;
+  link: string;
+  bytes: number;
+  icon: string;
+  thumbnailLink?: string;
+  isDir: boolean;
+}
+
 @Component({
   selector: 'app-fund-create',
   templateUrl: './fund-create.component.html',
@@ -392,8 +417,46 @@ export class FundCreateComponent implements OnInit {
   }
 
   dropboxupload() {
-    this.fileupload.getUserInfo();
+    let url: any;
+    // document.getElementById("OpenDropboxFilePicker").addEventListener("click", e => {
+    var options: DropboxChooseOptions = {
+      success: (files) => {
+        let that = this;
+        for (const file of files) {
+          const name = file.name;
+          console.log(typeof (file), "type of fie", file);
+          url = file.link;
+          // console.log({ name: name, url: url });
+          fetch(url).then(response => response.blob()).then(filedata => {
+            // TODO do something useful with the blob
+
+            // For instance, display the image
+            // console.log("blob is ", filedata.type);
+            const formData = new FormData();
+            const blob = new Blob([filedata], { type: filedata.type });
+            const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
+            formData.append('data_file', myfile);
+            that.userservice.uploadfile(formData).subscribe(
+              resp => {
+                // console.log(resp);
+                that.interconn.afterfileupload();
+                this.getfunds();
+                this.modalService.dismissAll('File uploaded');
+              }
+            );
+          });
+        }
+      },
+      cancel: () => {
+      },
+      linkType: "direct",
+      multiselect: false,
+      extensions: ['.xlsx', '.xls', '.csv'],
+    };
+
+    Dropbox.choose(options);
   }
+
 
   onedrivefileupload() {
   }

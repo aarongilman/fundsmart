@@ -58,19 +58,19 @@
                                     <td>
                                         <input [(ngModel)]="item['yourPortfolio']"
                                             style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)"
-                                            (change)="currentUser ? addportfolioFund('portfolio',item) : null"
+                                            (change)="currentUser ? addportfolioFund('portfolio',item,i): null"
                                             name='portfolio_{{i}}' type="text">
                                     </td>
                                     <td>
                                         <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
                                             style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
-                                            (change)="currentUser ? addportfolioFund('comp1',item) : null" type="text">
+                                            (change)="currentUser ? addportfolioFund('comp1',item,i): null" type="text">
 
                                     </td>
                                     <td>
                                         <input [(ngModel)]="item['comparision2']"
                                             style="text-align: center ; width: 3cm"
-                                            (change)="currentUser? addportfolioFund('comp2',item): null "
+                                            (change)="currentUser? addportfolioFund('comp2',item,i): null "
                                             name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
 
                                     </td>
@@ -388,7 +388,7 @@
                 <div class="upload-options ">
                     <ul class="d-flex align-items-center justify-content-between">
                         <li>
-                            <a (click)='dropboxupload()'>
+                            <a (click)='dropboxupload()' id="OpenDropboxFilePicker">
                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="475.078px"
                                     height="475.077px" viewBox="0 0 475.078 475.077"
@@ -637,7 +637,7 @@
                                 <a (click)='resetpass_modal()'>Forgot Password?</a>
                             </div>
                             <div id='Loginerror' class="hidden">
-                                <label>Invalid Login Credentials</label>
+                                <label style="color: red">Invalid Login Credentials</label>
                             </div>
                             <button type="button" (click)='userlogin()'
                                 class="trade-btn green-btn d-flex align-items-center justify-content-center">

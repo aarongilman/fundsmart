@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700');
 @import '~ngx-toastr/toastr.css';
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import "~primeng/resources/themes/nova-dark/theme.css";
+@import "~primeng/resources/primeng";
+@import "~primeicons/primeicons.css";
 
 /*Common Css*/
 html {
@@ -1511,6 +1514,7 @@ a.close-menu svg path {
     border-bottom-left-radius : 50px;
     border-right              : 10px solid #000034;
     padding                   : 30px !important;
+    border-bottom-right-radius: 50px;
 }
 
 .sign-pop .pop-logo svg {
@@ -1779,7 +1783,16 @@ a.close-menu svg path {
     display      : block;
 
 }
-
+.form-input .login-form .input-group>.form-control {
+    position: relative;
+    flex: 0 0 auto;
+    width: 1%;
+    margin-bottom: 0;
+    width: 180px;
+    max-width: 100%;
+    margin-left: auto;
+    font-size: 12px;
+}
 .progress-arrow {
     border-left     : 8px solid transparent;
     border-right    : 8px solid transparent;

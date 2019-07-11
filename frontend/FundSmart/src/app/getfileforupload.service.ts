@@ -82,7 +82,7 @@ export class GetfileforuploadService {
       console.log(doc.id, doc.name);
       self.downloadGDriveFile(doc.id).subscribe(
         filedata => {
-          console.log(filedata);
+          // console.log(filedata);
           const formData = new FormData();
           const blob = new Blob([filedata], { type: doc.mimeType });
           const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });

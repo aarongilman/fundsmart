@@ -5,12 +5,14 @@ import { ToastrService } from 'ngx-toastr';
 import { MatMenuTrigger } from '@angular/material';
 import { Router } from '@angular/router';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
     selector: 'app-fund',
     templateUrl: './fund.component.html',
     styleUrls: ['./fund.component.css']
 })
+
 export class FundComponent implements OnInit {
     @ViewChild(MatMenuTrigger)
     contextMenu: MatMenuTrigger;
@@ -21,19 +23,27 @@ export class FundComponent implements OnInit {
     SelectedIDs: any = [];
     searchText: string;
     contextMenuPosition = { x: '0px', y: '0px' };
-    currentUser: any;
+    name: any;
+    description: any;
+    owner_1: any;
+    owner_2: any;
+    type: any;
+    marginal_tax_range: any;
+    location:any;
+    created_by: any;
+    updated_by: any;
 
     constructor(
         private userService: ServercommunicationService,
         private modalService: NgbModal,
         private toastr: ToastrService,
-        private router: Router,
-        private interconn: IntercomponentCommunicationService
+        private interconn: IntercomponentCommunicationService,
+        private confirmationService: ConfirmationService,
+        private router: Router
     ) { }
 
     ngOnInit() {
         this.interconn.titleSettermethod("Funds");
-
         this.getFunds();
     }
 
@@ -50,6 +60,19 @@ export class FundComponent implements OnInit {
             fundlist => {
                 this.result = fundlist;
             });
+    }
+
+    addPortfolioData() {
+        this.userService.addPortfolioFund(
+            this.name,
+            this.description,
+            this.owner_1,
+            this.owner_2,
+            this.type,
+            this.marginal_tax_range,
+            this.created_by).subscribe(result => {
+            this.getFunds();
+        });
     }
 
     header_modals(modalid, fund?) {
@@ -82,29 +105,32 @@ export class FundComponent implements OnInit {
     }
 
     delete_Portfolio(id) {
-        this.userService.delete_Portfolio(id).subscribe(
-            result => {
-                this.getFunds();
-            });
+        this.confirmationService.confirm({
+            message: 'Do you want to delete this Portfolio?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            accept: () => {
+                this.userService.delete_Portfolio(id).subscribe(result => {
+                    this.getFunds();
+                    this.toastr.success('Success', 'Portfolio Deleted Successfully');
+                });
+            },
+            reject: () => {
+                this.toastr.error('', 'Request Rejected For Deletion');
+            }
+        });
     }
 
     selectID(item) {
         if (this.SelectedIDs.find(x => x == item)) {
             this.SelectedIDs.splice(this.SelectedIDs.indexOf(item), 1);
-            //console.log(this.SelectedIDs);
         } else {
-            this.SelectedIDs.push(item)
-            // console.log(this.SelectedIDs);
+            this.SelectedIDs.push(item);
         }
     }
 
     onContextMenuAction1() {
-        // this is query params 
-
         this.router.navigate(['/holding_summary'], { queryParams: { id: this.SelectedIDs } });
-
-        // console.log('hiiiiii', this.SelectedIDs);
-
     }
 
     onContextMenuAction2() {
@@ -119,18 +145,6 @@ export class FundComponent implements OnInit {
         this.router.navigate(['/allocation_recommendation']);
     }
 
-    openmodal(modalid, str) {
-        // alert("type of modal is" + typeof(modalid));
-        var addclass = '';
-        if (str == 'login' || str == 'register') {
-            addclass = 'long-pop sign-pop';
-        }
-        this.modalService.open(modalid, { centered: true, windowClass: addclass }).result.then((result) => {
-            this.closeResult = `Closed with: ${result}`;
-        }, (reason) => {
-            this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-        });
-    }
 }
 
 export interface Item { }

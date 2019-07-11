@@ -34,8 +34,7 @@
               "src/assets/js/jquery.min.js",
               "node_modules/chartist/dist/chartist.min.js",
               "src/assets/js/perfect-scrollbar.min.js",
-              "src/assets/js/custom.js",
-              "./node_modules/dropbox/dist/Dropbox-sdk.min.js"
+              "src/assets/js/custom.js"
             ],
             "es5BrowserSupport": true
           },

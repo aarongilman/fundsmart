@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthService, SocialUser, GoogleLoginProvider } from "angularx-social-login";
+import { AuthService, SocialUser } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
-import { Observable } from 'rxjs';
 import { holdindDetail } from './holding-details/holdingDetail';
 
 @Injectable({
@@ -140,7 +139,12 @@ export class ServercommunicationService {
   }
 
   add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby) {
-    const body = { quantity: fquantity, portfolio: userportfolio, security: selectedsecurity, created_by: createdby };
+    const body = {
+      quantity: fquantity,
+      portfolio: userportfolio,
+      security: selectedsecurity,
+      created_by: createdby
+    };
     return this.http.post(this.api_link + 'api/portfolio_fund/', body,
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
@@ -221,21 +225,16 @@ export class ServercommunicationService {
 
   update_One_Object(user: any, id) {
     const body = {
-      id: user.id,
       name: user.name,
       description: user.description,
       owner_1: user.owner_1,
       owner_2: user.owner_2,
       marginal_tax_range: user.marginal_tax_range,
       location: user.location,
-      created_at: user.created_at,
-      created_by: user.created_by,
     };
     return this.http.put(this.api_link + 'api/portfolio/' + id + '/',
       body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
-
-
 
   get_Fund() {
 
@@ -298,15 +297,11 @@ export class ServercommunicationService {
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
-
-
   get_lineplot_chart() {
     return this.http.get(this.api_link + 'api/dashboard_line_graph/', {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
-
-
 
   getHoldingDetails() {
     return this.http.get(this.api_link + 'api/holding_detail/',
@@ -316,6 +311,22 @@ export class ServercommunicationService {
   holding_summary_asset(ids) {
     return this.http.get(this.api_link + 'api/asset_class_holding_summary/?portfolio_ids=' + ids,
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  addPortfolioFund(name, description, owner_1, owner_2, marginal_tax_range, type, location) {
+    const body = {
+      name: name,
+      description: description,
+      owner_1: owner_1,
+      owner_2: owner_2,
+      type: type,
+      marginal_tax_range: marginal_tax_range,
+      location: location,
+      created_by: this.currentuser.id,
+    }
+    return this.http.post(this.api_link + 'api/portfolio/',
+      body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+
   }
 
   holding_summary_industry(ids) {

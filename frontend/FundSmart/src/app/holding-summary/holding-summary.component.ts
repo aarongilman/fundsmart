@@ -20,7 +20,7 @@ export class HoldingSummaryComponent implements OnInit {
     graph = [];
     linedata = [];
     linetype = 'LineChart';
-    linetitle = '';
+    linetitle = 'Portfolio value over time';
     linewidth = '450px';
     lineheight = '500px';
     linecolumnNames = [];
@@ -29,8 +29,7 @@ export class HoldingSummaryComponent implements OnInit {
     total1 = {};
     total2 = {};
     total3 = {};
-    total4 = {};
-    total5 = {};
+    total4 = [];
 
     constructor(
         private interconn: IntercomponentCommunicationService,
@@ -44,7 +43,6 @@ export class HoldingSummaryComponent implements OnInit {
 
     ngOnInit() {
         this.interconn.titleSettermethod("Holding Summary");
-
         this.getAssets();
         this.getHistoricalPerformance();
         this.getFund();
@@ -104,8 +102,6 @@ export class HoldingSummaryComponent implements OnInit {
         });
     }
 
-
-
     getIndustry() {
         this.service.holding_summary_industry(this.id).subscribe((industryData: any) => {
             industryData.forEach(industry => {
@@ -134,7 +130,7 @@ export class HoldingSummaryComponent implements OnInit {
                 if (names[0] !== 'Total') {
                     this.historical.push(historicalObj);
                 } else {
-                    this.total4 = historicalObj;
+                    this.total4.push(historicalObj);
                 }
             });
         });
@@ -160,7 +156,6 @@ export class HoldingSummaryComponent implements OnInit {
                             if (tempArray.filter(x => x === label).length === 0) {
                                 tempArray.push(label);
                             }
-                            // debugger
                             if (mainObj[label] || mainObj[label] === 0) {
                                 mainObj[label] = mainObj[label] + ',' + ((element.series[k]) ? element.series[k] : 0);
                             } else {
@@ -169,9 +164,8 @@ export class HoldingSummaryComponent implements OnInit {
                         }
                     }
                     for (let i = 0; i < tempArray.length; i++) {
-                        const element = tempArray[i]; // let me check
+                        const element = tempArray[i];
                         const values = (mainObj[element].split(',')).filter(Boolean);
-                        // const values = (mainObj[element]);
                         const valuesCollection = [];
                         valuesCollection.push(element);
                         for (const iterator of values) {
@@ -179,16 +173,13 @@ export class HoldingSummaryComponent implements OnInit {
                         }
                         this.linedata.push(valuesCollection);
                     }
-                    // // debugger;
-                    console.log("Line", this.linedata);
-
                 }
                 this.lineoptions = {
                     pointSize: 5,
                     curveType: 'function',
-                };
 
-            }
-        )
+                };
+            });
     }
+
 }
