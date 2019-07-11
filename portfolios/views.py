@@ -11,9 +11,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, status
 
+from .common import get_quantity
 from .serializers import ImportPortfolioFundSerializer
 from .models import Security, Portfolio, PortfolioFund, FundDetail, Price,\
-    HoldingDetail, FundHolding
+    HoldingDetail, FundHolding, FXRate
 
 LOGGER = logging.getLogger('fundsmart')
 
@@ -81,81 +82,99 @@ class ImportPortfolioFund(APIView):
 
 class HistoricalPerformanceDifference(APIView):
     """API view to get historical Performance difference calculation"""
-    def get(self, request):
+    permission_classes = []
+
+    def post(self, request):
+        base_currency = 'INR'
         fund_details = FundDetail.objects.all()
-        # Get your portfolio's funds
-        portfolio = Portfolio.objects.filter(created_by=request.user)
-        if portfolio:
-            portfolio = portfolio.first()
-            isin_list = PortfolioFund.objects.\
-                filter(security__asset_type='Mutual Fund', portfolio=portfolio,
-                       created_by=request.user).values_list('security__id_value',
-                                                            flat=True)
+        fx_rate = FXRate.objects.all()
+        data = request.POST.get('data')
+        temp_list = []
+        try:
+            securities = Security.objects.filter(id__in=map(
+                lambda d: d.get('securityId', 0), data),
+                asset_type="Mutual FUnd")
+            print(securities)
+            prices = Price.objects.filter(id_value__in=securities.
+                                          values_list('id_value'))
+            existing_mkt_values = []
+            for security in securities:
+                quantity_data = [item for item in data if item.get('securityId')
+                                 == str(security.id)]
+                fund_detail = fund_details.filter(fund_id=security.id_value)
 
-            # fund details for existing funds
-            portfolio_fund_details = fund_details.filter(fund_id__in=isin_list)
-            # Annual expense calculation for existing funds
-            if portfolio_fund_details:
-                portfolio_annual_expense = [float(x) for x in portfolio_fund_details.
-                                            values_list('fund_exp_ratio', flat=True)]
-                portfolio_avg_annual_expense =\
-                    sum(portfolio_annual_expense)/len(portfolio_annual_expense)
-
-                # 1 year, 3 year and 5 year return for existing funds
-                portfolio_1_year = [float(x) for x in portfolio_fund_details.
-                                    values_list('return_1_year', flat=True)]
-                portfolio_avg_1_year = sum(portfolio_1_year)/len(portfolio_1_year)
-
-                portfolio_3_year = [float(x) for x in portfolio_fund_details.
-                                    values_list('return_3_year', flat=True)]
-                portfolio_avg_3_year = sum(portfolio_3_year)/len(portfolio_3_year)
-
-                portfolio_5_year = [float(x) for x in portfolio_fund_details.
-                                    values_list('return_5_year', flat=True)]
-                portfolio_avg_5_year = sum(portfolio_5_year)/len(portfolio_5_year)
-
-                # recommended 4 funds
-                recommended_funds = fund_details[:4]#.filter(for_recommendation=True)[:4]
-                # Annual expense calculation for recommended
-                recommended_annual_expense = [float(x) for x in recommended_funds.
-                                              values_list('fund_exp_ratio', flat=True)]
-                recommended_avg_annual_expense = \
-                    sum(recommended_annual_expense)/len(recommended_annual_expense)
-
-                # 1 year, 3 year and 5 year for existing
-                recommended_1_year = [float(x) for x in recommended_funds.
-                                      values_list('return_1_year', flat=True)]
-                recommended_avg_1_year = sum(recommended_1_year)/len(recommended_1_year)
-
-                recommended_3_year = [float(x) for x in recommended_funds.
-                                      values_list('return_3_year', flat=True)]
-                recommended_avg_3_year = sum(recommended_3_year)/len(recommended_3_year)
-
-                recommended_5_year = [float(x) for x in recommended_funds.
-                                      values_list('return_5_year', flat=True)]
-                recommended_avg_5_year = sum(recommended_5_year)/len(recommended_5_year)
-
-                exp_diff = recommended_avg_annual_expense - portfolio_avg_annual_expense
-                data = [{"existing": {'annual_expense': portfolio_avg_annual_expense,
-                                      '1-year': portfolio_avg_1_year,
-                                      '3-year': portfolio_avg_3_year,
-                                      '5-year': portfolio_avg_5_year},
-                         "recommended": {
-                             'annual_expense': recommended_avg_annual_expense,
-                             '1-year': recommended_avg_1_year,
-                             '3-year': recommended_avg_3_year,
-                             '5-year': recommended_avg_5_year},
-                         "difference": {
-                             'annual_expense': exp_diff,
-                             '1-year': recommended_avg_1_year-portfolio_avg_1_year,
-                             '3-year': recommended_avg_3_year-portfolio_avg_3_year,
-                             '5-year': recommended_avg_5_year-portfolio_avg_5_year}}]
-                return Response(data, status=200)
-        return Response([], status=200)
+                fx_rate_obj = fx_rate.filter(base=base_currency,
+                                             date=date.today(),
+                                             currency=security.currency)
+                price_obj = prices.filter(id_value=security.id_value,
+                                          date=date.today())
+                price = float(price_obj[0].price)
+                total_quantity = 0
+                for item in quantity_data:
+                    quantity = item.get('portfolio')
+                    if '%' in str(quantity):
+                        quantity = get_quantity(quantity, security,
+                                                fund_detail[0].aum,
+                                                fx_rate_obj[0].rate, price)
+                    else:
+                        quantity = float(quantity)
+                    total_quantity = total_quantity + quantity
+                existing_mkt_values.append(total_quantity * price)
+                temp_list.append({'market_value': total_quantity * price,
+                                  'annual_expense': fund_detail[0].fund_exp_ratio,
+                                  '1-year': fund_detail[0].return_1_year,
+                                  '3-year': fund_detail[0].return_3_year,
+                                  '5-year': fund_detail[0].return_5_year})
+            existing_annual_expense = 0
+            existing_return_1_year = 0
+            existing_return_3_year = 0
+            existing_return_5_year = 0
+            for item in temp_list:
+                annual_expense = (item.get('market_value')/sum(existing_mkt_values)
+                                  )*float(item.get('annual_expense'))
+                existing_annual_expense = existing_annual_expense + annual_expense
+                return_1_year = (item.get('market_value') / sum(existing_mkt_values)
+                                 )*float(item.get('1-year'))
+                existing_return_1_year = existing_return_1_year + return_1_year
+                return_3_year = (item.get('market_value') / sum(existing_mkt_values)
+                                 )*float(item.get('3-year'))
+                existing_return_3_year = existing_return_3_year + return_3_year
+                return_5_year = (item.get('market_value') / sum(existing_mkt_values)
+                                 )*float(item.get('5-year'))
+                existing_return_5_year = existing_return_5_year + return_5_year
+            recommended_funds = fund_details.filter(for_recommendation=True)[:4]
+            rec_annual_expense = sum([float(exp) for exp in recommended_funds.
+                                     values_list('fund_exp_ratio', flat=True)])
+            rec_1_year_return = sum([float(exp) for exp in recommended_funds.
+                                    values_list('return_1_year', flat=True)])
+            rec_3_year_return = sum([float(exp) for exp in recommended_funds.
+                                    values_list('return_3_year', flat=True)])
+            rec_5_year_return = sum([float(exp) for exp in recommended_funds.
+                                    values_list('return_5_year', flat=True)])
+            return_data = [
+                {"existing": {'annual_expense': existing_annual_expense,
+                              '1-year': existing_return_1_year,
+                              '3-year': existing_return_3_year,
+                              '5-year': existing_return_5_year},
+                 "recommended": {'annual_expense': rec_annual_expense,
+                                 '1-year': rec_1_year_return,
+                                 '3-year': rec_3_year_return,
+                                 '5-year': rec_5_year_return},
+                 "difference": {
+                     'annual_expense': rec_annual_expense -
+                     existing_annual_expense,
+                     '1-year': rec_1_year_return-existing_return_1_year,
+                     '3-year': rec_3_year_return-existing_return_3_year,
+                     '5-year': rec_5_year_return-existing_return_5_year}}]
+        except Exception as e:
+            return_data = []
+            LOGGER.error("Error {} occurred: historical performance".format(e))
+        return Response(return_data, status=200)
 
 
 class DashboardLinePlotApi(APIView):
     """API view to compare historical market values of three portfolios"""
+    permission_classes = []
 
     def get(self, request):
         data = []
@@ -199,6 +218,7 @@ class DashboardLinePlotApi(APIView):
 class DashboardDoughnutChart(APIView):
     """APIView to display analytics on user’s holding in different Industries"""
 
+    permission_classes = []
     def get(self, request):
         portfolio = Portfolio.objects.filter(created_by=request.user).first()
         data = PortfolioFund.objects.filter(
@@ -211,6 +231,7 @@ class DashboardDoughnutChart(APIView):
 
 class DashboardPieChart(APIView):
     """APIView to display  holdings’ asset classes in user’s portfolio"""
+    permission_classes = []
 
     def get(self, request):
         portfolio = Portfolio.objects.filter(created_by=request.user).first()
