@@ -11,5 +11,5 @@ def get_quantity(quantity, security, aum, rate, price):
             .filter(fund_id=security.id_value)
         quantity = aum * sum(holdings)
     else:
-        quantity = a / float(price)
+        quantity = a / float(price) if price else 0
     return quantity

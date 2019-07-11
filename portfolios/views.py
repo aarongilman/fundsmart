@@ -94,7 +94,6 @@ class HistoricalPerformanceDifference(APIView):
             securities = Security.objects.filter(id__in=map(
                 lambda d: d.get('securityId', 0), data),
                 asset_type="Mutual FUnd")
-            print(securities)
             prices = Price.objects.filter(id_value__in=securities.
                                           values_list('id_value'))
             existing_mkt_values = []
@@ -108,7 +107,7 @@ class HistoricalPerformanceDifference(APIView):
                                              currency=security.currency)
                 price_obj = prices.filter(id_value=security.id_value,
                                           date=date.today())
-                price = float(price_obj[0].price)
+                price = float(price_obj.latest('date').price) if price_obj else None
                 total_quantity = 0
                 for item in quantity_data:
                     quantity = item.get('portfolio')
@@ -119,8 +118,9 @@ class HistoricalPerformanceDifference(APIView):
                     else:
                         quantity = float(quantity)
                     total_quantity = total_quantity + quantity
-                existing_mkt_values.append(total_quantity * price)
-                temp_list.append({'market_value': total_quantity * price,
+                if price:
+                    existing_mkt_values.append(total_quantity * price)
+                temp_list.append({'market_value': total_quantity * price if price else None,
                                   'annual_expense': fund_detail[0].fund_exp_ratio,
                                   '1-year': fund_detail[0].return_1_year,
                                   '3-year': fund_detail[0].return_3_year,
@@ -130,18 +130,19 @@ class HistoricalPerformanceDifference(APIView):
             existing_return_3_year = 0
             existing_return_5_year = 0
             for item in temp_list:
-                annual_expense = (item.get('market_value')/sum(existing_mkt_values)
-                                  )*float(item.get('annual_expense'))
-                existing_annual_expense = existing_annual_expense + annual_expense
-                return_1_year = (item.get('market_value') / sum(existing_mkt_values)
-                                 )*float(item.get('1-year'))
-                existing_return_1_year = existing_return_1_year + return_1_year
-                return_3_year = (item.get('market_value') / sum(existing_mkt_values)
-                                 )*float(item.get('3-year'))
-                existing_return_3_year = existing_return_3_year + return_3_year
-                return_5_year = (item.get('market_value') / sum(existing_mkt_values)
-                                 )*float(item.get('5-year'))
-                existing_return_5_year = existing_return_5_year + return_5_year
+                if item.get('market_value'):
+                    annual_expense = (item.get('market_value')/sum(existing_mkt_values)
+                                      )*float(item.get('annual_expense'))
+                    existing_annual_expense = existing_annual_expense + annual_expense
+                    return_1_year = (item.get('market_value') / sum(existing_mkt_values)
+                                     )*float(item.get('1-year'))
+                    existing_return_1_year = existing_return_1_year + return_1_year
+                    return_3_year = (item.get('market_value') / sum(existing_mkt_values)
+                                     )*float(item.get('3-year'))
+                    existing_return_3_year = existing_return_3_year + return_3_year
+                    return_5_year = (item.get('market_value') / sum(existing_mkt_values)
+                                     )*float(item.get('5-year'))
+                    existing_return_5_year = existing_return_5_year + return_5_year
             recommended_funds = fund_details.filter(for_recommendation=True)[:4]
             rec_annual_expense = sum([float(exp) for exp in recommended_funds.
                                      values_list('fund_exp_ratio', flat=True)])
