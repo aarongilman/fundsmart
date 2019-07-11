@@ -9,18 +9,44 @@
                         <h3>Holding <span>Details List</span></h3>
                     </div>
                     <div class="">
-                        <div class="table-btns">
-                            <form action="post">
-                                <button type="button" (click)="openModal(addHoldingDetais)" style="cursor: pointer"
-                                    class="tbl-btn button green-btn d-flex align-items-center justify-content-center">
-                                    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                        viewBox="0 0 491.86 491.86" style="enable-background:new 0 0 491.86 491.86;"
-                                        xml:space="preserve">
-                                        <g>
+                        <div class='row'>
+                            <div class='input-group align-items-center col-sm-4'>
+                                Select Portlolios:<select class='form-control'
+                                    [(ngModel)]="sortlist.searchTerm">
+                                    <option selected value=""></option>
+                                    <option *ngFor="let pitem of portfoliolist" title="portfolio1" [value]="pitem.name"
+                                        name='p1'>
+                                        {{pitem.name}} </option>
+                                </select>
+                            </div>
+                            <div class="table-btns col-sm-8">
+                                <form action="post">
+                                    <button type="button" (click)="openModal(addHoldingDetais)" style="cursor: pointer"
+                                        class="tbl-btn button green-btn d-flex align-items-center justify-content-center">
+                                        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                            viewBox="0 0 491.86 491.86" style="enable-background:new 0 0 491.86 491.86;"
+                                            xml:space="preserve">
                                             <g>
-                                                <path
-                                                    d="M465.167,211.614H280.245V26.691c0-8.424-11.439-26.69-34.316-26.69s-34.316,18.267-34.316,26.69v184.924H26.69 C18.267,211.614,0,223.053,0,245.929s18.267,34.316,26.69,34.316h184.924v184.924c0,8.422,11.438,26.69,34.316,26.69 s34.316-18.268,34.316-26.69V280.245H465.17c8.422,0,26.69-11.438,26.69-34.316S473.59,211.614,465.167,211.614z" />
+                                                <g>
+                                                    <path
+                                                        d="M465.167,211.614H280.245V26.691c0-8.424-11.439-26.69-34.316-26.69s-34.316,18.267-34.316,26.69v184.924H26.69 C18.267,211.614,0,223.053,0,245.929s18.267,34.316,26.69,34.316h184.924v184.924c0,8.422,11.438,26.69,34.316,26.69 s34.316-18.268,34.316-26.69V280.245H465.17c8.422,0,26.69-11.438,26.69-34.316S473.59,211.614,465.167,211.614z" />
+                                                </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
+                                                <g> </g>
                                             </g>
                                             <g> </g>
                                             <g> </g>
@@ -37,59 +63,44 @@
                                             <g> </g>
                                             <g> </g>
                                             <g> </g>
-                                        </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                    </svg>
-                                    Add Row
-                                </button>
-                                <button type="button" (click)="downloadData()"
-                                    class="tbl-btn  dark-green-btn d-flex align-items-center justify-content-center"
-                                    style="cursor: pointer">
-                                    <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                                        viewBox="0 0 475.078 475.077" style="enable-background:new 0 0 475.078 475.077;"
-                                        xml:space="preserve">
-                                        <g>
+                                        </svg>
+                                        Add Row
+                                    </button>
+                                    <button type="button" (click)="downloadData()"
+                                        class="tbl-btn  dark-green-btn d-flex align-items-center justify-content-center"
+                                        style="cursor: pointer">
+                                        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
+                                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                            viewBox="0 0 475.078 475.077"
+                                            style="enable-background:new 0 0 475.078 475.077;" xml:space="preserve">
                                             <g>
-                                                <path
-                                                    d="M467.083,318.627c-5.324-5.328-11.8-7.994-19.41-7.994H315.195l-38.828,38.827c-11.04,10.657-23.982,15.988-38.828,15.988 c-14.843,0-27.789-5.324-38.828-15.988l-38.543-38.827H27.408c-7.612,0-14.083,2.669-19.414,7.994 C2.664,323.955,0,330.427,0,338.044v91.358c0,7.614,2.664,14.085,7.994,19.414c5.33,5.328,11.801,7.99,19.414,7.99h420.266 c7.61,0,14.086-2.662,19.41-7.99c5.332-5.329,7.994-11.8,7.994-19.414v-91.358C475.078,330.427,472.416,323.955,467.083,318.627z M360.025,414.841c-3.621,3.617-7.905,5.424-12.854,5.424s-9.227-1.807-12.847-5.424c-3.614-3.617-5.421-7.898-5.421-12.844 c0-4.948,1.807-9.236,5.421-12.847c3.62-3.62,7.898-5.431,12.847-5.431s9.232,1.811,12.854,5.431 c3.613,3.61,5.421,7.898,5.421,12.847C365.446,406.942,363.638,411.224,360.025,414.841z M433.109,414.841 c-3.614,3.617-7.898,5.424-12.848,5.424c-4.948,0-9.229-1.807-12.847-5.424c-3.613-3.617-5.42-7.898-5.42-12.844 c0-4.948,1.807-9.236,5.42-12.847c3.617-3.62,7.898-5.431,12.847-5.431c4.949,0,9.233,1.811,12.848,5.431 c3.617,3.61,5.427,7.898,5.427,12.847C438.536,406.942,436.729,411.224,433.109,414.841z" />
-                                                <path
-                                                    d="M224.692,323.479c3.428,3.613,7.71,5.421,12.847,5.421c5.141,0,9.418-1.808,12.847-5.421l127.907-127.908 c5.899-5.519,7.234-12.182,3.997-19.986c-3.23-7.421-8.847-11.132-16.844-11.136h-73.091V36.543c0-4.948-1.811-9.231-5.421-12.847 c-3.62-3.617-7.901-5.426-12.847-5.426h-73.096c-4.946,0-9.229,1.809-12.847,5.426c-3.615,3.616-5.424,7.898-5.424,12.847V164.45 h-73.089c-7.998,0-13.61,3.715-16.846,11.136c-3.234,7.801-1.903,14.467,3.999,19.986L224.692,323.479z" />
+                                                <g>
+                                                    <path
+                                                        d="M467.083,318.627c-5.324-5.328-11.8-7.994-19.41-7.994H315.195l-38.828,38.827c-11.04,10.657-23.982,15.988-38.828,15.988 c-14.843,0-27.789-5.324-38.828-15.988l-38.543-38.827H27.408c-7.612,0-14.083,2.669-19.414,7.994 C2.664,323.955,0,330.427,0,338.044v91.358c0,7.614,2.664,14.085,7.994,19.414c5.33,5.328,11.801,7.99,19.414,7.99h420.266 c7.61,0,14.086-2.662,19.41-7.99c5.332-5.329,7.994-11.8,7.994-19.414v-91.358C475.078,330.427,472.416,323.955,467.083,318.627z M360.025,414.841c-3.621,3.617-7.905,5.424-12.854,5.424s-9.227-1.807-12.847-5.424c-3.614-3.617-5.421-7.898-5.421-12.844 c0-4.948,1.807-9.236,5.421-12.847c3.62-3.62,7.898-5.431,12.847-5.431s9.232,1.811,12.854,5.431 c3.613,3.61,5.421,7.898,5.421,12.847C365.446,406.942,363.638,411.224,360.025,414.841z M433.109,414.841 c-3.614,3.617-7.898,5.424-12.848,5.424c-4.948,0-9.229-1.807-12.847-5.424c-3.613-3.617-5.42-7.898-5.42-12.844 c0-4.948,1.807-9.236,5.42-12.847c3.617-3.62,7.898-5.431,12.847-5.431c4.949,0,9.233,1.811,12.848,5.431 c3.617,3.61,5.427,7.898,5.427,12.847C438.536,406.942,436.729,411.224,433.109,414.841z" />
+                                                    <path
+                                                        d="M224.692,323.479c3.428,3.613,7.71,5.421,12.847,5.421c5.141,0,9.418-1.808,12.847-5.421l127.907-127.908 c5.899-5.519,7.234-12.182,3.997-19.986c-3.23-7.421-8.847-11.132-16.844-11.136h-73.091V36.543c0-4.948-1.811-9.231-5.421-12.847 c-3.62-3.617-7.901-5.426-12.847-5.426h-73.096c-4.946,0-9.229,1.809-12.847,5.426c-3.615,3.616-5.424,7.898-5.424,12.847V164.45 h-73.089c-7.998,0-13.61,3.715-16.846,11.136c-3.234,7.801-1.903,14.467,3.999,19.986L224.692,323.479z" />
+                                                </g>
                                             </g>
-                                        </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                        <g> </g>
-                                    </svg>
-                                    Download data as CSV
-                                </button>
-                            </form>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                            <g> </g>
+                                        </svg>
+                                        Download data as CSV
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                         <br />
                         <div class='row align-items-center ml-2 mr-2'>
@@ -144,42 +155,42 @@
                                         <td><input *ngIf="item.current_price === null" type="number"
                                                 style="width: 2cm;text-align: center" [(ngModel)]="currentprice[i]"
                                                 (blur)="item.current_price=currentprice[i];UpdateHoldingDetails(item,i)"
-                                                name="current_price_{{i}}" >
+                                                name="current_price_{{i}}">
                                             <span *ngIf="item.current_price !== null">{{item.current_price}}</span>
                                         </td>
                                         <td>{{item.market_value}}</td>
                                         <td><input *ngIf="item.basic_price === null" type="number" style=" width: 2cm;text-align:
-                                                center" [(ngModel)]="basicprice[i]" 
+                                                center" [(ngModel)]="basicprice[i]"
                                                 (blur)="item.basic_price = basicprice[i];UpdateHoldingDetails(item,i)"
                                                 name="basic_price_{{i}}">
-                                                <span *ngIf="item.basic_price !== null">{{item.basic_price}}</span>
-                                            </td>
+                                            <span *ngIf="item.basic_price !== null">{{item.basic_price}}</span>
+                                        </td>
                                         <td>{{item.basis}}</td>
                                         <td><input *ngIf="item.country === null" [(ngModel)]="country[i]"
                                                 style="width: 2cm;text-align: center" name="country_{{i}}"
                                                 (change)="item.country=country[i];UpdateHoldingDetails(item,i)">
-                                                <span *ngIf="item.country !== null">{{item.country}}</span>
-                                        
-                                            </td>
+                                            <span *ngIf="item.country !== null">{{item.country}}</span>
+
+                                        </td>
                                         <td><input *ngIf="item.currency === null" [(ngModel)]="currency[i]"
                                                 style="width: 2cm;text-align: center" name='currency_{{i}}'
                                                 (change)="item.currency = currency[i];UpdateHoldingDetails(item,i)">
-                                                <span *ngIf="item.currency !== null">{{item.currency}}</span>
-                                        
-                                            </td>
+                                            <span *ngIf="item.currency !== null">{{item.currency}}</span>
+
+                                        </td>
                                         <td>{{item.asset_class}}</td>
                                         <td><input *ngIf="item.industry === null" [(ngModel)]="industry[i]"
                                                 style="width: 4cm;text-align: center" name='industry_{{i}}'
                                                 (change)="item.industry=industry[i];UpdateHoldingDetails(item,i)">
-                                                <span *ngIf="item.industry !== null">{{item.industry}}</span>
-                                        
-                                            </td>
+                                            <span *ngIf="item.industry !== null">{{item.industry}}</span>
+
+                                        </td>
                                         <td><input *ngIf="item.rating === null" [(ngModel)]="rating[i]"
                                                 style="width: 4cm;text-align: center" name='rating_{{i}}'
                                                 (change)="item.rating = rating[i];UpdateHoldingDetails(item,i)">
-                                                <span *ngIf="item.rating !== null">{{item.rating}}</span>
-                                        
-                                            </td>
+                                            <span *ngIf="item.rating !== null">{{item.rating}}</span>
+
+                                        </td>
 
                                     </tr>
 
@@ -188,6 +199,7 @@
 
                         </div>
                         <div>
+                            <br/>
                             <!-- Showing {{sortlist.pageSize}} records from {{total}} -->
                             <div class="d-flex ">
                                 <ngb-pagination class="ml-auto" [collectionSize]="total" [(page)]="sortlist.page"
@@ -201,6 +213,7 @@
             </div>
         </div>
     </div>
+
     <!-- Fund content -->
 
 </div>
@@ -251,79 +264,48 @@
         <div class="login-with-btn">
 
             <div class="login-form trade-inputs">
+
                 <form id='regform' [formGroup]='fundForm' action="post">
 
                     <div class="input-group">
-                        <label class="form-control label">Select Portfolio:</label>
-                        <ng-select class="form-control" id='portfolio' name='selected'
-                            formControlName="selectedPortfolio" placeholder="Select Portfolio" bindValue="item.id"
-                            [ngClass]="{ 'is-invalid': submitted && f.selectedPortfolio.errors }" bindLabel="item.name">
-                            <ng-option title="portfolio1" [value]="portfolio1.id" name='p1'>
-                                {{portfolio1.name}} </ng-option>
-                            <ng-option [value]="comparision1.id" name='p2'>
-                                {{comparision1.name}} </ng-option>
-                            <ng-option [value]="comparision2.id" name='p3'>
-                                {{comparision2.name}} </ng-option>
-                        </ng-select>
-                        <!-- <input class="form-control" id='portfolio' name='selected' title="
+                        <!-- <label class="form-control label">Select Portfolio:</label> -->
+                        <input class="form-control" id='portfolio' name='selected' title="
                                 Select Portfolio" formControlName="selectedPortfolio" placeholder="select Portfolio"
                             list="portfolioselect"
                             [ngClass]="{ 'is-invalid': submitted && f.selectedPortfolio.errors }">
                         <datalist id="portfolioselect">
-                            <option [ngValue]='portfolio1.name' title="portfolio1" [value]="portfolio1.name" name='p1'>
-                                {{portfolio1.name}} </option>
-                            <option [ngValue]='comparision1.name' title="comparision1" [value]="comparision1.name"
-                                name='p2'>
-                                {{comparision1.name}} </option>
-                            <option [ngValue]='comparision2.name' title="comparision2" [value]="comparision2.name"
-                                name='p3'>
-                                {{comparision2.name}} </option>
+                            <option *ngFor="let pitem of portfoliolist" [value]="pitem.name">
+                                {{pitem.name}} </option>
+
                         </datalist>
 
                         <div *ngIf="submitted && f.selectedPortfolio.errors" class="invalid-feedback">
                             <div *ngIf="f.selectedPortfolio.errors.required">Select Portfolio</div>
-                        </div> -->
+                        </div>
                     </div>
                     <br />
                     <div class="input-group">
-                        <ng-select class='custom' [items]="securitylist" class="form-control " bindLabel="name"
-                            placeholder="Select Security" formControlName="selectedSecurity"
-                            [searchFn]='searchsecurity()' bindValue="id"
-                            [ngClass]="{ 'is-invalid': submitted && f.selectedSecurity.errors }">
-
-                            <!-- <ng-template ng-label-tmp let-item="item">
-                                <span [ngOptionHighlight]="search">{{ item.id }} {{ item.name }} {{item.isin}}
-                                    {{item.ticker}} </span>
-                            </ng-template>
-
-                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm" let-index="index">
-                                <span [ngOptionHighlight]="search">{{ item.id }} {{ item.name }} {{item.isin}}
-                                    {{item.ticker}}</span>
-                            </ng-template> -->
-                        </ng-select>
-                        <!-- <ng-select [items]="securitylist" [virtualScroll]="true" bindLabel="name" bindValue="id"
-                            placeholder="Select Security" [searchFn]='searchsecurity()'
-                            [ngClass]="{ 'is-invalid': submitted && f.selectedSecurity.errors }"
-                            formControlName="selectedSecurity">
-                        </ng-select> -->
-                        <!-- <input placeholder="select security" class="form-control " (keyup)="searchsecurity($event)"
-                            list="securityname" type="text"
+                        <input placeholder="select security" class="form-control " (keyup)="searchsecurity($event)"
+                            list="securityname" type="text" (change)="setSecurity()" id='secinput'
+                            formControlName="selectedSecurity"
                             [ngClass]="{ 'is-invalid': submitted && f.selectedSecurity.errors }">
 
                         <datalist id="securityname">
-                            <option *ngFor="let security of securitylist" [ngValue]='security.name'
-                                title=" {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"
-                                [value]="security.name">
-                                {{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}
+                            <option *ngFor="let security of securitylist;let d = index" data-value={{security.name}}
+                                data-id={{security.id}}>
+                                <!-- title="{{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"> -->
+                                Name:{{security.name}} Isin:{{security.isin}}
+                                Ticker:{{security.ticker}} {{security.id}}
                             </option>
-                        </datalist> -->
+                        </datalist>
                         <div *ngIf="submitted && f.selectedSecurity.errors" class="invalid-feedback">
                             <div *ngIf="f.selectedSecurity.errors.required">security is required</div>
                         </div>
                     </div>
                     <br />
+
                     <div class="input-group">
-                        <input type="text" required=true class="form-control" formControlName="quantity" name='quantity'
+                        <input type="number" class="form-control" formControlName="quantity" name='quantity'
                             placeholder="Enter Quantity" [ngClass]="{ 'is-invalid': submitted && f.quantity.errors }">
                         <div *ngIf="submitted && f.quantity.errors" class="invalid-feedback">
                             <div *ngIf="f.quantity.errors.required">quantity is required</div>
@@ -331,15 +313,22 @@
                         </div>
                     </div>
                     <br />
-                    <!-- <div class="input-group">
-                        <input type="text" required=true class="form-control" [(ngModel)]="binding" name='quantity'
-                            placeholder="Enter Quantity" [ngClass]="{ 'is-invalid': submitted && f.quantity.errors }">
-                        <div *ngIf="submitted && f.quantity.errors" class="invalid-feedback">
-                            <div *ngIf="f.quantity.errors.required">quantity is required</div>
-                            <div *ngIf="f.quantity.errors.pattern">quantity in numbers only</div>
-                        </div>
+                    <div class="input-group">
+                        <input type="number" class="form-control" [ngModelOptions]="{standalone: true}"
+                            name='inputBasicPrice' [(ngModel)]=" inputBasicPrice" placeholder="Enter Basic Price">
+
                     </div>
-                    <br /> -->
+                    <br />
+                    <div class="input-group">
+                        <input type="number" class="form-control" [ngModelOptions]="{standalone: true}"
+                            name='inputCurrentPrice' [(ngModel)]="
+                            inputCurrentPrice" placeholder="Enter Current Price">
+
+                    </div>
+                    <br />
+                    <p>
+                        Basic Price and Current Price are not menditory.
+                    </p>
                     <button type="button" (click)='AddDetail()' style="cursor: pointer"
                         class="trade-btn button green-btn d-flex align-items-center justify-content-center login-email">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -354,21 +343,7 @@
                         Add Holding Details
                     </button>
                 </form>
-
             </div>
         </div>
-    </div>
-</ng-template>
-<ng-template>
-    <!-- #addHoldingDetais -->
-    <div class="modal-body">
-        <ng-select>
-            <ng-option>ABC</ng-option>
-            <ng-option>ABC</ng-option>
-            <ng-option>ABC</ng-option>
-
-            <ng-option>ABC</ng-option>
-
-        </ng-select>
     </div>
 </ng-template>
