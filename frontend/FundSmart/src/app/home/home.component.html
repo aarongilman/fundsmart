@@ -31,6 +31,7 @@
                                     <th scope="col" sortable="yourPortfolio" (sort)="onSort($event)">Your Portfolio</th>
                                     <th scope="col" sortable="comparision1" (sort)="onSort($event)">Comparison1</th>
                                     <th scope="col" sortable="comparision2" (sort)="onSort($event)">Comparison2</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody *ngIf="total$ > 0">
@@ -73,6 +74,9 @@
                                             (input)="currentUser? addportfolioFund('comp2',item,i): null "
                                             name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
 
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-outline-danger">Delete</button>
                                     </td>
 
                                     <!-- <td>{{item['security']}}</td> -->
@@ -125,6 +129,8 @@
                                     </svg>
                                     Upload</button>
                             </div>
+                            <button type="button" class="btn btn-outline-danger delete-all">Delete All</button>
+
                             <button type="button" style="cursor: pointer" class="upload-icon-btn" (click)='addRow()'>
                                 <!-- [ngStyle]="{display : currentUser ? '' : 'none'}" -->
                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"

@@ -893,13 +893,13 @@ export class HomeComponent implements OnInit {
     } else {
       console.log(item.security_id);
 
-      if (recid === null) {
-        // alert('post method');
-        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      } else {
-        // alert('put method');
-        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      }
+      // if (recid === null) {
+      //   // alert('post method');
+      //   this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // } else {
+      //   // alert('put method');
+      //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // }
       this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": item.security_id });
 
       this.setdataindeshboard();
