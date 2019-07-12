@@ -347,6 +347,17 @@ export class HomeComponent implements OnInit {
       });
   }
 
+  serAttribute(item, i) {
+    var opt = $('option[value="' + $('#security_' + i).val() + '"]');
+    item.security_id = Number.parseInt(opt.attr('id'));
+    try {
+      item.security = securitylist.find(s => s.id === item.security_id).name;
+    } catch {
+      return null;
+    }
+
+  }
+
   setdataindeshboard() {
     this.userservice.get_historical_perfomance().subscribe(
       result => {
