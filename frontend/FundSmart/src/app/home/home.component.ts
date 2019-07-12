@@ -881,7 +881,7 @@ export class HomeComponent implements OnInit {
         let that = this;
         for (const file of files) {
           const name = file.name;
-          console.log(typeof (file), "type of fie", file);
+          // console.log(typeof (file), "type of fie", file);
           url = file.link;
           // console.log({ name: name, url: url });
           fetch(url).then(response => response.blob()).then(filedata => {
