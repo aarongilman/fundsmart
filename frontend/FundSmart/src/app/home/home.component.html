@@ -34,8 +34,9 @@
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
-                            <tbody *ngIf="total$ > 0">
+                            <tbody>
                                 <tr *ngFor="let item of funds$  ;let i = index;">
+                                    <!-- <tr *ngFor="let item of tableData  ;let i = index;"> -->
                                     <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
                                     <!-- {{item|json}} -->
                                     <td>
@@ -76,14 +77,15 @@
 
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-outline-danger">Delete</button>
+                                        <button type="button" class="btn btn-outline-danger"
+                                            (click)="removeRow(i)">Delete</button>
                                     </td>
 
                                     <!-- <td>{{item['security']}}</td> -->
                                     <!-- <input #box type="text" [(ngModel)]="item['yourPortfolio']"  name="userportfolio" style="width: 1cm"> -->
                                     <!-- <td {{item['yourPortfolio']}}</td>
-									<td>{{item['comparision1']}}</td>
-									<td>{{item['comparision2']}}</td> -->
+                                        <td>{{item['comparision1']}}</td>
+                                        <td>{{item['comparision2']}}</td> -->
 
                                 </tr>
                             </tbody>
@@ -277,14 +279,14 @@
                 </div>
 
                 <!-- <div *ngIf="currentUser"
-                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
-                    <div class="donutchart">
-                        <google-chart *ngIf="currentUser" [title]="donutitle" [type]="donuttype" [data]="donutdata"
-                            [columnNames]="columnNames" [options]="donutoptions" [height]="donutheight"
-                            [width]="donutwidth">
-                        </google-chart>
-                    </div>
-                </div> -->
+                        class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
+                        <div class="donutchart">
+                            <google-chart *ngIf="currentUser" [title]="donutitle" [type]="donuttype" [data]="donutdata"
+                                [columnNames]="columnNames" [options]="donutoptions" [height]="donutheight"
+                                [width]="donutwidth">
+                            </google-chart>
+                        </div>
+                    </div> -->
 
             </div>
             <div class="col-lg-5">
@@ -332,14 +334,14 @@
                 </div>
 
                 <!-- <div *ngIf="currentUser"
-                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
-                    <div class="curve_chart">
-                        <google-chart *ngIf="currentUser" [title]="linetitle" [type]="linetype" [data]="linedata"
-                            [options]="lineoptions" [width]="linewidth" [height]="lineheight"
-                            [columnNames]="linecolumnNames">
-                        </google-chart>
-                    </div>
-                </div> -->
+                        class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+                        <div class="curve_chart">
+                            <google-chart *ngIf="currentUser" [title]="linetitle" [type]="linetype" [data]="linedata"
+                                [options]="lineoptions" [width]="linewidth" [height]="lineheight"
+                                [columnNames]="linecolumnNames">
+                            </google-chart>
+                        </div>
+                    </div> -->
 
                 <div
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
@@ -722,11 +724,11 @@
                                     name="email" placeholder="Email Id or User Id">
                             </div>
                             <!-- <div class="input-group">
-								<input type="text" class="form-control" placeholder="Email captcha from below block">
-							</div>
-							<div class="capcha-wrap">
-								<img src="img/captcha.jpg" />
-							</div> -->
+                                    <input type="text" class="form-control" placeholder="Email captcha from below block">
+                                </div>
+                                <div class="capcha-wrap">
+                                    <img src="img/captcha.jpg" />
+                                </div> -->
                             <button type="button" (click)='resetpassword()'
                                 class="trade-btn green-btn d-flex align-items-center justify-content-center">
                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"

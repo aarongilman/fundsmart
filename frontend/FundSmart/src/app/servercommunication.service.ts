@@ -8,9 +8,10 @@ import { holdindDetail } from './holding-details/holdingDetail';
   providedIn: 'root'
 })
 export class ServercommunicationService {
-  api_link = 'http://3.16.111.80/';
+  // api_link = 'http://3.16.111.80/';
   // api_link = 'http://localhost:8000/';
-  //api_link = 'http://192.168.100.111:8000/';
+  api_link = 'http://192.168.100.111:8000/';
+  // api_link = 'http://127.0.0.1:8000/';
 
 
   socialuser: SocialUser;
@@ -121,13 +122,21 @@ export class ServercommunicationService {
   }
 
   get_home_pie_chart() {
-    return this.http.get(this.api_link + 'api/dashboard_pie_chart/', {
+    // return this.http.get(this.api_link + 'api/dashboard_pie_chart/', {
+    //   headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    // });
+    let body = JSON.parse(localStorage.getItem('securityData'));
+    return this.http.post(this.api_link + 'api/dashboard_pie_chart/', { data: body }, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
 
   get_deshboard_doughnut_chart() {
-    return this.http.get(this.api_link + 'api/dashboard_doughnut_chart/', {
+    // return this.http.get(this.api_link + 'api/dashboard_doughnut_chart/', {
+    //   headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    // });
+    let body = JSON.parse(localStorage.getItem('securityData'));
+    return this.http.post(this.api_link + 'api/dashboard_doughnut_chart/', { data: body }, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
