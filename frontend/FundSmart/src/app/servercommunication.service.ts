@@ -311,7 +311,11 @@ export class ServercommunicationService {
   }
 
   get_lineplot_chart() {
-    return this.http.get(this.api_link + 'api/dashboard_line_graph/', {
+    // return this.http.get(this.api_link + 'api/dashboard_line_graph/', {
+    //   headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    // });
+    let body = JSON.parse(localStorage.getItem('securityData'));
+    return this.http.post(this.api_link + 'api/dashboard_line_graph/', { data: body }, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }

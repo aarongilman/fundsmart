@@ -363,7 +363,7 @@ export class HomeComponent implements OnInit {
   setdataindeshboard() {
     this.userservice.get_historical_perfomance().subscribe(
       result => {
-        // // console.log(result);
+        console.log("result", result);
         this.existing = {
           annualexpense: 0,
           oneyear: 0,
@@ -408,15 +408,16 @@ export class HomeComponent implements OnInit {
 
         }
       });
+
     this.userservice.get_home_pie_chart().subscribe(
       jsondata => {
         this.piedata = [];
         // tslint:disable-next-line: forin
         for (var data in jsondata) {
-          console.log(jsondata);
+          let key = Object.keys(jsondata[data]);
           var lable, series;
-          lable = jsondata[data]['security__asset_type'];
-          series = jsondata[data]['total'];
+          lable = key[data];
+          series = jsondata[data][key[data]];
           this.piedata.push([lable, series]);
         }
         this.pietitle = '';
@@ -436,9 +437,14 @@ export class HomeComponent implements OnInit {
         this.donutdata = [];
         //  console.log(jsondata);
         for (var data in jsondata) {
-          if (jsondata[data]['security__industry'] !== null && jsondata[data]['total'] !== 0) {
-            this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
-          }
+          let key = Object.keys(jsondata[data]);
+          var lable, series;
+          lable = key[data];
+          series = jsondata[data][key[data]];
+          this.donutdata.push([lable, series]);
+          // if (jsondata[data]['security__industry'] !== null && jsondata[data]['total'] !== 0) {
+          //   this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
+          // }
         }
         this.donutoptions = {
           pieHole: 0.8,
@@ -456,6 +462,7 @@ export class HomeComponent implements OnInit {
         } else {
           for (let i = 0; i < jsondata.length; i++) {
             const element = jsondata[i];
+            console.log("element", element.portfolio);
             if (this.linedata !== null) {
               this.linecolumnNames.push(element.portfolio);
             }
@@ -923,13 +930,13 @@ export class HomeComponent implements OnInit {
     } else {
       console.log(item.security_id);
 
-      // if (recid === null) {
-      //   // alert('post method');
-      //   this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      // } else {
-      //   // alert('put method');
-      //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      // }
+      if (recid === null) {
+        // alert('post method');
+        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      } else {
+        // alert('put method');
+        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      }
       this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": item.security_id });
 
       this.setdataindeshboard();

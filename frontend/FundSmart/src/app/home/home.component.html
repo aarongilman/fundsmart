@@ -349,7 +349,7 @@
                         <div class="hpd-table heading">
                             <h3>Testing Pie Chart</h3>
                         </div>
-                        <div *ngIf="donutdata?.length > 0">
+                        <div *ngIf="donutdata && donutdata?.length > 0">
                             <google-chart [type]="donuttype" [data]="donutdata" [columnNames]="columnNames"
                                 [options]="donutoptions" [height]="donutheight" [width]="donutwidth">
                             </google-chart>
@@ -366,7 +366,7 @@
                         <div class="hpd-table heading">
                             <h3>Home Pie Chart</h3>
                         </div>
-                        <div *ngIf="piedata?.length > 0">
+                        <div *ngIf="piedata && piedata?.length > 0">
                             <google-chart [type]="pietype" [data]="piedata" [options]="pieoptions" [width]="piewidth"
                                 [height]="pieheight">
                             </google-chart>
