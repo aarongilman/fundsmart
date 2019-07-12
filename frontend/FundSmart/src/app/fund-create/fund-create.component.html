@@ -9,7 +9,7 @@
                         <h3>Fund <span>Lists</span></h3>
                     </div>
                     <div class="row align-items-center ml-2 mr-2">
-                        <div class="col-sm-8">
+                        <div class="col-sm-9">
                             <div class="date-picker-wrap">
                                 <div class="input-group">
                                     <input class="form-control" placeholder="yyyy-mm-dd" [(ngModel)]="selectedDate"
@@ -24,7 +24,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-4">
+                        <div class="col-sm-3">
                         <div class='input-group align-items-center'>Select Portfolio:<select class='form-control' style="width: 50%" [(ngModel)]="fundservice.searchTerm">
                                 <option selected value=""></option>
                                 <option *ngFor="let pitem of portfoliolist" title="portfolio1" [value]="pitem.name"
