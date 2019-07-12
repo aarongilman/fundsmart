@@ -89,14 +89,12 @@ class HistoricalPerformanceDifference(APIView):
         fund_details = FundDetail.objects.all()
         fx_rate = FXRate.objects.all()
         data = request.data.get('data')
-        LOGGER.error("Error {} ==============".format(data))
         temp_list = []
         try:
             securities = Security.objects.filter(id__in=map(
                 lambda d: d.get('securityId', 0), data),
                 asset_type="Mutual FUnd")
-            prices = Price.objects.filter(id_value__in=securities.
-                                          values_list('id_value'))
+            prices = Price.objects.all()
             existing_mkt_values = []
             for security in securities:
                 quantity_data = [item for item in data if item.get('securityId')
@@ -108,24 +106,25 @@ class HistoricalPerformanceDifference(APIView):
                                              currency=security.currency)
                 price_obj = prices.filter(id_value=security.id_value,
                                           date=date.today())
-                price = float(price_obj.latest('date').price) if price_obj else None
-                total_quantity = 0
-                for item in quantity_data:
-                    quantity = item.get('portfolio')
-                    if '%' in str(quantity):
-                        quantity = get_quantity(quantity, security,
-                                                fund_detail[0].aum,
-                                                fx_rate_obj[0].rate, price)
-                    else:
-                        quantity = float(quantity)
-                    total_quantity = total_quantity + quantity
-                if price:
-                    existing_mkt_values.append(total_quantity * price)
-                temp_list.append({'market_value': total_quantity * price if price else None,
-                                  'annual_expense': fund_detail[0].fund_exp_ratio,
-                                  '1-year': fund_detail[0].return_1_year,
-                                  '3-year': fund_detail[0].return_3_year,
-                                  '5-year': fund_detail[0].return_5_year})
+                if price_obj and fx_rate_obj:
+                    price = float(price_obj.latest('date').price)
+                    total_quantity = 0
+                    for item in quantity_data:
+                        quantity = item.get('portfolio')
+                        if '%' in str(quantity):
+                            quantity = get_quantity(quantity, security,
+                                                    fund_detail[0].aum,
+                                                    fx_rate_obj[0].rate, price)
+                        else:
+                            quantity = float(quantity)
+                        total_quantity = total_quantity + quantity
+                    if price:
+                        existing_mkt_values.append(total_quantity * price)
+                    temp_list.append({'market_value': total_quantity * price if price else None,
+                                      'annual_expense': fund_detail[0].fund_exp_ratio,
+                                      '1-year': fund_detail[0].return_1_year,
+                                      '3-year': fund_detail[0].return_3_year,
+                                      '5-year': fund_detail[0].return_5_year})
             existing_annual_expense = 0
             existing_return_1_year = 0
             existing_return_3_year = 0
@@ -221,32 +220,117 @@ class DashboardLinePlotApi(APIView):
         return Response(data, status=200)
 
 
+def get_holding_list(data, base_currency):
+    fx_rate = FXRate.objects.all()
+    fund_holdings = FundHolding.objects.all()
+    fund_details = FundDetail.objects.all()
+    prices = Price.objects.all()
+    securities = Security.objects.filter(id__in=map(
+        lambda d: d.get('securityId', 0), data))
+    holding_list = []
+    for security in securities:
+        quantity_data = [item for item in data if item.get('securityId')
+                         == str(security.id)]
+        fx_rate_obj = fx_rate.filter(base=base_currency,
+                                     date=date.today(),
+                                     currency=security.currency)
+        price_obj = prices.filter(id_value=security.id_value,
+                                  date=date.today())
+        fund_detail = fund_details.filter(fund_id=security.id_value)
+        if fx_rate_obj and price_obj:
+            for item in quantity_data:
+                quantity = item.get('portfolio')
+                if '%' in quantity:
+                    a = float(quantity.replace("%", "")) * 1000000
+                    if security.asset_type == 'Mutual Fund':
+                        b = float(fund_detail[0].aum * 1000000 *
+                                  (1 / fx_rate_obj[0].rate))
+                        aum = a / b
+                        holdings = list(fund_holdings.values_list('id_value')
+                                        .filter(fund_id=security.id_value)
+                                        .annotate(quantity=F('quantity')))
+                        for holding in holdings:
+                            holding = list(holding)
+                            holding[1] = aum * holding[1]
+                            holding_list.append(holding)
+                    else:
+                        quantity = a / float(price_obj[0].price)
+                        holding_list.append([security.id_value, quantity])
+                else:
+                    if security.asset_type == 'Mutual Fund':
+                        holdings = list(fund_holdings.values_list('id_value')
+                                        .filter(fund_id=security.id_value)
+                                        .annotate(quantity=F('quantity')))
+                        for holding in holdings:
+                            holding = list(holding)
+                            holding[1] = quantity
+                            holding_list.append(holding)
+                    else:
+                        holding_list.append([security.id_value, quantity])
+    return holding_list
+
+
 class DashboardDoughnutChart(APIView):
     """APIView to display analytics on user’s holding in different Industries"""
 
     permission_classes = []
-    def get(self, request):
-        portfolio = Portfolio.objects.filter(created_by=request.user).first()
-        data = PortfolioFund.objects.filter(
-            portfolio=portfolio, created_by=request.user).\
-            values('security__industry').\
-            annotate(total=Count('security__industry', istinct=True)).\
-            order_by('total')
-        return Response(data, status=200)
+
+    def post(self, request):
+        base_currency = 'INR'
+        return_data = []
+        data = request.data.get('data')
+        try:
+
+            prices = Price.objects.all()
+            holding_list = get_holding_list(data, base_currency)
+            securities = Security.objects.filter(id_value__in=[item[0] for item in holding_list])
+            return_dict = {}
+            for item in holding_list:
+                if item[0]:
+                    security_obj = securities.filter(id_value=item[0])
+                    price_obj = prices.filter(id_value=item[0],
+                                              date=date.today())
+                    if security_obj and price_obj:
+                        industry = security_obj[0].industry
+                        market_value = float(item[1]) * float(price_obj[0].price)
+                        if return_dict.get(industry):
+                            market_value = return_dict.get(industry) + market_value
+                        return_dict.update({industry: market_value})
+            return Response([return_dict], status=200)
+        except Exception as e:
+            LOGGER.error("Error {} occurred:dashboard doughnut chart".format(e))
+            return Response(return_data, status=200)
 
 
 class DashboardPieChart(APIView):
     """APIView to display  holdings’ asset classes in user’s portfolio"""
+
     permission_classes = []
 
-    def get(self, request):
-        portfolio = Portfolio.objects.filter(created_by=request.user).first()
-        data = PortfolioFund.objects.filter(
-            portfolio=portfolio, created_by=request.user).\
-            values('security__asset_type').\
-            annotate(total=Count('security__asset_type', distinct=False)).\
-            order_by('total')
-        return Response(data, status=200)
+    def post(self, request):
+        base_currency = 'INR'
+        return_data = []
+        data = request.data.get('data')
+        try:
+            prices = Price.objects.all()
+            holding_list = get_holding_list(data, base_currency)
+            securities = Security.objects.filter(id_value__in=[item[0] for item in holding_list])
+            return_dict = {}
+            for item in holding_list:
+                if item[0]:
+                    security_obj = securities.filter(id_value=item[0])
+                    price_obj = prices.filter(id_value=item[0],
+                                              date=date.today())
+                    if security_obj and price_obj:
+                        asset_type = security_obj[0].asset_type
+                        market_value = float(item[1]) * float(price_obj[0].price)
+                        if return_dict.get(asset_type):
+                            market_value = return_dict.get(asset_type) + market_value
+                        return_dict.update({asset_type: market_value})
+            return Response([return_dict], status=200)
+        except Exception as e:
+            LOGGER.error("Error {} occurred:dashboard doughnut chart".format(e))
+            return Response(return_data, status=200)
 
 
 def get_holding_detail_data(fund):
