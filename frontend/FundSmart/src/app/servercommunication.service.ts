@@ -133,7 +133,11 @@ export class ServercommunicationService {
   }
 
   get_historical_perfomance() {
-    return this.http.get(this.api_link + 'api/historical_performance_difference/', {
+    // return this.http.get(this.api_link + 'api/historical_performance_difference/', {
+    //   headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+    // });
+    let body = JSON.parse(localStorage.getItem('securityData'));
+    return this.http.post(this.api_link + 'api/historical_performance_difference/', { data: body }, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
