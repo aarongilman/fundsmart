@@ -41,7 +41,7 @@
                                         <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
                                             id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
                                             name='security_{{i}}'
-                                            (input)="currentUser ? serAttribute(item,i) : openmodal(login,'login');serAttribute(item,i)"
+                                            (change)="currentUser ? serAttribute(item,i) : openmodal(login,'login');serAttribute(item,i)"
                                             type="text">
 
                                         <datalist id="securityname">
@@ -49,7 +49,7 @@
                                             <option *ngFor="let security of securitylist;let d = index"
                                                 data-value='{{security.name}}' data-id={{security.id}}>
                                                 <!-- title="{{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"> -->
-                                                Name:{{security.name}} Isin:{{security.isin}}
+                                                {{security.name}} Isin:{{security.isin}}
                                                 Ticker:{{security.ticker}}
                                             </option>
                                         </datalist>
@@ -971,7 +971,7 @@
 
         <!-- register pop up -->
         <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-        <script>
+        <!-- <script>
             const options = {
 
                 // Required. Called when a user selects an item in the Chooser.
@@ -1013,4 +1013,4 @@
             };
 
 
-        </script>
+        </script> -->
