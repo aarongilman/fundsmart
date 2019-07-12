@@ -413,6 +413,7 @@ export class HomeComponent implements OnInit {
         this.piedata = [];
         // tslint:disable-next-line: forin
         for (var data in jsondata) {
+          console.log(jsondata);
           var lable, series;
           lable = jsondata[data]['security__asset_type'];
           series = jsondata[data]['total'];
