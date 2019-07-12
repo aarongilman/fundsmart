@@ -11,7 +11,65 @@ import { funds } from '../funds';
 import { FundcreatesortService } from '../fundcreatesort.service';
 import { SortEvent, SortableDirective } from '../sortable.directive';
 import { securitylist } from '../securitylist';
+// import { resolve } from 'dns';
 
+
+interface OneDriveResult {
+  value: OneDriveFile[];
+  webUrl: string | null;
+}
+interface OneDriveFile {
+  "@microsoft.graph.downloadUrl": string;
+  "thumbnails@odata.context": string;
+  id: string;
+  name: string;
+  size: number;
+  thumbnails: Thumbnails[];
+  webUrl: string;
+}
+interface Thumbnails {
+  id: string;
+  large: Thumbnail;
+  medium: Thumbnail;
+  small: Thumbnail;
+}
+
+interface Thumbnail {
+  height: number;
+  width: number;
+  url: string;
+}
+
+interface DropboxFile {
+  name: string;
+  link: string;
+  bytes: number;
+  icon: string;
+  thumbnailLink?: string;
+  isDir: boolean;
+}
+
+declare var OneDrive: OneDrive;
+
+interface OneDrive {
+  open(options: OneDriveChooseOptions);
+}
+
+interface OneDriveChooseOptions {
+  clientId: "f6820b1f-b4c5-454a-a050-e88b6e231fb5",
+  success(files);
+  cancel?(): void;
+  action: "download",
+  openInNewWindow: true,
+  sourceInputElementId: "fileUploadControl",
+  linkType: "direct",
+  viewType: 'files',
+  advanced: {
+    filter: "folder,.xlsx"
+  },
+  multiselect: true,
+  // fileName: "PortfoliofundsFileupload.xlsx",
+}
 
 declare var Dropbox: Dropbox;
 
@@ -424,30 +482,31 @@ export class FundCreateComponent implements OnInit {
         let that = this;
         for (const file of files) {
           const name = file.name;
-          // console.log(typeof (file), "type of fie", file);
+          console.log(typeof (file), "type of fie", file);
           url = file.link;
           // console.log({ name: name, url: url });
           fetch(url).then(response => response.blob()).then(filedata => {
             // TODO do something useful with the blob
 
             // For instance, display the image
-            // console.log("blob is ", filedata.type);
+            console.log("blob is ", filedata.type);
             const formData = new FormData();
             const blob = new Blob([filedata], { type: filedata.type });
             const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
             formData.append('data_file', myfile);
-            that.userservice.uploadfile(formData).subscribe(
-              resp => {
-                // console.log(resp);
-                that.interconn.afterfileupload();
-                this.getfunds();
-                this.modalService.dismissAll('File uploaded');
-              }
-            );
+            // that.userservice.uploadfile(formData).subscribe(
+            //   resp => {
+            //     // console.log(resp);
+            //     that.interconn.afterfileupload();
+            //     this.getfunds();
+            //     this.modalService.dismissAll('File uploaded');
+            //   }
+            // );
           });
         }
       },
       cancel: () => {
+        // resolve(null);
       },
       linkType: "direct",
       multiselect: false,
@@ -459,6 +518,55 @@ export class FundCreateComponent implements OnInit {
 
 
   onedrivefileupload() {
+    let url: any;
+    return new Promise<OneDriveResult | null>((resolve, reject) => {
+      var options: OneDriveChooseOptions = {
+        clientId: "f6820b1f-b4c5-454a-a050-e88b6e231fb5",
+        success: (files) => {
+          let that = this;
+          for (const file of files.value) {
+            const name = file.name;
+            console.log(typeof (file), "type of file", file);
+            url = file.link;
+            fetch(url).then(response => response.blob()).then(filedata => {
+              console.log("File data", filedata);
+              console.log("blob is ", filedata.type);
+              const formData = new FormData();
+              const blob = new Blob([filedata], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8' });
+              const myfile = new File([blob], name, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8', lastModified: Date.now() });
+              formData.append('data_file', myfile);
+              console.log(formData);
+
+              // that.userservice.uploadfile(formData).subscribe(
+              //   resp => {
+              //     console.log(resp);
+              //     that.interconn.afterfileupload();
+              //     this.getfunds();
+              //     this.modalService.dismissAll('File uploaded');
+              //   }
+              // );
+            });
+          }
+        },
+
+        cancel: () => {
+          // resolve(null);
+        },
+        linkType: "direct",
+        sourceInputElementId: "fileUploadControl",
+        openInNewWindow: true,
+        multiselect: true,
+        action: "download",
+        viewType: 'files',
+        advanced: {
+          filter: "folder,.xlsx"
+        }
+        // fileName: "PortfoliofundsFileupload.xlsx",
+
+      };
+
+      OneDrive.open(options);
+    })
   }
 
   drive_fileupload() {
