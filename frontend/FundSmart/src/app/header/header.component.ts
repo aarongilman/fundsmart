@@ -69,6 +69,7 @@ export class HeaderComponent implements OnInit {
     }
 
     userlogout() {
+        alert('logout');
         this.service.logout();
     }
 

@@ -159,13 +159,31 @@ export class HomeComponent implements OnInit {
     this.interconn.reloadmethodcalled$.subscribe(
       () => {
         // this.createFundlist();
-        //   this.setdataindeshboard();
-        //   this.portfolioservice.funds$.subscribe(f => {
-        //     this.funds$ = f;
-        //   });
-        //   this.portfolioservice.total$.subscribe(total => {
-        //     this.total$ = total;
-        //   });
+        // this.setdataindeshboard();
+        // this.portfolioservice.funds$.subscribe(f => {
+        //   this.funds$ = f;
+        //   // if (f) {
+        //   //   f.map((x, key) => {
+        //   //     if (x.security !== '') {
+        //   //       if (x.yourPortfolio) {
+        //   //         this.userservice.storedata({ 'recordId': key, "key": 'p1', "quantity": x.yourPortfolio, "recid": x.p1record, "portfolio": '', "securityId": x.security_id });
+        //   //       }
+        //   //       if (x.comparision1) {
+        //   //         this.userservice.storedata({ 'recordId': key, "key": 'p2', "quantity": x.comparision1, "recid": x.p2record, "portfolio": '', "securityId": x.security_id });
+        //   //       }
+
+        //   //       if (x.comparision2) {
+        //   //         this.userservice.storedata({ 'recordId': key, "key": 'p3', "quantity": x.comparision2, "recid": x.p3record, "portfolio": '', "securityId": x.security_id });
+        //   //       }
+        //   //       //this.userservice.storedata({ 'recordId': key, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": x.security_id });
+        //   //     }
+        //   //   });
+        //   // }
+
+        // });
+        // this.portfolioservice.total$.subscribe(total => {
+        //   this.total$ = total;
+        // });
       }
     );
 
@@ -338,7 +356,7 @@ export class HomeComponent implements OnInit {
       };
       portfoliofundlist.push(singlefund);
     }
-    localStorage.getItem('securityData')
+    localStorage.getItem('securityData');
     this.portfolioservice.resetfunds();
 
   }
@@ -829,7 +847,7 @@ export class HomeComponent implements OnInit {
 
   addportfolioFund(string1, item, i) {
     // alert(item.security);
-    if (item.security === '') {
+    if (item.security_id === -1) {
       // alert('Plese select security first');
       return false;
     } else {
@@ -1036,6 +1054,7 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.sortDirection = direction;
   }
 }
+
 
 
 
