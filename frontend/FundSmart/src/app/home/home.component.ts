@@ -159,13 +159,13 @@ export class HomeComponent implements OnInit {
     this.interconn.reloadmethodcalled$.subscribe(
       () => {
         // this.createFundlist();
-      //   this.setdataindeshboard();
-      //   this.portfolioservice.funds$.subscribe(f => {
-      //     this.funds$ = f;
-      //   });
-      //   this.portfolioservice.total$.subscribe(total => {
-      //     this.total$ = total;
-      //   });
+        //   this.setdataindeshboard();
+        //   this.portfolioservice.funds$.subscribe(f => {
+        //     this.funds$ = f;
+        //   });
+        //   this.portfolioservice.total$.subscribe(total => {
+        //     this.total$ = total;
+        //   });
       }
     );
 
@@ -338,6 +338,9 @@ export class HomeComponent implements OnInit {
       };
       portfoliofundlist.push(singlefund);
     }
+    localStorage.getItem('securityData')
+    this.portfolioservice.resetfunds();
+
   }
 
   createFundlist() {
@@ -359,6 +362,7 @@ export class HomeComponent implements OnInit {
     } catch {
       return null;
     }
+
 
   }
 
@@ -438,6 +442,7 @@ export class HomeComponent implements OnInit {
       jsondata => {
         this.donutdata = [];
         //  console.log(jsondata);
+        // tslint:disable-next-line: forin
         for (var data in jsondata) {
           let key = Object.keys(jsondata[data]);
           var lable, series;
@@ -561,7 +566,13 @@ export class HomeComponent implements OnInit {
   removeRow(id) {
     // debugger
     console.log("ID", id);
-
+    portfoliofundlist.splice(id, 1);
+    this.portfolioservice.resetfunds();
+    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; this.securityinput[id] = this.funds$[id].security; });
+    this.portfolioservice.total$.subscribe(total => {
+      // alert('came here to set new row');
+      this.total$ = total;
+    });
     let singlefund: portfolio_fund = {
       security: '',
       security_id: -1,
@@ -572,17 +583,14 @@ export class HomeComponent implements OnInit {
       comparision1: '',
       comparision2: ''
     };
+    this.funds$.push(singlefund);
 
-    this.portfolioservice.total$.subscribe(total => {
-      // alert('came here to set new row');
-      this.total$ = total;
-    });
     // portfoliofundlist.push(singlefund);
-    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+    // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
 
-    console.log(pageno);
+    // console.log(pageno);
     // ()
-    this.portfolioservice.page = pageno - 1;
+    // this.portfolioservice.page = pageno - 1;
   }
 
 
@@ -773,12 +781,12 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  searchsecurity() {
+  searchsecurity(secinput) {
     // // console.log(this.securityinput);
     var securityList1 = [];
-    if (this.securityinput.length > 1) {
+    if (secinput.length > 1) {
       // if ($event.timeStamp - this.lastkeydown1 > 200) {
-      securityList1 = this.searchFromArray(securitylist, this.securityinput);
+      securityList1 = this.searchFromArray(securitylist, secinput);
 
       // }
       // // console.log(securityList1);
@@ -816,10 +824,7 @@ export class HomeComponent implements OnInit {
 
   addportfolioFund(string1, item, i) {
     // alert(item.security);
-    if (!this.currentUser) {
-      return false;
-      // alert('Please login First');
-    } else if (this.securityinput === undefined || item.security === '') {
+    if (this.securityinput === undefined || item.security === '') {
       // alert('Plese select security first');
       return false;
     } else {
@@ -830,6 +835,10 @@ export class HomeComponent implements OnInit {
         // alert(this.portfolio1);
         if (this.portfolio1 === undefined) {
           // alert('create portfolio1 called');
+          portfolio = '';
+          quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
+
           this.userservice.createportfolio(1).subscribe(
             data => {
               this.portfolio1 = data;
@@ -853,9 +862,11 @@ export class HomeComponent implements OnInit {
 
       } else if (string1.match('comp1')) {
         // alert(this.comparision1);
-        if (this.comparision1 === undefined) {
+        if (this.comparision1 === undefined && !this.currentUser) {
           // alert('create portfolio2');
-
+          portfolio = '';
+          quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
           this.userservice.createportfolio(2).subscribe(
             data => {
               // console.log(data);
@@ -879,8 +890,11 @@ export class HomeComponent implements OnInit {
         }
       } else if (string1.match('comp2')) {
         // alert(this.comparision2);
-        if (this.comparision2 === undefined) {
+        if (this.comparision2 === undefined && !this.currentUser) {
           // alert('create portfolio3');
+          portfolio = '';
+          quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
           this.userservice.createportfolio(3).subscribe(
             data => {
               // console.log(data);
@@ -932,13 +946,13 @@ export class HomeComponent implements OnInit {
     } else {
       console.log(item.security_id);
 
-      if (recid === null) {
-        // alert('post method');
-        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      } else {
-        // alert('put method');
-        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      }
+      // if (recid === null) {
+      //   // alert('post method');
+      //   this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // } else {
+      //   // alert('put method');
+      //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // }
       this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": item.security_id });
 
       this.setdataindeshboard();
