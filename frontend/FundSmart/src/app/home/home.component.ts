@@ -419,13 +419,17 @@ export class HomeComponent implements OnInit {
       jsondata => {
         this.piedata = [];
         // tslint:disable-next-line: forin
-        for (var data in jsondata) {
-          let key = Object.keys(jsondata[data]);
-          var lable, series;
-          lable = key[data];
-          series = jsondata[data][key[data]];
-          this.piedata.push([lable, series]);
-        }
+
+        let arrData = [];
+        let arrvalue = [];
+        Object.keys(jsondata).forEach((element) => {
+          arrData = Object.keys(jsondata[element]);
+          arrvalue = Object.values(jsondata[element]);
+          arrData.forEach((key, value) => {
+            this.piedata.push([key, arrvalue[value]]);
+          });
+        });
+
         this.pietitle = '';
         this.pietype = 'PieChart';
         this.columnNames = ['Security Industry', 'Total'];
@@ -442,18 +446,17 @@ export class HomeComponent implements OnInit {
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
         this.donutdata = [];
-        //  console.log(jsondata);
-        // tslint:disable-next-line: forin
-        for (var data in jsondata) {
-          let key = Object.keys(jsondata[data]);
-          var lable, series;
-          lable = key[data];
-          series = jsondata[data][key[data]];
-          this.donutdata.push([lable, series]);
-          // if (jsondata[data]['security__industry'] !== null && jsondata[data]['total'] !== 0) {
-          //   this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
-          // }
-        }
+
+        let arrData = [];
+        let arrvalue = [];
+        Object.keys(jsondata).forEach((element) => {
+          arrData = Object.keys(jsondata[element]);
+          arrvalue = Object.values(jsondata[element]);
+          arrData.forEach((key, value) => {
+            this.donutdata.push([key, arrvalue[value]]);
+          });
+        });
+
         this.donutoptions = {
           pieHole: 0.8,
           pieSliceText: 'none',
