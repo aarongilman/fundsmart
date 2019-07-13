@@ -41,3 +41,11 @@
 .hidden{
     display: none;
 }
+.delete-all{
+    box-shadow: none;
+    width: 150px;
+    height: 40px;
+    border-radius: 50px;
+    font-weight: normal;
+    margin-right: 20px;
+}

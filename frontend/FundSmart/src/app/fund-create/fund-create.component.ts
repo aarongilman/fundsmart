@@ -40,14 +40,6 @@ interface Thumbnail {
   url: string;
 }
 
-interface DropboxFile {
-  name: string;
-  link: string;
-  bytes: number;
-  icon: string;
-  thumbnailLink?: string;
-  isDir: boolean;
-}
 
 declare var OneDrive: OneDrive;
 
@@ -57,7 +49,7 @@ interface OneDrive {
 
 interface OneDriveChooseOptions {
   clientId: "f6820b1f-b4c5-454a-a050-e88b6e231fb5",
-  success(files);
+  success(files: any);
   cancel?(): void;
   action: "download",
   openInNewWindow: true,
@@ -516,8 +508,46 @@ export class FundCreateComponent implements OnInit {
     Dropbox.choose(options);
   }
 
+  // launchOneDrivePicker() {
+  //   const oneDriveApplicationId = "f6820b1f-b4c5-454a-a050-e88b6e231fb5";
 
-  onedrivefileupload() {
+  //   return new Promise<OneDriveResult | null>((resolve, reject) => {
+  //     var odOptions: OneDriveOpenOptions = {
+  //       clientId: oneDriveApplicationId,
+  //       action: "download",
+  //       multiSelect: false,
+  //       openInNewWindow: true,
+  //       advanced: {
+  //         filter: "folder,.xlsx"
+  //       },
+  //       success: (files) => { log(resolve(files)); },
+  //       cancel: function () { resolve(null); },
+  //       error: function (e) { reject(e); }
+  //     };
+
+  //     OneDrive.open(odOptions);
+  //   });
+  // }
+
+
+  onedrivefileupload(e) {
+
+    //     e.preventDefault();
+    //     this.launchOneDrivePicker.then(res => {
+    //       if (res) {
+    //         for (const file of res.value) {
+    //           const name = file.name;
+    //           const url = file["@microsoft.graph.downloadUrl"];
+    //           console.log({ name: name, url: url });
+    //         }
+    //       }
+    //     }).catch(reason => {
+    //       console.error(reason);
+    //     });
+    //   }
+    // });
+
+
     let url: any;
     return new Promise<OneDriveResult | null>((resolve, reject) => {
       var options: OneDriveChooseOptions = {
@@ -527,7 +557,7 @@ export class FundCreateComponent implements OnInit {
           for (const file of files.value) {
             const name = file.name;
             console.log(typeof (file), "type of file", file);
-            url = file.link;
+            url = file.link + '@microsoft.graph.downloadUrl';
             fetch(url).then(response => response.blob()).then(filedata => {
               console.log("File data", filedata);
               console.log("blob is ", filedata.type);
@@ -537,15 +567,29 @@ export class FundCreateComponent implements OnInit {
               formData.append('data_file', myfile);
               console.log(formData);
 
-              // that.userservice.uploadfile(formData).subscribe(
-              //   resp => {
-              //     console.log(resp);
-              //     that.interconn.afterfileupload();
-              //     this.getfunds();
-              //     this.modalService.dismissAll('File uploaded');
-              //   }
-              // );
+              that.userservice.uploadfile(formData).subscribe(
+                resp => {
+                  console.log(resp);
+                  that.interconn.afterfileupload();
+                  this.getfunds();
+                  this.modalService.dismissAll('File uploaded');
+                }
+              );
             });
+
+            // fetch(url)
+            //   .then(response => response.blob())
+            //   .then(blob => {
+            //     // TODO do something useful with the blob
+            //     console.log(blob);
+
+            //     // For instance, display the image
+            //     // const url = URL.createObjectURL(blob);
+            //     const url1 = window.URL.createObjectURL(blob);
+            //     window.location.assign(url1);
+            //     // (<HTMLImageElement>document.getElementById("preview")).src = url;
+            //   });
+
           }
         },
 
@@ -565,8 +609,14 @@ export class FundCreateComponent implements OnInit {
 
       };
 
+
+
       OneDrive.open(options);
-    })
+    });
+  }
+
+  readfile(file) {
+
   }
 
   drive_fileupload() {

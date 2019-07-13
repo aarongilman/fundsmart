@@ -74,6 +74,8 @@ export class HomeComponent implements OnInit {
 
   funds$: portfolio_fund[];
   total$;
+
+  tableData: any = [];
   @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
 
   existing: HistoricalData = {
@@ -240,7 +242,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.tableData = JSON.parse(localStorage.getItem('securityData'));
     this.interconn.titleSettermethod("Multi Portfolio Analyzer");
 
     if (this.userservice.currentuser) {
@@ -411,6 +413,7 @@ export class HomeComponent implements OnInit {
         this.piedata = [];
         // tslint:disable-next-line: forin
         for (var data in jsondata) {
+          console.log(jsondata);
           var lable, series;
           lable = jsondata[data]['security__asset_type'];
           series = jsondata[data]['total'];
@@ -544,6 +547,33 @@ export class HomeComponent implements OnInit {
     console.log(pageno);
     // ()
     this.portfolioservice.page = pageno + 1;
+  }
+
+  removeRow(id) {
+    // debugger
+    console.log("ID", id);
+
+    let singlefund: portfolio_fund = {
+      security: '',
+      security_id: -1,
+      p1record: null,
+      p2record: null,
+      p3record: null,
+      yourPortfolio: '',
+      comparision1: '',
+      comparision2: ''
+    };
+
+    this.portfolioservice.total$.subscribe(total => {
+      // alert('came here to set new row');
+      this.total$ = total;
+    });
+    // portfoliofundlist.push(singlefund);
+    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+
+    console.log(pageno);
+    // ()
+    this.portfolioservice.page = pageno - 1;
   }
 
 
@@ -893,13 +923,13 @@ export class HomeComponent implements OnInit {
     } else {
       console.log(item.security_id);
 
-      if (recid === null) {
-        // alert('post method');
-        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      } else {
-        // alert('put method');
-        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      }
+      // if (recid === null) {
+      //   // alert('post method');
+      //   this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // } else {
+      //   // alert('put method');
+      //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // }
       this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": item.security_id });
 
       this.setdataindeshboard();

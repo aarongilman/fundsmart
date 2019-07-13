@@ -23,67 +23,77 @@
                                 <!-- <span class="ml-3" *ngIf="portfolioservice.loading$ | async">Loading...</span> -->
                             </span>
                         </div>
+                        <div class="scrollauto">
+                            <table id="security-table" width="100%" class="width-100 trade-datatables ">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" sortable="security" (sort)="onSort($event)">Security</th>
+                                        <th scope="col" sortable="yourPortfolio" (sort)="onSort($event)">Your Portfolio
+                                        </th>
+                                        <th scope="col" sortable="comparision1" (sort)="onSort($event)">Comparison1</th>
+                                        <th scope="col" sortable="comparision2" (sort)="onSort($event)">Comparison2</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let item of funds$  ;let i = index;">
+                                        <!-- <tr *ngFor="let item of tableData  ;let i = index;"> -->
+                                        <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
+                                        <!-- {{item|json}} -->
+                                        <td>
+                                            <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
+                                                id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
+                                                name='security_{{i}}'
+                                                (change)="currentUser ? serAttribute(item,i) : openmodal(login,'login');serAttribute(item,i)"
+                                                type="text">
 
-                        <table id="security-table" width="100%" class="width-100 trade-datatables ">
-                            <thead>
-                                <tr>
-                                    <th scope="col" sortable="security" (sort)="onSort($event)">Security</th>
-                                    <th scope="col" sortable="yourPortfolio" (sort)="onSort($event)">Your Portfolio</th>
-                                    <th scope="col" sortable="comparision1" (sort)="onSort($event)">Comparison1</th>
-                                    <th scope="col" sortable="comparision2" (sort)="onSort($event)">Comparison2</th>
-                                </tr>
-                            </thead>
-                            <tbody *ngIf="total$ > 0">
-                                <tr *ngFor="let item of funds$  ;let i = index;">
-                                    <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
-                                    <!-- {{item|json}} -->
-                                    <td>
-                                        <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
-                                            id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
-                                            name='security_{{i}}'
-                                            (change)="currentUser ? serAttribute(item,i) : openmodal(login,'login');serAttribute(item,i)"
-                                            type="text">
+                                            <datalist id="securityname">
+                                                <!-- data-value={{security.id}} -->
+                                                <option *ngFor="let security of securitylist;let d = index"
+                                                    data-value='{{security.name}}' data-id={{security.id}}>
+                                                    <!-- title="{{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"> -->
+                                                    {{security.name}} Isin:{{security.isin}}
+                                                    Ticker:{{security.ticker}}
+                                                </option>
+                                            </datalist>
+                                            <span *ngIf="item.security != ''"
+                                                style="width: 3cm">{{item.security}}</span>
+                                        </td>
+                                        <td>
+                                            <input [(ngModel)]="item['yourPortfolio']"
+                                                style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)"
+                                                (input)="currentUser ? addportfolioFund('portfolio',item,i): null"
+                                                name='portfolio_{{i}}' type="text">
+                                        </td>
+                                        <td>
+                                            <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
+                                                style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
+                                                (input)="currentUser ? addportfolioFund('comp1',item,i): null"
+                                                type="text">
 
-                                        <datalist id="securityname">
-                                            <!-- data-value={{security.id}} -->
-                                            <option *ngFor="let security of securitylist;let d = index"
-                                                data-value='{{security.name}}' data-id={{security.id}}>
-                                                <!-- title="{{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"> -->
-                                                {{security.name}} Isin:{{security.isin}}
-                                                Ticker:{{security.ticker}}
-                                            </option>
-                                        </datalist>
-                                        <span *ngIf="item.security != ''" style="width: 3cm">{{item.security}}</span>
-                                    </td>
-                                    <td>
-                                        <input [(ngModel)]="item['yourPortfolio']"
-                                            style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)"
-                                            (input)="currentUser ? addportfolioFund('portfolio',item,i): null"
-                                            name='portfolio_{{i}}' type="text">
-                                    </td>
-                                    <td>
-                                        <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
-                                            style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
-                                            (input)="currentUser ? addportfolioFund('comp1',item,i): null" type="text">
+                                        </td>
+                                        <td>
+                                            <input [(ngModel)]="item['comparision2']"
+                                                style="text-align: center ; width: 3cm"
+                                                (input)="currentUser? addportfolioFund('comp2',item,i): null "
+                                                name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
 
-                                    </td>
-                                    <td>
-                                        <input [(ngModel)]="item['comparision2']"
-                                            style="text-align: center ; width: 3cm"
-                                            (input)="currentUser? addportfolioFund('comp2',item,i): null "
-                                            name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-outline-danger"
+                                                (click)="removeRow(i)">Delete</button>
+                                        </td>
 
-                                    </td>
+                                        <!-- <td>{{item['security']}}</td> -->
+                                        <!-- <input #box type="text" [(ngModel)]="item['yourPortfolio']"  name="userportfolio" style="width: 1cm"> -->
+                                        <!-- <td {{item['yourPortfolio']}}</td>
+                                        <td>{{item['comparision1']}}</td>
+                                        <td>{{item['comparision2']}}</td> -->
 
-                                    <!-- <td>{{item['security']}}</td> -->
-                                    <!-- <input #box type="text" [(ngModel)]="item['yourPortfolio']"  name="userportfolio" style="width: 1cm"> -->
-                                    <!-- <td {{item['yourPortfolio']}}</td>
-									<td>{{item['comparision1']}}</td>
-									<td>{{item['comparision2']}}</td> -->
-
-                                </tr>
-                            </tbody>
-                        </table>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="d-flex ">
                             <ngb-pagination class="ml-auto" [collectionSize]="total$" [(page)]="portfolioservice.page"
                                 [pageSize]="portfolioservice.pageSize">
@@ -125,6 +135,8 @@
                                     </svg>
                                     Upload</button>
                             </div>
+                            <button type="button" class="btn btn-outline-danger delete-all">Delete All</button>
+
                             <button type="button" style="cursor: pointer" class="upload-icon-btn" (click)='addRow()'>
                                 <!-- [ngStyle]="{display : currentUser ? '' : 'none'}" -->
                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -172,6 +184,26 @@
                         </form>
                     </div>
                 </div>
+               
+
+                <div
+                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+                    <div class="curve_chart">
+                        <div class="hpd-table heading">
+                            <h3>Testing Line Chart</h3>
+                        </div>
+                        <div *ngIf="linedata?.length > 0">
+                            <google-chart [title]="linetitle" [type]="linetype" [data]="linedata"
+                                [options]="lineoptions" [width]="linewidth" [height]="lineheight"
+                                [columnNames]="linecolumnNames">
+                            </google-chart>
+                        </div>
+                        <div *ngIf="linedata?.length <= 0" style="text-align:center">
+                            Data not found
+                        </div>
+                    </div>
+                </div>
+
                 <div class="block-container login-block" *ngIf="!currentUser">
                     <!-- [ngStyle]="{display : currentUser ? 'none' : ''}" -->
                     <p>With the same risk profile, we can improve performance by <span>5.43%</span> based on 1-year
@@ -251,34 +283,15 @@
                         </form>
                     </div>
                 </div>
-
-                <div
-                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
-                    <div class="curve_chart">
-                        <div class="hpd-table heading">
-                            <h3>Testing Line Chart</h3>
-                        </div>
-                        <div *ngIf="linedata?.length > 0">
-                            <google-chart [title]="linetitle" [type]="linetype" [data]="linedata"
-                                [options]="lineoptions" [width]="linewidth" [height]="lineheight"
-                                [columnNames]="linecolumnNames">
+                <!-- <div *ngIf="currentUser"
+                        class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
+                        <div class="donutchart">
+                            <google-chart *ngIf="currentUser" [title]="donutitle" [type]="donuttype" [data]="donutdata"
+                                [columnNames]="columnNames" [options]="donutoptions" [height]="donutheight"
+                                [width]="donutwidth">
                             </google-chart>
                         </div>
-                        <div *ngIf="linedata?.length <= 0" style="text-align:center">
-                            Data not found
-                        </div>
-                    </div>
-                </div>
-
-                <!-- <div *ngIf="currentUser"
-                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center">
-                    <div class="donutchart">
-                        <google-chart *ngIf="currentUser" [title]="donutitle" [type]="donuttype" [data]="donutdata"
-                            [columnNames]="columnNames" [options]="donutoptions" [height]="donutheight"
-                            [width]="donutwidth">
-                        </google-chart>
-                    </div>
-                </div> -->
+                    </div> -->
 
             </div>
             <div class="col-lg-5">
@@ -326,14 +339,14 @@
                 </div>
 
                 <!-- <div *ngIf="currentUser"
-                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
-                    <div class="curve_chart">
-                        <google-chart *ngIf="currentUser" [title]="linetitle" [type]="linetype" [data]="linedata"
-                            [options]="lineoptions" [width]="linewidth" [height]="lineheight"
-                            [columnNames]="linecolumnNames">
-                        </google-chart>
-                    </div>
-                </div> -->
+                        class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+                        <div class="curve_chart">
+                            <google-chart *ngIf="currentUser" [title]="linetitle" [type]="linetype" [data]="linedata"
+                                [options]="lineoptions" [width]="linewidth" [height]="lineheight"
+                                [columnNames]="linecolumnNames">
+                            </google-chart>
+                        </div>
+                    </div> -->
 
                 <div
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
@@ -694,7 +707,7 @@
                                 <input type="text" required=true class="form-control userid" [(ngModel)]="email"
                                     name="email" placeholder="Email Id or User Id">
                             </div>
-                          
+
                             <button type="button" (click)='resetpassword()'
                                 class="trade-btn green-btn d-flex align-items-center justify-content-center">
                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -945,4 +958,3 @@
 
         <!-- register pop up -->
         <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>
-    
