@@ -244,7 +244,7 @@ class DashboardLinePlotApi(APIView):
                                     comp1_mkt_values.get(price_date).append(quantity*price_value)
                                 else:
                                     comp1_mkt_values.update({price_date: [quantity*price_value]})
-                            comp2_quantity = item.get('COMPARISON1')
+                            comp2_quantity = item.get('COMPARISON2')
                             if comp2_quantity:
                                 if '%' in str(comp2_quantity):
                                     quantity = get_quantity(comp2_quantity, security,
@@ -262,9 +262,15 @@ class DashboardLinePlotApi(APIView):
                 comp1_mkt_values[k] = sum(v) / len(v)
             for k, v in comp2_mkt_values.items():
                 comp2_mkt_values[k] = sum(v) / len(v)
-            final_data.append({"portfolio": port_mkt_values,
-                               "comparison1": comp1_mkt_values,
-                               "comparison2":comp2_mkt_values})
+            final_data.append(
+                {'portfolio': "Your Portfolio", 'label': port_mkt_values.keys(),
+                 'series': port_mkt_values.values()})
+            final_data.append(
+                {'portfolio': "Comparison1", 'label': comp1_mkt_values.keys(),
+                 'series': comp1_mkt_values.values()})
+            final_data.append(
+                {'portfolio': "Comparison2", 'label': comp2_mkt_values.keys(),
+                 'series': comp2_mkt_values.values()})
         except Exception as e:
             LOGGER.error("Error {} occurred: dashboard line graph".format(e))
         return Response(final_data, status=200)
