@@ -42,9 +42,7 @@
                                     <td>
                                         <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
                                             id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
-                                            name='security_{{i}}'
-                                            (change)="currentUser ? serAttribute(item,i) : openmodal(login,'login');serAttribute(item,i)"
-                                            type="text">
+                                            name='security_{{i}}' (change)="serAttribute(item,i)" type="text">
 
                                         <datalist id="securityname">
                                             <!-- data-value={{security.id}} -->
@@ -60,20 +58,20 @@
                                     <td>
                                         <input [(ngModel)]="item['yourPortfolio']"
                                             style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)"
-                                            (input)="currentUser ? addportfolioFund('portfolio',item,i): null"
-                                            name='portfolio_{{i}}' type="text">
+                                            (input)="addportfolioFund('portfolio',item,i)" name='portfolio_{{i}}'
+                                            type="text">
                                     </td>
                                     <td>
                                         <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
                                             style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
-                                            (input)="currentUser ? addportfolioFund('comp1',item,i): null" type="text">
+                                            (input)="addportfolioFund('comp1',item,i)" type="text">
 
                                     </td>
                                     <td>
                                         <input [(ngModel)]="item['comparision2']"
                                             style="text-align: center ; width: 3cm"
-                                            (input)="currentUser? addportfolioFund('comp2',item,i): null "
-                                            name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
+                                            (input)="addportfolioFund('comp2',item,i)" name='comp2_{{i}}'
+                                            (keypress)="numberOnly($event)" type="text">
 
                                     </td>
                                     <td>
@@ -103,8 +101,7 @@
                                 <!-- [ngStyle]="{display : currentUser ? '' : 'none'}" -->
                                 <button type="button"
                                     class="upload-btn trade-btn green-btn d-flex align-items-center justify-content-center"
-                                    data-toggle="modal"
-                                    (click)="currentUser ? openmodal(upload,'upload') : openmodal(login,'login')">
+                                    data-toggle="modal" (click)="openmodal(upload,'upload')">
                                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                         viewBox="0 0 548.176 548.176" style="enable-background:new 0 0 548.176 548.176;"
@@ -180,7 +177,7 @@
                         </form>
                     </div>
                 </div>
-                <div class="block-container login-block" *ngIf="!currentUser">
+                <div class="block-container login-block">
                     <!-- [ngStyle]="{display : currentUser ? 'none' : ''}" -->
                     <p>With the same risk profile, we can improve performance by <span>5.43%</span> based on 1-year
                         returns or
@@ -290,8 +287,7 @@
 
             </div>
             <div class="col-lg-5">
-                <div *ngIf="currentUser != undefined "
-                    class="block-container no-bdrs-top-right no-bdrs-botton-right semi-block">
+                <div class="block-container no-bdrs-top-right no-bdrs-botton-right semi-block">
                     <div class="hpd-table">
                         <div class="heading">
                             <h3>Historical Performance Difference</h3>

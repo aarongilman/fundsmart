@@ -122,33 +122,36 @@ export class ServercommunicationService {
   }
 
   get_home_pie_chart() {
-    // return this.http.get(this.api_link + 'api/dashboard_pie_chart/', {
-    //   headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    // });
     let body = JSON.parse(localStorage.getItem('securityData'));
-    return this.http.post(this.api_link + 'api/dashboard_pie_chart/', { data: body }, {
-      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    });
+    if (this.userkey) {
+      return this.http.post(this.api_link + 'api/dashboard_pie_chart/', { data: body }, {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    } else {
+      return this.http.post(this.api_link + 'api/dashboard_pie_chart/', { data: body });
+    }
   }
 
   get_deshboard_doughnut_chart() {
-    // return this.http.get(this.api_link + 'api/dashboard_doughnut_chart/', {
-    //   headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    // });
     let body = JSON.parse(localStorage.getItem('securityData'));
-    return this.http.post(this.api_link + 'api/dashboard_doughnut_chart/', { data: body }, {
-      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    });
+    if (this.userkey) {
+      return this.http.post(this.api_link + 'api/dashboard_doughnut_chart/', { data: body }, {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    } else {
+      return this.http.post(this.api_link + 'api/dashboard_doughnut_chart/', { data: body });
+    }
   }
 
   get_historical_perfomance() {
-    // return this.http.get(this.api_link + 'api/historical_performance_difference/', {
-    //   headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    // });
     let body = JSON.parse(localStorage.getItem('securityData'));
-    return this.http.post(this.api_link + 'api/historical_performance_difference/', { data: body }, {
-      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    });
+    if (this.userkey) {
+      return this.http.post(this.api_link + 'api/historical_performance_difference/', { data: body }, {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    } else {
+      return this.http.post(this.api_link + 'api/historical_performance_difference/', { data: body });
+    }
   }
 
   add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby) {
@@ -311,13 +314,14 @@ export class ServercommunicationService {
   }
 
   get_lineplot_chart() {
-    // return this.http.get(this.api_link + 'api/dashboard_line_graph/', {
-    //   headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    // });
     let body = JSON.parse(localStorage.getItem('securityData'));
-    return this.http.post(this.api_link + 'api/dashboard_line_graph/', { data: body }, {
-      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    });
+    if (this.userkey) {
+      return this.http.post(this.api_link + 'api/dashboard_line_graph/', { data: body }, {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    } else {
+      return this.http.post(this.api_link + 'api/dashboard_line_graph/', { data: body });
+    }
   }
 
   getHoldingDetails() {

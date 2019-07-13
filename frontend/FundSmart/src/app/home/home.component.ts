@@ -814,10 +814,7 @@ export class HomeComponent implements OnInit {
 
   addportfolioFund(string1, item, i) {
     // alert(item.security);
-    if (!this.currentUser) {
-      return false;
-      // alert('Please login First');
-    } else if (this.securityinput === undefined || item.security === '') {
+    if (this.securityinput === undefined || item.security === '') {
       // alert('Plese select security first');
       return false;
     } else {
@@ -828,6 +825,10 @@ export class HomeComponent implements OnInit {
         // alert(this.portfolio1);
         if (this.portfolio1 === undefined) {
           // alert('create portfolio1 called');
+          portfolio = '';
+          quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
+
           this.userservice.createportfolio(1).subscribe(
             data => {
               this.portfolio1 = data;
@@ -851,9 +852,11 @@ export class HomeComponent implements OnInit {
 
       } else if (string1.match('comp1')) {
         // alert(this.comparision1);
-        if (this.comparision1 === undefined) {
+        if (this.comparision1 === undefined && !this.currentUser) {
           // alert('create portfolio2');
-
+          portfolio = '';
+          quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
           this.userservice.createportfolio(2).subscribe(
             data => {
               // console.log(data);
@@ -877,8 +880,11 @@ export class HomeComponent implements OnInit {
         }
       } else if (string1.match('comp2')) {
         // alert(this.comparision2);
-        if (this.comparision2 === undefined) {
+        if (this.comparision2 === undefined && !this.currentUser) {
           // alert('create portfolio3');
+          portfolio = '';
+          quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
           this.userservice.createportfolio(3).subscribe(
             data => {
               // console.log(data);
@@ -930,13 +936,13 @@ export class HomeComponent implements OnInit {
     } else {
       console.log(item.security_id);
 
-      if (recid === null) {
-        // alert('post method');
-        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      } else {
-        // alert('put method');
-        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      }
+      // if (recid === null) {
+      //   // alert('post method');
+      //   this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // } else {
+      //   // alert('put method');
+      //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // }
       this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": item.security_id });
 
       this.setdataindeshboard();
