@@ -108,7 +108,7 @@ export class HomeComponent implements OnInit {
   showdetail_flag = false;
   email2: string;
 
-  securityinput: string[] = [];
+
   portfolioinput: string[] = [];
   comp1input: string[] = [];
   comp2input: string[] = [];
@@ -573,7 +573,7 @@ export class HomeComponent implements OnInit {
     console.log("ID", id);
     portfoliofundlist.splice(id, 1);
     this.portfolioservice.resetfunds();
-    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; this.securityinput[id] = this.funds$[id].security; });
+    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
     this.portfolioservice.total$.subscribe(total => {
       // alert('came here to set new row');
       this.total$ = total;
@@ -829,7 +829,7 @@ export class HomeComponent implements OnInit {
 
   addportfolioFund(string1, item, i) {
     // alert(item.security);
-    if (this.securityinput === undefined || item.security === '') {
+    if (item.security === '') {
       // alert('Plese select security first');
       return false;
     } else {

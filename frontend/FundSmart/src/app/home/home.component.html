@@ -60,20 +60,20 @@
                                         <td>
                                             <input [(ngModel)]="item['yourPortfolio']"
                                                 style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)"
-                                                (input)="currentUser ? addportfolioFund('portfolio',item,i): null"
+                                                (input)="addportfolioFund('portfolio',item,i)"
                                                 name='portfolio_{{i}}' type="text">
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
                                                 style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
-                                                (input)="currentUser ? addportfolioFund('comp1',item,i): null"
+                                                (input)="addportfolioFund('comp1',item,i)"
                                                 type="text">
 
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['comparision2']"
                                                 style="text-align: center ; width: 3cm"
-                                                (input)="currentUser? addportfolioFund('comp2',item,i): null "
+                                                (input)="addportfolioFund('comp2',item,i)"
                                                 name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
 
                                         </td>
