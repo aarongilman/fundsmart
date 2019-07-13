@@ -41,7 +41,7 @@
                                         <!-- <tr *ngFor="let item of userFunds | slice: (page-1) * pageSize : (page-1) * pageSize + pageSize"> -->
                                         <!-- {{item|json}} -->
                                         <td>
-                                            <input *ngIf="item.security == '' " [(ngModel)]="securityinput[i]"
+                                            <input  [(ngModel)]="securityinput[i]"
                                                 id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
                                                 name='security_{{i}}'
                                                 (change)="currentUser ? serAttribute(item,i) : openmodal(login,'login');serAttribute(item,i)"
@@ -56,8 +56,7 @@
                                                     Ticker:{{security.ticker}}
                                                 </option>
                                             </datalist>
-                                            <span *ngIf="item.security != ''"
-                                                style="width: 3cm">{{item.security}}</span>
+                                           
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['yourPortfolio']"

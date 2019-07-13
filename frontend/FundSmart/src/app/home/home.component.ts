@@ -158,14 +158,14 @@ export class HomeComponent implements OnInit {
 
     this.interconn.reloadmethodcalled$.subscribe(
       () => {
-        this.createFundlist();
-        this.setdataindeshboard();
-        this.portfolioservice.funds$.subscribe(f => {
-          this.funds$ = f;
-        });
-        this.portfolioservice.total$.subscribe(total => {
-          this.total$ = total;
-        });
+        // this.createFundlist();
+      //   this.setdataindeshboard();
+      //   this.portfolioservice.funds$.subscribe(f => {
+      //     this.funds$ = f;
+      //   });
+      //   this.portfolioservice.total$.subscribe(total => {
+      //     this.total$ = total;
+      //   });
       }
     );
 
@@ -218,14 +218,14 @@ export class HomeComponent implements OnInit {
                 }
               }
             });
-            this.createFundlist();
-            this.setdataindeshboard();
-            this.portfolioservice.funds$.subscribe(f => {
-              this.funds$ = f;
-            });
-            this.portfolioservice.total$.subscribe(total => {
-              this.total$ = total;
-            });
+            // this.createFundlist();
+            // this.setdataindeshboard();
+            // this.portfolioservice.funds$.subscribe(f => {
+            //   this.funds$ = f;
+            // });
+            // this.portfolioservice.total$.subscribe(total => {
+            //   this.total$ = total;
+            // });
           }
         );
 
@@ -247,8 +247,8 @@ export class HomeComponent implements OnInit {
 
     if (this.userservice.currentuser) {
       this.setcurrent_user();
-      // this.resetfundlist();
-      this.createFundlist();
+      this.resetfundlist();
+      // this.createFundlist();
       this.setdataindeshboard();
     }
 
@@ -352,6 +352,8 @@ export class HomeComponent implements OnInit {
   serAttribute(item, i) {
     var opt = $('option[value="' + $('#security_' + i).val() + '"]');
     item.security_id = Number.parseInt(opt.attr('id'));
+    console.log(item.security_id);
+
     try {
       item.security = securitylist.find(s => s.id === item.security_id).name;
     } catch {
