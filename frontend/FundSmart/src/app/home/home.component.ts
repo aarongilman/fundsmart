@@ -438,6 +438,7 @@ export class HomeComponent implements OnInit {
           legend: 'none',
         };
       });
+
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
         this.donutdata = [];
@@ -458,6 +459,7 @@ export class HomeComponent implements OnInit {
           pieSliceText: 'none',
         };
       });
+
     this.userservice.get_lineplot_chart().subscribe(
       (jsondata: any) => {
         this.linedata = [];
@@ -469,7 +471,6 @@ export class HomeComponent implements OnInit {
         } else {
           for (let i = 0; i < jsondata.length; i++) {
             const element = jsondata[i];
-            console.log("element", element.portfolio);
             if (this.linedata !== null) {
               this.linecolumnNames.push(element.portfolio);
             }
@@ -477,7 +478,6 @@ export class HomeComponent implements OnInit {
               const label = element['label'][k];
               if (tempArray.filter(x => x === label).length === 0) {
                 tempArray.push(label);
-
               }
               if (mainObj[label]) {
                 mainObj[label] = mainObj[label] + ',' + element.series[k];
@@ -493,13 +493,18 @@ export class HomeComponent implements OnInit {
             valuesCollection.push(element.toString());
             for (const iterator of values) {
               valuesCollection.push(parseFloat(iterator));
+              // valuesCollection[0] = i;
             }
             this.linedata.push(valuesCollection);
           }
         }
+
         this.lineoptions = {
-          pointSize: 5,
+          pointSize: 1,
           curveType: 'function',
+          tooltips: {
+            mode: 'index'
+          }
         };
 
       }
@@ -838,20 +843,21 @@ export class HomeComponent implements OnInit {
           portfolio = '';
           quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
           this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
-
-          this.userservice.createportfolio(1).subscribe(
-            data => {
-              this.portfolio1 = data;
-              console.log("DATA", this.portfolio1);
-              portfolio = data['id'];
-              quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
-              this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
-              // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-            }, error => {
-              // console.log(error);
-              this.userservice.count--;
-            }
-          );
+          if (this.currentUser) {
+            this.userservice.createportfolio(1).subscribe(
+              data => {
+                this.portfolio1 = data;
+                console.log("DATA", this.portfolio1);
+                portfolio = data['id'];
+                quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
+                this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
+                // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
+              }, error => {
+                // console.log(error);
+                this.userservice.count--;
+              }
+            );
+          }
         } else {
           portfolio = this.portfolio1.id;
           quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
@@ -867,20 +873,22 @@ export class HomeComponent implements OnInit {
           portfolio = '';
           quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
           this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
-          this.userservice.createportfolio(2).subscribe(
-            data => {
-              // console.log(data);
-              this.comparision1 = data;
-              portfolio = data['id'];
-              quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
-              this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
+          if (this.currentUser) {
+            this.userservice.createportfolio(2).subscribe(
+              data => {
+                // console.log(data);
+                this.comparision1 = data;
+                portfolio = data['id'];
+                quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
+                this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
 
-              // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-            }, error => {
-              // console.log(error);
-              this.userservice.count--;
-            }
-          );
+                // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
+              }, error => {
+                // console.log(error);
+                this.userservice.count--;
+              }
+            );
+          }
         } else {
           portfolio = this.comparision1.id;
           quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
@@ -895,22 +903,24 @@ export class HomeComponent implements OnInit {
           portfolio = '';
           quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
           this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
-          this.userservice.createportfolio(3).subscribe(
-            data => {
-              // console.log(data);
-              // alert(data['id']);
-              this.comparision2 = data;
-              portfolio = data['id'];
-              quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
-              this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
+          if (this.currentUser) {
+            this.userservice.createportfolio(3).subscribe(
+              data => {
+                // console.log(data);
+                // alert(data['id']);
+                this.comparision2 = data;
+                portfolio = data['id'];
+                quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+                this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
 
-              // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
+                // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
 
-            }, error => {
-              // console.log(error);
-              this.userservice.count--;
-            }
-          );
+              }, error => {
+                // console.log(error);
+                this.userservice.count--;
+              }
+            );
+          }
         } else {
           portfolio = this.comparision2.id;
 
