@@ -13,13 +13,12 @@ import { AuthService, SocialUser } from "angularx-social-login";
 import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-login";
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { GetfileforuploadService } from '../getfileforupload.service';
-import { from } from 'rxjs/observable/from';
-import { groupBy, mergeAll, mergeMap, toArray } from 'rxjs/operators';
 import { HistoricalData } from '../historicaldata';
 import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
 import { MustMatch } from '../must-match.validator';
 import { securitylist } from '../securitylist';
-import { element } from '@angular/core/src/render3';
+
+
 // import { Dropbox } from 'dropbox';
 
 
@@ -149,12 +148,35 @@ export class HomeComponent implements OnInit {
     private formBuilder: FormBuilder,
     public portfolioservice: PortfoliofundhelperService) {
 
-    this.portfolioservice.funds$.subscribe(f => {
-      this.funds$ = f;
-    });
-    this.portfolioservice.total$.subscribe(total => {
-      this.total$ = total;
-    });
+    // this.portfolioservice.funds$.subscribe(f => {
+    //   this.funds$ = f;
+    // });
+    // this.portfolioservice.total$.subscribe(total => {
+    //   this.total$ = total;
+    // });
+
+    this.userservice.get_security().subscribe(
+      datasecuritylist => {
+        securitylist.length = 0;
+        // // console.log(securitylist);
+        // tslint:disable-next-line: forin
+        for (var obj in datasecuritylist) {
+          var securityobj: security = {
+            id: -1,
+            isin: '',
+            name: '',
+            ticker: '',
+            asset_type: ''
+          };
+          securityobj.id = datasecuritylist[obj]['id'];
+          securityobj.isin = datasecuritylist[obj]['isin'];
+          securityobj.name = datasecuritylist[obj]['name'];
+          securityobj.ticker = datasecuritylist[obj]['ticker'];
+          securityobj.asset_type = datasecuritylist[obj]['asset_type'];
+          securitylist.push(securityobj);
+        }
+      }
+    );
 
     this.interconn.reloadmethodcalled$.subscribe(
       () => {
@@ -162,24 +184,6 @@ export class HomeComponent implements OnInit {
         // this.setdataindeshboard();
         // this.portfolioservice.funds$.subscribe(f => {
         //   this.funds$ = f;
-        //   // if (f) {
-        //   //   f.map((x, key) => {
-        //   //     if (x.security !== '') {
-        //   //       if (x.yourPortfolio) {
-        //   //         this.userservice.storedata({ 'recordId': key, "key": 'p1', "quantity": x.yourPortfolio, "recid": x.p1record, "portfolio": '', "securityId": x.security_id });
-        //   //       }
-        //   //       if (x.comparision1) {
-        //   //         this.userservice.storedata({ 'recordId': key, "key": 'p2', "quantity": x.comparision1, "recid": x.p2record, "portfolio": '', "securityId": x.security_id });
-        //   //       }
-
-        //   //       if (x.comparision2) {
-        //   //         this.userservice.storedata({ 'recordId': key, "key": 'p3', "quantity": x.comparision2, "recid": x.p3record, "portfolio": '', "securityId": x.security_id });
-        //   //       }
-        //   //       //this.userservice.storedata({ 'recordId': key, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": x.security_id });
-        //   //     }
-        //   //   });
-        //   // }
-
         // });
         // this.portfolioservice.total$.subscribe(total => {
         //   this.total$ = total;
@@ -191,19 +195,19 @@ export class HomeComponent implements OnInit {
       () => {
         // alert('logout function');
         this.currentUser = undefined;
-        portfoliofundlist.length = 0;
-        this.resetfundlist();
-        this.portfolioservice.resetfunds();
-        this.portfolioservice.funds$.subscribe(f => {
-          this.funds$ = f;
-        });
+        // portfoliofundlist.length = 0;
+        // this.resetfundlist();
+        // this.portfolioservice.resetfunds();
+        // this.portfolioservice.funds$.subscribe(f => {
+        //   this.funds$ = f;
+        // });
         // this.portfolioservice.total$.subscribe(total => {
         //   this.total$ = total;
         //   // console.log(this.total$);
-        this.total$ = 0;
-        this.piedata = [];
-        this.donutdata = [];
-        this.linedata = [];
+        // this.total$ = 0;
+        // this.piedata = [];
+        // this.donutdata = [];
+        // this.linedata = [];
         // });
       }
     );
@@ -213,61 +217,62 @@ export class HomeComponent implements OnInit {
       () => {
         // alert("In first method");
         this.setcurrent_user();
-        this.userservice.getUserPortfolio().subscribe(
-          data => {
-            // alert("portfolio data came");
-            // console.log(data);
-            this.portfolio1 = data['results']['0'];
-            this.comparision1 = data['results']['1'];
-            this.comparision2 = data['results']['2'];
-            // console.log("Portfolios", this.portfolio1, this.comparision1, this.comparision2);
+        // this.userservice.getUserPortfolio().subscribe(
+        //   data => {
+        //     // alert("portfolio data came");
+        //     // console.log(data);
+        //     this.portfolio1 = data['results']['0'];
+        //     this.comparision1 = data['results']['1'];
+        //     this.comparision2 = data['results']['2'];
+        //     // console.log("Portfolios", this.portfolio1, this.comparision1, this.comparision2);
 
-            portfoliofundlist.forEach((element, key) => {
-              // console.log(element);
-              if (element.security !== '') {
-                if (element.yourPortfolio !== '') {
-                  this.addportfolioFund('portfolio', element, key);
-                }
-                if (element.comparision1 !== '') {
-                  this.addportfolioFund('comp1', element, key);
-                }
-                if (element.comparision2 !== '') {
-                  this.addportfolioFund('comp2', element, key);
-                }
-              }
-            });
-            // this.createFundlist();
-            // this.setdataindeshboard();
-            // this.portfolioservice.funds$.subscribe(f => {
-            //   this.funds$ = f;
-            // });
-            // this.portfolioservice.total$.subscribe(total => {
-            //   this.total$ = total;
-            // });
-          }
-        );
+        //     portfoliofundlist.forEach((element, key) => {
+        //       // console.log(element);
+        //       if (element.security !== '') {
+        //         if (element.yourPortfolio !== '') {
+        //           this.addportfolioFund('portfolio', element, key);
+        //         }
+        //         if (element.comparision1 !== '') {
+        //           this.addportfolioFund('comp1', element, key);
+        //         }
+        //         if (element.comparision2 !== '') {
+        //           this.addportfolioFund('comp2', element, key);
+        //         }
+        //       }
+        //     });
+        // this.createFundlist();
+        // this.setdataindeshboard();
+        // this.portfolioservice.funds$.subscribe(f => {
+        //   this.funds$ = f;
+        // });
+        // this.portfolioservice.total$.subscribe(total => {
+        //   this.total$ = total;
+        // });
+      }
+    );
 
-        this.createFundlist();
-        this.setdataindeshboard();
-        this.portfolioservice.funds$.subscribe(f => {
-          this.funds$ = f;
-        });
-        this.portfolioservice.total$.subscribe(total => {
-          this.total$ = total;
-        });
-        // alert(this.currentUser.name);
-      });
+    // this.createFundlist();
+    // this.setdataindeshboard();
+    // this.portfolioservice.funds$.subscribe(f => {
+    //   this.funds$ = f;
+    // });
+    // this.portfolioservice.total$.subscribe(total => {
+    //   this.total$ = total;
+    // });
+    // alert(this.currentUser.name);
+    // });
   }
 
   ngOnInit() {
-    this.tableData = JSON.parse(localStorage.getItem('securityData'));
+
+    // this.setfunds(this.tableData);
     this.interconn.titleSettermethod("Multi Portfolio Analyzer");
 
     if (this.userservice.currentuser) {
       this.setcurrent_user();
-      this.resetfundlist();
+      // this.resetfundlist();
       // this.createFundlist();
-      this.setdataindeshboard();
+
     }
 
 
@@ -296,28 +301,10 @@ export class HomeComponent implements OnInit {
         validator: MustMatch('password1', 'password2')
       });
 
-    this.userservice.get_security().subscribe(
-      datasecuritylist => {
-        // // console.log(securitylist);
-        // tslint:disable-next-line: forin
-        for (var obj in datasecuritylist) {
-          var securityobj: security = {
-            id: -1,
-            isin: '',
-            name: '',
-            ticker: '',
-            asset_type: ''
-          };
-          securityobj.id = datasecuritylist[obj]['id'];
-          securityobj.isin = datasecuritylist[obj]['isin'];
-          securityobj.name = datasecuritylist[obj]['name'];
-          securityobj.ticker = datasecuritylist[obj]['ticker'];
-          securityobj.asset_type = datasecuritylist[obj]['asset_type'];
-          securitylist.push(securityobj);
-        }
-      }
-    );
+
     // this.userservice.checklogin();
+    this.tableData = JSON.parse(localStorage.getItem('securityData'));
+    // console.log(this.tableData);
     this.portfolioservice.funds$.subscribe(f => {
       if (f) {
         f.map((x, key) => {
@@ -338,6 +325,10 @@ export class HomeComponent implements OnInit {
       }
       //console.log('Fund', f);
     });
+    if (this.tableData) {
+      this.setfundsfromLocalstorage(this.tableData);
+      this.setdataindeshboard();
+    }
   }
 
 
@@ -358,16 +349,19 @@ export class HomeComponent implements OnInit {
     }
     localStorage.getItem('securityData');
     this.portfolioservice.resetfunds();
-
+    this.setdataindeshboard();
   }
 
   createFundlist() {
-    this.userservice.dashboardDataTable().subscribe(
-      fundlist => {
-        // console.log(fundlist);
-        this.setfunds(fundlist);
+    // this.userservice.dashboardDataTable().subscribe(
+    //   fundlist => {
+    //     // console.log(fundlist);
+    // const fundlist = localStorage.getItem('securityData');
+    // console.log(fundlist);
 
-      });
+    // this.setfunds(fundlist);
+
+    // });
   }
 
   serAttribute(item, i) {
@@ -385,6 +379,7 @@ export class HomeComponent implements OnInit {
   }
 
   setdataindeshboard() {
+    // alert('dashboard');
     this.userservice.get_historical_perfomance().subscribe(
       result => {
         console.log("result", result);
@@ -610,7 +605,7 @@ export class HomeComponent implements OnInit {
       comparision2: ''
     };
     this.funds$.push(singlefund);
-
+    this.setdataindeshboard();
     // portfoliofundlist.push(singlefund);
     // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
 
@@ -666,8 +661,23 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  setfundsfromLocalstorage(fundlist) {
+    // console.log(JSON.parse(JSON.stringify(fundlist)));
+
+    var newseclist = JSON.stringify(this.securitylist);
+    console.log('newseclist is',newseclist);
+
+    fundlist.forEach(element => {
+      let secid = element.securityId;
+      var security = this.securitylist.find(sec => sec.id === secid);
+      console.log(security);
+
+    });
+
+  }
+
   setfunds(fundlist) {
-    portfoliofundlist.length = 0;
+    // portfoliofundlist.length = 0;
     // this.portfolioservice.resetfunds();
     // this.portfolioservice.funds$.subscribe(f => {
     //   this.funds$ = f;
@@ -675,38 +685,79 @@ export class HomeComponent implements OnInit {
     // this.portfolioservice.total$.subscribe(total => {
     //   this.total$ = total;
     // });
+    const newseclist = [];
+    console.log(securitylist);
+
+    // this.userservice.get_security().subscribe(
+    //   datasecuritylist => {
+    //     newseclist.length = 0;
+    //     // // console.log(securitylist);
+    //     // tslint:disable-next-line: forin
+    //     for (var obj in datasecuritylist) {
+    //       var securityobj: security = {
+    //         id: -1,
+    //         isin: '',
+    //         name: '',
+    //         ticker: '',
+    //         asset_type: ''
+    //       };
+    //       securityobj.id = datasecuritylist[obj]['id'];
+    //       securityobj.isin = datasecuritylist[obj]['isin'];
+    //       securityobj.name = datasecuritylist[obj]['name'];
+    //       securityobj.ticker = datasecuritylist[obj]['ticker'];
+    //       securityobj.asset_type = datasecuritylist[obj]['asset_type'];
+    //       newseclist.push(securityobj);
+    //     }
+    //   }
+    // );
+
 
     fundlist.forEach(element => {
-      // console.log(element);
-      let singlefund: portfolio_fund = {
-        // created_by: 0
-        security: element['security_name'],
-        security_id: element['security_id'],
-        p1record: element['portfolio_id_1'],
-        p2record: element['portfolio_id_2'],
-        p3record: element['portfolio_id_3'],
-        yourPortfolio: element['quantity1'],
-        comparision1: element['quantity2'],
-        comparision2: element['quantity3']
-      };
-      if (element['quantity1'] === null) {
-        singlefund.yourPortfolio = '';
+
+      console.log("element --> ", element);
+      if (securitylist.length > 0) {
+        console.log("securitylist --> ", securitylist);
+        let security = securitylist.find(x => x.id === element.securityId);
+        securitylist.map(data => {
+          if (data.id == element.securityId) {
+            console.log('security id', data.id);
+          }
+        });
+        console.log(security);
+        console.log(element.securityId);
+        console.log(element['securityId']);
       }
-      if (element['quantity2'] === null) {
-        singlefund.comparision1 = '';
-      }
-      if (element['quantity3'] === null) {
-        singlefund.comparision2 = '';
-      }
-      portfoliofundlist.push(singlefund);
+
+
+      //   let singlefund: portfolio_fund = {
+      //     // created_by: 0
+      //     security: security_name.name,
+      //     security_id: element['securityId'],
+      //     p1record: element['portfolio_id_1'],
+      //     p2record: element['portfolio_id_2'],
+      //     p3record: element['portfolio_id_3'],
+      //     yourPortfolio: element['portfolio'],
+      //     comparision1: element['COMPARISON1'],
+      //     comparision2: element['COMPARISON2']
+      //   };
+      //   if (element['quantity1'] === null) {
+      //     singlefund.yourPortfolio = '';
+      //   }
+      //   if (element['quantity2'] === null) {
+      //     singlefund.comparision1 = '';
+      //   }
+      //   if (element['quantity3'] === null) {
+      //     singlefund.comparision2 = '';
+      //   }
+      //   portfoliofundlist.push(singlefund);
     });
-    this.portfolioservice.resetfunds();
-    this.portfolioservice.funds$.subscribe(f => {
-      this.funds$ = f;
-    });
-    this.portfolioservice.total$.subscribe(total => {
-      this.total$ = total;
-    });
+    // this.portfolioservice.resetfunds();
+    // this.portfolioservice.funds$.subscribe(f => {
+    //   this.funds$ = f;
+    // });
+    // this.portfolioservice.total$.subscribe(total => {
+    //   this.total$ = total;
+    // });
 
 
 
@@ -850,7 +901,7 @@ export class HomeComponent implements OnInit {
 
   addportfolioFund(string1, item, i) {
     // alert(item.security);
-    if (item.security_id === -1) {
+    if (item.security === '') {
       // alert('Plese select security first');
       return false;
     } else {
@@ -889,7 +940,7 @@ export class HomeComponent implements OnInit {
 
       } else if (string1.match('comp1')) {
         // alert(this.comparision1);
-        if (this.comparision1 === undefined && !this.currentUser) {
+        if (this.comparision1 === undefined) {
           // alert('create portfolio2');
           portfolio = '';
           quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
@@ -919,7 +970,7 @@ export class HomeComponent implements OnInit {
         }
       } else if (string1.match('comp2')) {
         // alert(this.comparision2);
-        if (this.comparision2 === undefined && !this.currentUser) {
+        if (this.comparision2 === undefined) {
           // alert('create portfolio3');
           portfolio = '';
           quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
@@ -958,8 +1009,10 @@ export class HomeComponent implements OnInit {
 
   createportfoliofundmethod(portfolio, quantity, item: portfolio_fund, recordid, i) {
     // alert('came in create portfolio fund');
-    var security = securitylist.find(x => x.name === item.security);
-    // console.log(security);
+    var security = securitylist.find(x => x.id === item.security_id);
+    console.log(security);
+
+
 
     // name = this.securityinput);
     var recid;
@@ -985,7 +1038,6 @@ export class HomeComponent implements OnInit {
       //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
       // }
       this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": item.security_id });
-
       this.setdataindeshboard();
     }
   }
@@ -1057,7 +1109,6 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.sortDirection = direction;
   }
 }
-
 
 
 
