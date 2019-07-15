@@ -469,6 +469,22 @@ export class ServercommunicationService {
     }
   }
 
+  //Remove data from localstorage and reset with index numbers
+  removedata(id) {
+    if (id) {
+      const storageData = JSON.parse(localStorage.getItem('securityData'));
+      const index = storageData.findIndex(order => order.recordId === id);
+      storageData.splice(index, 1); // remove particular record
+      let resetData;
+      //reset key and ID in localstorage
+      storageData.forEach((key, value) => {
+        key.recordId = value;
+        resetData.push(key);
+      });
+      localStorage.setItem('securityData', resetData);
+    }
+  }
+
   //Use for find record in array object
   getDimensionsByFind(arrayValue, recordId) {
     return arrayValue.find(x => x.recordId === recordId);

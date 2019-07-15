@@ -21,7 +21,7 @@ import { MustMatch } from '../must-match.validator';
 import { securitylist } from '../securitylist';
 import { element } from '@angular/core/src/render3';
 // import { Dropbox } from 'dropbox';
-
+import Swal from 'sweetalert2'
 
 
 declare var Dropbox: Dropbox;
@@ -337,6 +337,7 @@ export class HomeComponent implements OnInit {
         });
       }
       //console.log('Fund', f);
+      this.resetfundlist();
     });
   }
 
@@ -592,25 +593,45 @@ export class HomeComponent implements OnInit {
   removeRow(id) {
     // debugger
     console.log("ID", id);
-    portfoliofundlist.splice(id, 1);
-    this.portfolioservice.resetfunds();
-    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
-    this.portfolioservice.total$.subscribe(total => {
-      // alert('came here to set new row');
-      this.total$ = total;
-    });
-    let singlefund: portfolio_fund = {
-      security: '',
-      security_id: -1,
-      p1record: null,
-      p2record: null,
-      p3record: null,
-      yourPortfolio: '',
-      comparision1: '',
-      comparision2: ''
-    };
-    this.funds$.push(singlefund);
+    if (id) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this data',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'No, keep it'
+      }).then((result) => {
+        if (result.value) {
+          this.userservice.removedata(id);
+          portfoliofundlist.splice(id, 1);
+          console.log("portfoliofundlist", portfoliofundlist);
+          this.portfolioservice.resetfunds();
+          this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+          this.portfolioservice.total$.subscribe(total => {
+            this.total$ = total;
+          });
 
+          let singlefund: portfolio_fund = {
+            security: '',
+            security_id: -1,
+            p1record: null,
+            p2record: null,
+            p3record: null,
+            yourPortfolio: '',
+            comparision1: '',
+            comparision2: ''
+          };
+          this.funds$.push(singlefund);
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          Swal.fire(
+            'Cancelled',
+            'Your data is safe :)',
+            'error'
+          )
+        }
+      })
+    }
     // portfoliofundlist.push(singlefund);
     // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
 
@@ -841,7 +862,7 @@ export class HomeComponent implements OnInit {
 
   numberOnly(event): boolean {
     const charCode = (event.which) ? event.which : event.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+    if (charCode > 31 && (charCode < 48 || charCode > 57) || charCode == 37) {
       return false;
     }
     return true;

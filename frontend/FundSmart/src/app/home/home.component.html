@@ -187,7 +187,7 @@
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
                     <div class="curve_chart">
                         <div class="hpd-table heading">
-                            <h3>Testing Line Chart</h3>
+                            <h3>Line Chart</h3>
                         </div>
                         <div *ngIf="linedata?.length > 0">
                             <google-chart [title]="linetitle" [type]="linetype" [data]="linedata"
@@ -349,7 +349,7 @@
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
                     <div class="donutchart">
                         <div class="hpd-table heading">
-                            <h3>Testing Pie Chart</h3>
+                            <h3>Donut Chart</h3>
                         </div>
                         <div *ngIf="donutdata && donutdata?.length > 0">
                             <google-chart [type]="donuttype" [data]="donutdata" [columnNames]="columnNames"
@@ -366,7 +366,7 @@
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
                     <div class="pie-chart">
                         <div class="hpd-table heading">
-                            <h3>Home Pie Chart</h3>
+                            <h3>Pie Chart</h3>
                         </div>
                         <div *ngIf="piedata && piedata?.length > 0">
                             <google-chart [type]="pietype" [data]="piedata" [options]="pieoptions" [width]="piewidth"
