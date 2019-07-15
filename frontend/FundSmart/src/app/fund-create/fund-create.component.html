@@ -33,7 +33,6 @@
                             </select>
                         </div>
                     </div>
-                    </div>
                     <br />
                     <div class='row align-items-center ml-2 mr-2'>
                         Show
@@ -46,7 +45,7 @@
                         </select>
                         Entries
 
-                        <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
+                        <span class="col-sm-4 form-group d-flex align-items-center ml-auto mb-0 w-60">
                             Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
                                 [(ngModel)]="fundservice.searchTerm" />
                             <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>

@@ -148,9 +148,11 @@
                                     </div>
 
                                 </div>
-                                <div class="total-label" style="margin-left: 40px"
-                                    *ngFor="let data of total | keyvalue">
-                                    <p>{{data.value}}</p>
+                                <div class="d-flex mt-3">
+                                    <div class="total-label" style="width:200px; margin-left: 40px"
+                                        *ngFor="let data of total | keyvalue">
+                                        <p>{{data.value}}</p>
+                                    </div>
                                 </div>
                             </div>
                             <div id="assestClass" class="item" data-title="Tab 2">
@@ -178,9 +180,12 @@
                                                 </div>
                                             </li>
                                         </ul>
-                                        <div class="total-label" style="margin-left: 10px; margin-top: 25px;"
-                                            *ngFor="let data of (total1 | keyvalue)">
-                                            <p>{{data.value}}</p>
+                                        <div class="d-flex mt-3">
+                                            <div class="total-label"
+                                                style="margin-left: 10px; margin-top: 25px;width: 200px"
+                                                *ngFor="let data of (total1 | keyvalue)">
+                                                <p>{{data.value}}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -198,9 +203,11 @@
                                                     <p>{{data.value}}</p>
                                                 </div>
                                             </li>
-                                            <div style="margin-top: 35px; margin-left: 9px;" class="total-label"
-                                                *ngFor="let item of (total2 | keyvalue)">
-                                                <p>{{item.value}}</p>
+                                            <div class="d-flex mt-3">
+                                                <div style="margin-top: 35px; margin-left: 9px;width:200px"
+                                                    class="total-label" *ngFor="let item of (total2 | keyvalue)">
+                                                    <p>{{item.value}}</p>
+                                                </div>
                                             </div>
                                         </ul>
                                         <div class="country-map">
@@ -233,9 +240,11 @@
                                                 </div>
                                             </li>
                                         </ul>
-                                        <div style="margin-top: 30px; margin-left: 10px;" class="total-label"
-                                            *ngFor="let item of (total3 | keyvalue)">
-                                            <p>{{item.value}}</p>
+                                        <div class="d-flex mt-3">
+                                            <div style="margin-top: 30px; margin-left: 10px;width:200px"
+                                                class="total-label" *ngFor="let item of (total3 | keyvalue)">
+                                                <p>{{item.value}}</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -280,7 +289,7 @@
                     </div>
                 </div>
                 <div
-                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-inner chart-wrapper pie-chart-wrap semi-block">
                     <div class="ct-chart line-chart">
                         <div class="graph-labels">
                             <div class="curve_chart">

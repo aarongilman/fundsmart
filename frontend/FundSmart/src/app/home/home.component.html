@@ -43,7 +43,7 @@
                                         <td>
                                             <input [(ngModel)]="item['security']" id='security_{{i}}'
                                                 (keyup)="searchsecurity($event,item['security'])" list="securityname"
-                                                name='security_{{i}}' (change)=serAttribute(item,i) type="text">
+                                                name='security_{{i}}' (change)='serAttribute(item,i)' type="text">
                                             <!-- (change)="currentUser ? serAttribute(item,i) : openmodal(login,'login');serAttribute(item,i)" -->
 
                                             <datalist id="securityname">
@@ -60,21 +60,20 @@
                                         <td>
                                             <input [(ngModel)]="item['yourPortfolio']"
                                                 style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)"
-                                                (input)="addportfolioFund('portfolio',item,i)"
-                                                name='portfolio_{{i}}' type="text">
+                                                (input)="addportfolioFund('portfolio',item,i)" name='portfolio_{{i}}'
+                                                type="text">
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
                                                 style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
-                                                (input)="addportfolioFund('comp1',item,i)"
-                                                type="text">
+                                                (input)="addportfolioFund('comp1',item,i)" type="text">
 
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['comparision2']"
                                                 style="text-align: center ; width: 3cm"
-                                                (input)="addportfolioFund('comp2',item,i)"
-                                                name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
+                                                (input)="addportfolioFund('comp2',item,i)" name='comp2_{{i}}'
+                                                (keypress)="numberOnly($event)" type="text">
 
                                         </td>
                                         <td>
@@ -132,7 +131,8 @@
                                     </svg>
                                     Upload</button>
                             </div>
-                            <button type="button" (click)='resetfundlist()' class="btn btn-outline-danger delete-all">Delete All</button>
+                            <button type="button" (click)='resetfundlist()'
+                                class="btn btn-outline-danger delete-all">Delete All</button>
 
                             <button type="button" style="cursor: pointer" class="upload-icon-btn" (click)='addRow()'>
                                 <!-- [ngStyle]="{display : currentUser ? '' : 'none'}" -->
@@ -187,7 +187,7 @@
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
                     <div class="curve_chart">
                         <div class="hpd-table heading">
-                            <h3>Testing Line Chart</h3>
+                            <h3>Line Chart</h3>
                         </div>
                         <div *ngIf="linedata?.length > 0">
                             <google-chart [title]="linetitle" [type]="linetype" [data]="linedata"
@@ -349,7 +349,7 @@
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
                     <div class="donutchart">
                         <div class="hpd-table heading">
-                            <h3>Testing Pie Chart</h3>
+                            <h3>Donut Chart</h3>
                         </div>
                         <div *ngIf="donutdata && donutdata?.length > 0">
                             <google-chart [type]="donuttype" [data]="donutdata" [columnNames]="columnNames"
@@ -366,7 +366,7 @@
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
                     <div class="pie-chart">
                         <div class="hpd-table heading">
-                            <h3>Home Pie Chart</h3>
+                            <h3>Pie Chart</h3>
                         </div>
                         <div *ngIf="piedata && piedata?.length > 0">
                             <google-chart [type]="pietype" [data]="piedata" [options]="pieoptions" [width]="piewidth"

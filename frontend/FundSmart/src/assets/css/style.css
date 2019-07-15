@@ -1768,7 +1768,7 @@ a.close-menu svg path {
 .progess-value-block {
     position   : absolute;
     top        : -35px;
-    left       : 0;
+    left       : 0 !important;
     transition : left 1.5s ease-in-out;
     margin-left: -7%;
 
@@ -1947,4 +1947,15 @@ td.loss-red.info-red {
 
 .main-body {
     position: relative;
+}
+
+.chart-inner{
+    height: 290px;
+    position: relative;
+}
+.chart-inner .graph-labels{
+    right: inherit;
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%);
 }
