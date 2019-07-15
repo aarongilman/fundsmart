@@ -42,11 +42,12 @@
                                     <i class="fa fa-times" aria-hidden="true"
                                         style="color: red;font-size:25px; padding-left: 20px"></i>
                                 </a>
-                                <a style="padding-left: 20px"><input style=" width: 17px; height: 17px;"
+                                <a style="padding-left: 20px; ">
+                                    <input style=" width: 17px; height: 17px;cursor: pointer;"
                                         (contextmenu)="onContextMenu($event, item)" type="checkbox" class="checkbox"
                                         (change)="selectID(fund.id)">
                                 </a>
-                                <div style="position: fixed;" [style.left]="contextMenuPosition.x"
+                                <div style="position: fixed" [style.left]="contextMenuPosition.x"
                                     [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu"
                                     [matMenuTriggerData]="{item: item}">
                                 </div>
