@@ -14,7 +14,7 @@ from rest_framework import authentication, status
 from .common import get_quantity
 from .serializers import ImportPortfolioFundSerializer
 from .models import Security, Portfolio, PortfolioFund, FundDetail, Price,\
-    HoldingDetail, FundHolding, FXRate
+    HoldingDetail, FundHolding, FXRate, PortfolioFundPrice
 
 LOGGER = logging.getLogger('fundsmart')
 
@@ -467,6 +467,7 @@ def get_holding_detail_data(fund):
             'current_price': current_price, 'market_value': market_value,
             'asset_class': fund.security.asset_type, 'currency': currency,
             'country': country,  'industry': industry, 'rating': rating}
+
 
 class HoldingDetailAPIView(APIView):
     """APIView to import Portfolio"""
@@ -1084,3 +1085,20 @@ class PortfolioFundData(APIView):
                     count = count+1
                 final_data.append(temp_dict)
         return Response(final_data, status=200)
+
+
+class PortfolioFundPriceAPI(APIView):
+    def post(self, request):
+        """post method in PortfolioFundData"""
+        try:
+            fund_price, created = PortfolioFundPrice.objects.get_or_create(
+                fund_id=int(request.data.get('id')), created_by=request.user,
+                created_at=request.data.get('date'))
+            if request.data.get('price'):
+                fund_price.price = request.data.get('price')
+            fund_price.save()
+            return Response("Price saved successfully", status=200)
+        except Exception as e:
+            LOGGER.error("Error {} occurred while saving fund price!".
+                         format(e))
+            return Response('Failed to save data!', status=204)

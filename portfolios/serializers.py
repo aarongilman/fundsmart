@@ -2,7 +2,8 @@
 from datetime import datetime
 from rest_framework import serializers
 
-from .models import Security, Portfolio, PortfolioFund, Price, HoldingDetail
+from .models import Security, Portfolio, PortfolioFund, PortfolioFundPrice,\
+                    Price
 
 
 class SecuritySerializer(serializers.ModelSerializer):
@@ -42,9 +43,7 @@ class PortfolioFundSerializer(serializers.ModelSerializer):
         if request.query_params.get('date'):
             date = request.query_params.get('date')
         try:
-            price = HoldingDetail.objects.get(fund=obj).current_price
-            if not price:
-                raise Exception
+            price = PortfolioFundPrice.objects.get(fund=obj, created_at=date).price
         except Exception:
             price_obj = Price.objects.filter(date=date, id_value=obj.security.id_value)
             if price_obj:
