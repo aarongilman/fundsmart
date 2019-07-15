@@ -74,6 +74,8 @@ export class HomeComponent implements OnInit {
 
   funds$: portfolio_fund[];
   total$;
+
+  tableData: any = [];
   @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
 
   existing: HistoricalData = {
@@ -106,7 +108,7 @@ export class HomeComponent implements OnInit {
   showdetail_flag = false;
   email2: string;
 
-  securityinput: string[] = [];
+
   portfolioinput: string[] = [];
   comp1input: string[] = [];
   comp2input: string[] = [];
@@ -156,14 +158,32 @@ export class HomeComponent implements OnInit {
 
     this.interconn.reloadmethodcalled$.subscribe(
       () => {
-        this.createFundlist();
-        this.setdataindeshboard();
-        this.portfolioservice.funds$.subscribe(f => {
-          this.funds$ = f;
-        });
-        this.portfolioservice.total$.subscribe(total => {
-          this.total$ = total;
-        });
+        // this.createFundlist();
+        // this.setdataindeshboard();
+        // this.portfolioservice.funds$.subscribe(f => {
+        //   this.funds$ = f;
+        //   // if (f) {
+        //   //   f.map((x, key) => {
+        //   //     if (x.security !== '') {
+        //   //       if (x.yourPortfolio) {
+        //   //         this.userservice.storedata({ 'recordId': key, "key": 'p1', "quantity": x.yourPortfolio, "recid": x.p1record, "portfolio": '', "securityId": x.security_id });
+        //   //       }
+        //   //       if (x.comparision1) {
+        //   //         this.userservice.storedata({ 'recordId': key, "key": 'p2', "quantity": x.comparision1, "recid": x.p2record, "portfolio": '', "securityId": x.security_id });
+        //   //       }
+
+        //   //       if (x.comparision2) {
+        //   //         this.userservice.storedata({ 'recordId': key, "key": 'p3', "quantity": x.comparision2, "recid": x.p3record, "portfolio": '', "securityId": x.security_id });
+        //   //       }
+        //   //       //this.userservice.storedata({ 'recordId': key, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": x.security_id });
+        //   //     }
+        //   //   });
+        //   // }
+
+        // });
+        // this.portfolioservice.total$.subscribe(total => {
+        //   this.total$ = total;
+        // });
       }
     );
 
@@ -202,28 +222,28 @@ export class HomeComponent implements OnInit {
             this.comparision2 = data['results']['2'];
             // console.log("Portfolios", this.portfolio1, this.comparision1, this.comparision2);
 
-            portfoliofundlist.forEach(element => {
+            portfoliofundlist.forEach((element, key) => {
               // console.log(element);
               if (element.security !== '') {
                 if (element.yourPortfolio !== '') {
-                  this.addportfolioFund('portfolio', element);
+                  this.addportfolioFund('portfolio', element, key);
                 }
                 if (element.comparision1 !== '') {
-                  this.addportfolioFund('comp1', element);
+                  this.addportfolioFund('comp1', element, key);
                 }
                 if (element.comparision2 !== '') {
-                  this.addportfolioFund('comp2', element);
+                  this.addportfolioFund('comp2', element, key);
                 }
               }
             });
-            this.createFundlist();
-            this.setdataindeshboard();
-            this.portfolioservice.funds$.subscribe(f => {
-              this.funds$ = f;
-            });
-            this.portfolioservice.total$.subscribe(total => {
-              this.total$ = total;
-            });
+            // this.createFundlist();
+            // this.setdataindeshboard();
+            // this.portfolioservice.funds$.subscribe(f => {
+            //   this.funds$ = f;
+            // });
+            // this.portfolioservice.total$.subscribe(total => {
+            //   this.total$ = total;
+            // });
           }
         );
 
@@ -240,13 +260,13 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.tableData = JSON.parse(localStorage.getItem('securityData'));
     this.interconn.titleSettermethod("Multi Portfolio Analyzer");
 
     if (this.userservice.currentuser) {
       this.setcurrent_user();
-      // this.resetfundlist();
-      this.createFundlist();
+      this.resetfundlist();
+      // this.createFundlist();
       this.setdataindeshboard();
     }
 
@@ -298,6 +318,26 @@ export class HomeComponent implements OnInit {
       }
     );
     // this.userservice.checklogin();
+    this.portfolioservice.funds$.subscribe(f => {
+      if (f) {
+        f.map((x, key) => {
+          if (x.security !== '') {
+            if (x.yourPortfolio) {
+              this.userservice.storedata({ 'recordId': key, "key": 'p1', "quantity": x.yourPortfolio, "recid": x.p1record, "portfolio": '', "securityId": x.security_id });
+            }
+            if (x.comparision1) {
+              this.userservice.storedata({ 'recordId': key, "key": 'p2', "quantity": x.comparision1, "recid": x.p2record, "portfolio": '', "securityId": x.security_id });
+            }
+
+            if (x.comparision2) {
+              this.userservice.storedata({ 'recordId': key, "key": 'p3', "quantity": x.comparision2, "recid": x.p3record, "portfolio": '', "securityId": x.security_id });
+            }
+            //this.userservice.storedata({ 'recordId': key, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": x.security_id });
+          }
+        });
+      }
+      //console.log('Fund', f);
+    });
   }
 
 
@@ -316,6 +356,9 @@ export class HomeComponent implements OnInit {
       };
       portfoliofundlist.push(singlefund);
     }
+    localStorage.getItem('securityData');
+    this.portfolioservice.resetfunds();
+
   }
 
   createFundlist() {
@@ -327,10 +370,24 @@ export class HomeComponent implements OnInit {
       });
   }
 
+  serAttribute(item, i) {
+    var opt = $('option[value="' + $('#security_' + i).val() + '"]');
+    item.security_id = Number.parseInt(opt.attr('id'));
+    console.log(item.security_id);
+
+    try {
+      item.security = securitylist.find(s => s.id === item.security_id).name;
+    } catch {
+      return null;
+    }
+
+
+  }
+
   setdataindeshboard() {
     this.userservice.get_historical_perfomance().subscribe(
       result => {
-        // // console.log(result);
+        console.log("result", result);
         this.existing = {
           annualexpense: 0,
           oneyear: 0,
@@ -375,16 +432,22 @@ export class HomeComponent implements OnInit {
 
         }
       });
+
     this.userservice.get_home_pie_chart().subscribe(
       jsondata => {
         this.piedata = [];
         // tslint:disable-next-line: forin
-        for (var data in jsondata) {
-          var lable, series;
-          lable = jsondata[data]['security__asset_type'];
-          series = jsondata[data]['total'];
-          this.piedata.push([lable, series]);
-        }
+
+        let arrData = [];
+        let arrvalue = [];
+        Object.keys(jsondata).forEach((element) => {
+          arrData = Object.keys(jsondata[element]);
+          arrvalue = Object.values(jsondata[element]);
+          arrData.forEach((key, value) => {
+            this.piedata.push([key, arrvalue[value]]);
+          });
+        });
+
         this.pietitle = '';
         this.pietype = 'PieChart';
         this.columnNames = ['Security Industry', 'Total'];
@@ -397,20 +460,27 @@ export class HomeComponent implements OnInit {
           legend: 'none',
         };
       });
+
     this.userservice.get_deshboard_doughnut_chart().subscribe(
       jsondata => {
         this.donutdata = [];
-        //  console.log(jsondata);
-        for (var data in jsondata) {
-          if (jsondata[data]['security__industry'] !== null && jsondata[data]['total'] !== 0) {
-            this.donutdata.push([jsondata[data]['security__industry'], jsondata[data]['total']]);
-          }
-        }
+
+        let arrData = [];
+        let arrvalue = [];
+        Object.keys(jsondata).forEach((element) => {
+          arrData = Object.keys(jsondata[element]);
+          arrvalue = Object.values(jsondata[element]);
+          arrData.forEach((key, value) => {
+            this.donutdata.push([key, arrvalue[value]]);
+          });
+        });
+
         this.donutoptions = {
           pieHole: 0.8,
           pieSliceText: 'none',
         };
       });
+
     this.userservice.get_lineplot_chart().subscribe(
       (jsondata: any) => {
         this.linedata = [];
@@ -429,7 +499,6 @@ export class HomeComponent implements OnInit {
               const label = element['label'][k];
               if (tempArray.filter(x => x === label).length === 0) {
                 tempArray.push(label);
-
               }
               if (mainObj[label]) {
                 mainObj[label] = mainObj[label] + ',' + element.series[k];
@@ -445,13 +514,18 @@ export class HomeComponent implements OnInit {
             valuesCollection.push(element.toString());
             for (const iterator of values) {
               valuesCollection.push(parseFloat(iterator));
+              // valuesCollection[0] = i;
             }
             this.linedata.push(valuesCollection);
           }
         }
+
         this.lineoptions = {
-          pointSize: 5,
+          pointSize: 1,
           curveType: 'function',
+          tooltips: {
+            mode: 'index'
+          }
         };
 
       }
@@ -515,6 +589,36 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.page = pageno + 1;
   }
 
+  removeRow(id) {
+    // debugger
+    console.log("ID", id);
+    portfoliofundlist.splice(id, 1);
+    this.portfolioservice.resetfunds();
+    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+    this.portfolioservice.total$.subscribe(total => {
+      // alert('came here to set new row');
+      this.total$ = total;
+    });
+    let singlefund: portfolio_fund = {
+      security: '',
+      security_id: -1,
+      p1record: null,
+      p2record: null,
+      p3record: null,
+      yourPortfolio: '',
+      comparision1: '',
+      comparision2: ''
+    };
+    this.funds$.push(singlefund);
+
+    // portfoliofundlist.push(singlefund);
+    // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+
+    // console.log(pageno);
+    // ()
+    // this.portfolioservice.page = pageno - 1;
+  }
+
 
   get f() { return this.registeruserForm.controls; }
 
@@ -540,16 +644,16 @@ export class HomeComponent implements OnInit {
         this.modalService.dismissAll('Registration Done');
         this.registeruserForm.reset();
 
-        portfoliofundlist.forEach(element => {
+        portfoliofundlist.forEach((element, key) => {
           if (element.security !== '') {
             if (element.yourPortfolio !== '') {
-              this.addportfolioFund('portfolio', element);
+              this.addportfolioFund('portfolio', element, key);
             }
             if (element.comparision1 !== '') {
-              this.addportfolioFund('comp1', element);
+              this.addportfolioFund('comp1', element, key);
             }
             if (element.comparision2 !== '') {
-              this.addportfolioFund('comp2', element);
+              this.addportfolioFund('comp2', element, key);
             }
           }
         });
@@ -703,12 +807,12 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  searchsecurity() {
+  searchsecurity(secinput) {
     // // console.log(this.securityinput);
     var securityList1 = [];
-    if (this.securityinput.length > 1) {
+    if (secinput.length > 1) {
       // if ($event.timeStamp - this.lastkeydown1 > 200) {
-      securityList1 = this.searchFromArray(securitylist, this.securityinput);
+      securityList1 = this.searchFromArray(securitylist, secinput);
 
       // }
       // // console.log(securityList1);
@@ -744,12 +848,9 @@ export class HomeComponent implements OnInit {
 
   }
 
-  addportfolioFund(string1, item) {
+  addportfolioFund(string1, item, i) {
     // alert(item.security);
-    if (!this.currentUser) {
-      return false;
-      // alert('Please login First');
-    } else if (this.securityinput === undefined || item.security === '') {
+    if (item.security_id === -1) {
       // alert('Plese select security first');
       return false;
     } else {
@@ -760,78 +861,92 @@ export class HomeComponent implements OnInit {
         // alert(this.portfolio1);
         if (this.portfolio1 === undefined) {
           // alert('create portfolio1 called');
-          this.userservice.createportfolio(1).subscribe(
-            data => {
-              this.portfolio1 = data;
-              console.log("DATA", this.portfolio1);
-              portfolio = data['id'];
-              quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
-              this.createportfoliofundmethod(portfolio, quantity, item, 'p1');
-              // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-            }, error => {
-              // console.log(error);
-              this.userservice.count--;
-            }
-          );
+          portfolio = '';
+          quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
+          if (this.currentUser) {
+            this.userservice.createportfolio(1).subscribe(
+              data => {
+                this.portfolio1 = data;
+                console.log("DATA", this.portfolio1);
+                portfolio = data['id'];
+                quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
+                this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
+                // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
+              }, error => {
+                // console.log(error);
+                this.userservice.count--;
+              }
+            );
+          }
         } else {
           portfolio = this.portfolio1.id;
           quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
 
-          this.createportfoliofundmethod(portfolio, quantity, item, 'p1');
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
           // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
         }
 
       } else if (string1.match('comp1')) {
         // alert(this.comparision1);
-        if (this.comparision1 === undefined) {
+        if (this.comparision1 === undefined && !this.currentUser) {
           // alert('create portfolio2');
+          portfolio = '';
+          quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
+          if (this.currentUser) {
+            this.userservice.createportfolio(2).subscribe(
+              data => {
+                // console.log(data);
+                this.comparision1 = data;
+                portfolio = data['id'];
+                quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
+                this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
 
-          this.userservice.createportfolio(2).subscribe(
-            data => {
-              // console.log(data);
-              this.comparision1 = data;
-              portfolio = data['id'];
-              quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
-              this.createportfoliofundmethod(portfolio, quantity, item, 'p2');
-
-              // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-            }, error => {
-              // console.log(error);
-              this.userservice.count--;
-            }
-          );
+                // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
+              }, error => {
+                // console.log(error);
+                this.userservice.count--;
+              }
+            );
+          }
         } else {
           portfolio = this.comparision1.id;
           quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
-          this.createportfoliofundmethod(portfolio, quantity, item, 'p2');
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
 
           // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
         }
       } else if (string1.match('comp2')) {
         // alert(this.comparision2);
-        if (this.comparision2 === undefined) {
+        if (this.comparision2 === undefined && !this.currentUser) {
           // alert('create portfolio3');
-          this.userservice.createportfolio(3).subscribe(
-            data => {
-              // console.log(data);
-              // alert(data['id']);
-              this.comparision2 = data;
-              portfolio = data['id'];
-              quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
-              this.createportfoliofundmethod(portfolio, quantity, item, 'p3');
+          portfolio = '';
+          quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
+          if (this.currentUser) {
+            this.userservice.createportfolio(3).subscribe(
+              data => {
+                // console.log(data);
+                // alert(data['id']);
+                this.comparision2 = data;
+                portfolio = data['id'];
+                quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+                this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
 
-              // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
+                // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
 
-            }, error => {
-              // console.log(error);
-              this.userservice.count--;
-            }
-          );
+              }, error => {
+                // console.log(error);
+                this.userservice.count--;
+              }
+            );
+          }
         } else {
           portfolio = this.comparision2.id;
 
           quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
-          this.createportfoliofundmethod(portfolio, quantity, item, 'p3');
+          this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
 
           // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
         }
@@ -841,7 +956,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  createportfoliofundmethod(portfolio, quantity, item: portfolio_fund, recordid) {
+  createportfoliofundmethod(portfolio, quantity, item: portfolio_fund, recordid, i) {
     // alert('came in create portfolio fund');
     var security = securitylist.find(x => x.name === item.security);
     // console.log(security);
@@ -862,13 +977,15 @@ export class HomeComponent implements OnInit {
     } else {
       console.log(item.security_id);
 
-      if (recid === null) {
-        // alert('post method');
-        this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      } else {
-        // alert('put method');
-        this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-      }
+      // if (recid === null) {
+      //   // alert('post method');
+      //   this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // } else {
+      //   // alert('put method');
+      //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
+      // }
+      this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": item.security_id });
+
       this.setdataindeshboard();
     }
   }
@@ -881,7 +998,7 @@ export class HomeComponent implements OnInit {
         let that = this;
         for (const file of files) {
           const name = file.name;
-          console.log(typeof (file), "type of fie", file);
+          // console.log(typeof (file), "type of fie", file);
           url = file.link;
           // console.log({ name: name, url: url });
           fetch(url).then(response => response.blob()).then(filedata => {
@@ -940,6 +1057,7 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.sortDirection = direction;
   }
 }
+
 
 
 

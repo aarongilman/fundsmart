@@ -11,6 +11,7 @@ export class ServercommunicationService {
   // api_link = 'http://3.16.111.80/';
   // api_link = 'http://localhost:8000/';
   api_link = 'http://192.168.100.111:8000/';
+  // api_link = 'http://127.0.0.1:8000/';
 
 
   socialuser: SocialUser;
@@ -121,21 +122,36 @@ export class ServercommunicationService {
   }
 
   get_home_pie_chart() {
-    return this.http.get(this.api_link + 'api/dashboard_pie_chart/', {
-      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    });
+    let body = JSON.parse(localStorage.getItem('securityData'));
+    if (this.userkey) {
+      return this.http.post(this.api_link + 'api/dashboard_pie_chart/', { data: body }, {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    } else {
+      return this.http.post(this.api_link + 'api/dashboard_pie_chart/', { data: body });
+    }
   }
 
   get_deshboard_doughnut_chart() {
-    return this.http.get(this.api_link + 'api/dashboard_doughnut_chart/', {
-      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    });
+    let body = JSON.parse(localStorage.getItem('securityData'));
+    if (this.userkey) {
+      return this.http.post(this.api_link + 'api/dashboard_doughnut_chart/', { data: body }, {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    } else {
+      return this.http.post(this.api_link + 'api/dashboard_doughnut_chart/', { data: body });
+    }
   }
 
   get_historical_perfomance() {
-    return this.http.get(this.api_link + 'api/historical_performance_difference/', {
-      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    });
+    let body = JSON.parse(localStorage.getItem('securityData'));
+    if (this.userkey) {
+      return this.http.post(this.api_link + 'api/historical_performance_difference/', { data: body }, {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    } else {
+      return this.http.post(this.api_link + 'api/historical_performance_difference/', { data: body });
+    }
   }
 
   add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby) {
@@ -298,9 +314,14 @@ export class ServercommunicationService {
   }
 
   get_lineplot_chart() {
-    return this.http.get(this.api_link + 'api/dashboard_line_graph/', {
-      headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-    });
+    let body = JSON.parse(localStorage.getItem('securityData'));
+    if (this.userkey) {
+      return this.http.post(this.api_link + 'api/dashboard_line_graph/', { data: body }, {
+        headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+      });
+    } else {
+      return this.http.post(this.api_link + 'api/dashboard_line_graph/', { data: body });
+    }
   }
 
   getHoldingDetails() {
@@ -359,6 +380,100 @@ export class ServercommunicationService {
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
 
   }
+
+
+  storedata(data) {
+    var alldata = [];
+    if (data) {
+      let format = { 'recordId': data.recordId, 'portfolio': '', 'recid': data.recid, 'COMPARISON1': '', 'COMPARISON2': '', 'securityId': data.securityId }
+      let localData = JSON.parse(localStorage.getItem('securityData'));
+
+      //check portfolio
+      if (data.key == 'p1') {
+        format.portfolio = data.quantity;
+        if (localData) {
+          var resultObject = this.getDimensionsByFind(localData, data.recordId);
+          if (resultObject) {
+            format.recordId = resultObject.recordId;
+            format.portfolio = data.quantity;
+            format.recid = resultObject.recid;
+            format.COMPARISON1 = resultObject.COMPARISON1;
+            format.COMPARISON2 = resultObject.COMPARISON2;
+            format.securityId = resultObject.securityId;
+
+            localData.forEach((key, value) => {
+              if ((localData[value].recordId == data.recordId)) { // if same recid then update data
+                localData[value] = format;
+              }
+            });
+          } else {
+            localData.push(format);
+          }
+        }
+      }
+
+      //check COMPARISON1
+      if (data.key == 'p2') {
+        format.COMPARISON1 = data.quantity;
+        if (localData) {
+          var resultObject = this.getDimensionsByFind(localData, data.recordId);
+          if (resultObject) {
+            format.recordId = resultObject.recordId;
+            format.portfolio = resultObject.portfolio;
+            format.recid = resultObject.recid;
+            format.COMPARISON1 = data.quantity;
+            format.COMPARISON2 = resultObject.COMPARISON2;
+            format.securityId = resultObject.securityId;
+
+            localData.forEach((key, value) => {
+              if ((localData[value].recordId == data.recordId)) { // if same recid then update data
+                localData[value] = format;
+              }
+            });
+          } else {
+            localData.push(format);
+          }
+        }
+      }
+
+      //check COMPARISON2
+      if (data.key == 'p3') {
+        format.COMPARISON2 = data.quantity;
+        if (localData) {
+          var resultObject = this.getDimensionsByFind(localData, data.recordId);
+          if (resultObject) {
+            format.recordId = resultObject.recordId;
+            format.portfolio = resultObject.portfolio;
+            format.recid = resultObject.recid;
+            format.COMPARISON1 = resultObject.COMPARISON1;
+            format.COMPARISON2 = data.quantity;
+            format.securityId = resultObject.securityId;
+
+            localData.forEach((key, value) => {
+              if ((localData[value].recordId == data.recordId)) { // if same recid then update data
+                localData[value] = format;
+              }
+            });
+          } else {
+            localData.push(format);
+          }
+        }
+      }
+
+      if (localData) {
+        localStorage.setItem('securityData', JSON.stringify(localData));
+      } else {
+        alldata.push(format);
+        localStorage.setItem('securityData', JSON.stringify(alldata));
+      }
+    }
+  }
+
+  //Use for find record in array object
+  getDimensionsByFind(arrayValue, recordId) {
+    return arrayValue.find(x => x.recordId === recordId);
+  }
+
   // production api ----->3.16.111.80
 
   // 3.16.111.80 server

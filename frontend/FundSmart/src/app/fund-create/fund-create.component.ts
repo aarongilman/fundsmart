@@ -515,48 +515,48 @@ export class FundCreateComponent implements OnInit {
         return buf;
     }
 
-    // onedrivefileupload() {
-    //     let url: any;
-    //     document.getElementById("OpenDropboxFilePicker").addEventListener("click", e => {
-    //         var options: OneDriveOpenOptions = {
-    //             success: (files) => {
-    //                 let that = this;
-    //                 for (const file of files.value) {
-    //                     const name = file.name;
-    //                     url = file.link;
-    //                     fetch(url).then(response => response.blob()).then(filedata => {
-    //                         console.log(filedata);
-    //                         var url = URL.createObjectURL(new Blob([filedata], { type: 'application/octet-stream' }));
-    //                         console.log(url);
-    //                         const formData = new FormData();
-    //                         //   const blob = new Blob([filedata], { type: filedata.type });
-    //                         const blob = new Blob([filedata], { type: 'application/vnd.ms-excel' });
-    //                         //  const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
-    //                         const myfile = new File([blob], name, { type: 'application/vnd.ms-excel', lastModified: Date.now() });
-    //                         formData.append('data_file', myfile);
-    //                         that.userservice.uploadfile(formData).subscribe(
-    //                             resp => {
-    //                                 that.interconn.afterfileupload();
-    //                                 this.modalService.dismissAll('File uploaded');
-    //                             }
-    //                         );
-    //                     });
-    //                 }
-    //             },
-    //             clientId: 'f6820b1f-b4c5-454a-a050-e88b6e231fb5',
-    //             action: "download",
-    //             multiSelect: true,
-    //             openInNewWindow: true,
-    //             advanced: {
-    //                 //filter: "folder,.png" /* display folder and files with extension '.png' only */
-    //                 filter: "folder,.xlsx"
-    //             },
-    //             cancel: () => {
-    //             },
-    //         };
-    //         OneDrive.open(options);
-    //     });
-    // }
+    onedrivefileupload() {
+        let url: any;
+        document.getElementById("OpenDropboxFilePicker").addEventListener("click", e => {
+            var options: OneDriveOpenOptions = {
+                success: (files) => {
+                    let that = this;
+                    for (const file of files.value) {
+                        const name = file.name;
+                        url = file.link;
+                        fetch(url).then(response => response.blob()).then(filedata => {
+                            console.log(filedata);
+                            var url = URL.createObjectURL(new Blob([filedata], { type: 'application/octet-stream' }));
+                            console.log(url);
+                            const formData = new FormData();
+                            //   const blob = new Blob([filedata], { type: filedata.type });
+                            const blob = new Blob([filedata], { type: 'application/vnd.ms-excel' });
+                            //  const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
+                            const myfile = new File([blob], name, { type: 'application/vnd.ms-excel', lastModified: Date.now() });
+                            formData.append('data_file', myfile);
+                            that.userservice.uploadfile(formData).subscribe(
+                                resp => {
+                                    that.interconn.afterfileupload();
+                                    this.modalService.dismissAll('File uploaded');
+                                }
+                            );
+                        });
+                    }
+                },
+                clientId: 'f6820b1f-b4c5-454a-a050-e88b6e231fb5',
+                action: "download",
+                multiSelect: true,
+                openInNewWindow: true,
+                advanced: {
+                    //filter: "folder,.png" /* display folder and files with extension '.png' only */
+                    filter: "folder,.xlsx"
+                },
+                cancel: () => {
+                },
+            };
+            OneDrive.open(options);
+        });
+    }
 
     // onedrivefileupload() {
     //     let url: any;

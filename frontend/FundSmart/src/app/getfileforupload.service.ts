@@ -67,7 +67,7 @@ export class GetfileforuploadService {
       var picker = pickerBuilder
         .enableFeature(google.picker.Feature.NAV_HIDDEN)
         .setOAuthToken(self.oauthToken)
-        .addView(google.picker.ViewId.DOCS)
+        .addView(google.picker.ViewId.SPREADSHEETS)
         .setDeveloperKey('AIzaSyA_1Y6HBXXhTvDVN0vM4OCYhCZzj1j6OA4')
         .setCallback(self.pickerCallback.bind(this))
         .build();
