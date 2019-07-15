@@ -336,7 +336,6 @@ class DashboardDoughnutChart(APIView):
         return_data = []
         data = request.data.get('data')
         try:
-
             prices = Price.objects.all()
             holding_list = get_holding_list(data, base_currency)
             securities = Security.objects.filter(id_value__in=[item[0] for item in holding_list])
@@ -352,6 +351,8 @@ class DashboardDoughnutChart(APIView):
                         if return_dict.get(industry):
                             market_value = return_dict.get(industry) + market_value
                         return_dict.update({industry: market_value})
+            if return_dict.get(None):
+                return_dict['Other'] = return_dict.pop(None)
             return Response([return_dict], status=200)
         except Exception as e:
             LOGGER.error("Error {} occurred:dashboard doughnut chart".format(e))
