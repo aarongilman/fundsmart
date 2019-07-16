@@ -135,7 +135,8 @@
                                                 <div class="holding-graph">
                                                     <div class="progress">
                                                         <div class="progress-bar plot-9" role="progressbar"
-                                                            [attr.aria-valuenow]="item.value" aria-valuemin="0">
+                                                            [attr.aria-valuenow]="item.value.toFixed(2)"
+                                                            aria-valuemin="0">
                                                         </div>
                                                         <div class="progess-value-block">
                                                             <span class="progress-value plot-9"></span>
@@ -169,8 +170,7 @@
                                                 <div class="holding-graph">
                                                     <div class="progress">
                                                         <div class="progress-bar plot-9" role="progressbar"
-                                                            [attr.aria-valuenow]="item.value" aria-valuemin="0"
-                                                            aria-valuemax="10000000">
+                                                            [attr.aria-valuenow]="item.value" aria-valuemin="0">
                                                         </div>
                                                         <div class="progess-value-block">
                                                             <span class="progress-value plot-9"></span>
