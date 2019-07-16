@@ -290,6 +290,8 @@ export class FundCreateComponent implements OnInit {
     }
 
     updatefundquantity(item) {
+        console.log(item);
+
         if (item.id === -1) {
             this.userservice.add_portfolio_fund(
                 item.quantity,
@@ -344,9 +346,9 @@ export class FundCreateComponent implements OnInit {
         }
         this.userservice.postPrice(fund.id, fund.price, date).subscribe();
         // data => {
-            // let resfund = this.fundlist.find(x => x === fund);
-            // let index = this.fundlist.indexOf(resfund);
-            // apiresultfundlist[index]['price'] = data['current_price'];
+        // let resfund = this.fundlist.find(x => x === fund);
+        // let index = this.fundlist.indexOf(resfund);
+        // apiresultfundlist[index]['price'] = data['current_price'];
         // });
     }
 
@@ -619,7 +621,7 @@ export class FundCreateComponent implements OnInit {
     //   }
 
     drive_fileupload() {
-        this.fileupload.onApiLoad();
+        this.fileupload.onApiLoad("Create Fund");
         this.modalService.dismissAll('File upload');
         this.getfunds();
     }

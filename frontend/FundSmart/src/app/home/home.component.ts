@@ -618,7 +618,7 @@ export class HomeComponent implements OnInit {
 
     console.log(pageno);
     // ()
-    this.portfolioservice.page = pageno + 1;
+    this.portfolioservice.page = pageno;
   }
 
   removeRow(id) {
@@ -733,7 +733,7 @@ export class HomeComponent implements OnInit {
         // created_by: 0
         security: security.name,
         security_id: element['securityId'],
-        p1record: element['portfolio_id_1'],
+        p1record: element['recordId'],
         p2record: element['portfolio_id_2'],
         p3record: element['portfolio_id_3'],
         yourPortfolio: element['portfolio'],
@@ -766,6 +766,9 @@ export class HomeComponent implements OnInit {
         portfoliofundlist.push(singlefund);
       }
     }
+    portfoliofundlist.sort(function (a, b) {
+      return a.p1record - b.p1record;
+    });
     this.portfolioservice.resetfunds();
     this.portfolioservice.funds$.subscribe(f => {
       this.funds$ = f;
@@ -875,45 +878,34 @@ export class HomeComponent implements OnInit {
         for (let record in sheetdata) {
           console.log(sheetdata[record]);
           let port1, comp1, comp2;
-          try {
-            port1 = Number.parseInt(sheetdata[record]['portfolio1']);
-          } catch{
-            port1 = null;
-          }
-          try {
-            comp1 = Number.parseInt(sheetdata[record]['comparison1']);
-          } catch{
-            comp1 = null;
-          }
-          try {
-            comp2 = Number.parseInt(sheetdata[record]['comparison2']);
-          } catch{
-            comp2 = null;
-          }
+          port1 = Number.parseInt(sheetdata[record]['portfolio1']);
+          comp1 = Number.parseInt(sheetdata[record]['comparison1']);
+          comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+
           // console.log(sheetdata[record]['Security ISIN']);
           let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
-          try {
-            let portfilio = portfoliofundlist.findIndex(s => s.security === '');
-            portfoliofundlist[portfilio].security_id = security.id;
-            portfoliofundlist[portfilio].security = security.name;
-            portfoliofundlist[portfilio].yourPortfolio = port1;
-            portfoliofundlist[portfilio].comparision1 = comp1;
-            portfoliofundlist[portfilio].comparision2 = comp2;
+          if (security) {
+            try {
+              let portfilio = portfoliofundlist.findIndex(s => s.security === '');
+              portfoliofundlist[portfilio].security_id = security.id;
+              portfoliofundlist[portfilio].security = security.name;
+              portfoliofundlist[portfilio].yourPortfolio = port1;
+              portfoliofundlist[portfilio].comparision1 = comp1;
+              portfoliofundlist[portfilio].comparision2 = comp2;
+            } catch {
+              let singlefund: portfolio_fund = {
+                security: security.name,
+                security_id: security.id,
+                p1record: null,
+                p2record: null,
+                p3record: null,
+                yourPortfolio: port1,
+                comparision1: comp1,
+                comparision2: comp2
+              };
+              portfoliofundlist.push(singlefund);
+            }
           }
-          catch {
-            let singlefund: portfolio_fund = {
-              security: security.name,
-              security_id: security.id,
-              p1record: null,
-              p2record: null,
-              p3record: null,
-              yourPortfolio: port1,
-              comparision1: comp1,
-              comparision2: comp2
-            };
-            portfoliofundlist.push(singlefund);
-          }
-
         }
 
         // this.setfunds(sheetdata);
@@ -921,24 +913,14 @@ export class HomeComponent implements OnInit {
       };
       fr.readAsArrayBuffer(element);
     }
-
-    // const formData = new FormData();
-    // formData.append('data_file', element);
-    // this.userservice.uploadfile(formData).subscribe(
-    //   res => {
-    //     // console.log(res);
-    //     // this.createFundlist();
-    //     // this.setdataindeshboard();
-
-    //   },
-    //   error => {
-    //     // console.log(error);
-    //   }
-    // );
     this.portfolioservice.resetfunds();
     this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
     this.portfolioservice.total$.subscribe(f => { this.total$ = f; });
+    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
 
+    console.log(pageno);
+    // ()
+    this.portfolioservice.page = pageno;
     this.modalService.dismissAll('Upload Done');
 
   }
@@ -1053,6 +1035,7 @@ export class HomeComponent implements OnInit {
       success: (files) => {
         let that = this;
         for (const file of files) {
+          // console.log(file, typeof (file));
           const name = file.name;
           // console.log(typeof (file), "type of fie", file);
           url = file.link;
@@ -1062,21 +1045,73 @@ export class HomeComponent implements OnInit {
 
             // For instance, display the image
             // console.log("blob is ", filedata.type);
-            const formData = new FormData();
             const blob = new Blob([filedata], { type: filedata.type });
             const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
-            formData.append('data_file', myfile);
-            that.userservice.uploadfile(formData).subscribe(
-              resp => {
-                // console.log(resp);
-                that.interconn.afterfileupload();
-                this.modalService.dismissAll('File uploaded');
+            console.log('myfile', myfile);
+
+            let fr = new FileReader;
+            fr.onload = (e) => {
+              this.arrayBuffer = fr.result;
+              let data = new Uint8Array(this.arrayBuffer);
+              let arr = new Array();
+              for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+              let bstr = arr.join("");
+              let workbook = XLSX.read(bstr, { type: "binary" });
+              let first_sheet_name = workbook.SheetNames[0];
+              let worksheet = workbook.Sheets[first_sheet_name];
+              let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+              // tslint:disable-next-line: forin
+              for (let record in sheetdata) {
+                // console.log(sheetdata[record]);
+                let port1, comp1, comp2;
+                port1 = Number.parseInt(sheetdata[record]['portfolio1']);
+                comp1 = Number.parseInt(sheetdata[record]['comparison1']);
+                comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+
+                // console.log(sheetdata[record]['Security ISIN']);
+                let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
+                // console.log(security);
+                if (security) {
+                  try {
+                    let portfilio = portfoliofundlist.findIndex(s => s.security === '');
+                    portfoliofundlist[portfilio].security_id = security.id;
+                    portfoliofundlist[portfilio].security = security.name;
+                    portfoliofundlist[portfilio].yourPortfolio = port1;
+                    portfoliofundlist[portfilio].comparision1 = comp1;
+                    portfoliofundlist[portfilio].comparision2 = comp2;
+                  } catch {
+                    let singlefund: portfolio_fund = {
+                      security: security.name,
+                      security_id: security.id,
+                      p1record: null,
+                      p2record: null,
+                      p3record: null,
+                      yourPortfolio: port1,
+                      comparision1: comp1,
+                      comparision2: comp2
+                    };
+                    portfoliofundlist.push(singlefund);
+                  }
+                }
               }
-            );
+
+
+
+            };
+            fr.readAsArrayBuffer(myfile);
+            this.portfolioservice.resetfunds();
+            this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+            this.portfolioservice.total$.subscribe(f => { this.total$ = f; });
+            const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+            console.log(pageno);
+            // ()
+            this.portfolioservice.page = pageno;
+            this.modalService.dismissAll('File upload');
           });
         }
       },
       cancel: () => {
+        this.modalService.dismissAll('File not upload');
       },
       linkType: "direct",
       multiselect: false,
@@ -1091,7 +1126,13 @@ export class HomeComponent implements OnInit {
 
   drive_fileupload() {
     // alert('abc');
-    this.fileupload.onApiLoad();
+    this.fileupload.onApiLoad("Dashboard");
+    this.portfolioservice.resetfunds();
+    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+    this.portfolioservice.total$.subscribe(f => { this.total$ = f; });
+    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+    console.log(pageno);
+    this.portfolioservice.page = pageno;
     this.modalService.dismissAll('File upload');
   }
 
