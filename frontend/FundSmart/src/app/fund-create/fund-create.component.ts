@@ -344,9 +344,9 @@ export class FundCreateComponent implements OnInit {
         }
         this.userservice.postPrice(fund.id, fund.price, date).subscribe();
         // data => {
-            // let resfund = this.fundlist.find(x => x === fund);
-            // let index = this.fundlist.indexOf(resfund);
-            // apiresultfundlist[index]['price'] = data['current_price'];
+        // let resfund = this.fundlist.find(x => x === fund);
+        // let index = this.fundlist.indexOf(resfund);
+        // apiresultfundlist[index]['price'] = data['current_price'];
         // });
     }
 

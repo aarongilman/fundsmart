@@ -31,6 +31,13 @@ export class HoldingSummaryComponent implements OnInit {
     total3 = {};
     total4 = [];
 
+    bartitle_fund = 'Bar Chart';
+    bardata_fund = [];
+    barwidth_fund = 500;
+    barheight_fund = 400;
+    bartype_fund = 'BarChart';
+    baroptions_fund;
+
     constructor(
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
@@ -60,6 +67,7 @@ export class HoldingSummaryComponent implements OnInit {
                     value: fund[names[0]]
                 }
                 if (names[0] !== 'Total') {
+                    this.bardata_fund.push([names[0], fund[names[0]]]);
                     this.fund.push(FundObj);
                 } else {
                     this.total = FundObj;

@@ -132,8 +132,19 @@
                                                 <div class="holding-label">
                                                     <p>{{item.name}}</p>
                                                 </div>
-                                                <div class="holding-graph">
-                                                    <div class="progress">
+                                            </li>
+                                        </ul>
+                                        <div class="holding-graph">
+                                            <div *ngIf="bardata_fund && bardata_fund?.length > 0">
+                                                <google-chart [type]="bartype_fund" [data]="bardata_fund"
+                                                    [columnNames]="columnNames" [options]="baroptions_fund"
+                                                    [height]="barheight_fund" [width]="barwidth_fund">
+                                                </google-chart>
+                                            </div>
+                                            <div *ngIf="bardata_fund?.length <= 0" style="text-align:center">
+                                                Data not found
+                                            </div>
+                                            <!-- <div class="progress">
                                                         <div class="progress-bar plot-9" role="progressbar"
                                                             [attr.aria-valuenow]="item.value.toFixed(2)"
                                                             aria-valuemin="0">
@@ -142,10 +153,10 @@
                                                             <span class="progress-value plot-9"></span>
                                                             <span class="progress-arrow border-plot-9"></span>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
+                                                    </div> -->
+                                        </div>
+                                        <!-- </li>
+                                        </ul> -->
                                     </div>
 
                                 </div>
