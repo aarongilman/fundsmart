@@ -1,7 +1,6 @@
 """views.py in portfolios app"""
 import xlrd
 import logging
-import operator
 import itertools
 from datetime import date
 
@@ -519,26 +518,30 @@ def get_summary_data(request, type):
         portfolio_ids = request.GET.get('portfolio_ids').split(",")
         portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
                                               created_by=request.user)
-        funds = PortfolioFund.objects.filter(portfolio__in=portfolios)
-        fund_details = FundDetail.objects.all()
-        price = Price.objects.all()
-        for fund in funds:
-            try:
-                price_obj = price.filter(
-                    id_value=fund.security.id_value).latest('date')
-                price_value = price_obj.price
-            except Exception as e:
-                price_value = 0
-            if '%' in fund.quantity:
-                quantity = (float(fund.quantity.replace("%", "")) / 100) * \
-                           1000000
+    else:
+        portfolios = Portfolio.objects.filter(created_by=request.user)
+    funds = PortfolioFund.objects.filter(portfolio__in=portfolios)
+    fund_details = FundDetail.objects.all()
+    fx_rate = FXRate.objects.all()
+    price = Price.objects.all()
+    for fund in funds:
+        try:
+            price_obj = price.filter(
+                id_value=fund.security.id_value).latest('date')
+            price_value = price_obj.price
+        except Exception as e:
+            price_value = None
+        fund_detail = fund_details.filter(fund_id=fund.security.id_value)
+        fx_rate_obj = fx_rate.filter(date=date.today(),
+                                     currency=fund.security.currency)
+        if price_value and fund_detail and fx_rate_obj:
+            if '%' in str(fund.quantity):
+                quantity = get_quantity(quantity, fund.security,
+                                        fund_detail[0].aum,
+                                        fx_rate_obj[0].rate, price_value)
             else:
-                quantity = fund.quantity
-            market_value = float(quantity) * float(price_value)
-            if fund.security.asset_type == 'Mutual Fund':
-                aum = fund_details.get(fund_id=fund.security.id_value).aum
-                quantity = float(market_value) / float(aum) * 1000000
-                market_value = float(quantity) * float(price_value)
+                quantity = float(fund.quantity)
+            market_value = float(price_value) * quantity
             if type == 'asset_type':
                 key = fund.security.asset_type if fund.security.asset_type else 'Empty'
             if type == 'country':
@@ -550,13 +553,13 @@ def get_summary_data(request, type):
                     temp_dict.get(key).append(market_value)
                 else:
                     temp_dict.update({key: [market_value]})
-        total = 0
-        if temp_dict:
-            for key, value in temp_dict.items():
-                total += sum(value)
-                data.append({key: sum(value)})
-            data.append({'Total': total})
-        return data
+    total = 0
+    if temp_dict:
+        for key, value in temp_dict.items():
+            total += sum(value)
+            data.append({key: sum(value)})
+        data.append({'Total': total})
+    return data
 
 
 class HoldingSummaryByHoldingType(APIView):
@@ -568,25 +571,29 @@ class HoldingSummaryByHoldingType(APIView):
             portfolio_ids = request.GET.get('portfolio_ids').split(",")
             portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
                                                   created_by=request.user)
-            funds = PortfolioFund.objects.filter(portfolio__in=portfolios)
-            fund_details = FundDetail.objects.all()
-            price = Price.objects.all()
-            for fund in funds:
-                try:
-                    price_obj = price.filter(id_value=fund.security.id_value).latest('date')
-                    price_value = price_obj.price
-                except Exception as e:
-                    price_value = 0
-                if '%' in fund.quantity:
-                    quantity = (float(fund.quantity.replace("%", "")) / 100) * \
-                               1000000
+        else:
+            portfolios = Portfolio.objects.filter(created_by=request.user)
+        funds = PortfolioFund.objects.filter(portfolio__in=portfolios)
+        fund_details = FundDetail.objects.all()
+        price = Price.objects.all()
+        fx_rate = FXRate.objects.all()
+        for fund in funds:
+            try:
+                price_obj = price.filter(id_value=fund.security.id_value).latest('date')
+                price_value = price_obj.price
+            except Exception as e:
+                price_value = None
+            fund_detail = fund_details.filter(fund_id=fund.security.id_value)
+            fx_rate_obj = fx_rate.filter(date=date.today(),
+                                         currency=fund.security.currency)
+            if price_value and fund_detail and fx_rate_obj:
+                if '%' in str(fund.quantity):
+                    quantity = get_quantity(quantity, fund.security,
+                                            fund_detail[0].aum,
+                                            fx_rate_obj[0].rate, price_value)
                 else:
-                    quantity = fund.quantity
-                market_value = float(quantity) * float(price_value)
-                if fund.security.asset_type == 'Mutual Fund':
-                    aum = fund_details.get(fund_id=fund.security.id_value).aum
-                    quantity = float(market_value) / float(aum) * 1000000
-                    market_value = float(quantity) * float(price_value)
+                    quantity = float(fund.quantity)
+                market_value = float(price_value)*quantity
                 if fund.security.name:
                     key = fund.security.name if fund.security.asset_type == \
                                                 'Mutual Fund' else 'Other'
@@ -594,12 +601,12 @@ class HoldingSummaryByHoldingType(APIView):
                         temp_dict.get(key).append(market_value)
                     else:
                         temp_dict.update({key: [market_value]})
-            total = 0
-            if temp_dict:
-                for key, value in temp_dict.items():
-                    total += sum(value)
-                    data.append({key: sum(value)})
-                data.append({'Total': total})
+        total = 0
+        if temp_dict:
+            for key, value in temp_dict.items():
+                total += sum(value)
+                data.append({key: sum(value)})
+            data.append({'Total': total})
         return Response(data, status=200)
 
 
