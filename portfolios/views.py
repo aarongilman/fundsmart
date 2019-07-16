@@ -637,85 +637,87 @@ def get_historical_performance(request):
         portfolio_ids = request.GET.get('portfolio_ids').split(',')
         portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
                                               created_by=request.user)
-        portfolio_funds = PortfolioFund.objects.filter(portfolio__in=
-                                                       portfolios)
-        fund_details = FundDetail.objects.all()
-        total_annual_expense = 0
-        total_1_year = []
-        total_3_year = []
-        total_5_year = []
-        price = Price.objects.all()
-        for portfolio in portfolios:
-            isin_list = portfolio_funds.filter(
-                portfolio=portfolio, created_by=request.user) \
-                .values_list('security__id_value', flat=True)
-            return_1_yr = []
-            return_3_yr = []
-            return_5_yr = []
-            for isin in isin_list:
-                end_price_1_year = price.filter(id_value=isin,
-                                                date=str(
-                                                    date(date.today().year -
-                                                         1, 12, 31)))
-                beg_price_1_year = price.filter(id_value=isin,
-                                                date=str(
-                                                    date(date.today().year -
-                                                         2, 12, 31)))
-                end_price_3_year = price.filter(id_value=isin,
-                                                date=str(
-                                                    date(date.today().year -
-                                                         3, 12, 31)))
-                beg_price_3_year = price.filter(id_value=isin,
-                                                date=str(
-                                                    date(date.today().year -
-                                                         4, 12, 31)))
-                end_price_5_year = price.filter(id_value=isin,
-                                                date=str(
-                                                    date(date.today().year -
-                                                         5, 12, 31)))
-                beg_price_5_year = price.filter(id_value=isin,
-                                                date=str(
-                                                    date(date.today().year -
-                                                         6, 12, 31)))
-                if end_price_1_year and beg_price_1_year:
-                    return_1_yr.append((end_price_1_year[0].price -
-                                        beg_price_1_year[0].price) /
-                                       beg_price_1_year[0].price)
-                if end_price_3_year and beg_price_3_year:
-                    return_3_yr.append((end_price_3_year[0].price -
-                                        beg_price_3_year[0].price) /
-                                       beg_price_3_year[0].price)
-                if end_price_5_year and beg_price_5_year:
-                    return_5_yr.append((end_price_5_year[0].price -
-                                        beg_price_5_year[0].price) /
-                                       beg_price_5_year[0].price)
-            portfolio_fund_details = fund_details.filter(fund_id__in=isin_list)
-            portfolio_annual_expense = [float(x) for x in
-                                        portfolio_fund_details.
-                                            values_list('fund_exp_ratio',
-                                                        flat=True)]
-            portfolio_avg_annual_expense = sum(portfolio_annual_expense)
+    else:
+        portfolios = Portfolio.objects.filter(created_by=request.user)
+    portfolio_funds = PortfolioFund.objects.filter(portfolio__in=
+                                                   portfolios)
+    fund_details = FundDetail.objects.all()
+    total_annual_expense = 0
+    total_1_year = []
+    total_3_year = []
+    total_5_year = []
+    price = Price.objects.all()
+    for portfolio in portfolios:
+        isin_list = portfolio_funds.filter(
+            portfolio=portfolio, created_by=request.user) \
+            .values_list('security__id_value', flat=True)
+        return_1_yr = []
+        return_3_yr = []
+        return_5_yr = []
+        for isin in isin_list:
+            end_price_1_year = price.filter(id_value=isin,
+                                            date=str(
+                                                date(date.today().year -
+                                                     1, 12, 31)))
+            beg_price_1_year = price.filter(id_value=isin,
+                                            date=str(
+                                                date(date.today().year -
+                                                     2, 12, 31)))
+            end_price_3_year = price.filter(id_value=isin,
+                                            date=str(
+                                                date(date.today().year -
+                                                     3, 12, 31)))
+            beg_price_3_year = price.filter(id_value=isin,
+                                            date=str(
+                                                date(date.today().year -
+                                                     4, 12, 31)))
+            end_price_5_year = price.filter(id_value=isin,
+                                            date=str(
+                                                date(date.today().year -
+                                                     5, 12, 31)))
+            beg_price_5_year = price.filter(id_value=isin,
+                                            date=str(
+                                                date(date.today().year -
+                                                     6, 12, 31)))
+            if end_price_1_year and beg_price_1_year:
+                return_1_yr.append((end_price_1_year[0].price -
+                                    beg_price_1_year[0].price) /
+                                   beg_price_1_year[0].price)
+            if end_price_3_year and beg_price_3_year:
+                return_3_yr.append((end_price_3_year[0].price -
+                                    beg_price_3_year[0].price) /
+                                   beg_price_3_year[0].price)
+            if end_price_5_year and beg_price_5_year:
+                return_5_yr.append((end_price_5_year[0].price -
+                                    beg_price_5_year[0].price) /
+                                   beg_price_5_year[0].price)
+        portfolio_fund_details = fund_details.filter(fund_id__in=isin_list)
+        portfolio_annual_expense = [float(x) for x in
+                                    portfolio_fund_details.
+                                        values_list('fund_exp_ratio',
+                                                    flat=True)]
+        portfolio_avg_annual_expense = sum(portfolio_annual_expense)
 
-            # 1 year, 3 year and 5 year return for existing funds
-            return_1_year = sum(return_1_yr) if return_1_yr else None
-            return_3_year = sum(return_3_yr) if return_3_yr else None
-            return_5_year = sum(return_5_yr) if return_5_yr else None
-            data.append({portfolio.name:
-                             {'annual_expense': portfolio_avg_annual_expense,
-                              '1-year': return_1_year, '3-year': return_3_year,
-                              '5-year': return_5_year}})
-            total_annual_expense += portfolio_avg_annual_expense
-            total_1_year.append(return_1_year)
-            total_3_year.append(return_3_year)
-            total_5_year.append(return_5_year)
-        data.append({'Total': {'annual_expense': total_annual_expense,
-                               '1-year': sum(
-                                   list(filter(None, total_1_year))),
-                               '3-year': sum(
-                                   list(filter(None, total_3_year))),
-                               '5-year': sum(
-                                   list(filter(None, total_5_year)))}})
-        return data
+        # 1 year, 3 year and 5 year return for existing funds
+        return_1_year = sum(return_1_yr) if return_1_yr else None
+        return_3_year = sum(return_3_yr) if return_3_yr else None
+        return_5_year = sum(return_5_yr) if return_5_yr else None
+        data.append({portfolio.name:
+                         {'annual_expense': portfolio_avg_annual_expense,
+                          '1-year': return_1_year, '3-year': return_3_year,
+                          '5-year': return_5_year}})
+        total_annual_expense += portfolio_avg_annual_expense
+        total_1_year.append(return_1_year)
+        total_3_year.append(return_3_year)
+        total_5_year.append(return_5_year)
+    data.append({'Total': {'annual_expense': total_annual_expense,
+                           '1-year': sum(
+                               list(filter(None, total_1_year))),
+                           '3-year': sum(
+                               list(filter(None, total_3_year))),
+                           '5-year': sum(
+                               list(filter(None, total_5_year)))}})
+    return data
 
 
 class HoldingSummaryHistoricalPerformanceDifference(APIView):
