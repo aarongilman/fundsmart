@@ -233,7 +233,7 @@ export class ServercommunicationService {
 
 
   postPrice(fundid, fundprice, selected_date) {
-    const body = { id: fundid, current_price: fundprice, date: selected_date };
+    const body = { id: fundid, price: fundprice, date: selected_date };
     return this.http.post(this.api_link + 'api/portfolio_fund_price/', body, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });

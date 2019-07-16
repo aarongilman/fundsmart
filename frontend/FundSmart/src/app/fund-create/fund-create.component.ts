@@ -342,11 +342,12 @@ export class FundCreateComponent implements OnInit {
         } else {
             date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
         }
-        this.userservice.postPrice(fund.id, fund.price, date).subscribe(data => {
-            let resfund = this.fundlist.find(x => x === fund);
-            let index = this.fundlist.indexOf(resfund);
-            apiresultfundlist[index]['price'] = data['current_price'];
-        });
+        this.userservice.postPrice(fund.id, fund.price, date).subscribe();
+        // data => {
+            // let resfund = this.fundlist.find(x => x === fund);
+            // let index = this.fundlist.indexOf(resfund);
+            // apiresultfundlist[index]['price'] = data['current_price'];
+        // });
     }
 
     addRow() {

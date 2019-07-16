@@ -1,4 +1,3 @@
-
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Observable, merge } from 'rxjs';
@@ -120,24 +119,24 @@ export class HomeComponent implements OnInit {
   comparision2: any;
 
   pietype = 'PieChart';
-  pietitle = '';
+  pietitle = 'Pie Chart';
   piedata = [];
   pieoptions;
   columnNames = [];
   pieheight = 400;
   piewidth = 500;
 
-  donutitle = '';
+  donutitle = 'Donought Chart';
   donutdata = [];
-  donutwidth = 550;
+  donutwidth = 500;
   donutheight = 400;
   donuttype = 'PieChart';
   donutoptions;
 
-  linetitle = '';
+  linetitle = 'Line Chart';
   linedata = [];
   lineoptions;
-  linewidth = 550;
+  linewidth = 700;
   lineheight = 400;
   linetype = 'LineChart';
   linecolumnNames = [];
@@ -291,7 +290,6 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.interconn.titleSettermethod("Multi Portfolio Analyzer");
     // this.securitylist = [{ "id": 1, "name": "Motilal Oswal Dynamic Fund", "isin": "INF247L01585", "id_value": "ISIN_INF247L01585", "date": "2019-01-31", "ticker": "MOFDERG IN", "asset_type": "Mutual Fund", "currency": "INR", "country": "IN", "industry": null, "rating": null, "created_at": "2019-06-12T11:25:46.929006Z", "created_by": 6 }];
     if (this.userservice.currentuser) {
@@ -327,8 +325,6 @@ export class HomeComponent implements OnInit {
         validator: MustMatch('password1', 'password2')
       });
 
-
-    // this.userservice.checklogin();
     this.portfolioservice.funds$.subscribe(f => {
       if (f) {
         f.map((x, key) => {
@@ -854,6 +850,11 @@ export class HomeComponent implements OnInit {
 
 
   uploadFile(event) {
+    const tabledata = JSON.parse(localStorage.getItem('securityData'));
+    let i = tabledata.length;
+    let tableobj = tabledata[i - 1];
+    console.log("Last object of stored data", tableobj);
+
     // alert('upload file event');
     for (let index = 0; index < event.length; index++) {
       const element = event[index];
@@ -873,20 +874,53 @@ export class HomeComponent implements OnInit {
         // tslint:disable-next-line: forin
         for (let record in sheetdata) {
           console.log(sheetdata[record]);
-          // let format = { 'recordId': data.recordId, 'portfolio': '', 'recid': data.recid, 'COMPARISON1': '', 'COMPARISON2': '', 'securityId': data.securityId }
-          // let localData = JSON.parse(localStorage.getItem('securityData'));
-
-          // this.userservice.storedata({ 'recordId': key, "key": 'p1', "quantity": x.yourPortfolio, "recid": x.p1record, "portfolio": '', "securityId": x.security_id });
-
-
+          let port1, comp1, comp2;
+          try {
+            port1 = Number.parseInt(sheetdata[record]['portfolio1']);
+          } catch{
+            port1 = null;
+          }
+          try {
+            comp1 = Number.parseInt(sheetdata[record]['comparison1']);
+          } catch{
+            comp1 = null;
+          }
+          try {
+            comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+          } catch{
+            comp2 = null;
+          }
+          // console.log(sheetdata[record]['Security ISIN']);
+          let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
+          try {
+            let portfilio = portfoliofundlist.findIndex(s => s.security === '');
+            portfoliofundlist[portfilio].security_id = security.id;
+            portfoliofundlist[portfilio].security = security.name;
+            portfoliofundlist[portfilio].yourPortfolio = port1;
+            portfoliofundlist[portfilio].comparision1 = comp1;
+            portfoliofundlist[portfilio].comparision2 = comp2;
+          }
+          catch {
+            let singlefund: portfolio_fund = {
+              security: security.name,
+              security_id: security.id,
+              p1record: null,
+              p2record: null,
+              p3record: null,
+              yourPortfolio: port1,
+              comparision1: comp1,
+              comparision2: comp2
+            };
+            portfoliofundlist.push(singlefund);
+          }
 
         }
+
         // this.setfunds(sheetdata);
 
-
-      }
+      };
       fr.readAsArrayBuffer(element);
-    };
+    }
 
     // const formData = new FormData();
     // formData.append('data_file', element);
@@ -901,7 +935,11 @@ export class HomeComponent implements OnInit {
     //     // console.log(error);
     //   }
     // );
-    this.modalService.dismissAll('Log in Done');
+    this.portfolioservice.resetfunds();
+    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+    this.portfolioservice.total$.subscribe(f => { this.total$ = f; });
+
+    this.modalService.dismissAll('Upload Done');
 
   }
 
@@ -952,109 +990,29 @@ export class HomeComponent implements OnInit {
       // alert('Plese select security first');
       return false;
     } else {
-      var portfolio;
       var quantity;
       const Tempportfoliofundlist = JSON.parse(JSON.stringify(portfoliofundlist));
       if (string1.match('portfolio')) {
-        // alert(this.portfolio1);
-        if (this.portfolio1 === undefined) {
-          // alert('create portfolio1 called');
-          portfolio = '';
-          quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
-          this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
-          if (this.currentUser) {
-            this.userservice.createportfolio(1).subscribe(
-              data => {
-                this.portfolio1 = data;
-                console.log("DATA", this.portfolio1);
-                portfolio = data['id'];
-                quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
-                this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
-                // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-              }, error => {
-                // console.log(error);
-                this.userservice.count--;
-              }
-            );
-          }
-        } else {
-          portfolio = this.portfolio1.id;
-          quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
 
-          this.createportfoliofundmethod(portfolio, quantity, item, 'p1', i);
-          // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-        }
+        quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
+
+        this.createportfoliofundmethod(quantity, item, 'p1', i);
 
       } else if (string1.match('comp1')) {
-        // alert(this.comparision1);
-        if (this.comparision1 === undefined && !this.currentUser) {
-          // alert('create portfolio2');
-          portfolio = '';
-          quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
-          this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
-          if (this.currentUser) {
-            this.userservice.createportfolio(2).subscribe(
-              data => {
-                // console.log(data);
-                this.comparision1 = data;
-                portfolio = data['id'];
-                quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
-                this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
 
-                // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-              }, error => {
-                // console.log(error);
-                this.userservice.count--;
-              }
-            );
-          }
-        } else {
-          portfolio = this.comparision1.id;
-          quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
-          this.createportfoliofundmethod(portfolio, quantity, item, 'p2', i);
+        quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
+        this.createportfoliofundmethod(quantity, item, 'p2', i);
 
-          // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-        }
       } else if (string1.match('comp2')) {
         // alert(this.comparision2);
-        if (this.comparision2 === undefined && !this.currentUser) {
-          // alert('create portfolio3');
-          portfolio = '';
-          quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
-          this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
-          if (this.currentUser) {
-            this.userservice.createportfolio(3).subscribe(
-              data => {
-                // console.log(data);
-                // alert(data['id']);
-                this.comparision2 = data;
-                portfolio = data['id'];
-                quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
-                this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
-
-                // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-
-              }, error => {
-                // console.log(error);
-                this.userservice.count--;
-              }
-            );
-          }
-        } else {
-          portfolio = this.comparision2.id;
-
-          quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
-          this.createportfoliofundmethod(portfolio, quantity, item, 'p3', i);
-
-          // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
-        }
+        quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+        this.createportfoliofundmethod(quantity, item, 'p3', i);
       }
-      // alert("Quantity " + quantity + " Portfolio " + portfolio + ' secutity ' + item.security);
 
     }
   }
 
-  createportfoliofundmethod(portfolio, quantity, item: portfolio_fund, recordid, i) {
+  createportfoliofundmethod(quantity, item: portfolio_fund, recordid, i) {
     // alert('came in create portfolio fund');
     var security = securitylist.find(x => x.name === item.security);
     // console.log(security);
@@ -1082,7 +1040,7 @@ export class HomeComponent implements OnInit {
       //   // alert('put method');
       //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
       // }
-      this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": item.security_id });
+      this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "securityId": item.security_id });
 
       this.setdataindeshboard();
     }
