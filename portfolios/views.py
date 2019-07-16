@@ -391,61 +391,49 @@ class DashboardPieChart(APIView):
 
 
 def get_holding_detail_data(fund):
-    try:
-        fund_detail = FundDetail.objects.get(fund_id=fund.security.id_value)
-    except Exception as e:
-        LOGGER.error("Error {} occurred: get holding details!". format(e))
+    basic_price = None
+    current_price = None
+    fund_detail = FundDetail.objects.filter(fund_id=fund.security.id_value)
+    fx_rate_obj = FXRate.objects.filter(date=date.today(),
+                                        currency=fund.security.currency)
     price = Price.objects.filter(id_value=fund.security.id_value)
     try:
-        try:
-            holding_detail = HoldingDetail.objects.get(fund=fund)
-        except Exception as e:
-            holding_detail = None
-        if holding_detail and holding_detail.basic_price:
-            basic_price = holding_detail.basic_price
-        else:
-            basic_price = price.filter(date=fund.portfolio.created_at.date()
-                                       )[0].price
+        basic_price = PortfolioFundPrice \
+            .objects.get(fund=fund, created_at=fund.portfolio
+                         .created_at.date()).price
     except Exception as e:
-        LOGGER.error("Error {} occurred:holding details!".
-                     format(e))
-        basic_price = None
+        basic_price_obj = price. \
+            filter(id_value=fund.security.id_value,
+                   date=fund.portfolio.created_at.date())
+        if basic_price_obj:
+            basic_price = basic_price_obj[0].price
+    try:
+        current_price = PortfolioFundPrice.objects. \
+            get(fund=fund, created_at=date.today()).price
+    except Exception as e:
+        current_price_obj = price. \
+            filter(id_value=fund.security.id_value, date=date.today())
+        if current_price_obj:
+            current_price = current_price_obj[0].price
+    market_value = None
+    basis = None
     if '%' in fund.quantity:
-        quantity = (float(fund.quantity.replace("%", "")) / 100) * \
-                   1000000
+        if current_price and fund_detail and fx_rate_obj:
+            quantity = get_quantity(fund.quantity, fund.security,
+                                    fund_detail[0].aum, fx_rate_obj[0].rate,
+                                    current_price)
+        else:
+            quantity = None
     else:
         quantity = fund.quantity
-    basis = float(quantity) * float(basic_price) if basic_price else None
-
-    # Quantity is different for mutual funds
-    if fund.security.asset_type == 'Mutual Fund':
-        aum = fund_detail.aum
-        if basis:
-            quantity = float(basis) / float(aum) * 1000000
-            basis = float(quantity) * float(basic_price)
-        else:
-            basis = None
-    try:
-        if holding_detail and holding_detail.current_price:
-            current_price = holding_detail.current_price
-        else:
-            current_price = price.latest('date').current_price
-    except Exception as e:
-        LOGGER.error("Error {} occurred:holding details!".
-                     format(e))
-        current_price = None
-    market_value = None
-    if current_price:
-        if fund.security.asset_type == 'Mutual Fund':
-            if basic_price:
-                aum = fund_detail.aum
-                quantity = float(float(fund.quantity) * float(basic_price) /
-                                 float(aum)) * 1000000
-            else:
-                quantity = None
-        if quantity:
-            market_value = float(quantity) * float(current_price)
+    if quantity:
+        market_value = float(quantity) * float(current_price) if current_price else None
+        basis = float(quantity) * float(basic_price) if basic_price else None
     currency = fund.security.currency
+    try:
+        holding_detail = HoldingDetail.objects.get(fund=fund)
+    except Exception as e:
+        holding_detail = None
     if holding_detail and holding_detail.currency:
         currency = holding_detail.currency
 
@@ -475,91 +463,16 @@ class HoldingDetailAPIView(APIView):
     def get(self, request):
         """post method in HoldingDetailAPIView"""
         data = []
-        portfolios = Portfolio.objects.filter(created_by=request.user)
+        if request.GET.get('portfolio_ids'):
+            portfolio_ids = request.GET.get('portfolio_ids').split(",")
+            portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
+                                                  created_by=request.user)
+        else:
+            portfolios = Portfolio.objects.filter(created_by=request.user)
         funds = PortfolioFund.objects.filter(portfolio__in=portfolios)
-        price = Price.objects.filter(id_value__in=
-                                     funds.values_list('security__id_value'))
-        fund_details = FundDetail.objects.filter(
-            fund_id__in=funds.values_list('security__id_value'))
         for fund in funds:
-            try:
-                try:
-                    holding_detail = HoldingDetail.objects.get(fund=fund)
-                except Exception as e:
-                    holding_detail = None
-                if holding_detail and holding_detail.basic_price:
-                    basic_price = holding_detail.basic_price
-                else:
-                    basic_price = price.filter(id_value=fund.security.id_value,
-                                               date=fund.portfolio.created_at.date()
-                                               )[0].price
-            except Exception as e:
-                LOGGER.error("Error {} occurred:holding details!".
-                             format(e))
-                basic_price = None
-            if '%' in fund.quantity:
-                quantity = (float(fund.quantity.replace("%", "")) / 100) * \
-                           1000000
-            else:
-                quantity = fund.quantity
-            basis = float(quantity) * float(basic_price) if basic_price else None
-
-            # Quantity is different for mutual funds
-            if fund.security.asset_type == 'Mutual Fund':
-                aum = fund_details.get(fund_id=fund.security.id_value).aum
-                if basis:
-                    quantity = float(basis) / float(aum) * 1000000
-                    basis = float(quantity) * float(basic_price)
-                else:
-                    basis = None
-            try:
-                if holding_detail and holding_detail.current_price:
-                    current_price = holding_detail.current_price
-                else:
-                    current_price = price.filter(id_value=fund.security.id_value)\
-                        .latest('date').current_price
-            except Exception as e:
-                LOGGER.error("Error {} occurred:holding details!".
-                             format(e))
-                current_price = None
-            market_value = None
-            if current_price:
-                if fund.security.asset_type == 'Mutual Fund':
-                    if basic_price:
-                        aum = fund_details.get(fund_id=fund.security.id_value).aum
-                        quantity = float(float(fund.quantity) * float(basic_price) /
-                                         float(aum)) * 1000000
-                    else:
-                        quantity = None
-                if quantity:
-                    market_value = float(quantity) * float(current_price)
-            currency = fund.security.currency
-            if holding_detail and holding_detail.currency:
-                currency = holding_detail.currency
-
-            country = fund.security.country
-            if holding_detail and holding_detail.country:
-                country = holding_detail.country
-
-            industry = fund.security.industry
-            if holding_detail and holding_detail.industry:
-                industry = holding_detail.industry
-
-            rating = fund.security.rating
-            if holding_detail and holding_detail.rating:
-                rating = holding_detail.rating
-
-            data.append({'fund_id': fund.id, 'portfolio': fund.portfolio.name,
-                         'security': fund.security.name,
-                         'isin': fund.security.isin, 'quantity': fund.quantity,
-                         'ticker': fund.security.ticker,
-                         'basic_price': basic_price, 'basis': basis,
-                         'current_price': current_price,
-                         'market_value': market_value,
-                         'asset_class': fund.security.asset_type,
-                         'currency': currency, 'country': country,
-                         'industry': industry, 'rating': rating
-                         })
+            temp_dict = get_holding_detail_data(fund)
+            data.append(temp_dict)
         return Response(data, status=200)
 
     def post(self, request):
@@ -569,10 +482,6 @@ class HoldingDetailAPIView(APIView):
                 fund_id=int(request.data.get('id')))
             if request.data.get('currency'):
                 holding_detail.currency = request.data.get('currency')
-            if request.data.get('basic_price'):
-                holding_detail.basic_price = request.data.get('basic_price')
-            if request.data.get('current_price'):
-                holding_detail.current_price = request.data.get('current_price')
             if request.data.get('country'):
                 holding_detail.country = request.data.get('country')
             if request.data.get('industry'):
@@ -580,6 +489,19 @@ class HoldingDetailAPIView(APIView):
             if request.data.get('rating'):
                 holding_detail.rating = request.data.get('rating')
             holding_detail.save()
+            fund = PortfolioFund.objects.get(id=request.data.get('id'))
+            if request.data.get('basic_price'):
+                fund_basic_price, created = PortfolioFundPrice.objects.get_or_create\
+                    (fund_id=fund.id, created_by=request.user,
+                     created_at=fund.portfolio.created_at.date())
+                fund_basic_price.price = request.data.get('basic_price')
+                fund_basic_price.save()
+            if request.data.get('current_price'):
+                fund_current_price, created = PortfolioFundPrice.objects.get_or_create(
+                    fund_id=int(request.data.get('id')),
+                    created_by=request.user, created_at=date.today())
+                fund_current_price.price = request.data.get('current_price')
+                fund_current_price.save()
             fund = PortfolioFund.objects.get(id=request.data.get('id'))
             data = get_holding_detail_data(fund)
             return Response(data, status=200)

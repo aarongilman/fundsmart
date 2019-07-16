@@ -134,4 +134,4 @@ class PortfolioFundPrice(models.Model):
                                 null=True, blank=True)
     fund = models.ForeignKey(PortfolioFund, on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=False)
