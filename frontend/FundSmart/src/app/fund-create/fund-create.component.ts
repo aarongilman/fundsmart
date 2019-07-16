@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
-import { NgbModal, ModalDismissReasons, NgbDate } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, ModalDismissReasons, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { security } from '../security';
 import * as $ from 'jquery';
 import { DecimalPipe } from '@angular/common';
@@ -160,6 +160,7 @@ export class FundCreateComponent implements OnInit {
         private userservice: ServercommunicationService,
         private interconn: IntercomponentCommunicationService,
         public fundservice: FundcreatesortService,
+        private calendar: NgbCalendar,
     ) {
         // this.excelIO = new Excel.IO();
         this.interconn.componentMethodCalled$.subscribe(
@@ -173,6 +174,8 @@ export class FundCreateComponent implements OnInit {
                 this.resetfunds();
                 this.portfoliolist.length = 0;
             });
+
+        this.selectedDate = calendar.getToday();
     }
 
     ngOnInit() {
@@ -330,7 +333,16 @@ export class FundCreateComponent implements OnInit {
     }
 
     updateprice(fund) {
-        this.userservice.postPrice(fund.id, fund.price).subscribe(data => {
+        if (this.selectedDate === undefined) {
+            this.selectedDate = this.calendar.getToday();
+        }
+        var date;
+        if (this.selectedDate.month < 10) {
+            date = this.selectedDate.year + '-0' + this.selectedDate.month + '-' + this.selectedDate.day;
+        } else {
+            date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
+        }
+        this.userservice.postPrice(fund.id, fund.price, date).subscribe(data => {
             let resfund = this.fundlist.find(x => x === fund);
             let index = this.fundlist.indexOf(resfund);
             apiresultfundlist[index]['price'] = data['current_price'];

@@ -232,8 +232,8 @@ export class ServercommunicationService {
 
 
 
-  postPrice(fundid, fundprice) {
-    const body = { id: fundid, current_price: fundprice };
+  postPrice(fundid, fundprice, selected_date) {
+    const body = { id: fundid, current_price: fundprice, date: selected_date };
     return this.http.post(this.api_link + 'api/holding_detail/', body, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
@@ -471,17 +471,17 @@ export class ServercommunicationService {
 
   //Remove data from localstorage and reset with index numbers
   removedata(id) {
-    if (id) {
+    if (id >= 0) {
       const storageData = JSON.parse(localStorage.getItem('securityData'));
       const index = storageData.findIndex(order => order.recordId === id);
       storageData.splice(index, 1); // remove particular record
-      let resetData;
+      const resetData = [];
       //reset key and ID in localstorage
       storageData.forEach((key, value) => {
         key.recordId = value;
         resetData.push(key);
       });
-      localStorage.setItem('securityData', resetData);
+      localStorage.setItem('securityData', JSON.stringify(resetData));
     }
   }
 
