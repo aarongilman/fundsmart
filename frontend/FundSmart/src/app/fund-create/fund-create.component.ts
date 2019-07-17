@@ -365,6 +365,7 @@ export class FundCreateComponent implements OnInit {
             price: ''
         };
         apiresultfundlist.unshift(singlefund);
+        this.securityinput[0] = '';
         this.fundservice.resetfunds();
         this.fundservice.funds$.subscribe(list => {
             this.fundlist = list;

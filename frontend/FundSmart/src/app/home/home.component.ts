@@ -837,10 +837,10 @@ export class HomeComponent implements OnInit {
 
 
   uploadFile(event) {
-    const tabledata = JSON.parse(localStorage.getItem('securityData'));
-    let i = tabledata.length;
-    let tableobj = tabledata[i - 1];
-    console.log("Last object of stored data", tableobj);
+    // const tabledata = JSON.parse(localStorage.getItem('securityData'));
+    // let i = tabledata.length;
+    // let tableobj = tabledata[i - 1];
+    // console.log("Last object of stored data", tableobj);
 
     // alert('upload file event');
     for (let index = 0; index < event.length; index++) {
@@ -858,6 +858,7 @@ export class HomeComponent implements OnInit {
         let first_sheet_name = workbook.SheetNames[0];
         let worksheet = workbook.Sheets[first_sheet_name];
         let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+
         let localData = JSON.parse(localStorage.getItem('securityData'));
         if (localData === null) {
           localStorage.setItem('securityData', JSON.stringify([]));
@@ -865,7 +866,7 @@ export class HomeComponent implements OnInit {
         }
         // tslint:disable-next-line: forin
         for (let record in sheetdata) {
-          console.log(sheetdata[record]);
+          // console.log(sheetdata[record]);
           let port1, comp1, comp2;
           port1 = Number.parseInt(sheetdata[record]['portfolio1']);
           comp1 = Number.parseInt(sheetdata[record]['comparison1']);
@@ -873,6 +874,7 @@ export class HomeComponent implements OnInit {
 
           // console.log(sheetdata[record]['Security ISIN']);
           let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
+          // console.log(security);
           if (security) {
             try {
               let portfilio = portfoliofundlist.findIndex(s => s.security === '');
@@ -896,11 +898,19 @@ export class HomeComponent implements OnInit {
                 comparision2: comp2
               };
               portfoliofundlist.push(singlefund);
+
+              // let lastrow = localData[localData.length - 1];
+              // console.log(lastrow);
               let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+              console.log(format);
+
               localData.push(format);
+
+
             }
           }
         }
+
         localStorage.setItem('securityData', JSON.stringify(localData));
 
         // this.setfunds(sheetdata);
