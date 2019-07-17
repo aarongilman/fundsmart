@@ -67,7 +67,6 @@
                                             <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
                                                 style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
                                                 (input)="addportfolioFund('comp1',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
-                                                
                                                 type="text">
 
                                         </td>
@@ -80,7 +79,7 @@
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-outline-danger"
-                                                (click)="removeRow((i + portfolioservice.pageSize * (portfolioservice.page - 1)))">Delete</button>
+                                                (click)="removeRow(item.p1record,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))">Delete</button>
                                         </td>
 
                                         <!-- <td>{{item['security']}}</td> -->

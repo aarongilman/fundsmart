@@ -161,11 +161,12 @@ export class HomeComponent implements OnInit {
       () => {
         this.portfolioservice.resetfunds();
         this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
-        this.portfolioservice.total$.subscribe(f => { this.total$ = f; });
-        const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-        console.log(pageno);
-        // ()
-        this.portfolioservice.page = pageno;
+        this.portfolioservice.total$.subscribe(f => {
+          this.total$ = f;
+          const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+          // console.log(pageno);
+          this.portfolioservice.page = pageno;
+        });
       }
     );
 
@@ -622,18 +623,17 @@ export class HomeComponent implements OnInit {
     this.portfolioservice.total$.subscribe(total => {
       // alert('came here to set new row');
       this.total$ = total;
+      let pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+      // console.log("Page number", pageno);
+      this.portfolioservice.page = pageno;
     });
     // portfoliofundlist.push(singlefund);
-    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
 
-    console.log(pageno);
-    // ()
-    this.portfolioservice.page = pageno;
   }
 
-  removeRow(id) {
+  removeRow(p1record, id) {
     // debugger
-    console.log("ID", id);
+    // console.log("ID", id);
     if (id >= 0) {
       Swal.fire({
         title: 'Are you sure?',
@@ -644,7 +644,9 @@ export class HomeComponent implements OnInit {
         cancelButtonText: 'No, keep it'
       }).then((result) => {
         if (result.value) {
-          this.userservice.removedata(id);
+          if (portfoliofundlist[id].security !== '') {
+            this.userservice.removedata(p1record);
+          }
           portfoliofundlist.splice(id, 1);
           console.log("portfoliofundlist", portfoliofundlist);
           this.portfolioservice.resetfunds();
@@ -857,7 +859,10 @@ export class HomeComponent implements OnInit {
         let worksheet = workbook.Sheets[first_sheet_name];
         let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
         let localData = JSON.parse(localStorage.getItem('securityData'));
-
+        if (localData === null) {
+          localStorage.setItem('securityData', JSON.stringify([]));
+          localData = JSON.parse(localStorage.getItem('securityData'));
+        }
         // tslint:disable-next-line: forin
         for (let record in sheetdata) {
           console.log(sheetdata[record]);
@@ -902,14 +907,16 @@ export class HomeComponent implements OnInit {
       };
       fr.readAsArrayBuffer(element);
     }
+    let pageno;
     this.portfolioservice.resetfunds();
     this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
-    this.portfolioservice.total$.subscribe(f => { this.total$ = f; });
-    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+    this.portfolioservice.total$.subscribe(f => {
+      this.total$ = f;
+      pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+      // console.log(pageno);
+      this.portfolioservice.page = pageno;
+    });
 
-    console.log(pageno);
-    // ()
-    this.portfolioservice.page = pageno;
     this.modalService.dismissAll('Upload Done');
 
   }
@@ -985,6 +992,11 @@ export class HomeComponent implements OnInit {
 
   createportfoliofundmethod(quantity, item: portfolio_fund, recordid, i) {
     // alert('came in create portfolio fund');
+    let localData = JSON.parse(localStorage.getItem('securityData'));
+    if (localData === null) {
+      localStorage.setItem('securityData', JSON.stringify([]));
+      localData = JSON.parse(localStorage.getItem('securityData'));
+    }
     var security = securitylist.find(x => x.name === item.security);
     // console.log(security);
 
@@ -996,6 +1008,9 @@ export class HomeComponent implements OnInit {
       recid = item.p2record;
     } else if (recordid === 'p3') {
       recid = item.p3record;
+    }
+    if (item.p1record === null) {
+      item.p1record = localData.length;
     }
 
     if (security === undefined) {
@@ -1011,7 +1026,7 @@ export class HomeComponent implements OnInit {
       //   // alert('put method');
       //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
       // }
-      this.userservice.storedata({ 'recordId': i, "key": recordid, "quantity": quantity, "recid": recid, "securityId": item.security_id });
+      this.userservice.storedata({ 'recordId': item.p1record, "key": recordid, "quantity": quantity, "recid": recid, "securityId": item.security_id });
 
       this.setdataindeshboard();
     }
@@ -1051,6 +1066,10 @@ export class HomeComponent implements OnInit {
               let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
 
               let localData = JSON.parse(localStorage.getItem('securityData'));
+              if (localData === null) {
+                localStorage.setItem('securityData', JSON.stringify([]));
+                localData = JSON.parse(localStorage.getItem('securityData'));
+              }
               // tslint:disable-next-line: forin
               for (let record in sheetdata) {
                 // console.log(sheetdata[record]);
@@ -1103,11 +1122,16 @@ export class HomeComponent implements OnInit {
             fr.readAsArrayBuffer(myfile);
             this.portfolioservice.resetfunds();
             this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
-            this.portfolioservice.total$.subscribe(f => { this.total$ = f; });
-            const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-            console.log(pageno);
-            // ()
-            this.portfolioservice.page = pageno;
+            this.portfolioservice.total$.subscribe(f => {
+              this.total$ = f;
+              const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+              // console.log(pageno);
+              this.portfolioservice.page = pageno;
+            });
+            // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+            // console.log(pageno);
+            // // ()
+            // this.portfolioservice.page = pageno;
             this.modalService.dismissAll('File upload');
           });
         }
