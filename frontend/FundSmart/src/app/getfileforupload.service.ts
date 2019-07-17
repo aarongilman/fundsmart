@@ -105,6 +105,10 @@ export class GetfileforuploadService {
               let worksheet = workbook.Sheets[first_sheet_name];
               let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
               let localData = JSON.parse(localStorage.getItem('securityData'));
+              if (localData === null) {
+                localStorage.setItem('securityData', JSON.stringify([]));
+                localData = JSON.parse(localStorage.getItem('securityData'));
+              }
               // tslint:disable-next-line: forin
               for (let record in sheetdata) {
                 // console.log(sheetdata[record]);
