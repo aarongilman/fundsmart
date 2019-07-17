@@ -336,27 +336,27 @@ export class HomeComponent implements OnInit {
         validator: MustMatch('password1', 'password2')
       });
 
-    this.portfolioservice.funds$.subscribe(f => {
-      if (f) {
-        f.map((x, key) => {
-          if (x.security !== '') {
-            if (x.yourPortfolio) {
-              this.userservice.storedata({ 'recordId': key, "key": 'p1', "quantity": x.yourPortfolio, "recid": x.p1record, "portfolio": '', "securityId": x.security_id });
-            }
-            if (x.comparision1) {
-              this.userservice.storedata({ 'recordId': key, "key": 'p2', "quantity": x.comparision1, "recid": x.p2record, "portfolio": '', "securityId": x.security_id });
-            }
+    // this.portfolioservice.funds$.subscribe(f => {
+    //   if (f) {
+    //     f.map((x, key) => {
+    //       if (x.security !== '') {
+    //         if (x.yourPortfolio) {
+    //           this.userservice.storedata({ 'recordId': key, "key": 'p1', "quantity": x.yourPortfolio, "recid": x.p1record, "portfolio": '', "securityId": x.security_id });
+    //         }
+    //         if (x.comparision1) {
+    //           this.userservice.storedata({ 'recordId': key, "key": 'p2', "quantity": x.comparision1, "recid": x.p2record, "portfolio": '', "securityId": x.security_id });
+    //         }
 
-            if (x.comparision2) {
-              this.userservice.storedata({ 'recordId': key, "key": 'p3', "quantity": x.comparision2, "recid": x.p3record, "portfolio": '', "securityId": x.security_id });
-            }
-            //this.userservice.storedata({ 'recordId': key, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": x.security_id });
-          }
-        });
-      }
-      //console.log('Fund', f);
-      // this.resetfundlist();
-    });
+    //         if (x.comparision2) {
+    //           this.userservice.storedata({ 'recordId': key, "key": 'p3', "quantity": x.comparision2, "recid": x.p3record, "portfolio": '', "securityId": x.security_id });
+    //         }
+    //         //this.userservice.storedata({ 'recordId': key, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": x.security_id });
+    //       }
+    //     });
+    //   }
+    //   //console.log('Fund', f);
+    //   // this.resetfundlist();
+    // });
 
 
 
