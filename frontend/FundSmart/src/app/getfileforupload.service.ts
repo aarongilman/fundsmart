@@ -104,6 +104,7 @@ export class GetfileforuploadService {
               let first_sheet_name = workbook.SheetNames[0];
               let worksheet = workbook.Sheets[first_sheet_name];
               let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+              let localData = JSON.parse(localStorage.getItem('securityData'));
               // tslint:disable-next-line: forin
               for (let record in sheetdata) {
                 // console.log(sheetdata[record]);
@@ -124,6 +125,8 @@ export class GetfileforuploadService {
                     portfoliofundlist[portfilio].yourPortfolio = port1;
                     portfoliofundlist[portfilio].comparision1 = comp1;
                     portfoliofundlist[portfilio].comparision2 = comp2;
+                    let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                    localData.push(format);
                   } catch {
                     let singlefund: portfolio_fund = {
                       security: security.name,
@@ -136,10 +139,13 @@ export class GetfileforuploadService {
                       comparision2: comp2
                     };
                     portfoliofundlist.push(singlefund);
+                    let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                    localData.push(format);
                   }
                 }
                 // this.interconn.Filuplodedsettable();
               }
+              localStorage.setItem('securityData', JSON.stringify(localData));
 
               this.interconn.Filuplodedsettable();
             };

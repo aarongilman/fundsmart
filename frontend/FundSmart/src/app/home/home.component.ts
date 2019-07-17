@@ -14,7 +14,7 @@ import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-logi
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { GetfileforuploadService } from '../getfileforupload.service';
 import { from } from 'rxjs/observable/from';
-import { groupBy, mergeAll, mergeMap, toArray } from 'rxjs/operators';
+import { groupBy, mergeAll, mergeMap, toArray, last } from 'rxjs/operators';
 import { HistoricalData } from '../historicaldata';
 import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
 import { MustMatch } from '../must-match.validator';
@@ -377,19 +377,18 @@ export class HomeComponent implements OnInit {
       if (result.value) {
         localStorage.setItem('securityData', JSON.stringify([]));
         portfoliofundlist.length = 0;
-        for (var i = 0; i < 10; i++) {
-          let singlefund: portfolio_fund = {
-            security: '',
-            security_id: -1,
-            p1record: null,
-            p2record: null,
-            p3record: null,
-            yourPortfolio: '',
-            comparision1: '',
-            comparision2: ''
-          };
-          portfoliofundlist.push(singlefund);
-        }
+        let singlefund: portfolio_fund = {
+          security: '',
+          security_id: -1,
+          p1record: null,
+          p2record: null,
+          p3record: null,
+          yourPortfolio: '',
+          comparision1: '',
+          comparision2: ''
+        };
+        portfoliofundlist.push(singlefund);
+
         // localStorage.getItem('securityData');
         this.portfolioservice.resetfunds();
         this.setdataindeshboard();
@@ -653,19 +652,6 @@ export class HomeComponent implements OnInit {
           this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
           });
-
-          let singlefund: portfolio_fund = {
-            security: '',
-            security_id: -1,
-            p1record: null,
-            p2record: null,
-            p3record: null,
-            yourPortfolio: '',
-            comparision1: '',
-            comparision2: ''
-          };
-          this.funds$.push(singlefund);
-          portfoliofundlist.push(singlefund);
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           Swal.fire(
             'Cancelled',
@@ -731,12 +717,10 @@ export class HomeComponent implements OnInit {
   }
 
   setfunds(fundlist) {
-    let count = 0;
-    portfoliofundlist.length = 0;
-
-
+    if (fundlist.length > 0) {
+      portfoliofundlist.length = 0;
+    }
     fundlist.forEach(element => {
-      count++;
       // console.log(element);
       let security = this.securitylist.find(s => s['id'] === element.securityId);
       // console.log("security is", security);
@@ -763,24 +747,10 @@ export class HomeComponent implements OnInit {
       }
       portfoliofundlist.push(singlefund);
     });
-    if (count < 10) {
-      for (let c = count; c < 10; c++) {
-        let singlefund: portfolio_fund = {
-          security: '',
-          security_id: -1,
-          p1record: null,
-          p2record: null,
-          p3record: null,
-          yourPortfolio: '',
-          comparision1: '',
-          comparision2: ''
-        };
-        portfoliofundlist.push(singlefund);
-      }
-    }
-    portfoliofundlist.sort(function (a, b) {
-      return a.p1record - b.p1record;
-    });
+
+    // portfoliofundlist.sort(function (a, b) {
+    //   return a.p1record - b.p1record;
+    // });
     this.portfolioservice.resetfunds();
     this.portfolioservice.funds$.subscribe(f => {
       this.funds$ = f;
@@ -886,6 +856,8 @@ export class HomeComponent implements OnInit {
         let first_sheet_name = workbook.SheetNames[0];
         let worksheet = workbook.Sheets[first_sheet_name];
         let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+        let localData = JSON.parse(localStorage.getItem('securityData'));
+
         // tslint:disable-next-line: forin
         for (let record in sheetdata) {
           console.log(sheetdata[record]);
@@ -904,6 +876,8 @@ export class HomeComponent implements OnInit {
               portfoliofundlist[portfilio].yourPortfolio = port1;
               portfoliofundlist[portfilio].comparision1 = comp1;
               portfoliofundlist[portfilio].comparision2 = comp2;
+              let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+              localData.push(format);
             } catch {
               let singlefund: portfolio_fund = {
                 security: security.name,
@@ -916,9 +890,12 @@ export class HomeComponent implements OnInit {
                 comparision2: comp2
               };
               portfoliofundlist.push(singlefund);
+              let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+              localData.push(format);
             }
           }
         }
+        localStorage.setItem('securityData', JSON.stringify(localData));
 
         // this.setfunds(sheetdata);
 
@@ -1072,6 +1049,8 @@ export class HomeComponent implements OnInit {
               let first_sheet_name = workbook.SheetNames[0];
               let worksheet = workbook.Sheets[first_sheet_name];
               let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+
+              let localData = JSON.parse(localStorage.getItem('securityData'));
               // tslint:disable-next-line: forin
               for (let record in sheetdata) {
                 // console.log(sheetdata[record]);
@@ -1091,6 +1070,8 @@ export class HomeComponent implements OnInit {
                     portfoliofundlist[portfilio].yourPortfolio = port1;
                     portfoliofundlist[portfilio].comparision1 = comp1;
                     portfoliofundlist[portfilio].comparision2 = comp2;
+                    let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                    localData.push(format);
                   } catch {
                     let singlefund: portfolio_fund = {
                       security: security.name,
@@ -1103,11 +1084,20 @@ export class HomeComponent implements OnInit {
                       comparision2: comp2
                     };
                     portfoliofundlist.push(singlefund);
+
+                    // let lastrow = localData[localData.length - 1];
+                    // console.log(lastrow);
+                    let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                    console.log(format);
+
+                    localData.push(format);
+
+
                   }
                 }
               }
 
-
+              localStorage.setItem('securityData', JSON.stringify(localData));
 
             };
             fr.readAsArrayBuffer(myfile);
