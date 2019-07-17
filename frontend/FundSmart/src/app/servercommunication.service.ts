@@ -385,9 +385,13 @@ export class ServercommunicationService {
   storedata(data) {
     var alldata = [];
     if (data) {
-      let format = { 'recordId': data.recordId, 'portfolio': '', 'recid': data.recid, 'COMPARISON1': '', 'COMPARISON2': '', 'securityId': data.securityId }
-      let localData = JSON.parse(localStorage.getItem('securityData'));
 
+      let localData = JSON.parse(localStorage.getItem('securityData'));
+      if (localData === null) {
+        localStorage.setItem('securityData', JSON.stringify([]));
+        localData = JSON.parse(localStorage.getItem('securityData'));
+      }
+      let format = { 'recordId': data.recordId , 'portfolio': '', 'recid': data.recid, 'COMPARISON1': '', 'COMPARISON2': '', 'securityId': data.securityId }
       //check portfolio
       if (data.key == 'p1') {
         format.portfolio = data.quantity;
