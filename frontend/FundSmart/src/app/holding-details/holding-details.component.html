@@ -11,9 +11,8 @@
                     <div class="">
                         <div class='row'>
                             <div class='input-group align-items-center col-sm-4'>
-                                Select Portlolios:<select class='form-control'
-                                    [(ngModel)]="sortlist.searchTerm">
-                                    <option selected value=""></option>
+                                Select Portlolios:<select class='form-control' [(ngModel)]="sortlist.searchTerm">
+                                    <option selected value="">ALl</option>
                                     <option *ngFor="let pitem of portfoliolist" title="portfolio1" [value]="pitem.name"
                                         name='p1'>
                                         {{pitem.name}} </option>
@@ -156,16 +155,18 @@
                                                 style="width: 2cm;text-align: center" [(ngModel)]="currentprice[i]"
                                                 (blur)="item.current_price=currentprice[i];UpdateHoldingDetails(item,i)"
                                                 name="current_price_{{i}}">
-                                            <span *ngIf="item.current_price !== null">{{item.current_price}}</span>
+                                            <span
+                                                *ngIf="item.current_price !== null">{{(item.current_price).toFixed(2)}}</span>
                                         </td>
-                                        <td>{{item.market_value}}</td>
+                                        <td>{{(item.market_value).toFixed(2)}}</td>
                                         <td><input *ngIf="item.basic_price === null" type="number" style=" width: 2cm;text-align:
                                                 center" [(ngModel)]="basicprice[i]"
                                                 (blur)="item.basic_price = basicprice[i];UpdateHoldingDetails(item,i)"
                                                 name="basic_price_{{i}}">
-                                            <span *ngIf="item.basic_price !== null">{{item.basic_price}}</span>
+                                            <span
+                                                *ngIf="item.basic_price !== null">{{(item.basic_price).toFixed(2)}}</span>
                                         </td>
-                                        <td>{{item.basis}}</td>
+                                        <td>{{(item.basis).toFixed(2)}}</td>
                                         <td><input *ngIf="item.country === null" [(ngModel)]="country[i]"
                                                 style="width: 2cm;text-align: center" name="country_{{i}}"
                                                 (change)="item.country=country[i];UpdateHoldingDetails(item,i)">
@@ -199,7 +200,7 @@
 
                         </div>
                         <div>
-                            <br/>
+                            <br />
                             <!-- Showing {{sortlist.pageSize}} records from {{total}} -->
                             <div class="d-flex ">
                                 <ngb-pagination class="ml-auto" [collectionSize]="total" [(page)]="sortlist.page"
