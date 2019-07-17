@@ -157,6 +157,17 @@ export class HomeComponent implements OnInit {
       this.total$ = total;
     });
 
+    this.interconn.googledriveuploadcalled$.subscribe(
+      () => {
+        this.portfolioservice.resetfunds();
+        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+        this.portfolioservice.total$.subscribe(f => { this.total$ = f; });
+        const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+        console.log(pageno);
+        // ()
+        this.portfolioservice.page = pageno;
+      }
+    );
 
 
     this.interconn.reloadmethodcalled$.subscribe(
@@ -654,6 +665,7 @@ export class HomeComponent implements OnInit {
             comparision2: ''
           };
           this.funds$.push(singlefund);
+          portfoliofundlist.push(singlefund);
         } else if (result.dismiss === Swal.DismissReason.cancel) {
           Swal.fire(
             'Cancelled',
@@ -1127,12 +1139,7 @@ export class HomeComponent implements OnInit {
   drive_fileupload() {
     // alert('abc');
     this.fileupload.onApiLoad("Dashboard");
-    this.portfolioservice.resetfunds();
-    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
-    this.portfolioservice.total$.subscribe(f => { this.total$ = f; });
-    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-    console.log(pageno);
-    this.portfolioservice.page = pageno;
+
     this.modalService.dismissAll('File upload');
   }
 

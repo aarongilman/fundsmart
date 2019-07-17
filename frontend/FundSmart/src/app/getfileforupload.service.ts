@@ -93,7 +93,6 @@ export class GetfileforuploadService {
           const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
 
           if (self.page === 'Dashboard') {
-            alert("Dashboard");
             let fr = new FileReader;
             fr.onload = (e) => {
               this.arrayBuffer = fr.result;
@@ -108,6 +107,7 @@ export class GetfileforuploadService {
               // tslint:disable-next-line: forin
               for (let record in sheetdata) {
                 // console.log(sheetdata[record]);
+                // alert('in forloop');
                 let port1, comp1, comp2;
                 port1 = Number.parseInt(sheetdata[record]['portfolio1']);
                 comp1 = Number.parseInt(sheetdata[record]['comparison1']);
@@ -138,7 +138,10 @@ export class GetfileforuploadService {
                     portfoliofundlist.push(singlefund);
                   }
                 }
+                // this.interconn.Filuplodedsettable();
               }
+
+              this.interconn.Filuplodedsettable();
             };
             fr.readAsArrayBuffer(file);
           } else {
