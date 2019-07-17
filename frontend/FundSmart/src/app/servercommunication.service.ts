@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AuthService, SocialUser } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
 import { holdindDetail } from './holding-details/holdingDetail';
@@ -496,6 +496,12 @@ export class ServercommunicationService {
     return arrayValue.find(x => x.recordId === recordId);
   }
 
+  //Get data
+  get(apiUrl) {
+    const url = `${this.api_link}${apiUrl}`;
+    return this.http.get(url,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
   // production api ----->3.16.111.80
 
   // 3.16.111.80 server
