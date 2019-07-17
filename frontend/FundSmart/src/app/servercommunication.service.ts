@@ -478,7 +478,7 @@ export class ServercommunicationService {
       const resetData = [];
       //reset key and ID in localstorage
       storageData.forEach((key, value) => {
-        key.recordId = value;
+        key.recordId = value;  //date 17-07-2019
         resetData.push(key);
       });
       localStorage.setItem('securityData', JSON.stringify(resetData));
