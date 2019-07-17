@@ -391,7 +391,9 @@ export class ServercommunicationService {
         localStorage.setItem('securityData', JSON.stringify([]));
         localData = JSON.parse(localStorage.getItem('securityData'));
       }
-      let format = { 'recordId': data.recordId , 'portfolio': '', 'recid': data.recid, 'COMPARISON1': '', 'COMPARISON2': '', 'securityId': data.securityId }
+
+      let format = { 'recordId': data.recordId, 'portfolio': '', 'recid': data.recid, 'COMPARISON1': '', 'COMPARISON2': '', 'securityId': data.securityId }
+
       //check portfolio
       if (data.key == 'p1') {
         format.portfolio = data.quantity;
