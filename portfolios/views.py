@@ -1135,3 +1135,78 @@ class PortfolioFundPriceAPI(APIView):
             LOGGER.error("Error {} occurred while saving fund price!".
                          format(e))
             return Response('Failed to save data!', status=204)
+
+
+class CurrentAllocationAPI(APIView):
+    """API to display current allocation in allocation recommendation page"""
+    def get(self, request):
+        data = []
+        try:
+            fx_rate = FXRate.objects.all()
+            fund_holdings = FundHolding.objects.all()
+            fund_details = FundDetail.objects.all()
+            prices = Price.objects.all()
+            portfolio_ids = []
+            if request.GET.get('portfolio_ids'):
+                portfolio_ids = request.GET.get('portfolio_ids').split(',')
+            funds = PortfolioFund.objects.filter(portfolio__in=portfolio_ids,
+                                                 created_by=request.user)
+            holding_list = []
+            for fund in funds:
+                fx_rate_obj = fx_rate.filter(date=date.today(),
+                                             currency=fund.security.currency)
+                price_obj = prices.filter(id_value=fund.security.id_value,
+                                          date=date.today())
+                fund_detail = fund_details.filter(fund_id=fund.security.id_value)
+                if fx_rate_obj and price_obj:
+                    if '%' in fund.quantity:
+                        a = float(fund.quantity.replace("%", "")) * 1000000
+                        if fund.security.asset_type == 'Mutual Fund':
+                            b = float(fund_detail[0].aum * 1000000 *
+                                      (1 / fx_rate_obj[0].rate))
+                            aum = a / b
+                            holdings = list(
+                                fund_holdings.values_list('id_value')
+                                .filter(fund_id=fund.security.id_value)
+                                .annotate(quantity=F('quantity')))
+                            for holding in holdings:
+                                holding = list(holding)
+                                holding[1] = aum * holding[1]
+                                holding_list.append(holding)
+                        else:
+                            quantity = a / float(price_obj[0].price)
+                            holding_list.append(
+                                [fund.security.id_value, quantity])
+                    else:
+                        if fund.security.asset_type == 'Mutual Fund':
+                            holdings = list(
+                                fund_holdings.values_list('id_value')
+                                .filter(fund_id=fund.security.id_value)
+                                .annotate(quantity=F('quantity')))
+                            for holding in holdings:
+                                holding = list(holding)
+                                holding[1] = fund.quantity
+                                holding_list.append(holding)
+                        else:
+                            holding_list.append(
+                                [fund.security.id_value, fund.quantity])
+            securities = Security.objects.filter(id_value__in=[item[0] for item in holding_list])
+            return_dict = {}
+            for item in holding_list:
+                if item[0]:
+                    security_obj = securities.filter(id_value=item[0])
+                    price_obj = prices.filter(id_value=item[0],
+                                              date=date.today())
+                    if security_obj and price_obj:
+                        asset_type = security_obj[0].asset_type
+                        country = security_obj[0].country
+                        market_value = float(item[1]) * float(price_obj[0].price)
+                        if return_dict.get("{} {}".format(country, asset_type)):
+                            market_value = return_dict.get("{} {}".format(
+                                country, asset_type)) + market_value
+                        return_dict.update({"{} {}".format(
+                            country, asset_type): market_value})
+            return Response([return_dict], status=200)
+        except Exception as e:
+            LOGGER.error("Error {} occurred:dashboard doughnut chart".format(e))
+            return Response(data, status=200)
