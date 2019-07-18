@@ -33,6 +33,7 @@
     "angular-google-charts": "^0.1.6",
     "angularx-social-login": "^1.2.7",
     "bootstrap": "^4.3.1",
+    "classlist.js": "1.1.20150312",
     "core-js": "^2.5.4",
     "dropbox": "^4.0.28",
     "exceljs": "^1.13.0",
@@ -47,6 +48,7 @@
     "primeicons": "^1.0.0",
     "primeng": "^8.0.1",
     "rxjs": "~6.5.2",
+    "sweetalert2": "^8.13.5",
     "tslib": "^1.9.0",
     "xlsx": "^0.14.3",
     "zone.js": "~0.8.26"

@@ -29,7 +29,7 @@ export class FundComponent implements OnInit {
     owner_2: any;
     type: any;
     marginal_tax_range: any;
-    location:any;
+    location: any;
     created_by: any;
     updated_by: any;
 
@@ -71,8 +71,8 @@ export class FundComponent implements OnInit {
             this.type,
             this.marginal_tax_range,
             this.created_by).subscribe(result => {
-            this.getFunds();
-        });
+                this.getFunds();
+            });
     }
 
     header_modals(modalid, fund?) {
@@ -138,7 +138,7 @@ export class FundComponent implements OnInit {
     }
 
     onContextMenuAction3() {
-        this.router.navigate(['/fund_reccommendation']);
+        this.router.navigate(['/fund_recommendation'], { queryParams: { id: this.SelectedIDs } });
     }
 
     onContextMenuAction4() {

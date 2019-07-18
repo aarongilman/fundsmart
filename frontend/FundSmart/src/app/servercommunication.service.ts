@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AuthService, SocialUser } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
 import { holdindDetail } from './holding-details/holdingDetail';
@@ -232,9 +232,9 @@ export class ServercommunicationService {
 
 
 
-  postPrice(fundid, fundprice) {
-    const body = { id: fundid, current_price: fundprice };
-    return this.http.post(this.api_link + 'api/holding_detail/', body, {
+  postPrice(fundid, fundprice, selected_date) {
+    const body = { id: fundid, price: fundprice, date: selected_date };
+    return this.http.post(this.api_link + 'api/portfolio_fund_price/', body, {
       headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
     });
   }
@@ -385,8 +385,14 @@ export class ServercommunicationService {
   storedata(data) {
     var alldata = [];
     if (data) {
-      let format = { 'recordId': data.recordId, 'portfolio': '', 'recid': data.recid, 'COMPARISON1': '', 'COMPARISON2': '', 'securityId': data.securityId }
+
       let localData = JSON.parse(localStorage.getItem('securityData'));
+      if (localData === null) {
+        localStorage.setItem('securityData', JSON.stringify([]));
+        localData = JSON.parse(localStorage.getItem('securityData'));
+      }
+
+      let format = { 'recordId': data.recordId, 'portfolio': '', 'recid': data.recid, 'COMPARISON1': '', 'COMPARISON2': '', 'securityId': data.securityId }
 
       //check portfolio
       if (data.key == 'p1') {
@@ -469,11 +475,33 @@ export class ServercommunicationService {
     }
   }
 
+  //Remove data from localstorage and reset with index numbers
+  removedata(id) {
+    if (id >= 0) {
+      const storageData = JSON.parse(localStorage.getItem('securityData'));
+      const index = storageData.findIndex(order => order.recordId === id);
+      storageData.splice(index, 1); // remove particular record
+      const resetData = [];
+      //reset key and ID in localstorage
+      storageData.forEach((key, value) => {
+        key.recordId = value;  //date 17-07-2019
+        resetData.push(key);
+      });
+      localStorage.setItem('securityData', JSON.stringify(resetData));
+    }
+  }
+
   //Use for find record in array object
   getDimensionsByFind(arrayValue, recordId) {
     return arrayValue.find(x => x.recordId === recordId);
   }
 
+  //Get data
+  get(apiUrl) {
+    const url = `${this.api_link}${apiUrl}`;
+    return this.http.get(url,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
   // production api ----->3.16.111.80
 
   // 3.16.111.80 server

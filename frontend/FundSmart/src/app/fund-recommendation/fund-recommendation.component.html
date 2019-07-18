@@ -19,26 +19,20 @@
                                     <th>5-Year</th>
                                 </thead>
                                 <tbody>
-                                    <tr class="normal-tr">
-                                        <td>Existing</td>
-                                        <td>-1.73%</td>
-                                        <td>-0.92%</td>
-                                        <td>7.50%</td>
-                                        <td>6.07%</td>
+                                    <tr *ngFor="let data of historical" class="blue-tr">
+                                        <td>{{data.name}}</td>
+                                        <td>{{data.value['annual_expense'] ? data.value['annual_expense'] : 0}}%</td>
+                                        <td>{{data.value['1-year'] ? data.value['1-year'] : 0}}%</td>
+                                        <td>{{data.value['3-year'] ? data.value['3-year'] : 0}}%</td>
+                                        <td>{{data.value['5-year'] ? data.value['5-year'] : 0}}%</td>
                                     </tr>
-                                    <tr class="blue-tr">
-                                        <td>Recommended</td>
-                                        <td>-1.10%</td>
-                                        <td>2.88%</td>
-                                        <td>11.26%</td>
-                                        <td>3.25%</td>
-                                    </tr>
-                                    <tr class="total-tr">
-                                        <td>Differences</td>
-                                        <td class="gain-green">1.62%</td>
-                                        <td class="gain-green">3.80%</td>
-                                        <td class="gain-green">3.76%</td>
-                                        <td class="loss-red">-2.82%</td>
+                                    <tr *ngFor="let data of total4" class="total-tr">
+                                        <td class="gain-green">{{data.name}}</td>
+                                        <td class="gain-green">
+                                            {{data.value.annual_expense ? data.value.annual_expense : 0}}%</td>
+                                        <td class="gain-green">{{data.value['1-year'] ? data.value['1-year'] : 0}}%</td>
+                                        <td class="gain-green">{{data.value['3-year'] ? data.value['3-year'] : 0}}%</td>
+                                        <td class="gain-green">{{data.value['5-year'] ? data.value['5-year'] : 0}}%</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -51,11 +45,14 @@
                 <div class="block-container  chart-wrapper">
                     <div class="ct-chart analysis-line-chart"></div>
                     <div class="graph-labels">
-                        <ul>
-                            <li><span class="plot-12"></span>BTC</li>
-                            <li><span class="plot-3"></span>ETH</li>
-                            <li><span class="plot-9"></span>ERP</li>
-                        </ul>
+                        <div *ngIf="bardata && bardata?.length > 0">
+                            <google-chart [type]="bartype" [data]="bardata" [columnNames]="barcolumnNames"
+                                [options]="baroptions" [height]="barheight" [width]="barwidth">
+                            </google-chart>
+                        </div>
+                        <div *ngIf="bardata?.length <= 0" style="text-align:center">
+                            Data not found
+                        </div>
                     </div>
                 </div>
             </div>
@@ -98,65 +95,28 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Motilal Oswal Dynamic Fund</td>
-                                    <td>-1.81</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="gain-green">3.12</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="loss-red loss-bg-red">-4.93</td>
-                                    <td class="gain-green gain-bg-green">0</td>
-                                    <td class="gain-green gain-bg-green">0</td>
-                                </tr>
-                                <tr>
-                                    <td>IDFC Dynamic Equity Fund</td>
-                                    <td>0.07</td>
-                                    <td>7.81</td>
-                                    <td></td>
-                                    <td class="gain-green">3.12</td>
-                                    <td class="gain-green">13.99</td>
-                                    <td></td>
-                                    <td class="loss-red loss-bg-red">-3.05</td>
-                                    <td class="loss-red loss-bg-red">-6.18</td>
-                                    <td class="gain-green gain-bg-green">0</td>
-                                </tr>
-                                <tr>
-                                    <td>IDFC Core Equity Fund</td>
-                                    <td>-7.28</td>
-                                    <td>16.09</td>
-                                    <td>12.59</td>
-                                    <td class="gain-green">0.67</td>
-                                    <td class="gain-green">11.73</td>
-                                    <td class="gain-green">14.35</td>
-                                    <td class="loss-red loss-bg-red">-7.95</td>
-                                    <td class="loss-red loss-bg-red">-1.14</td>
-                                    <td class="loss-red loss-bg-red">-1.72</td>
-                                </tr>
-                                <tr>
-                                    <td>ICICI Prudential Short Term Fund</td>
-                                    <td>6.45</td>
-                                    <td>7.99</td>
-                                    <td>8.49</td>
-                                    <td class="gain-green">7.51</td>
-                                    <td class="gain-green">7.67</td>
-                                    <td class="gain-green">8.29</td>
-                                    <td class="loss-red loss-bg-red">-1.06</td>
-                                    <td class="gain-green gain-bg-green">0.32</td>
-                                    <td class="gain-green gain-bg-green">0.2</td>
-                                </tr>
-                                <tr class="blue-tr">
-                                    <td class="loss-red info-red">* Assuming Regular in absence of information</td>
-                                    <td>6.45</td>
-                                    <td>7.50</td>
-                                    <td>6.07</td>
-                                    <td>3.65</td>
-                                    <td>8.71</td>
-                                    <td>6.52</td>
-                                    <td class="loss-red loss-bg-red">-4.58</td>
-                                    <td class="loss-red loss-bg-red">-0.68</td>
-                                    <td class="loss-red loss-bg-red">-0.2</td>
+                                <tr *ngFor="let data of PortfolioPerformance" class="blue-tr">
+                                    <td>{{data.scheme ? data.scheme : ''}}</td>
+                                    <td>{{data.portfolio_1_year ? data.portfolio_1_year : ''}}</td>
+                                    <td>{{data.portfolio_3_year ? data.portfolio_3_year : 0}}</td>
+                                    <td>{{data.portfolio_5_year ? data.portfolio_5_year : 0}}</td>
+                                    <td class="gain-green">{{data.benchmark_1_year ? data.benchmark_1_year : 0}}</td>
+                                    <td>{{data.benchmark_3_year ? data.benchmark_3_year : 0}}</td>
+                                    <td>{{data.benchmark_5_year ? data.benchmark_5_year : 0}}</td>
+                                    <td class="loss-red loss-bg-red" *ngIf="data.diff_1_year < 0">
+                                        {{data.diff_1_year ? data.diff_1_year : 0}}</td>
+                                    <td class="gain-green gain-bg-green" *ngIf="data.diff_1_year >= 0">
+                                        {{data.diff_1_year ? data.diff_1_year : 0}}</td>
+                                    <td class="loss-red loss-bg-red" *ngIf="data.diff_3_year < 0">
+                                        {{data.diff_3_year ? data.diff_3_year : 0}}
+                                    <td class="gain-green gain-bg-green" *ngIf="data.diff_3_year >= 0">
+                                        {{data.diff_3_year ? data.diff_3_year : 0}}
+                                    </td>
+                                    <td class="loss-red loss-bg-red" *ngIf="data.diff_5_year < 0">
+                                        {{data.diff_5_year ? data.diff_5_year : 0}}
+                                    <td class="gain-green gain-bg-green" *ngIf="data.diff_5_year >= 0">
+                                        {{data.diff_5_year ? data.diff_5_year : 0}}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -197,65 +157,28 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Motilal Oswal Dynamic Fund</td>
-                                    <td>-1.81</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="gain-green">3.12</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="loss-red loss-bg-red">-4.93</td>
-                                    <td class="gain-green gain-bg-green">0</td>
-                                    <td class="gain-green gain-bg-green">0</td>
-                                </tr>
-                                <tr>
-                                    <td>IDFC Dynamic Equity Fund</td>
-                                    <td>0.07</td>
-                                    <td>7.81</td>
-                                    <td></td>
-                                    <td class="gain-green">3.12</td>
-                                    <td class="gain-green">13.99</td>
-                                    <td></td>
-                                    <td class="loss-red loss-bg-red">-3.05</td>
-                                    <td class="loss-red loss-bg-red">-6.18</td>
-                                    <td class="gain-green gain-bg-green">0</td>
-                                </tr>
-                                <tr>
-                                    <td>IDFC Core Equity Fund</td>
-                                    <td>-7.28</td>
-                                    <td>16.09</td>
-                                    <td>12.59</td>
-                                    <td class="gain-green">0.67</td>
-                                    <td class="gain-green">11.73</td>
-                                    <td class="gain-green">14.35</td>
-                                    <td class="loss-red loss-bg-red">-7.95</td>
-                                    <td class="loss-red loss-bg-red">-1.14</td>
-                                    <td class="loss-red loss-bg-red">-1.72</td>
-                                </tr>
-                                <tr>
-                                    <td>ICICI Prudential Short Term Fund</td>
-                                    <td>6.45</td>
-                                    <td>7.99</td>
-                                    <td>8.49</td>
-                                    <td class="gain-green">7.51</td>
-                                    <td class="gain-green">7.67</td>
-                                    <td class="gain-green">8.29</td>
-                                    <td class="loss-red loss-bg-red">-1.06</td>
-                                    <td class="gain-green gain-bg-green">0.32</td>
-                                    <td class="gain-green gain-bg-green">0.2</td>
-                                </tr>
-                                <tr class="blue-tr">
-                                    <td class="loss-red info-red">* Assuming Regular in absence of information</td>
-                                    <td>6.45</td>
-                                    <td>7.50</td>
-                                    <td>6.07</td>
-                                    <td>3.65</td>
-                                    <td>8.71</td>
-                                    <td>6.52</td>
-                                    <td class="loss-red loss-bg-red">-4.58</td>
-                                    <td class="loss-red loss-bg-red">-0.68</td>
-                                    <td class="loss-red loss-bg-red">-0.2</td>
+                                <tr *ngFor="let data of RecommendedPerformance" class="blue-tr">
+                                    <td>{{data.scheme ? data.scheme : ''}}</td>
+                                    <td>{{data.portfolio_1_year ? data.portfolio_1_year : ''}}</td>
+                                    <td>{{data.portfolio_3_year ? data.portfolio_3_year : 0}}</td>
+                                    <td>{{data.portfolio_5_year ? data.portfolio_5_year : 0}}</td>
+                                    <td class="gain-green">{{data.benchmark_1_year ? data.benchmark_1_year : 0}}</td>
+                                    <td>{{data.benchmark_3_year ? data.benchmark_3_year : 0}}</td>
+                                    <td>{{data.benchmark_5_year ? data.benchmark_5_year : 0}}</td>
+                                    <td class="loss-red loss-bg-red" *ngIf="data.diff_1_year < 0">
+                                        {{data.diff_1_year ? data.diff_1_year : 0}}</td>
+                                    <td class="gain-green gain-bg-green" *ngIf="data.diff_1_year >= 0">
+                                        {{data.diff_1_year ? data.diff_1_year : 0}}</td>
+                                    <td class="loss-red loss-bg-red" *ngIf="data.diff_3_year < 0">
+                                        {{data.diff_3_year ? data.diff_3_year : 0}}
+                                    <td class="gain-green gain-bg-green" *ngIf="data.diff_3_year >= 0">
+                                        {{data.diff_3_year ? data.diff_3_year : 0}}
+                                    </td>
+                                    <td class="loss-red loss-bg-red" *ngIf="data.diff_5_year < 0">
+                                        {{data.diff_5_year ? data.diff_5_year : 0}}
+                                    <td class="gain-green gain-bg-green" *ngIf="data.diff_5_year >= 0">
+                                        {{data.diff_5_year ? data.diff_5_year : 0}}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

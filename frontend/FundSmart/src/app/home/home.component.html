@@ -3,7 +3,7 @@
     <!-- Dashboard content -->
     <div class="dashboard-content">
         <div class="row">
-            <div class="col-lg-7 ">
+            <div class="col-lg-7 pr-0">
                 <div class="block-container">
                     <form>
                         <div class='row align-items-center ml-2 mr-2'>
@@ -60,25 +60,26 @@
                                         <td>
                                             <input [(ngModel)]="item['yourPortfolio']"
                                                 style="text-align: center ;width: 3cm" (keypress)="numberOnly($event)"
-                                                (input)="addportfolioFund('portfolio',item,i)" name='portfolio_{{i}}'
-                                                type="text">
+                                                (input)="addportfolioFund('portfolio',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
+                                                name='portfolio_{{i}}' type="text">
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
                                                 style="text-align: center ; width: 3cm" (keypress)="numberOnly($event)"
-                                                (input)="addportfolioFund('comp1',item,i)" type="text">
+                                                (input)="addportfolioFund('comp1',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
+                                                type="text">
 
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['comparision2']"
                                                 style="text-align: center ; width: 3cm"
-                                                (input)="addportfolioFund('comp2',item,i)" name='comp2_{{i}}'
-                                                (keypress)="numberOnly($event)" type="text">
+                                                (input)="addportfolioFund('comp2',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
+                                                name='comp2_{{i}}' (keypress)="numberOnly($event)" type="text">
 
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-outline-danger"
-                                                (click)="removeRow(i)">Delete</button>
+                                                (click)="removeRow(item.p1record,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))">Delete</button>
                                         </td>
 
                                         <!-- <td>{{item['security']}}</td> -->
@@ -187,7 +188,7 @@
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
                     <div class="curve_chart">
                         <div class="hpd-table heading">
-                            <h3>Testing Line Chart</h3>
+                            <h3>Line Chart</h3>
                         </div>
                         <div *ngIf="linedata?.length > 0">
                             <google-chart [title]="linetitle" [type]="linetype" [data]="linedata"
@@ -349,7 +350,7 @@
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
                     <div class="donutchart">
                         <div class="hpd-table heading">
-                            <h3>Testing Pie Chart</h3>
+                            <h3>Donut Chart</h3>
                         </div>
                         <div *ngIf="donutdata && donutdata?.length > 0">
                             <google-chart [type]="donuttype" [data]="donutdata" [columnNames]="columnNames"
@@ -363,10 +364,10 @@
                 </div>
 
                 <div
-                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+                    class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block ">
                     <div class="pie-chart">
                         <div class="hpd-table heading">
-                            <h3>Home Pie Chart</h3>
+                            <h3>Pie Chart</h3>
                         </div>
                         <div *ngIf="piedata && piedata?.length > 0">
                             <google-chart [type]="pietype" [data]="piedata" [options]="pieoptions" [width]="piewidth"

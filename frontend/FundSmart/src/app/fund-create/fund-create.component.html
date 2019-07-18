@@ -12,7 +12,7 @@
                         <div class="col-sm-9">
                             <div class="date-picker-wrap">
                                 <div class="input-group">
-                                    <input class="form-control" placeholder="yyyy-mm-dd" [(ngModel)]="selectedDate"
+                                    <input class="form-control " placeholder="yyyy-mm-dd" [(ngModel)]="selectedDate"
                                         #c="ngModel" ngbDatepicker #d="ngbDatepicker"
                                         (dateSelect)="onDateSelect($event)">
                                     <div class="input-group-append">
@@ -25,31 +25,35 @@
                         </div>
 
                         <div class="col-sm-3">
-                        <div class='input-group align-items-center'>Select Portfolio:<select class='form-control' style="width: 50%" [(ngModel)]="fundservice.searchTerm">
-                                <option selected value=""></option>
-                                <option *ngFor="let pitem of portfoliolist" title="portfolio1" [value]="pitem.name"
-                                    name='p1'>
-                                    {{pitem.name}} </option>
-                            </select>
+                            <div class='input-group align-items-center'>Select Portfolio:<select
+                                    class='form-control ml-2' style="width: 50%" [(ngModel)]="fundservice.searchTerm">
+                                    <option selected value=""></option>
+                                    <option *ngFor="let pitem of portfoliolist" title="portfolio1" [value]="pitem.name"
+                                        name='p1'>
+                                        {{pitem.name}} </option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <br />
-                    <div class='row align-items-center ml-2 mr-2'>
-                        Show
-                        <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
-                            [(ngModel)]="fundservice.pageSize">
-                            <option [ngValue]="10">10</option>
-                            <option [ngValue]="25">25</option>
-                            <option [ngValue]="50">50</option>
-                            <option [ngValue]="100">100</option>
-                        </select>
-                        Entries
-
-                        <span class="col-sm-4 form-group d-flex align-items-center ml-auto mb-0 w-60">
-                            Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
-                                [(ngModel)]="fundservice.searchTerm" />
-                            <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
-                        </span>
+                    <div class='row align-items-center ml-2 mr-2 mt-3'>
+                        <div class="col-lg-9">
+                            Show
+                            <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
+                                [(ngModel)]="fundservice.pageSize">
+                                <option [ngValue]="10">10</option>
+                                <option [ngValue]="25">25</option>
+                                <option [ngValue]="50">50</option>
+                                <option [ngValue]="100">100</option>
+                            </select>
+                            Entries
+                        </div>
+                        <div class="col-lg-3">
+                            <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
+                                Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
+                                    [(ngModel)]="fundservice.searchTerm" />
+                                <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
+                            </span>
+                        </div>
                     </div>
 
                     <table id="security-table" class="width-100 trade-datatables ">
@@ -92,8 +96,7 @@
                                         (input)='updatefundquantity(fund)'></td>
                                 <td><input type="text" [(ngModel)]="fund.price" name='quantity_{{i}}'
                                         style="text-align: center; width: 130px" (keypress)="numberOnly($event)"
-                                        (input)='updateprice(fund)'
-                                        (click)="fund.price === 0 ? fund.price = '' : null "
+                                        (input)='updateprice(fund)' (click)="fund.price === 0 ? fund.price = '' : null "
                                         (blur)="fund.price === '' ? fund.price = 0 : null"></td>
                             </tr>
 
