@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, ViewChild, ElementRef } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { NgbModal, ModalDismissReasons, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
@@ -400,13 +400,18 @@ export class FundCreateComponent implements OnInit {
             });
     }
 
-    numberOnly(event): boolean {
+    numberOnly(event, value) {
         const charCode = (event.which) ? event.which : event.keyCode;
-        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        if (value.includes('%')) {
+            return false;
+        } else if ((charCode > 47 && charCode < 58) || charCode === 37) {
+            if (charCode === 37 && Number.parseInt(value) > 100) {
+                return false;
+            }
+            return true;
+        } else {
             return false;
         }
-        return true;
-
     }
 
     searchsecurity($event) {

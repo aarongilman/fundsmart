@@ -92,10 +92,10 @@
                                 <td>{{fund.asset_type}}</td>
                                 <td>{{fund.isin}}</td>
                                 <td><input type="text" [(ngModel)]="fund.quantity" name='quantity_{{i}}'
-                                        style="text-align: center; width: 130px" (keypress)="numberOnly($event)"
+                                        style="text-align: center; width: 130px" (keypress)="numberOnly($event,fund.quantity)"
                                         (input)='updatefundquantity(fund)'></td>
                                 <td><input type="text" [(ngModel)]="fund.price" name='quantity_{{i}}'
-                                        style="text-align: center; width: 130px" (keypress)="numberOnly($event)"
+                                        style="text-align: center; width: 130px" (keypress)="numberOnly($event,fund.price)"
                                         (input)='updateprice(fund)' (click)="fund.price === 0 ? fund.price = '' : null "
                                         (blur)="fund.price === '' ? fund.price = 0 : null"></td>
                             </tr>
