@@ -38,6 +38,7 @@ export class FundRecommendationComponent implements OnInit {
   barheight = 200;
   bartype = 'BarChart';
   baroptions;
+  barcolumnNames = [];
 
   constructor(
     private interconn: IntercomponentCommunicationService,
@@ -105,31 +106,24 @@ export class FundRecommendationComponent implements OnInit {
     });
 
     this.bardata = [
-      ['Galaxy', 'Distance', 'Brightness'],
-      ['Canis Major Dwarf', 8000, 23.3],
-      ['Sagittarius Dwarf', 24000, 4.5],
-      ['Ursa Major II Dwarf', 30000, 14.3],
-      ['Lg. Magellanic Cloud', 50000, 0.9],
-      ['Bootes I', 60000, 13.1]
+      ["Apples", 3, 2, 2.5],
+      ["Oranges", 2, 3, 2.5],
+      ["Pears", 1, 5, 3],
+      ["Bananas", 3, 9, 6],
+      ["Plums", 4, 2, 3]
     ];
+    this.barcolumnNames = ['Fruits', 'Jane', 'Jone', 'Average'];
 
-    var options = {
-      width: 800,
-      chart: {
-        title: 'Nearby galaxies',
-        subtitle: 'distance on the left, brightness on the right'
+    this.baroptions = {
+      hAxis: {
+        title: 'Person'
       },
-      bars: 'horizontal', // Required for Material Bar Charts.
-      series: {
-        0: { axis: 'distance' }, // Bind series 0 to an axis named 'distance'.
-        1: { axis: 'brightness' } // Bind series 1 to an axis named 'brightness'.
+      vAxis: {
+        title: 'Fruits'
       },
-      axes: {
-        x: {
-          distance: { label: 'parsecs' }, // Bottom x-axis.
-          brightness: { side: 'top', label: 'apparent magnitude' } // Top x-axis.
-        }
-      }
+      bars: 'vertical',
+      seriesType: 'bars',
+      series: { 2: { type: 'line' } }
     };
   }
 }
