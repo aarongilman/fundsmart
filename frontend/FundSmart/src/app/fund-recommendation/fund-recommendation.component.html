@@ -45,11 +45,14 @@
                 <div class="block-container  chart-wrapper">
                     <div class="ct-chart analysis-line-chart"></div>
                     <div class="graph-labels">
-                        <ul>
-                            <li><span class="plot-12"></span>BTC</li>
-                            <li><span class="plot-3"></span>ETH</li>
-                            <li><span class="plot-9"></span>ERP</li>
-                        </ul>
+                        <div *ngIf="bardata && bardata?.length > 0">
+                            <google-chart [type]="bartype" [data]="bardata" [columnNames]="barcolumnNames"
+                                [options]="baroptions" [height]="barheight" [width]="barwidth">
+                            </google-chart>
+                        </div>
+                        <div *ngIf="bardata?.length <= 0" style="text-align:center">
+                            Data not found
+                        </div>
                     </div>
                 </div>
             </div>
