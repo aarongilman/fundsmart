@@ -3,7 +3,7 @@
     <!-- Dashboard content -->
     <div class="dashboard-content">
         <div class="row">
-            <div class="col-lg-7 ">
+            <div class="col-lg-7 pr-0">
                 <div class="block-container">
                     <div class="head-global">
                         <h3>Holding <span>Summary</span></h3>
@@ -11,7 +11,7 @@
                     <article class="holding-smmary-wrap">
                         <nav class="fund-tabs">
                             <ul class="d-flex align-items-center justify-content-start">
-                                <li routerLinkActive="active">
+                                <li class="active" routerLinkActive="active" (click)='getFund()'>
                                     <a href="javascript:void(0);" data-tab="holdingType">
                                         <svg viewBox="0 -48 464 464" xmlns="http://www.w3.org/2000/svg">
                                             <path d="m440 103.199219h16v32h-16zm0 0" />
@@ -27,7 +27,7 @@
                                     </a>
                                 </li>
                                 <li routerLinkActive="active">
-                                    <a href="javascript:void(0);" data-tab="assestClass">
+                                    <a href="javascript:void(0);" data-tab="assestClass" (click)="getAssets()">
                                         <svg viewBox="0 0 496 496" xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="m472 160h-8v-96h-384v-64h-40c-22.054688 0-40 17.945312-40 40v304c0 22.054688 17.945312 40 40 40h216v88c0 13.230469 10.769531 24 24 24h192c13.230469 0 24-10.769531 24-24v-288c0-13.230469-10.769531-24-24-24zm-456-120c0-13.230469 10.769531-24 24-24h24v288h-24c-9 0-17.3125 2.992188-24 8.015625zm24 328c-13.230469 0-24-10.769531-24-24s10.769531-24 24-24h40v-240h368v80h-165.519531c-13.433594-37.976562-49.726563-64-90.480469-64-52.9375 0-96 43.0625-96 96s43.0625 96 96 96c23.839844 0 46.558594-8.953125 64-24.550781v104.550781zm216-184h-56v-71.550781c30.152344 3.046875 56.28125 23.070312 66.929688 51.472656-6.570313 4.285156-10.929688 11.671875-10.929688 20.078125zm-72 87.59375c-40.367188-4.027344-72-38.1875-72-79.59375s31.632812-75.566406 72-79.59375zm16-71.59375h56v39.824219c-13.472656 17.992187-33.824219 29.449219-56 31.6875zm280 272c0 4.40625-3.59375 8-8 8h-192c-4.40625 0-8-3.59375-8-8v-288c0-4.40625 3.59375-8 8-8h192c4.40625 0 8 3.59375 8 8zm0 0" />
@@ -82,7 +82,7 @@
                                     </a>
                                 </li>
                                 <li routerLinkActive="active">
-                                    <a href="javascript:void(0);" data-tab="industry">
+                                    <a href="javascript:void(0);" data-tab="industry" (click)='getIndustry()'>
                                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                             viewBox="0 0 30.986 30.986" style="enable-background:new 0 0 30.986 30.986;"
@@ -127,13 +127,13 @@
                                         <h3 style="color: #5ace9f">Holding Type</h3>
                                     </div>
                                     <div class="summary-content">
-                                        <ul>
+                                        <!-- <ul>
                                             <li *ngFor="let item of fund">
                                                 <div class="holding-label">
                                                     <p>{{item.name}}</p>
                                                 </div>
                                             </li>
-                                        </ul>
+                                        </ul> -->
                                         <div class="holding-graph">
                                             <div *ngIf="bardata_fund && bardata_fund?.length > 0">
                                                 <google-chart [type]="bartype_fund" [data]="bardata_fund"
@@ -155,8 +155,7 @@
                                                         </div>
                                                     </div> -->
                                         </div>
-                                        <!-- </li>
-                                        </ul> -->
+
                                     </div>
 
                                 </div>
@@ -168,34 +167,72 @@
                                 </div>
                             </div>
                             <div id="assestClass" class="item" data-title="Tab 2">
+                                <div id="holdingType" class="item active" data-title="Tab 1">
+                                    <div class="summary-tab-content">
+                                        <div class="heading">
+                                            <h3 style="color: #5ace9f">Holding Type</h3>
+                                        </div>
+                                        <div class="summary-content">
+                                            <!-- <ul>
+                                                        <li *ngFor="let item of fund">
+                                                            <div class="holding-label">
+                                                                <p>{{item.name}}</p>
+                                                            </div>
+                                                        </li>
+                                                    </ul> -->
+                                            <div class="holding-graph">
+                                                <div *ngIf="assets_bardata_fund && assets_bardata_fund?.length > 0">
+                                                    <google-chart [type]="assets_bartype_fund"
+                                                        [data]="assets_bardata_fund" [options]="assets_baroptions_fund"
+                                                        [height]="assets_barheight_fund" [width]="assets_barwidth_fund">
+                                                    </google-chart>
+                                                </div>
+                                                <div *ngIf="assets_bardata_fund?.length <= 0" style="text-align:center">
+                                                    Data not found
+                                                </div>
+                                                <!-- <div class="progress">
+                                                                    <div class="progress-bar plot-9" role="progressbar"
+                                                                        [attr.aria-valuenow]="item.value.toFixed(2)"
+                                                                        aria-valuemin="0">
+                                                                    </div>
+                                                                    <div class="progess-value-block">
+                                                                        <span class="progress-value plot-9"></span>
+                                                                        <span class="progress-arrow border-plot-9"></span>
+                                                                    </div>
+                                                                </div> -->
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="d-flex mt-3">
+                                        <div class="total-label" style="width:200px; margin-left: 40px"
+                                            *ngFor="let data of total | keyvalue">
+                                            <p>{{data.value}}</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="summary-tab-content">
                                     <div class="heading">
                                         <h3 style="color: #5ace9f">Assest Class</h3>
                                     </div>
                                     <div class="summary-content">
-                                        <ul>
-                                            <li *ngFor="let item of result">
-                                                <div class="holding-label">
-                                                    <p>{{item.name}}</p>
+                                        <div class="holding-graph">
+                                            <div *ngIf="assets_bardata_fund && assets_bardata_fund?.length > 0">
+                                                <google-chart [type]="assets_bartype_fund" [data]="assets_bardata_fund"
+                                                    [options]="assets_baroptions_fund" [height]="assets_barheight_fund"
+                                                    [width]="assets_barwidth_fund">
+                                                </google-chart>
+                                            </div>
+                                            <div *ngIf="assets_bardata_fund?.length <= 0" style="text-align:center">
+                                                Data not found
+                                            </div>
+                                            <div class="d-flex mt-3">
+                                                <div class="total-label"
+                                                    style="margin-left: 10px; margin-top: 25px;width: 200px"
+                                                    *ngFor="let data of (total1 | keyvalue)">
+                                                    <p>{{data.value}}</p>
                                                 </div>
-                                                <div class="holding-graph">
-                                                    <div class="progress">
-                                                        <div class="progress-bar plot-9" role="progressbar"
-                                                            [attr.aria-valuenow]="item.value" aria-valuemin="0">
-                                                        </div>
-                                                        <div class="progess-value-block">
-                                                            <span class="progress-value plot-9"></span>
-                                                            <span class="progress-arrow border-plot-9"></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                        <div class="d-flex mt-3">
-                                            <div class="total-label"
-                                                style="margin-left: 10px; margin-top: 25px;width: 200px"
-                                                *ngFor="let data of (total1 | keyvalue)">
-                                                <p>{{data.value}}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -233,24 +270,15 @@
                                         <h3 style="color: #5ace9f">Industry</h3>
                                     </div>
                                     <div class="summary-content">
-                                        <ul>
-                                            <li *ngFor="let data of industry">
-                                                <div class="holding-label">
-                                                    <p>{{data.name}}</p>
-                                                </div>
-                                                <div class="holding-graph">
-                                                    <div class="progress">
-                                                        <div class="progress-bar plot-5" role="progressbar"
-                                                            [attr.aria-valuenow]="data.value" aria-valuemin="0"
-                                                            aria-valuemax="100000000000000"></div>
-                                                        <div class="progess-value-block">
-                                                            <span class="progress-value plot-5"></span>
-                                                            <span class="progress-arrow border-plot-5"></span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        </ul>
+                                        <div *ngIf="industry_bardata_fund && industry_bardata_fund?.length > 0">
+                                            <google-chart [type]="industry_bartype_fund" [data]="industry_bardata_fund"
+                                                [columnNames]="columnNames" [options]="industry_baroptions_fund"
+                                                [height]="industry_barheight_fund" [width]="industry_barwidth_fund">
+                                            </google-chart>
+                                        </div>
+                                        <div *ngIf="industry_bardata_fund?.length <= 0" style="text-align:center">
+                                            Data not found
+                                        </div>
                                         <div class="d-flex mt-3">
                                             <div style="margin-top: 30px; margin-left: 10px;width:200px"
                                                 class="total-label" *ngFor="let item of (total3 | keyvalue)">

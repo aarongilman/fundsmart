@@ -1,4 +1,4 @@
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren, ViewChild, ElementRef } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Observable, merge } from 'rxjs';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
@@ -77,6 +77,7 @@ export class HomeComponent implements OnInit {
 
   tableData: any = [];
   @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
+  @ViewChild('fieldValue') fieldValue: ElementRef;
 
   existing: HistoricalData = {
     annualexpense: 0,
@@ -97,6 +98,7 @@ export class HomeComponent implements OnInit {
     fiveyear: 0
   };
 
+  percentageCount = false;
   userFunds = portfoliofundlist;
   files: any = [];
   currentUser: any;
@@ -964,14 +966,21 @@ export class HomeComponent implements OnInit {
     return matches;
   }
 
-  numberOnly(event): boolean {
+  numberOnly(event, value) {
     const charCode = (event.which) ? event.which : event.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57) || charCode == 37) {
+    if (value.includes('%')) {
+      return false;
+    } else if ((charCode > 47 && charCode < 58) || charCode === 37) {
+      if (charCode === 37 && Number.parseInt(value) > 100) {
+        return false;
+      }
+      return true;
+    } else {
       return false;
     }
-    return true;
-
   }
+
+
 
   addportfolioFund(string1, item, i) {
     // alert(item.security);

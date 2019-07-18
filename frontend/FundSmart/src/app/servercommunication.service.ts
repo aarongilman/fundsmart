@@ -8,9 +8,9 @@ import { holdindDetail } from './holding-details/holdingDetail';
   providedIn: 'root'
 })
 export class ServercommunicationService {
-  // api_link = 'http://3.16.111.80/';
+  api_link = 'http://3.16.111.80/';
   // api_link = 'http://localhost:8000/';
-  api_link = 'http://192.168.100.111:8000/';
+  // api_link = 'http://192.168.100.111:8000/';
   // api_link = 'http://127.0.0.1:8000/';
 
 
@@ -375,11 +375,6 @@ export class ServercommunicationService {
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
-  hanny_api() {
-    return this.http.get(this.api_link + 'api/holding_detail/',
-      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-
-  }
 
 
   storedata(data) {

@@ -40,7 +40,15 @@ export class FundComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         private confirmationService: ConfirmationService,
         private router: Router
-    ) { }
+    ) {
+
+        this.interconn.logoutcomponentMethodCalled$.subscribe(
+            () => {
+                this.router.navigate(['/home']);
+            }
+        );
+
+     }
 
     ngOnInit() {
         this.interconn.titleSettermethod("Funds");
@@ -134,7 +142,7 @@ export class FundComponent implements OnInit {
     }
 
     onContextMenuAction2() {
-        this.router.navigate(['/holding_details']);
+        this.router.navigate(['/holding_details'], { queryParams: { id: this.SelectedIDs } });
     }
 
     onContextMenuAction3() {
