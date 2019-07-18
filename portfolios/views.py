@@ -2,6 +2,7 @@
 import xlrd
 import logging
 import itertools
+import collections
 from datetime import date
 
 from django.db.models import F
@@ -754,6 +755,7 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
                 existing_fund_ids = existing_funds.values_list('security__id_value',
                                                                flat=True)
                 fund_details = FundDetail.objects.all()
+                fx_rate = FXRate.objects.all()
                 recommended_funds = fund_details[:4]
                 recommended_fund_ids = recommended_funds.values_list('fund_id',
                                                                      flat=True)
@@ -762,23 +764,23 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
                                  list(recommended_fund_ids))
                 existing_funds_market_values = []
                 for fund in existing_funds:
+                    fund_detail = fund_details.filter(fund_id=fund.security.id_value)
+                    fx_rate_obj = fx_rate.filter(date=date.today(),
+                                                 currency=fund.security.currency)
                     try:
                         price_obj = price_objects.filter(
                             id_value=fund.security.id_value).latest('date')
                         price_value = price_obj.price
                     except Exception as e:
                         price_value = None
-                    if '%' in fund.quantity:
-                        quantity = (float(fund.quantity.replace("%", "")) / 100) * \
-                                   1000000
-                    else:
-                        quantity = fund.quantity
-                    if price_value:
+                    if price_value and fund_detail and fx_rate_obj:
+                        if '%' in str(fund.quantity):
+                            quantity = get_quantity(fund.quantity, fund.security,
+                                                    fund_detail[0].aum,
+                                                    fx_rate_obj[0].rate, price_value)
+                        else:
+                            quantity = float(fund.quantity)
                         market_value = float(quantity) * float(price_value)
-                        if fund.security.asset_type == 'Mutual Fund':
-                            aum = fund_details.get(fund_id=fund.security.id_value).aum
-                            quantity = float(market_value) / float(aum) * 1000000
-                            market_value = float(quantity) * float(price_value)
                     else:
                         market_value = None
                     existing_funds_market_values.append(market_value)
@@ -817,24 +819,24 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
                 recommended_avg_5_year = sum(recommended_5_year) / len(recommended_5_year)
                 data.append(
                     {"existing":
-                         {'annual_expense': portfolio_annual_expense,
-                          '1-year': portfolio_avg_1_year,
-                          '3-year': portfolio_avg_3_year,
-                          '5-year': portfolio_avg_5_year},
+                         {'annual_expense': round(portfolio_annual_expense, 2),
+                          '1-year': round(portfolio_avg_1_year, 2),
+                          '3-year': round(portfolio_avg_3_year, 2),
+                          '5-year': round(portfolio_avg_5_year, 2)},
                      "recommended":
-                         {'annual_expense': recommended_avg_annual_exp,
-                          '1-year': recommended_avg_1_year,
-                          '3-year': recommended_avg_3_year,
-                          '5-year': recommended_avg_5_year},
+                         {'annual_expense': round(recommended_avg_annual_exp, 2),
+                          '1-year': round(recommended_avg_1_year, 2),
+                          '3-year': round(recommended_avg_3_year, 2),
+                          '5-year': round(recommended_avg_5_year, 2)},
                      "difference":
-                         {'annual_expense': portfolio_annual_expense -
-                                            recommended_avg_annual_exp,
+                         {'annual_expense': round(portfolio_annual_expense -
+                                                  recommended_avg_annual_exp, 2),
                           '1-year':
-                              portfolio_avg_1_year - recommended_avg_1_year,
+                              round(portfolio_avg_1_year - recommended_avg_1_year, 2),
                           '3-year':
-                              portfolio_avg_3_year - recommended_avg_3_year,
+                              round(portfolio_avg_3_year - recommended_avg_3_year, 2),
                           '5-year':
-                              portfolio_avg_5_year - recommended_avg_5_year
+                              round(portfolio_avg_5_year - recommended_avg_5_year, 2)
                          }
                     })
         return Response(data, status=200)
@@ -848,14 +850,12 @@ class BarPlotFundRecommendation(APIView):
             portfolio_ids = request.GET.get('portfolio_ids').split(',')
             existing_funds = PortfolioFund.objects.filter(
                 portfolio__in=portfolio_ids, security__asset_type='Mutual Fund',
-                created_by=request.user)
-            existing_fund_ids = list(existing_funds.values_list('security__id_value',
-                                                           flat=True))
-
+                created_by=request.user).values_list('security__id_value',
+                                                     flat=True)
             recommended_fund_ids = list(FundDetail.objects.values_list('fund_id',
                                                                   flat=True)[:4])
             fund_inclued = FundHolding.objects.values_list('id_value', flat=True)\
-                .filter(fund_id__in=existing_fund_ids)
+                .filter(fund_id__in=existing_funds)
             existing_quantity = Security.objects.values_list('asset_type').\
                 filter(id_value__in=fund_inclued).annotate(
                 count=Count('asset_type'))
@@ -876,26 +876,27 @@ def get_market_values(request, funds):
     """function to get market values"""
     market_values = []
     fund_details = FundDetail.objects.all()
+    fx_rate = FXRate.objects.all()
     price = Price.objects.all()
     for fund in funds:
+        fund_detail = fund_details.filter(fund_id=fund.security.id_value)
+        fx_rate_obj = fx_rate.filter(date=date.today(),
+                                     currency=fund.security.currency)
         try:
             price_obj = price.filter(
                 id_value=fund.security.id_value).latest('date')
             price_value = price_obj.price
         except Exception as e:
-            price_value = 0
-        if '%' in fund.quantity:
-            quantity = (float(fund.quantity.replace("%", "")) / 100) * \
-                       1000000
-        else:
-            quantity = fund.quantity
+            price_value = None
         if price_value:
+            if '%' in str(fund.quantity):
+                quantity = get_quantity(fund.quantity, fund.security,
+                                        fund_detail[0].aum,
+                                        fx_rate_obj[0].rate, price_value)
+            else:
+                quantity = float(fund.quantity)
             market_value = float(quantity) * float(price_value)
-            if fund.security.asset_type == 'Mutual Fund':
-                aum = fund_details.get(fund_id=fund.security.id_value).aum
-                quantity = float(market_value) / float(aum) * 1000000
-                market_value = float(quantity) * float(price_value)
-            market_values.append(market_value)
+            market_values.append({fund.security.id_value: market_value})
     return market_values
 
 
@@ -912,14 +913,115 @@ class LineGraphFundRecommendation(APIView):
                                              security__asset_type='Mutual Fund',
                                              created_by=request.user)
             fund_details = FundDetail.objects.all()
+            fx_rate = FXRate.objects.all()
             price = Price.objects.all()
+            prices = price.filter(id_value__in=funds.
+                                  values_list('security__id_value', flat=True))
+            if prices:
+                date_list = prices.values_list('id_value').annotate(
+                    count=Min('date')) \
+                    .distinct()
+                common_date = max([x[1] for x in date_list])
+            # get market value and % movement of existing funds
+            for fund in funds:
+                price_obj = prices.filter(id_value=fund.security.id_value,
+                                          date__gte=common_date,
+                                          date__lte=date.today()) \
+                    .order_by('date').distinct()
+                fund_detail = fund_details.filter(
+                    fund_id=fund.security.id_value)
+                mkt_value_dict = {}
+                for price in price_obj:
+                    if '%' in str(fund.quantity):
+                        fx_rate_obj = fx_rate.filter(date=date.today(),
+                                                     currency=fund.security.currency)
+                        quantity = get_quantity(fund.quantity, fund.security,
+                                                fund_detail[0].aum,
+                                                fx_rate_obj[0].rate,
+                                                price.price)
+                    else:
+                        quantity = float(fund.quantity)
+                    mkt_value_dict.update({str(price.date): float(quantity) * float(price.price)})
+                existing_fund_mkt_value.append({fund.id: mkt_value_dict})
+            per_movement_list = []
+            for item in existing_fund_mkt_value:
+                temp_dict = {}
+                value_dict = list(item.values())[0]
+                for i in range(0, len(value_dict)):
+                    key = list(value_dict.keys())[i]
+                    if i >= 1:
+                        value_list = list(value_dict.values())
+                        value = (value_list[i]-value_list[i-1])/value_list[i-1]
+                        temp_dict.update({key: value})
+                    else:
+                        temp_dict.update({key: 0})
+                per_movement_list.append({list(item.keys())[0]: temp_dict})
 
-            existing_fund_mkt_value = get_market_values(request, funds)
-            recommended_funds = list(fund_details[:4].values_list('fund_id',
-                                                                  flat=True))
-            recommended_mkt_value = FundHolding.objects.values_list\
-                ('market_value', flat=True).filter(fund_id__in=recommended_funds)
-            print(sum(existing_fund_mkt_value), sum(recommended_mkt_value))
+            final_dict = {}
+            for item in per_movement_list:
+                value_dict = list(item.values())[0]
+                temp_value = 100
+                for i in range(0, len(value_dict)):
+                    key = list(value_dict.keys())[i]
+                    if i >= 1:
+                        value_list = list(value_dict.values())
+                        temp_value = temp_value*(1 + value_list[i])
+                    if final_dict.get(key):
+                        final_dict[key].append(temp_value)
+                    else:
+                        final_dict.update({key: [temp_value]})
+            final_dict = collections.OrderedDict(sorted(final_dict.items()))
+            for k, v in final_dict.items():
+                final_dict[k] = round(sum(v) / len(v), 2)
+            data.append(
+                {'portfolio': "Existing", 'label': final_dict.keys(),
+                 'series': final_dict.values()})
+            # market value of recommended funds
+            recommended_funds = fund_details.filter(for_recommendation=True)[:4]
+            total_market_value = {}
+            for dict_item in existing_fund_mkt_value:
+                value_dict = list(dict_item.values())[0]
+                for key,value in value_dict.items():
+                    if total_market_value.get(key):
+                        total_market_value[key].append(value)
+                    else:
+                        total_market_value.update({key: [value]})
+            for k, v in total_market_value.items():
+                total_market_value[k] = round(sum(v), 4)
+            recommended_fund_mkt_value = {}
+            for fund in recommended_funds:
+                price_obj = prices.filter(id_value=fund.fund_id,
+                                          date__gte=common_date,
+                                          date__lte=date.today()) \
+                    .order_by('date').distinct()
+                for price in price_obj:
+                    ext_mkt_value = total_market_value.get(str(price.date))
+                    if ext_mkt_value:
+                        quantity = (ext_mkt_value/4)/float(price.price)
+                        if recommended_fund_mkt_value.get(key):
+                            recommended_fund_mkt_value[key].append(float(quantity) *
+                                                   float(price.price))
+                        else:
+                            recommended_fund_mkt_value.update(
+                                {str(price.date): [float(quantity) *
+                                                   float(price.price)]})
+            for k, v in recommended_fund_mkt_value.items():
+                recommended_fund_mkt_value[k] = round(sum(v)/len(v), 2)
+            data.append(
+                {'portfolio': "Recommended",
+                 'label': recommended_fund_mkt_value.keys(),
+                 'series': recommended_fund_mkt_value.values()})
+            # benchmark fund's price
+            benchmark_price = Price.objects.\
+                filter(id_value='ISIN_US78390M1053', date__gte=common_date,
+                       date__lte=date.today()).values_list('date')\
+                .annotate(price=F('price')).order_by('date').distinct()
+            di = dict(list(benchmark_price))
+            for k, v in di.items():
+                di[k] = round(v, 2)
+            data.append(
+                {'portfolio': "Benchmark", 'label': di.keys(),
+                 'series': di.values()})
         return Response(data, status=200)
 
 
