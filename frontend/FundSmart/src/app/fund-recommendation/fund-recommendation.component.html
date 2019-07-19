@@ -1,9 +1,8 @@
 <div class="right-panel-wrap no-padding-right">
-    <!-- Fund content -->
     <div class="dashboard-content">
         <div class="row">
-            <!-- <div class="col-lg-3"></div> -->
-            <div class="col-md-5">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-6">
                 <div class="block-container ">
                     <div class="hpd-table">
                         <div class="heading">
@@ -40,25 +39,37 @@
                     </div>
                 </div>
             </div>
-            <!-- <div class="col-lg-3"></div> -->
-            <div class="col-md-3">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-6 col-md-12">
                 <div class="block-container  chart-wrapper">
-                    <div class="ct-chart analysis-line-chart"></div>
-                    <div class="graph-labels">
-                        <div *ngIf="bardata && bardata?.length > 0">
-                            <google-chart [type]="bartype" [data]="bardata" [columnNames]="barcolumnNames"
-                                [options]="baroptions" [height]="barheight" [width]="barwidth">
-                            </google-chart>
-                        </div>
-                        <div *ngIf="bardata?.length <= 0" style="text-align:center">
-                            Data not found
-                        </div>
+                    <div *ngIf="linedata && linedata?.length > 0">
+                        <google-chart [type]="linetype" [data]="linedata" [columnNames]="linecolumnNames"
+                            [options]="lineoptions" [height]="lineheight" [width]="linewidth">
+                        </google-chart>
                     </div>
+                    <div *ngIf="linedata?.length <= 0" style="text-align:center">
+                        Data not found
+                    </div>
+                    <!-- <div class="ct-chart analysis-line-chart"></div>
+                    <div class="graph-labels">
+                        <ul>
+                            <li><span class="plot-12"></span>BTC</li>
+                            <li><span class="plot-3"></span>ETH</li>
+                            <li><span class="plot-9"></span>ERP</li>
+                        </ul>
+                    </div> -->
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-lg-6 col-md-12">
                 <div class="block-container chart-wrapper ">
-                    <div class="ct-chart bar-chart"></div>
+                    <div *ngIf="bardata && bardata?.length > 0">
+                        <google-chart [type]="bartype" [data]="bardata" [columnNames]="barcolumnNames"
+                            [options]="baroptions" [height]="barheight" [width]="barwidth">
+                        </google-chart>
+                    </div>
+                    <div *ngIf="bardata?.length <= 0" style="text-align:center">
+                        Data not found
+                    </div>
                 </div>
             </div>
             <div class="col-lg-12">
@@ -187,5 +198,4 @@
             </div>
         </div>
     </div>
-    <!-- Fund content -->
 </div>

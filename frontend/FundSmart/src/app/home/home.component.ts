@@ -521,6 +521,7 @@ export class HomeComponent implements OnInit {
         this.donutoptions = {
           pieHole: 0.8,
           pieSliceText: 'none',
+          colors : ['#008080',],
         };
       });
 

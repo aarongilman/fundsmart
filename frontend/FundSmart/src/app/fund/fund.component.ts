@@ -48,7 +48,7 @@ export class FundComponent implements OnInit {
             }
         );
 
-     }
+    }
 
     ngOnInit() {
         this.interconn.titleSettermethod("Funds");
@@ -150,7 +150,7 @@ export class FundComponent implements OnInit {
     }
 
     onContextMenuAction4() {
-        this.router.navigate(['/allocation_recommendation']);
+        this.router.navigate(['/allocation_recommendation'], { queryParams: { id: this.SelectedIDs } });
     }
 
 }

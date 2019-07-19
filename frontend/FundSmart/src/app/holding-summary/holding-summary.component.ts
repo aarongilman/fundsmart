@@ -89,7 +89,7 @@ export class HoldingSummaryComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
         private activatedRoute: ActivatedRoute,
-        private route:Router
+        private route: Router
     ) {
         this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
             this.id = queryParams.params.id;
@@ -155,6 +155,8 @@ export class HoldingSummaryComponent implements OnInit {
             // console.log(resultData);
 
             resultData.forEach(result => {
+                console.log("result", result);
+
                 const names = Object.keys(result);
                 const ResultObj = {
                     name: names[0],
@@ -167,7 +169,7 @@ export class HoldingSummaryComponent implements OnInit {
                 } else {
                     this.total1 = ResultObj;
                 }
-                console.log(this.assets_bardata_fund);
+                // console.log(this.assets_bardata_fund);
             });
         });
     }

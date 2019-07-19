@@ -67,7 +67,7 @@ export class HoldingDetailsComponent implements OnInit {
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
     private route: ActivatedRoute,
-    private router:Router,
+    private router: Router,
     private interconn: IntercomponentCommunicationService) {
 
     // this.sortlist.hlist$.subscribe(f => {
@@ -244,10 +244,6 @@ export class HoldingDetailsComponent implements OnInit {
       return;
     }
     let portfolioid = this.portfoliolist.find(p => p.name === this.fundForm.controls['selectedPortfolio'].value).id;
-
-    // console.log(this.fundForm.controls['quantity'].value,
-    //   portfolioid,
-    //   this.selectboxsecurityid, this.userservice.currentuser.id);
 
     this.userservice.add_portfolio_fund(this.fundForm.controls['quantity'].value,
       portfolioid,

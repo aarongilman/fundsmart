@@ -161,7 +161,7 @@ export class FundCreateComponent implements OnInit {
         private userservice: ServercommunicationService,
         private interconn: IntercomponentCommunicationService,
         public fundservice: FundcreatesortService,
-        public route:Router,
+        public route: Router,
         private calendar: NgbCalendar,
     ) {
         // this.excelIO = new Excel.IO();
@@ -404,14 +404,10 @@ export class FundCreateComponent implements OnInit {
             });
     }
 
-    numberOnly(event, value) {
+    numberOnly(event) {
         const charCode = (event.which) ? event.which : event.keyCode;
-        if (value.includes('%')) {
-            return false;
-        } else if ((charCode > 47 && charCode < 58) || charCode === 37) {
-            if (charCode === 37 && Number.parseInt(value) > 100) {
-                return false;
-            }
+        if (charCode > 47 && charCode < 58) {
+
             return true;
         } else {
             return false;

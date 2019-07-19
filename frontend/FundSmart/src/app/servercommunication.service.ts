@@ -8,9 +8,9 @@ import { holdindDetail } from './holding-details/holdingDetail';
   providedIn: 'root'
 })
 export class ServercommunicationService {
-  api_link = 'http://3.16.111.80/';
+  // api_link = 'http://3.16.111.80/';
   // api_link = 'http://localhost:8000/';
-  // api_link = 'http://192.168.100.111:8000/';
+  api_link = 'http://192.168.100.111:8000/';
   // api_link = 'http://127.0.0.1:8000/';
 
 
@@ -497,6 +497,12 @@ export class ServercommunicationService {
     return this.http.get(url,
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
+
+  fundRecommendationLineChart(ids) {
+    return this.http.get(this.api_link + 'api/line_graph_fund_recommendation/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
   // production api ----->3.16.111.80
 
   // 3.16.111.80 server

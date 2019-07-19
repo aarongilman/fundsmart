@@ -78,8 +78,8 @@
                     <div class="head-global head-full">
                         <h3>Current<span>Allocation</span></h3>
                     </div>
-                    <div class="graph-labels label-left">
-                        <ul>
+                     <div class="graph-labels label-left">
+                        <!-- <ul>
                             <li><span class="plot-5"></span>Short Term Treasury Bonds : 5%</li>
                             <li><span class="plot-6"></span>Tips : 6%</li>
                             <li><span class="plot-7"></span>U.S. Investment Grade Bonds : 24%</li>
@@ -87,9 +87,18 @@
                             <li><span class="plot-9"></span>Emerginy Mkt Equities: 13%</li>
                             <li><span class="plot-10"></span>Internationals Equities : 14%</li>
                             <li><span class="plot-11"></span>U.S. Equities : 35%</li>
-                        </ul>
+                        </ul> -->
+                    </div> 
+                    <div *ngIf="currentAllocationData && currentAllocationData?.length > 0">
+                        <google-chart #chart [title]="currentAllocationTitle" [type]="currentAllocationType"
+                            [data]="currentAllocationData" [columnNames]="columnNames"
+                            [options]="currentAllocationOption" [width]="currentAllocationWidth"
+                            [height]="currentAllocationHeight">
+                        </google-chart>
                     </div>
-                    <div class="ct-chart do-nut-chart-allocation"></div>
+                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center">
+                        Data not found
+                    </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-12">
@@ -98,7 +107,7 @@
                     <div class="head-global head-full">
                         <h3>Recommended <span>Allocation</span></h3>
                     </div>
-                    <div class="graph-labels label-left">
+                    <!-- <div class="graph-labels label-left">
                         <ul>
                             <li><span class="plot-5"></span>Short Term Treasury Bonds : 5%</li>
                             <li><span class="plot-6"></span>Tips : 6%</li>
@@ -108,8 +117,19 @@
                             <li><span class="plot-10"></span>Internationals Equities : 14%</li>
                             <li><span class="plot-11"></span>U.S. Equities : 35%</li>
                         </ul>
+                    </div> -->
+                    <!-- <div class="ct-chart do-nut-chart-standard-allocation"></div> -->
+                    <div *ngIf="currentAllocationData && currentAllocationData?.length > 0"
+                        class="ct-chart do-nut-chart-allocation">
+                        <google-chart #chart [title]="currentAllocationTitle" [type]="currentAllocationType"
+                            [data]="currentAllocationData" [columnNames]="columnNames"
+                            [options]="currentAllocationOption" [width]="currentAllocationWidth"
+                            [height]="currentAllocationHeight">
+                        </google-chart>
                     </div>
-                    <div class="ct-chart do-nut-chart-standard-allocation"></div>
+                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center">
+                        Data not found
+                    </div>
                 </div>
             </div>
             <div class="col-lg-12">
