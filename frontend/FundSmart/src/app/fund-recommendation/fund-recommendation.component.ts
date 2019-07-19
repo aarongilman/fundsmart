@@ -26,11 +26,10 @@ export class FundRecommendationComponent implements OnInit {
   linedata = [];
   linetype = 'LineChart';
   linetitle = 'Portfolio value over time';
-  linewidth = '450px';
-  lineheight = '500px';
+  linewidth = 700;
+  lineheight = 500;
   linecolumnNames = [];
   lineoptions;
-
 
   bartitle = 'Bar Chart';
   bardata = [];
@@ -46,6 +45,7 @@ export class FundRecommendationComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
+      console.log("Id", queryParams.params.id);
       this.id = queryParams.params.id;
     });
   }
@@ -56,6 +56,7 @@ export class FundRecommendationComponent implements OnInit {
     this.getPortfolioPerformance();
     this.getRecommendedPerformance();
     this.getPlotFundRecommendation();
+    this.getLinePlotChart();
   }
 
   //get portfolio data
@@ -125,5 +126,50 @@ export class FundRecommendationComponent implements OnInit {
       seriesType: 'bars',
       series: { 2: { type: 'line' } }
     };
+  }
+
+  getLinePlotChart() {
+    this.service.fundRecommendationLineChart(this.id).subscribe(
+      (jsondata: any) => {
+        this.linedata = [];
+        this.linecolumnNames = ['label'];
+        const tempArray = [];
+        const mainObj = {};
+        for (let i = 0; i < jsondata.length; i++) {
+          const element = jsondata[i];
+          if (this.linedata !== null) {
+            this.linecolumnNames.push(element.portfolio);
+          }
+          for (let k = 0; k < element['label'].length; k++) {
+            const label = element['label'][k];
+            if (tempArray.filter(x => x === label).length === 0) {
+              tempArray.push(label);
+            }
+            if (mainObj[label] || mainObj[label] === 0) {
+              mainObj[label] = mainObj[label] + ',' + ((element.series[k]) ? element.series[k] : 0);
+            } else {
+              mainObj[label] = (element.series[k]) ? element.series[k] : 0;
+            }
+          }
+          console.log(mainObj);
+        }
+        for (let i = 0; i < tempArray.length; i++) {
+          const element = tempArray[i];
+          const values = (mainObj[element].toString().split(',')).filter(Boolean);
+          const valuesCollection = [];
+          valuesCollection.push(element);
+          for (const iterator of values) {
+            valuesCollection.push(parseFloat(iterator));
+          }
+          this.linedata.push(valuesCollection);
+        }
+        console.log("Line data", this.linedata, this.linecolumnNames);
+
+        this.lineoptions = {
+          pointSize: 5,
+          curveType: 'function',
+
+        };
+      });
   }
 }

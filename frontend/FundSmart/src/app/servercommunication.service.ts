@@ -502,6 +502,11 @@ export class ServercommunicationService {
     return this.http.get(url,
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
+
+  fundRecommendationLineChart(ids) {
+    return this.http.get(this.api_link + 'api/line_graph_fund_recommendation/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
   // production api ----->3.16.111.80
 
   // 3.16.111.80 server

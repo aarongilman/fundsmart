@@ -76,8 +76,6 @@ export class HomeComponent implements OnInit {
 
     tableData: any = [];
     @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
-    @ViewChild('fieldValue') fieldValue: ElementRef;
-
 
     existing: HistoricalData = {
         annualexpense: 0,
@@ -562,6 +560,8 @@ export class HomeComponent implements OnInit {
                             // valuesCollection[0] = i;
                         }
                         this.linedata.push(valuesCollection);
+                        console.log("Line dara",this.linedata);
+                        
                     }
                 }
 

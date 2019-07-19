@@ -134,7 +134,7 @@ export class FundComponent implements OnInit {
     }
 
     onContextMenuAction2() {
-        this.router.navigate(['/holding_details']);
+        this.router.navigate(['/holding_details'], { queryParams: { id: this.SelectedIDs } });
     }
 
     onContextMenuAction3() {

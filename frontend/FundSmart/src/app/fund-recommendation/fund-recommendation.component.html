@@ -42,8 +42,8 @@
             </div>
             <!-- <div class="col-lg-3"></div> -->
             <div class="col-md-3">
-                <div class="block-container  chart-wrapper">
-                    <div class="ct-chart analysis-line-chart"></div>
+                <div class="chart-wrapper">
+                    <div class="ct-chart bar-chart"></div>
                     <div class="graph-labels">
                         <div *ngIf="bardata && bardata?.length > 0">
                             <google-chart [type]="bartype" [data]="bardata" [columnNames]="barcolumnNames"
@@ -56,9 +56,20 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="block-container chart-wrapper ">
-                    <div class="ct-chart bar-chart"></div>
+
+            <div class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+                <div class="curve_chart">
+                    <div class="hpd-table heading">
+                        <h3>Line Chart</h3>
+                    </div>
+                    <div *ngIf="linedata?.length > 0">
+                        <google-chart [title]="linetitle" [type]="linetype" [data]="linedata" [options]="lineoptions"
+                            [width]="linewidth" [height]="lineheight" [columnNames]="linecolumnNames">
+                        </google-chart>
+                    </div>
+                    <div *ngIf="linedata?.length <= 0" style="text-align:center">
+                        Data not found
+                    </div>
                 </div>
             </div>
             <div class="col-lg-12">
