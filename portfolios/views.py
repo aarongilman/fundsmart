@@ -1208,5 +1208,74 @@ class CurrentAllocationAPI(APIView):
                             country, asset_type): market_value})
             return Response([return_dict], status=200)
         except Exception as e:
-            LOGGER.error("Error {} occurred:dashboard doughnut chart".format(e))
+            LOGGER.error("Error {} occurred: allocation recommendation".format(e))
             return Response(data, status=200)
+
+
+class AllocationHistoricalPerformance(APIView):
+    """APIView to get Historical performance allocation recommendation page"""
+    def get(self, request):
+        data = []
+        fund_details = FundDetail.objects.all()
+        fx_rate = FXRate.objects.all()
+        prices = Price.objects.all()
+        try:
+            portfolio_ids = []
+            if request.GET.get('portfolio_ids'):
+                portfolio_ids = request.GET.get('portfolio_ids').split(',')
+            funds = PortfolioFund.objects.filter(portfolio__in=portfolio_ids,
+                                                 created_by=request.user)
+            existing_mkt_values = []
+            temp_list = []
+            for fund in funds:
+                fund_detail = fund_details.filter(fund_id=fund.security.id_value)
+
+                fx_rate_obj = fx_rate.filter(date=date.today(),
+                                             currency=fund.security.currency)
+                price_obj = prices.filter(id_value=fund.security.id_value,
+                                          date=date.today())
+                if price_obj and fx_rate_obj and fund_detail:
+                    price = float(price_obj[0].price)
+                    if '%' in str(fund.quantity):
+                        quantity = get_quantity(fund.quantity, fund.security,
+                                                fund_detail[0].aum,
+                                                fx_rate_obj[0].rate, price)
+                    else:
+                        quantity = float(fund.quantity)
+                    existing_mkt_values.append(quantity * price)
+                    temp_list.append({'market_value': quantity * price,
+                                      '1-year': fund_detail[0].return_1_year,
+                                      '3-year': fund_detail[0].return_3_year,
+                                      '5-year': fund_detail[0].return_5_year})
+            existing_return_1_year = 0
+            existing_return_3_year = 0
+            existing_return_5_year = 0
+            for item in temp_list:
+                if item.get('market_value'):
+                    return_1_year = (item.get('market_value') /
+                                     sum(filter(None, existing_mkt_values))
+                                     )*float(item.get('1-year'))
+                    existing_return_1_year = existing_return_1_year + return_1_year
+                    return_3_year = (item.get('market_value') /
+                                     sum(filter(None, existing_mkt_values))
+                                     )*float(item.get('3-year'))
+                    existing_return_3_year = existing_return_3_year + return_3_year
+                    return_5_year = (item.get('market_value') /
+                                     sum(filter(None, existing_mkt_values))
+                                     )*float(item.get('5-year'))
+                    existing_return_5_year = existing_return_5_year + return_5_year
+            data.append({"Current Allocation":
+                             {'1-year': existing_return_1_year,
+                              '3-year': existing_return_3_year,
+                              '5-year': existing_return_5_year},
+                         "Recommended Allocation": {'1-year': 0.0001,
+                                                    '3-year': 0.0001,
+                                                    '5-year': 0.0001},
+                         "Difference": {
+                             '1-year': existing_return_1_year - 0.0001,
+                             '3-year': existing_return_3_year - 0.0001,
+                             '5-year': existing_return_5_year - 0.0001}})
+        except Exception as e:
+            LOGGER.error("Error {} occurred: allocation recommendation\
+                         performance".format(e))
+        return Response(data, status=200)

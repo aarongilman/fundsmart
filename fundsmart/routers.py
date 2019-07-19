@@ -10,7 +10,7 @@ from portfolios.views import HistoricalPerformanceDifference,\
     FundRecommendationHistoricalPerformanceDiff, HoldingSummaryLineGraph,\
     BarPlotFundRecommendation, LineGraphFundRecommendation, PortfolioFundData,\
     PortfolioPerformanceAPI, RecommendedPerformanceAPI, PortfolioFundPriceAPI,\
-    CurrentAllocationAPI
+    CurrentAllocationAPI, AllocationHistoricalPerformance
 
 from portfolios.viewsets import PortfolioViewSet, PortfolioFundViewSet,\
     SecurityViewSet
@@ -53,5 +53,7 @@ urlpatterns += [
     re_path(r'^recommended_performance/$', RecommendedPerformanceAPI.as_view()),
     re_path(r'^portfolio_fund_data/$', PortfolioFundData.as_view()),
     re_path(r'^portfolio_fund_price/$', PortfolioFundPriceAPI.as_view()),
-    re_path(r'^current_allocation/$', CurrentAllocationAPI.as_view())
+    re_path(r'^current_allocation/$', CurrentAllocationAPI.as_view()),
+    re_path(r'^allocation_historical_performance/$',
+            AllocationHistoricalPerformance.as_view()),
 ]
