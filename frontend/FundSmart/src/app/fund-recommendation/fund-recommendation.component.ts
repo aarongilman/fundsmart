@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
-import { HistoricalData } from '../historicaldata';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 
 @Component({
-  selector: 'app-fund-recommendation',
-  templateUrl: './fund-recommendation.component.html',
-  styleUrls: ['./fund-recommendation.component.css']
+    selector: 'app-fund-recommendation',
+    templateUrl: './fund-recommendation.component.html',
+    styleUrls: ['./fund-recommendation.component.css']
 })
 export class FundRecommendationComponent implements OnInit {
 
