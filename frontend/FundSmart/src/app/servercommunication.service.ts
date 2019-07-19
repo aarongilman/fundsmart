@@ -370,6 +370,11 @@ export class ServercommunicationService {
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
+  allocationRecommendationHistorical(ids) {
+    return this.http.get(this.api_link + 'api/allocation_historical_performance/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
   holding_summary_lineGraph(ids) {
     return this.http.get(this.api_link + 'api/line_graph_holding_summary/?portfolio_ids=' + ids,
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });

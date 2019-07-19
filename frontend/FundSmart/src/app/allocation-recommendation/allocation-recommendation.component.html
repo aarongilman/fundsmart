@@ -79,15 +79,6 @@
                         <h3>Current<span>Allocation</span></h3>
                     </div>
                      <div class="graph-labels label-left">
-                        <!-- <ul>
-                            <li><span class="plot-5"></span>Short Term Treasury Bonds : 5%</li>
-                            <li><span class="plot-6"></span>Tips : 6%</li>
-                            <li><span class="plot-7"></span>U.S. Investment Grade Bonds : 24%</li>
-                            <li><span class="plot-8"></span>Emerginy Mkt Bonds : 3%</li>
-                            <li><span class="plot-9"></span>Emerginy Mkt Equities: 13%</li>
-                            <li><span class="plot-10"></span>Internationals Equities : 14%</li>
-                            <li><span class="plot-11"></span>U.S. Equities : 35%</li>
-                        </ul> -->
                     </div> 
                     <div *ngIf="currentAllocationData && currentAllocationData?.length > 0">
                         <google-chart #chart [title]="currentAllocationTitle" [type]="currentAllocationType"
@@ -107,18 +98,6 @@
                     <div class="head-global head-full">
                         <h3>Recommended <span>Allocation</span></h3>
                     </div>
-                    <!-- <div class="graph-labels label-left">
-                        <ul>
-                            <li><span class="plot-5"></span>Short Term Treasury Bonds : 5%</li>
-                            <li><span class="plot-6"></span>Tips : 6%</li>
-                            <li><span class="plot-7"></span>U.S. Investment Grade Bonds : 24%</li>
-                            <li><span class="plot-8"></span>Emerginy Mkt Bonds : 3%</li>
-                            <li><span class="plot-9"></span>Emerginy Mkt Equities: 13%</li>
-                            <li><span class="plot-10"></span>Internationals Equities : 14%</li>
-                            <li><span class="plot-11"></span>U.S. Equities : 35%</li>
-                        </ul>
-                    </div> -->
-                    <!-- <div class="ct-chart do-nut-chart-standard-allocation"></div> -->
                     <div *ngIf="currentAllocationData && currentAllocationData?.length > 0"
                         class="ct-chart do-nut-chart-allocation">
                         <google-chart #chart [title]="currentAllocationTitle" [type]="currentAllocationType"
@@ -134,7 +113,7 @@
             </div>
             <div class="col-lg-12">
                 <form action="post">
-                    <button type="button"
+                    <button type="button" (click)="routeTo()" routerLink="/allocation_fund_analysis"
                         class="details-btn trade-btn green-btn d-flex align-items-center justify-content-center investment-btn">
                         <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <path
