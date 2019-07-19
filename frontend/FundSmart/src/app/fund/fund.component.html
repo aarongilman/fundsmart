@@ -9,13 +9,14 @@
                     </div>
                     <div class='row align-items-center ml-2 mr-2' style="float:right; margin-bottom: 75px;">
                         Items
-                        <select class="dropdown" style="width: 40px;margin: 0 10px">
+                        <!-- <span class='form-group'> -->
+                        <select class="form-control" style="width: 60px;margin: 0 10px">
                             <option [ngValue]="10">10</option>
                             <option [ngValue]="25">25</option>
                             <option [ngValue]="50">50</option>
                             <option [ngValue]="100">100</option>
                         </select>
-
+                    <!-- </span> -->
                         <p-confirmDialog></p-confirmDialog>
                         <span class="form-group d-flex align-items-center ml-auto mb-0 w-60" style="width: 350px">
                             <input class="form-control search ml-2 w-100" type="text" name="searchText"

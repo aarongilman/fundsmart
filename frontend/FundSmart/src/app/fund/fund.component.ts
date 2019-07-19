@@ -40,7 +40,15 @@ export class FundComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         private confirmationService: ConfirmationService,
         private router: Router
-    ) { }
+    ) {
+
+        this.interconn.logoutcomponentMethodCalled$.subscribe(
+            () => {
+                this.router.navigate(['/home']);
+            }
+        );
+
+     }
 
     ngOnInit() {
         this.interconn.titleSettermethod("Funds");

@@ -11,6 +11,7 @@ import { funds } from '../funds';
 import { FundcreatesortService } from '../fundcreatesort.service';
 import { SortEvent, SortableDirective } from '../sortable.directive';
 import { securitylist } from '../securitylist';
+import { Router } from '@angular/router';
 
 declare var Dropbox: Dropbox;
 
@@ -160,6 +161,7 @@ export class FundCreateComponent implements OnInit {
         private userservice: ServercommunicationService,
         private interconn: IntercomponentCommunicationService,
         public fundservice: FundcreatesortService,
+        public route:Router,
         private calendar: NgbCalendar,
     ) {
         // this.excelIO = new Excel.IO();
@@ -171,6 +173,7 @@ export class FundCreateComponent implements OnInit {
             });
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
+                this.route.navigate(['/home']);
                 this.resetfunds();
                 this.portfoliolist.length = 0;
             });
@@ -365,6 +368,7 @@ export class FundCreateComponent implements OnInit {
             price: ''
         };
         apiresultfundlist.unshift(singlefund);
+        this.securityinput[0] = '';
         this.fundservice.resetfunds();
         this.fundservice.funds$.subscribe(list => {
             this.fundlist = list;

@@ -57,14 +57,16 @@
                                             </datalist>
                                         </td>
                                         <td>
-                                            <input [(ngModel)]="item['yourPortfolio']" (keypress)="numberOnly($event,item['yourPortfolio'])"
+                                            <input [(ngModel)]="item['yourPortfolio']"
                                                 style="text-align: center ;width: 3cm"
+                                                (keypress)="numberOnly($event,item['yourPortfolio'])"
                                                 (input)="addportfolioFund('portfolio',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
                                                 name='portfolio_{{i}}' type="text">
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
-                                                style="text-align: center ; width: 3cm" (keypress)="numberOnly($event,item['comparision1'])"
+                                                style="text-align: center ; width: 3cm"
+                                                (keypress)="numberOnly($event,item['comparision1'])"
                                                 (input)="addportfolioFund('comp1',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
                                                 type="text">
 
@@ -73,7 +75,8 @@
                                             <input [(ngModel)]="item['comparision2']"
                                                 style="text-align: center ; width: 3cm"
                                                 (input)="addportfolioFund('comp2',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
-                                                name='comp2_{{i}}' (keypress)="numberOnly($event,item['comparision2'])" type="text">
+                                                name='comp2_{{i}}' (keypress)="numberOnly($event,item['comparision2'])"
+                                                type="text">
 
                                         </td>
                                         <td>

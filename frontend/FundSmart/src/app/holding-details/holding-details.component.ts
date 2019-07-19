@@ -12,6 +12,9 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { securitylist } from '../securitylist';
 import { security } from '../security';
 import * as $ from 'jquery';
+import { ActivatedRoute, Params, Router } from '@angular/router';
+import 'rxjs/add/operator/filter';
+
 
 @Component({
   selector: 'app-holding-details',
@@ -30,6 +33,7 @@ export class HoldingDetailsComponent implements OnInit {
   inputBasicPrice: number;
   inputCurrentPrice: number;
   portfoliolist = [];
+  order = [];
   option = {
     fieldSeparator: ' ',
     quoteStrings: '"',
@@ -62,6 +66,8 @@ export class HoldingDetailsComponent implements OnInit {
     public sortlist: HoldingdetailsSortService,
     private formBuilder: FormBuilder,
     private modalService: NgbModal,
+    private route: ActivatedRoute,
+    private router:Router,
     private interconn: IntercomponentCommunicationService) {
 
     // this.sortlist.hlist$.subscribe(f => {
@@ -75,6 +81,9 @@ export class HoldingDetailsComponent implements OnInit {
       () => {
         holdingList.length = 0;
         this.getHoldingdetail();
+
+
+
         this.userservice.getUserPortfolio().subscribe(
           data => {
             // alert("portfolio data came");
@@ -88,11 +97,11 @@ export class HoldingDetailsComponent implements OnInit {
               this.portfoliolist.push(data['results'][d]);
             }
           });
-      }
-    );
+      });
 
     this.interconn.logoutcomponentMethodCalled$.subscribe(
       () => {
+        this.router.navigate(['/home']);
         holdingList.length = 0;
         this.sortlist.resetHoldingDetails();
         this.sortlist.hlist$.subscribe(f => {
@@ -107,6 +116,7 @@ export class HoldingDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.interconn.titleSettermethod('Holding Details');
+
     if (securitylist.length === 0) {
       this.userservice.get_security().subscribe(
         datasecuritylist => {
@@ -133,6 +143,7 @@ export class HoldingDetailsComponent implements OnInit {
         }
       );
     }
+
     this.userservice.getUserPortfolio().subscribe(
       data => {
         // alert("portfolio data came");
@@ -147,7 +158,9 @@ export class HoldingDetailsComponent implements OnInit {
         // this.comparision2 = data['results']['2'];
       });
     if (this.userservice.currentuser) {
+
       this.getHoldingdetail();
+
     }
 
 
@@ -162,23 +175,46 @@ export class HoldingDetailsComponent implements OnInit {
 
 
   getHoldingdetail() {
-    var res = this.userservice.getHoldings().toPromise().then(
-      mtdata => {
-        holdingList.length = 0;
-        // tslint:disable-next-line: forin
-        for (var obj in mtdata) {
-          // console.log("Record", mtdata[obj]);
-          holdingList.push(mtdata[obj]);
-        }
-        this.sortlist.resetHoldingDetails();
-        this.sortlist.hlist$.subscribe(f => {
-          this.HoldingDetailList = f;
-        });
-        this.sortlist.total$.subscribe(total => {
-          this.total = total;
-        });
+    this.route.queryParamMap.subscribe((queryParams: Params) => {
+      this.order = queryParams.params.id;
+      if (queryParams.params.id === undefined) {
+        this.userservice.getHoldings().toPromise().then(
+          mtdata => {
+            holdingList.length = 0;
+            // tslint:disable-next-line: forin
+            for (var obj in mtdata) {
+              holdingList.push(mtdata[obj]);
+            }
+            this.sortlist.resetHoldingDetails();
+            this.sortlist.hlist$.subscribe(f => {
+              this.HoldingDetailList = f;
+            });
+            this.sortlist.total$.subscribe(total => {
+              this.total = total;
+            });
+          });
+      } else {
+        this.userservice.get(`api/holding_detail/?portfolio_ids=${this.order}`).toPromise().then(
+          mtdata => {
+            holdingList.length = 0;
+            // tslint:disable-next-line: forin
+            for (var obj in mtdata) {
+              holdingList.push(mtdata[obj]);
+            }
+            this.sortlist.resetHoldingDetails();
+            this.sortlist.hlist$.subscribe(f => {
+              this.HoldingDetailList = f;
+            });
+            this.sortlist.total$.subscribe(total => {
+              this.total = total;
+            });
+          }
+        );
       }
-    );
+    });
+
+
+
   }
 
 

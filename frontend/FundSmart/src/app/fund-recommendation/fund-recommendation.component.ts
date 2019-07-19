@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { HistoricalData } from '../historicaldata';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 
@@ -42,12 +42,20 @@ export class FundRecommendationComponent implements OnInit {
   constructor(
     private interconn: IntercomponentCommunicationService,
     private service: ServercommunicationService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private route: Router
   ) {
     this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
       console.log("Id", queryParams.params.id);
       this.id = queryParams.params.id;
     });
+
+    this.interconn.logoutcomponentMethodCalled$.subscribe(
+      () => {
+        this.route.navigate(['/home']);
+      }
+    );
+
   }
 
   ngOnInit() {
