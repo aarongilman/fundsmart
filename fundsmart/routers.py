@@ -2,15 +2,7 @@
 from django.urls import re_path
 from rest_framework import routers
 
-from portfolios.views import HistoricalPerformanceDifference,\
-    ImportPortfolioFund, DashboardLinePlotApi, DashboardDoughnutChart,\
-    DashboardPieChart, HoldingDetailAPIView, HoldingSummaryByHoldingType,\
-    HoldingSummaryByAssetClass, HoldingSummaryByIndustry,\
-    HoldingSummaryByCountry, HoldingSummaryHistoricalPerformanceDifference,\
-    FundRecommendationHistoricalPerformanceDiff, HoldingSummaryLineGraph,\
-    BarPlotFundRecommendation, LineGraphFundRecommendation, PortfolioFundData,\
-    PortfolioPerformanceAPI, RecommendedPerformanceAPI, PortfolioFundPriceAPI,\
-    CurrentAllocationAPI, AllocationHistoricalPerformance
+from portfolios.views import *
 
 from portfolios.viewsets import PortfolioViewSet, PortfolioFundViewSet,\
     SecurityViewSet
@@ -56,4 +48,5 @@ urlpatterns += [
     re_path(r'^current_allocation/$', CurrentAllocationAPI.as_view()),
     re_path(r'^allocation_historical_performance/$',
             AllocationHistoricalPerformance.as_view()),
+    re_path(r'allocation_line_graph', AllocationLineGraph.as_view())
 ]
