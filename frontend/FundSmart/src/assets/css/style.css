@@ -138,7 +138,10 @@ body.menu-overlay:after {
     box-shadow   : 0 0 20px 0 rgba(0, 0, 0, 0.12);
     margin-bottom: 30px;
 }
-
+.block-container.chart-padding {
+padding: 0;
+    padding-top: 50px;
+}
 /*inputs*/
 .trade-inputs input {
     border       : 0;
@@ -604,7 +607,7 @@ select {
 }
 
 .heading h3 {
-    margin     : 0 0 50px 0;
+    /* margin     : 0 0 50px 0; */
     padding    : 0;
     color      : #fca62b;
     font-size  : 18px;
@@ -1838,14 +1841,20 @@ a.close-menu svg path {
     font-size    : 14px;
     font-weight  : 500;
     flex         : 0 0 50%;
-    max-width    : 50%;
+    max-width    : 50%;    
 }
 
 .total-label p {
     color      : #000034;
     font-weight: 600;
 }
-
+.summary_total{
+    box-shadow: 0 0px 7px 0 rgba(0, 0, 0, 0.1);
+    padding: 15px 10px;
+}
+.summary_total .total-label p{
+    margin: 0;
+}
 .holding-graph {
     flex     : 0 0 calc(65% - 30px);
     max-width: calc(65% - 30px);
@@ -1853,20 +1862,21 @@ a.close-menu svg path {
 }
 
 #country .summary-content {
-    display    : flex;
+    /* display    : flex; */
     align-items: center;
     margin     : 0 -15px;
 }
 
 #country .summary-content ul {
-    flex     : 0 0 30%;
-    max-width: 30%;
+    flex     : 0 0 100%;
+    max-width: 100%;
     padding  : 0 15px;
+    order: 2;
 }
 
 #country .summary-content .country-map {
-    flex     : 0 0 70%;
-    max-width: 70%;
+    flex     : 0 0 100%;
+    max-width: 100%;
     padding  : 0 15px;
 }
 
@@ -1958,4 +1968,7 @@ td.loss-red.info-red {
     left: 50%;
     position: absolute;
     transform: translateX(-50%);
+}
+.search_box input{
+    width: calc(100% - 70px);
 }

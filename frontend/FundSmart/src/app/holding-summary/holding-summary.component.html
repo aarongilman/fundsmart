@@ -244,23 +244,24 @@
                                         <h3 style="color: #5ace9f">Country</h3>
                                     </div>
                                     <div class="summary-content">
+                                            <div class="country-map">
+                                                    <img src="assets/img/country-map.png" alt="Country Map">
+                                                </div>
                                         <ul>
                                             <li *ngFor="let data of country">
                                                 <div class="holding-label">
                                                     <p>{{data.name}}</p>
-                                                    <p>{{data.value}}</p>
+                                                    <p class="text-right">{{data.value}}</p>
                                                 </div>
                                             </li>
-                                            <div class="d-flex mt-3">
-                                                <div style="margin-top: 35px; margin-left: 9px;width:200px"
+                                            <div class="d-flex mt-3 justify-content-between summary_total">
+                                                <div
                                                     class="total-label" *ngFor="let item of (total2 | keyvalue)">
                                                     <p>{{item.value}}</p>
                                                 </div>
                                             </div>
                                         </ul>
-                                        <div class="country-map">
-                                            <img src="assets/img/country-map.png" alt="Country Map">
-                                        </div>
+                                       
                                     </div>
                                 </div>
                             </div>
