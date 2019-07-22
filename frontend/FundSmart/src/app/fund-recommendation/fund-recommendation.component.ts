@@ -25,7 +25,7 @@ export class FundRecommendationComponent implements OnInit {
   linedata = [];
   linetype = 'LineChart';
   linetitle = '';
-  linewidth = 600;
+  linewidth = 500;
   lineheight = 300;
   linecolumnNames = [];
   lineoptions;
@@ -33,7 +33,7 @@ export class FundRecommendationComponent implements OnInit {
 
   bartitle = 'Bar Chart';
   bardata = [];
-  barwidth = 600;
+  barwidth = 550;
   barheight = 300;
   bartype = 'ColumnChart';
   baroptions = {
