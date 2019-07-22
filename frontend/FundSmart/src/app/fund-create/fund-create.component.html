@@ -48,7 +48,8 @@
                             Entries
                         </div>
                         <div class="col-lg-3">
-                            <span class="form-group d-flex justify-content-between align-items-center ml-auto mb-0 w-60 search_box">
+                            <span
+                                class="form-group d-flex justify-content-between align-items-center ml-auto mb-0 w-60 search_box">
                                 Search: <input class="form-control search ml-2 " type="text" name="searchTerm"
                                     [(ngModel)]="fundservice.searchTerm" />
                                 <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
@@ -77,10 +78,8 @@
 
 
                                     <datalist id="securityname">
-                                        <!-- data-value={{security.id}} -->
                                         <option *ngFor="let security of securitylist;let d = index"
                                             data-value='{{security.name}}' data-id={{security.id}}>
-                                            <!-- title="{{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"> -->
                                             Name:{{security.name}} Isin:{{security.isin}}
                                             Ticker:{{security.ticker}}
                                         </option>
@@ -88,18 +87,17 @@
                                     <span *ngIf="fund.security_name != ''"
                                         style="width: 3cm">{{fund.security_name}}</span>
                                 </td>
-                                <!-- <td>{{fund.security_name}}</td> -->
                                 <td>{{fund.asset_type}}</td>
                                 <td>{{fund.isin}}</td>
-                                <td><input type="text" [(ngModel)]="fund.quantity" name='quantity_{{i}}'
-                                        style="text-align: center; width: 130px" (keypress)="numberOnly($event)"
-                                        (change)='updatefundquantity(fund)'></td>
-                                <td><input type="text" [(ngModel)]="fund.price" name='quantity_{{i}}'
-                                        style="text-align: center; width: 130px" (keypress)="numberOnly($event)"
-                                        (change)='updateprice(fund)' (click)="fund.price === 0 ? fund.price = '' : null "
+                                <td><input type="text" class="form-control" [(ngModel)]="fund.quantity"
+                                        name='quantity_{{i}}' style="text-align: center; width: 130px"
+                                        (keypress)="numberOnly($event)" (change)='updatefundquantity(fund)'></td>
+                                <td><input type="text" class="form-control" [(ngModel)]="fund.price"
+                                        name='quantity_{{i}}' style="text-align: center; width: 130px"
+                                        (keypress)="numberOnly($event)" (change)='updateprice(fund)'
+                                        (click)="fund.price === 0 ? fund.price = '' : null "
                                         (blur)="fund.price === '' ? fund.price = 0 : null"></td>
                             </tr>
-
                         </tbody>
                     </table>
                     <div class="d-flex ">

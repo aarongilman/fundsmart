@@ -119,25 +119,25 @@ export class HomeComponent implements OnInit {
   comparision2: any;
 
   pietype = 'PieChart';
-  pietitle = 'Pie Chart';
+  // pietitle = 'Pie Chart';
   piedata = [];
   pieoptions;
   columnNames = [];
-  pieheight = 400;
+  pieheight = 350;
   piewidth = 500;
 
-  donutitle = 'Donought Chart';
+  // donutitle = 'Donought Chart';
   donutdata = [];
   donutwidth = 500;
-  donutheight = 400;
+  donutheight = 350;
   donuttype = 'PieChart';
   donutoptions;
 
-  linetitle = 'Line Chart';
+  // linetitle = 'Line Chart';
   linedata = [];
   lineoptions;
-  linewidth = 700;
-  lineheight = 400;
+  linewidth = 600;
+  lineheight = 450;
   linetype = 'LineChart';
   linecolumnNames = [];
   securitylist = securitylist;
@@ -491,7 +491,7 @@ export class HomeComponent implements OnInit {
           });
         });
 
-        this.pietitle = '';
+        // this.pietitle = '';
         this.pietype = 'PieChart';
         this.columnNames = ['Security Industry', 'Total'];
         this.pieoptions = {

@@ -22,7 +22,7 @@ export class HoldingSummaryComponent implements OnInit {
     linetype = 'LineChart';
     linetitle = 'Portfolio value over time';
     linewidth = '450px';
-    lineheight = '500px';
+    lineheight = '600px';
     linecolumnNames = [];
     lineoptions;
     total = {};
