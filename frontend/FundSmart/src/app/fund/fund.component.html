@@ -16,7 +16,7 @@
                             <option [ngValue]="50">50</option>
                             <option [ngValue]="100">100</option>
                         </select>
-                    <!-- </span> -->
+                        <!-- </span> -->
                         <p-confirmDialog></p-confirmDialog>
                         <span class="form-group d-flex align-items-center ml-auto mb-0 w-60" style="width: 350px">
                             <input class="form-control search ml-2 w-100" type="text" name="searchText"
@@ -34,12 +34,14 @@
                         </thead>
                         <tbody>
 
-                            <tr *ngFor="let fund of result.results  | filter : searchText; let i = index">
+                            <tr *ngFor="let fund of result  | filter : searchText; let i = index">
                                 <td> {{fund.name}}</td>
                                 <td> {{fund.description}}</td>
-                                <a (click)='header_modals(updateportfolio, fund)'><i class="fas fa-pen"
+                                <a (click)='header_modals(updateportfolio, fund)' pTooltip="Edit Portfolio"
+                                    tooltipPosition="bottom"><i class="fas fa-pen"
                                         style="color: #5ace9f;font-size:22px"></i></a>
-                                <a (click)="delete_Portfolio(fund.id)">
+                                <a (click)="delete_Portfolio(fund.id)" pTooltip="Delete Portfolio"
+                                    tooltipPosition="bottom">
                                     <i class="fa fa-times" aria-hidden="true"
                                         style="color: red;font-size:25px; padding-left: 20px"></i>
                                 </a>
@@ -165,33 +167,39 @@
                     <div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Name:</label>
-                            <input type="text" required class="form-control name" [(ngModel)]="fund.name" name='name'
+                            <input type="text" required class="form-control name" [(ngModel)]="name" name='name'
                                 placeholder="Name">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Description:</label>
-                            <input type="text" required class="form-control Description" [(ngModel)]="fund.description"
+                            <input type="text" required class="form-control Description" [(ngModel)]="description"
                                 name='description' placeholder="Description">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Owner 1:</label>
-                            <input type="text" required class="form-control owner1" [(ngModel)]="fund.owner_1"
+                            <input type="text" required class="form-control owner1" [(ngModel)]="owner_1"
                                 name='owner_1' placeholder="Owner 1">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Owner 2:</label>
-                            <input type="text" required class="form-control owner2" [(ngModel)]="fund.owner_2"
+                            <input type="text" required class="form-control owner2" [(ngModel)]="owner_2"
                                 name='owner_2' placeholder="Owner 2">
+                        </div>
+                        <div class="input-group">
+                            <label style="margin-top: 9px;font-size: 14px;color: black">Type:</label>
+                            <input type="text" required class="form-control marginal_tax_range"
+                                [(ngModel)]="type" name='type'
+                                placeholder="Type">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Marginal Range:</label>
                             <input type="text" required class="form-control marginal_tax_range"
-                                [(ngModel)]="fund.marginal_tax_range" name='marginal_tax_range'
+                                [(ngModel)]="marginal_tax_range" name='marginal_tax_range'
                                 placeholder="Fund Marginal Tax Range">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Location:</label>
-                            <input type="text" required class="form-control location" [(ngModel)]="fund.location"
+                            <input type="text" required class="form-control location" [(ngModel)]="location"
                                 name='location' placeholder="Location">
                         </div>
                         <button style="margin-top: 25px" type="button"

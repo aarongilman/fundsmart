@@ -5,3 +5,9 @@ export class HistoricalData {
     public fiveyear: number;
 
 }
+
+export class AllocationData {
+    public oneyear: number;
+    public threeyear: number;
+    public fiveyear: number;
+}

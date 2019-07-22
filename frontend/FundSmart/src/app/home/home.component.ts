@@ -1,6 +1,5 @@
 import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Observable, merge } from 'rxjs';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { portfolio_fund } from '../portfolio_fund';
 import { portfoliofundlist } from '../portfolio_fundlist';
@@ -13,16 +12,13 @@ import { AuthService, SocialUser } from "angularx-social-login";
 import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-login";
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { GetfileforuploadService } from '../getfileforupload.service';
-import { from } from 'rxjs/observable/from';
-import { groupBy, mergeAll, mergeMap, toArray, last } from 'rxjs/operators';
 import { HistoricalData } from '../historicaldata';
 import { FormBuilder, FormControl, Validators, FormGroup } from '@angular/forms';
 import { MustMatch } from '../must-match.validator';
 import { securitylist } from '../securitylist';
-import { element } from '@angular/core/src/render3';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
-import { Title } from '@angular/platform-browser';
+
 
 
 declare var Dropbox: Dropbox;
@@ -134,7 +130,7 @@ export class HomeComponent implements OnInit {
   donuttype = 'PieChart';
   donutoptions;
 
-  linetitle = 'Line Chart';
+  linetitle = '';
   linedata = [];
   lineoptions;
   linewidth = 700;
@@ -526,6 +522,7 @@ export class HomeComponent implements OnInit {
 
         this.donutoptions = {
           pieHole: 0.8,
+          legend: { position: 'top', alignment: 'start', maxLines: 10 },
           pieSliceText: 'none',
           colors: ['#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', '#5ace9f', '#fca622'],
         };

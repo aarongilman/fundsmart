@@ -245,8 +245,11 @@ export class ServercommunicationService {
       description: user.description,
       owner_1: user.owner_1,
       owner_2: user.owner_2,
+      type: user.type,
       marginal_tax_range: user.marginal_tax_range,
       location: user.location,
+      created_by: this.currentuser.id,
+      updated_by: this.currentuser.id
     };
     return this.http.put(this.api_link + 'api/portfolio/' + id + '/',
       body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
@@ -369,6 +372,11 @@ export class ServercommunicationService {
 
   holding_summary_historicalPerformance(ids) {
     return this.http.get(this.api_link + 'api/historical_performance_holding_summary/?portfolio_ids=' + ids,
+      { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+  }
+
+  allocationRecommendationHistorical(ids) {
+    return this.http.get(this.api_link + 'api/allocation_historical_performance/?portfolio_ids=' + ids,
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 

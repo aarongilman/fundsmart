@@ -66,7 +66,9 @@ export class FundComponent implements OnInit {
     getFunds() {
         this.userService.getUserPortfolio().subscribe(
             fundlist => {
-                this.result = fundlist;
+                this.result = fundlist['results'];
+
+
             });
     }
 
@@ -85,6 +87,13 @@ export class FundComponent implements OnInit {
 
     header_modals(modalid, fund?) {
         this.fund = fund;
+        this.name = fund.name;
+        this.description = fund.description;
+        this.type = fund.type;
+        this.marginal_tax_range = fund.marginal_tax_range;
+        this.owner_1 = fund.owner_1;
+        this.owner_2 = fund.owner_2;
+        this.location = fund.location;
         this.modalService.open(modalid, {
             ariaLabelledBy: 'app-fund',
             windowClass: 'long-pop sign-pop', centered: true
@@ -106,8 +115,28 @@ export class FundComponent implements OnInit {
     }
 
     updatePortfolioData(_id) {
-        this.userService.update_One_Object(this.fund, _id).subscribe(
+        console.log(_id);
+        let fundupdate = {
+            name: this.name,
+            description: this.description,
+            owner_1: this.owner_1,
+            owner_2: this.owner_2,
+            type: this.type,
+            marginal_tax_range: this.marginal_tax_range,
+            location: this.location,
+        };
+        // console.log(this.result.find(fund => fund.id === _id));
+        this.userService.update_One_Object(fundupdate, _id).subscribe(
             data => {
+                // console.log(data);
+                let index = this.result.findIndex(fund => fund.id === _id);
+                // console.log(index);
+                this.result[index] = data;
+
+                // console.log(this.result);
+
+
+
                 this.toastr.success('Portfolio Updated!', 'Portfolio Updated!');
             });
     }

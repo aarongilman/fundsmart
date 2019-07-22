@@ -43,6 +43,7 @@ import { ToastrModule } from 'ngx-toastr';
 
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
 
 let gapiClientConfig: NgGapiClientConfig = {
     client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
@@ -97,6 +98,7 @@ export function provideConfig() {
         HttpClientModule,
         FormsModule,
         ConfirmDialogModule,
+        TooltipModule,
         NgSelectModule,
         ReactiveFormsModule,
         MatMenuModule,
@@ -109,9 +111,9 @@ export function provideConfig() {
         }),
     ],
     providers: [
-        ServercommunicationService, 
-        SocialloginService, 
-        GetfileforuploadService, 
+        ServercommunicationService,
+        SocialloginService,
+        GetfileforuploadService,
         ConfirmationService,
         IntercomponentCommunicationService, {
             provide: AuthServiceConfig,

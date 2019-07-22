@@ -26,7 +26,7 @@
 
                         <div class="col-sm-3">
                             <div class='input-group align-items-center'>Select Portfolio:<select
-                                    class='form-control ml-2' style="width: 50%" [(ngModel)]="fundservice.searchTerm">
+                                    class='form-control ml-2' [(ngModel)]="fundservice.searchTerm">
                                     <option selected value=""></option>
                                     <option *ngFor="let pitem of portfoliolist" title="portfolio1" [value]="pitem.name"
                                         name='p1'>
@@ -48,8 +48,8 @@
                             Entries
                         </div>
                         <div class="col-lg-3">
-                            <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
-                                Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
+                            <span class="form-group d-flex justify-content-between align-items-center ml-auto mb-0 w-60 search_box">
+                                Search: <input class="form-control search ml-2 " type="text" name="searchTerm"
                                     [(ngModel)]="fundservice.searchTerm" />
                                 <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
                             </span>

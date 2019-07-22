@@ -175,6 +175,46 @@ export class FundRecommendationComponent implements OnInit {
       });
   }
 
+  // //get portfolio Performance data 
+  // getPlotFundRecommendation() {
+  //   this.service.get(`api/bar_plot_fund_recommendation/?portfolio_ids=${this.id}`).subscribe((historicalData: any) => {
+  //     historicalData.forEach(historical => {
+  //       // console.log(historical);
+  //       const name = Object.keys(historical);
+  //       const obj = Object.values(historical);
+  //       let i: any;
+  //       // tslint:disable-next-line: forin
+
+  //       // this.barcolumnNames = element;
+  //       console.log(this.barcolumnNames);
+  //       // tslint:disable-next-line: forin
+  //       for (const n in name) {
+  //         console.log('N is', name[n], historical[name[n]]);
+
+  //         this.bardata.push([name[n], historical[name[n]]]);
+  //         let barobj = Object.values(obj[n]);
+  //         barobj.unshift(name[n]);
+  //         this.bardata.push(barobj);
+
+  //       }
+  //       // console.log("Bar data",this.bardata);
+  //       // console.log("Object count", Object.values(obj[0]));
+  //       // this.barcolumnNames = name;
+  //       // tslint:disable-next-line: forin
+  //       // for (let i in obj[1]) {
+  //       //   // console.log("elements are", i);
+  //       //   this.barcolumnNames.push(i);
+  //       // }
+  //       // this.barcolumnNames.unshift('Fund Types');
+  //       // console.log("Length of obj", obj[1]);
+
+
+
+  //     });
+  //   });
+
+  // }
+
   //get portfolio Performance data 
   getPlotFundRecommendation() {
     this.service.get(`api/bar_plot_fund_recommendation/?portfolio_ids=${this.id}`).subscribe((historicalData: any) => {
@@ -182,32 +222,25 @@ export class FundRecommendationComponent implements OnInit {
         // console.log(historical);
         const name = Object.keys(historical);
         const obj = Object.values(historical);
-        let i: any;
+
         // tslint:disable-next-line: forin
-        for (i in obj[1]) {
+        for (const n in name) {
+          // console.log('N is', name[n], historical[name[n]]);
+          // this.bardata.push([name[n], historical[name[n]]]);
+          let barobj = Object.values(obj[n]);
+          barobj.unshift(name[n]);
+          this.bardata.push(barobj);
+        }
+        // console.log("Bar data",this.bardata);
+        // console.log("Object count", Object.values(obj[0]));
+        // this.barcolumnNames = name;
+        // tslint:disable-next-line: forin
+        for (let i in obj[0]) {
           // console.log("elements are", i);
           this.barcolumnNames.push(i);
         }
         this.barcolumnNames.unshift('Fund Types');
         // this.barcolumnNames = element;
-        console.log(this.barcolumnNames);
-        let count = 0;
-        // tslint:disable-next-line: forin
-        for (const n in name) {
-          console.log('N is', name[n], historical[name[n]]);
-          
-          this.bardata.push([name[n], historical[name[n]]]);
-          let barobj = Object.values(obj[n]);
-          barobj.unshift(name[n]);
-          this.bardata.push(barobj);
-
-        }
-        // console.log("Bar data",this.bardata);
-        // console.log("Object count", Object.values(obj[0]));
-        // this.barcolumnNames = name;
-        console.log("Length of obj", obj[1]);
-
-
 
       });
     });
