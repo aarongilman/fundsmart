@@ -868,6 +868,12 @@ class BarPlotFundRecommendation(APIView):
                 data[0].get('existing').update({item[0]: item[1]})
             for item in recommended_quantity:
                 data[0].get('recommended').update({item[0]: item[1]})
+            for key in data[0].get('existing').keys():
+                if key not in data[0].get('recommended'):
+                    data[0].get('recommended').update({key: 0})
+            for key in data[0].get('recommended').keys():
+                if key not in data[0].get('existing'):
+                    data[0].get('existing').update({key: 0})
         return Response(data, status=200)
 
 
