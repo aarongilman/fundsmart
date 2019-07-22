@@ -73,6 +73,7 @@ export class FundComponent implements OnInit {
     }
 
     addPortfolioData() {
+        // alert("add portfolio");
         this.userService.addPortfolioFund(
             this.name,
             this.description,
@@ -80,20 +81,22 @@ export class FundComponent implements OnInit {
             this.owner_2,
             this.type,
             this.marginal_tax_range,
-            this.created_by).subscribe(result => {
+            this.location).subscribe(result => {
                 this.getFunds();
             });
     }
 
     header_modals(modalid, fund?) {
-        this.fund = fund;
-        this.name = fund.name;
-        this.description = fund.description;
-        this.type = fund.type;
-        this.marginal_tax_range = fund.marginal_tax_range;
-        this.owner_1 = fund.owner_1;
-        this.owner_2 = fund.owner_2;
-        this.location = fund.location;
+        if (fund) {
+            this.fund = fund;
+            this.name = fund.name;
+            this.description = fund.description;
+            this.type = fund.type;
+            this.marginal_tax_range = fund.marginal_tax_range;
+            this.owner_1 = fund.owner_1;
+            this.owner_2 = fund.owner_2;
+            this.location = fund.location;
+        }
         this.modalService.open(modalid, {
             ariaLabelledBy: 'app-fund',
             windowClass: 'long-pop sign-pop', centered: true

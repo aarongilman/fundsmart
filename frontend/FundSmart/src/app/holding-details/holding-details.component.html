@@ -151,20 +151,20 @@
                                         <td>{{item.isin}}</td>
                                         <td>{{item.ticker}}</td>
                                         <td>{{item.quantity}}</td>
-                                        <td><input *ngIf="item.current_price === null" type="number"
-                                                style="width: 2cm;text-align: center" [(ngModel)]="currentprice[i]"
+                                        <td><input class="form-control" *ngIf="item.current_price === null"
+                                                type="number" style="width: 2cm;text-align: center"
+                                                [(ngModel)]="currentprice[i]"
                                                 (blur)="item.current_price=currentprice[i];UpdateHoldingDetails(item,i)"
                                                 name="current_price_{{i}}">
-                                            <span
-                                                *ngIf="item.current_price !== null">{{item.current_price}}</span>
+                                            <span *ngIf="item.current_price !== null">{{item.current_price}}</span>
                                         </td>
                                         <td>{{(item.market_value)}}</td>
-                                        <td><input *ngIf="item.basic_price === null" type="number" style=" width: 2cm;text-align:
+                                        <td><input class="form-control" *ngIf="item.basic_price === null" type="number"
+                                                style=" width: 2cm;text-align:
                                                 center" [(ngModel)]="basicprice[i]"
                                                 (blur)="item.basic_price = basicprice[i];UpdateHoldingDetails(item,i)"
                                                 name="basic_price_{{i}}">
-                                            <span
-                                                *ngIf="item.basic_price !== null">{{item.basic_price}}</span>
+                                            <span *ngIf="item.basic_price !== null">{{item.basic_price}}</span>
                                         </td>
                                         <td>{{item.basis}}</td>
                                         <td><input *ngIf="item.country === null" [(ngModel)]="country[i]"
@@ -328,7 +328,7 @@
                     </div>
                     <br />
                     <p>
-                        Basic Price and Current Price are not menditory.
+                        Basic Price and Current Price are not mandatory.
                     </p>
                     <button type="button" (click)='AddDetail()' style="cursor: pointer"
                         class="trade-btn button green-btn d-flex align-items-center justify-content-center login-email">
