@@ -396,7 +396,7 @@
                 <div class="upload-body" (click)="fileInput.click()" appDragDrop (onFileDropped)="uploadFile($event)">
                     <form action="post" class="d-flex align-items-center justify-content-center">
                         <p>Drag & Drop Files <br>(Excel or CSV)</p>
-                        <input type="file" #fileInput (change)="uploadFile($event.target.files)">
+                        <input type="file" #fileInput (change)="uploadFile($event.target.files)" accept=".xlsx">
 
                     </form>
                 </div>
@@ -704,7 +704,7 @@
                     <div class="login-form trade-inputs">
                         <form action="post">
                             <div class="input-group">
-                                <input type="text" required=true class="form-control userid" [(ngModel)]="email"
+                                <input type="text" required=true class="form-control userid" [(ngModel)]="email2"
                                     name="email" placeholder="Email Id or User Id">
                             </div>
 

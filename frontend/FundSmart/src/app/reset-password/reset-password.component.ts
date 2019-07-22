@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Data, ActivatedRoute } from '@angular/router';
 import { ServercommunicationService } from '../servercommunication.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-reset-password',
@@ -43,16 +44,17 @@ export class ResetPasswordComponent implements OnInit {
     if (this.password1 == this.password2) {
       this.userservice.resetpassword_req(this.uid, this.token, this.password1, this.password2).subscribe(
         data => {
-          console.log(data);
-          alert(data['detail']);
+          // console.log(data);
+          Swal.fire("Reset Password", data['detail'], 'success');
+          // alert(data['detail']);
         },
         error => {
-          console.log(error);
+          Swal.fire("Reset Password", error, 'error');
         }
       );
     }
     else {
-      alert(' Password and confirmation password does not match each other');
+      Swal.fire("Reset Password", ' Password and confirmation password does not match each other', 'error');
     }
   }
 }

@@ -22,6 +22,7 @@ import { securitylist } from '../securitylist';
 import { element } from '@angular/core/src/render3';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
+import { Title } from '@angular/platform-browser';
 
 
 declare var Dropbox: Dropbox;
@@ -159,6 +160,7 @@ export class HomeComponent implements OnInit {
 
     this.interconn.googledriveuploadcalled$.subscribe(
       () => {
+        this.setdataindeshboard();
         this.portfolioservice.resetfunds();
         this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
         this.portfolioservice.total$.subscribe(f => {
@@ -303,12 +305,13 @@ export class HomeComponent implements OnInit {
 
   ngOnInit() {
     this.interconn.titleSettermethod("Multi Portfolio Analyzer");
+    this.setdataindeshboard();
     // this.securitylist = [{ "id": 1, "name": "Motilal Oswal Dynamic Fund", "isin": "INF247L01585", "id_value": "ISIN_INF247L01585", "date": "2019-01-31", "ticker": "MOFDERG IN", "asset_type": "Mutual Fund", "currency": "INR", "country": "IN", "industry": null, "rating": null, "created_at": "2019-06-12T11:25:46.929006Z", "created_by": 6 }];
     if (this.userservice.currentuser) {
       this.setcurrent_user();
       // this.resetfundlist();
       // // this.createFundlist();
-      // this.setdataindeshboard();
+
     }
 
 
@@ -428,9 +431,11 @@ export class HomeComponent implements OnInit {
   }
 
   setdataindeshboard() {
+    console.log("set data in dashboard");
+
     this.userservice.get_historical_perfomance().subscribe(
       result => {
-        console.log("result", result);
+        // console.log("result", result);
         this.existing = {
           annualexpense: 0,
           oneyear: 0,
@@ -501,6 +506,7 @@ export class HomeComponent implements OnInit {
           },
           pieSliceText: 'label',
           legend: 'none',
+          colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
         };
       });
 
@@ -521,7 +527,7 @@ export class HomeComponent implements OnInit {
         this.donutoptions = {
           pieHole: 0.8,
           pieSliceText: 'none',
-          colors : ['#008080',],
+          colors: ['#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', '#5ace9f', '#fca622'],
         };
       });
 
@@ -569,7 +575,8 @@ export class HomeComponent implements OnInit {
           curveType: 'function',
           tooltips: {
             mode: 'index'
-          }
+          },
+          colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
         };
 
       }
@@ -694,6 +701,7 @@ export class HomeComponent implements OnInit {
         // console.log("Key is", data['key']);
         // alert('registration successful. Plese confirm email');
         this.showdetail_flag = false;
+        Swal.fire('Registration', 'Please verify your email from your mail box', 'success');
         this.modalService.dismissAll('Registration Done');
         this.registeruserForm.reset();
 
@@ -807,8 +815,19 @@ export class HomeComponent implements OnInit {
   }
 
   resetpassword() {
+    // console.log(this.email2);
+
+
     this.userservice.reset_pwd_sendemail(this.email2).subscribe(data => {
       // console.log(data);
+      this.email2 = undefined;
+      this.modalService.dismissAll('Email sent.');
+      Swal.fire({
+        title: 'Reset Password',
+        text: 'Token has been sent to your email address.',
+        type: "success",
+
+      });
     },
       error => {
         // console.log(error);
@@ -838,6 +857,7 @@ export class HomeComponent implements OnInit {
 
 
   uploadFile(event) {
+
     // const tabledata = JSON.parse(localStorage.getItem('securityData'));
     // let i = tabledata.length;
     // let tableobj = tabledata[i - 1];
@@ -846,97 +866,111 @@ export class HomeComponent implements OnInit {
     // alert('upload file event');
     for (let index = 0; index < event.length; index++) {
       const element = event[index];
-      this.files.push(element.name);
-      // console.log(element);
-      let fr = new FileReader;
-      fr.onload = (e) => {
-        this.arrayBuffer = fr.result;
-        let data = new Uint8Array(this.arrayBuffer);
-        let arr = new Array();
-        for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-        let bstr = arr.join("");
-        let workbook = XLSX.read(bstr, { type: "binary" });
-        let first_sheet_name = workbook.SheetNames[0];
-        let worksheet = workbook.Sheets[first_sheet_name];
-        let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+      if (element.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+        console.log(element.type);
 
-        let localData = JSON.parse(localStorage.getItem('securityData'));
-        if (localData === null) {
-          localStorage.setItem('securityData', JSON.stringify([]));
-          localData = JSON.parse(localStorage.getItem('securityData'));
-        }
-        // tslint:disable-next-line: forin
-        for (let record in sheetdata) {
-          // console.log(sheetdata[record]);
-          let port1, comp1, comp2;
-          port1 = Number.parseInt(sheetdata[record]['portfolio1']);
-          comp1 = Number.parseInt(sheetdata[record]['comparison1']);
-          comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+        this.files.push(element.name);
+        // console.log(element);
+        let fr = new FileReader;
+        fr.onload = (e) => {
+          this.arrayBuffer = fr.result;
+          let data = new Uint8Array(this.arrayBuffer);
+          let arr = new Array();
+          for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+          let bstr = arr.join("");
+          let workbook = XLSX.read(bstr, { type: "binary" });
+          let first_sheet_name = workbook.SheetNames[0];
+          let worksheet = workbook.Sheets[first_sheet_name];
+          let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+          console.log("hello", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
 
-          // console.log(sheetdata[record]['Security ISIN']);
-          let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
-          // console.log(security);
-          if (security) {
-            try {
-              let portfilio = portfoliofundlist.findIndex(s => s.security === '');
-              portfoliofundlist[portfilio].security_id = security.id;
-              portfoliofundlist[portfilio].security = security.name;
-              portfoliofundlist[portfilio].yourPortfolio = port1;
-              portfoliofundlist[portfilio].comparision1 = comp1;
-              portfoliofundlist[portfilio].comparision2 = comp2;
-              portfoliofundlist[portfilio].p1record = localData.length;
-              let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-              localData.push(format);
-            } catch {
-              let singlefund: portfolio_fund = {
-                security: security.name,
-                security_id: security.id,
-                p1record: localData.length,
-                p2record: null,
-                p3record: null,
-                yourPortfolio: port1,
-                comparision1: comp1,
-                comparision2: comp2
-              };
-              portfoliofundlist.push(singlefund);
+          let localData = JSON.parse(localStorage.getItem('securityData'));
 
-              // let lastrow = localData[localData.length - 1];
-              // console.log(lastrow);
-              let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-              console.log(format);
+          if (localData === null) {
+            localStorage.setItem('securityData', JSON.stringify([]));
+            localData = JSON.parse(localStorage.getItem('securityData'));
 
-              localData.push(format);
+          }
+          let count = localData.length;
+
+          // tslint:disable-next-line: forin
+          for (let record in sheetdata) {
+            // console.log(sheetdata[record]);
+            let port1, comp1, comp2;
+            port1 = Number.parseInt(sheetdata[record]['portfolio1']);
+            comp1 = Number.parseInt(sheetdata[record]['comparison1']);
+            comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+
+            // console.log(sheetdata[record]['Security ISIN']);
+            let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
+            // console.log(security);
+            if (security) {
+              try {
+                let portfilio = portfoliofundlist.findIndex(s => s.security === '');
+                portfoliofundlist[portfilio].security_id = security.id;
+                portfoliofundlist[portfilio].security = security.name;
+                portfoliofundlist[portfilio].yourPortfolio = port1;
+                portfoliofundlist[portfilio].comparision1 = comp1;
+                portfoliofundlist[portfilio].comparision2 = comp2;
+                portfoliofundlist[portfilio].p1record = localData.length;
+                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                localData.push(format);
+              } catch {
+                let singlefund: portfolio_fund = {
+                  security: security.name,
+                  security_id: security.id,
+                  p1record: localData.length,
+                  p2record: null,
+                  p3record: null,
+                  yourPortfolio: port1,
+                  comparision1: comp1,
+                  comparision2: comp2
+                };
+                portfoliofundlist.push(singlefund);
+
+                // let lastrow = localData[localData.length - 1];
+                // console.log(lastrow);
+                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                console.log(format);
+
+                localData.push(format);
 
 
+              }
             }
           }
-        }
+          if (count === localData.length) {
+            Swal.fire('File Upload', 'Your data is not in proper format', 'error');
+          } else {
+            localStorage.setItem('securityData', JSON.stringify(localData));
+            let pageno;
+            this.portfolioservice.resetfunds();
+            this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+            this.portfolioservice.total$.subscribe(f => {
+              this.total$ = f;
+              pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+              // console.log(pageno);
+              this.portfolioservice.page = pageno;
+            });
+            this.setdataindeshboard();
+          }
+          this.modalService.dismissAll('Upload Done');
+          // this.setfunds(sheetdata);
 
-        localStorage.setItem('securityData', JSON.stringify(localData));
+        };
+        fr.readAsArrayBuffer(element);
+      } else {
+        Swal.fire('File Upload', 'Please upload exel or csv files', 'error');
+      }
 
-        // this.setfunds(sheetdata);
-
-      };
-      fr.readAsArrayBuffer(element);
     }
-    let pageno;
-    this.portfolioservice.resetfunds();
-    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
-    this.portfolioservice.total$.subscribe(f => {
-      this.total$ = f;
-      pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-      // console.log(pageno);
-      this.portfolioservice.page = pageno;
-    });
-
-    this.modalService.dismissAll('Upload Done');
 
   }
 
   searchsecurity(secinput) {
     // // console.log(this.securityinput);
     var securityList1 = [];
-    if (secinput.length > 1) {
+    if (secinput.length >= 1) {
       // if ($event.timeStamp - this.lastkeydown1 > 200) {
       securityList1 = this.searchFromArray(securitylist, secinput);
 
@@ -968,16 +1002,16 @@ export class HomeComponent implements OnInit {
   numberOnly(event, value) {
     const charCode = (event.which) ? event.which : event.keyCode;
     if (value.includes('%')) {
-        return false;
+      return false;
     } else if ((charCode > 47 && charCode < 58) || charCode === 37) {
-        if (charCode === 37 && Number.parseInt(value) > 100) {
-            return false;
-        }
-        return true;
-    } else {
+      if (charCode === 37 && Number.parseInt(value) > 100) {
         return false;
+      }
+      return true;
+    } else {
+      return false;
     }
-}
+  }
 
   addportfolioFund(string1, item, i) {
     // alert(item.security);
@@ -1068,10 +1102,11 @@ export class HomeComponent implements OnInit {
             // console.log("blob is ", filedata.type);
             const blob = new Blob([filedata], { type: filedata.type });
             const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
-            console.log('myfile', myfile);
+            // console.log('myfile', myfile);
 
             let fr = new FileReader;
             fr.onload = (e) => {
+
               this.arrayBuffer = fr.result;
               let data = new Uint8Array(this.arrayBuffer);
               let arr = new Array();
@@ -1081,12 +1116,16 @@ export class HomeComponent implements OnInit {
               let first_sheet_name = workbook.SheetNames[0];
               let worksheet = workbook.Sheets[first_sheet_name];
               let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+              console.log("sheetdata", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
 
               let localData = JSON.parse(localStorage.getItem('securityData'));
               if (localData === null) {
                 localStorage.setItem('securityData', JSON.stringify([]));
                 localData = JSON.parse(localStorage.getItem('securityData'));
               }
+              let count = localData.length;
+              // console.log(count);
+
               // tslint:disable-next-line: forin
               for (let record in sheetdata) {
                 // console.log(sheetdata[record]);
@@ -1125,32 +1164,31 @@ export class HomeComponent implements OnInit {
                     // let lastrow = localData[localData.length - 1];
                     // console.log(lastrow);
                     let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-                    console.log(format);
-
+                    // console.log(format);
                     localData.push(format);
-
-
                   }
                 }
               }
+              // console.log("length", localData.length);
 
-              localStorage.setItem('securityData', JSON.stringify(localData));
+              if (count === localData.length) {
+                Swal.fire('File Upload', 'Your data is not in proper format', 'error');
+              } else {
+                localStorage.setItem('securityData', JSON.stringify(localData));
+                this.portfolioservice.resetfunds();
+                this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+                this.portfolioservice.total$.subscribe(f => {
+                  this.total$ = f;
+                  const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                  // console.log(pageno);
+                  this.portfolioservice.page = pageno;
+                });
+                this.setdataindeshboard();
+              }
 
+              this.modalService.dismissAll('File upload');
             };
             fr.readAsArrayBuffer(myfile);
-            this.portfolioservice.resetfunds();
-            this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
-            this.portfolioservice.total$.subscribe(f => {
-              this.total$ = f;
-              const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-              // console.log(pageno);
-              this.portfolioservice.page = pageno;
-            });
-            // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-            // console.log(pageno);
-            // // ()
-            // this.portfolioservice.page = pageno;
-            this.modalService.dismissAll('File upload');
           });
         }
       },

@@ -24,7 +24,7 @@ const routes: Routes = [
   { path: 'allocation_fund_analysis', component: AllocationFundAnalysisComponent },
   { path: 'allocation_recommendation', component: AllocationRecommendationComponent },
   { path: 'reset-password/:uid/:token', component: ResetPasswordComponent },
-  { path: 'confirm-email/:token', component: ConfirmemailComponent },
+  { path: 'accounts/confirm-email/:token', component: ConfirmemailComponent },
   { path: 'abc', component: TestingdataComponent }
 ];
 

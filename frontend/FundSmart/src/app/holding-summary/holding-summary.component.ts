@@ -30,6 +30,8 @@ export class HoldingSummaryComponent implements OnInit {
     total2 = {};
     total3 = {};
     total4 = [];
+    colors = ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'];
+
     // holding type
     bartitle_fund = 'Bar Chart';
     bardata_fund = [];
@@ -39,13 +41,14 @@ export class HoldingSummaryComponent implements OnInit {
     baroptions_fund = {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
-        colors: ['#000080'],
-        animation: {
-            duration: 10000,
-            easing: 'out'
-        },
+        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        // animation: {
+        //     duration: 10000,
+        //     easing: 'out'
+        // },
         enableInteractivity: true,
     };
+    barcolumnname = [];
 
     // industry graph
     industry_bartitle_fund = 'Bar Chart';
@@ -56,11 +59,11 @@ export class HoldingSummaryComponent implements OnInit {
     industry_baroptions_fund = {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
-        colors: ['#FF4500'],
-        animation: {
-            duration: 10000,
-            easing: 'out'
-        },
+        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        // animation: {
+        //     duration: 10000,
+        //     easing: 'out'
+        // },
         enableInteractivity: true,
 
     };
@@ -76,11 +79,12 @@ export class HoldingSummaryComponent implements OnInit {
     assets_baroptions_fund = {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
-        colors: ['#9ACD32'],
-        animation: {
-            duration: 10000,
-            easing: 'out'
-        },
+        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        // animation: {
+        //     duration: 10000,
+        //     easing: 'out'
+        // },
+        interpolateNulls: true,
         enableInteractivity: true,
     };
 
@@ -133,29 +137,36 @@ export class HoldingSummaryComponent implements OnInit {
 
     getFund() {
         this.service.holding_summary_fund(this.id).subscribe((fundData: any) => {
+            let i = 0;
+            let names: any;
             fundData.forEach(fund => {
-                const names = Object.keys(fund);
+                names = Object.keys(fund);
                 const FundObj = {
                     name: names[0],
                     value: fund[names[0]]
                 }
                 if (names[0] !== 'Total') {
-                    this.bardata_fund.push([names[0], fund[names[0]]]);
+                    this.bardata_fund.push([names[0], fund[names[0]], `color:${this.colors[i]}`]);
                     this.fund.push(FundObj);
+                    i++;
+
                 } else {
                     this.total = FundObj;
                 }
-                console.log(this.bardata_fund);
+                // console.log(this.bardata_fund);
+
             });
+
+            this.barcolumnname = ['Fund', 'value', { role: 'style' }];
         });
     }
 
     getAssets() {
         this.service.holding_summary_asset(this.id).subscribe((resultData: any) => {
             // console.log(resultData);
-
+            let i = 0;
             resultData.forEach(result => {
-                console.log("result", result);
+                // console.log("result", result);
 
                 const names = Object.keys(result);
                 const ResultObj = {
@@ -166,12 +177,17 @@ export class HoldingSummaryComponent implements OnInit {
                 if (names[0] !== 'Total') {
                     this.assets_bardata_fund.push([names[0], result[names[0]]]);
                     this.result.push(ResultObj);
+                    // console.log();
+
+                    i++;
                 } else {
                     this.total1 = ResultObj;
                 }
-                // console.log(this.assets_bardata_fund);
+
             });
         });
+        console.log(this.assets_bardata_fund);
+        // this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
     }
 
     getCountry() {
@@ -192,7 +208,9 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     getIndustry() {
+
         this.service.holding_summary_industry(this.id).subscribe((industryData: any) => {
+            let i = 0;
             industryData.forEach(industry => {
                 const names = Object.keys(industry);
                 const industryObj = {
@@ -202,11 +220,13 @@ export class HoldingSummaryComponent implements OnInit {
                 // console.log(names[0]);
 
                 if (names[0] !== 'Total') {
-                    this.industry_bardata_fund.push([names[0], industry[names[0]]]);
+                    this.industry_bardata_fund.push([names[0], industry[names[0]], `color:${this.colors[i]}`]);
                     this.industry.push(industryObj);
+                    i++;
                 } else {
                     this.total3 = industryObj;
                 }
+
             });
         });
     }
@@ -270,6 +290,7 @@ export class HoldingSummaryComponent implements OnInit {
                 this.lineoptions = {
                     pointSize: 5,
                     curveType: 'function',
+                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
 
                 };
             });

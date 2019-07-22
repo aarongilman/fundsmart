@@ -4,9 +4,9 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 
 @Component({
-    selector: 'app-fund-recommendation',
-    templateUrl: './fund-recommendation.component.html',
-    styleUrls: ['./fund-recommendation.component.css']
+  selector: 'app-fund-recommendation',
+  templateUrl: './fund-recommendation.component.html',
+  styleUrls: ['./fund-recommendation.component.css']
 })
 export class FundRecommendationComponent implements OnInit {
 
@@ -38,7 +38,9 @@ export class FundRecommendationComponent implements OnInit {
   bartype = 'ColumnChart';
   baroptions = {
     isStacked: true,
-    colors: ['#7FFFD4', '#800000', '#DC143C', '#006400'],
+    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+
+    // colors: ['#7FFFD4', '#800000', '#DC143C', '#006400'],
   };
   barcolumnNames = [];
 
@@ -107,7 +109,7 @@ export class FundRecommendationComponent implements OnInit {
     });
   }
 
-//line chart
+  //line chart
   getLinePlotChart() {
     this.service.fundRecommendationLineChart(this.id).subscribe(
       (jsondata: any) => {
@@ -149,15 +151,25 @@ export class FundRecommendationComponent implements OnInit {
             }
             // debugger;
             this.linedata.push(valuesCollection);
-            console.log("line",this.linedata);
+            // console.log("line", this.linedata);
           }
         }
+        // this.lineoptions = {
+        //   pointSize: 1,
+        //   colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        //   curveType: 'function',
+        //   tooltips: {
+        //     mode: 'index'
+        //   },
+
+        // };
         this.lineoptions = {
           pointSize: 1,
           curveType: 'function',
           tooltips: {
             mode: 'index'
-          }
+          },
+          colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
         };
 
       });
@@ -170,29 +182,36 @@ export class FundRecommendationComponent implements OnInit {
         // console.log(historical);
         const name = Object.keys(historical);
         const obj = Object.values(historical);
-
+        let i: any;
         // tslint:disable-next-line: forin
-        for (const n in name) {
-          // console.log('N is', name[n], historical[name[n]]);
-          // this.bardata.push([name[n], historical[name[n]]]);
-          let barobj = Object.values(obj[n]);
-          barobj.unshift(name[n]);
-          this.bardata.push(barobj);
-        }
-        // console.log("Bar data",this.bardata);
-        // console.log("Object count", Object.values(obj[0]));
-        // this.barcolumnNames = name;
-        // tslint:disable-next-line: forin
-        for (let i in obj[0]) {
+        for (i in obj[1]) {
           // console.log("elements are", i);
           this.barcolumnNames.push(i);
         }
         this.barcolumnNames.unshift('Fund Types');
         // this.barcolumnNames = element;
+        console.log(this.barcolumnNames);
+        let count = 0;
+        // tslint:disable-next-line: forin
+        for (const n in name) {
+          console.log('N is', name[n], historical[name[n]]);
+          
+          this.bardata.push([name[n], historical[name[n]]]);
+          let barobj = Object.values(obj[n]);
+          barobj.unshift(name[n]);
+          this.bardata.push(barobj);
+
+        }
+        // console.log("Bar data",this.bardata);
+        // console.log("Object count", Object.values(obj[0]));
+        // this.barcolumnNames = name;
+        console.log("Length of obj", obj[1]);
+
+
 
       });
     });
-    
+
   }
 
 }

@@ -6,6 +6,7 @@ import * as XLSX from 'xlsx';
 import { securitylist } from './securitylist';
 import { portfoliofundlist } from './portfolio_fundlist';
 import { portfolio_fund } from './portfolio_fund';
+import Swal from 'sweetalert2';
 
 
 declare const google: any;
@@ -95,6 +96,7 @@ export class GetfileforuploadService {
           if (self.page === 'Dashboard') {
             let fr = new FileReader;
             fr.onload = (e) => {
+              // alert('In fole reader')
               this.arrayBuffer = fr.result;
               let data = new Uint8Array(this.arrayBuffer);
               let arr = new Array();
@@ -104,11 +106,14 @@ export class GetfileforuploadService {
               let first_sheet_name = workbook.SheetNames[0];
               let worksheet = workbook.Sheets[first_sheet_name];
               let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+              // console.log("sheet data", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
+
               let localData = JSON.parse(localStorage.getItem('securityData'));
               if (localData === null) {
                 localStorage.setItem('securityData', JSON.stringify([]));
                 localData = JSON.parse(localStorage.getItem('securityData'));
               }
+              let count = localData.length;
               // tslint:disable-next-line: forin
               for (let record in sheetdata) {
                 // console.log(sheetdata[record]);
@@ -150,9 +155,14 @@ export class GetfileforuploadService {
                 }
                 // this.interconn.Filuplodedsettable();
               }
-              localStorage.setItem('securityData', JSON.stringify(localData));
+              // console.log('two counts', count, localData.length);
 
-              this.interconn.Filuplodedsettable();
+              if (count === localData.length) {
+                Swal.fire('File Upload', 'Your data is not in proper format', 'error');
+              } else {
+                localStorage.setItem('securityData', JSON.stringify(localData));
+                this.interconn.Filuplodedsettable();
+              }
             };
             fr.readAsArrayBuffer(file);
           } else {
@@ -170,13 +180,125 @@ export class GetfileforuploadService {
           }
         },
         error => {
-          console.log(error);
+          self.exportGDrivefile(doc.id).subscribe(
+            filedata => {
+              // console.log(filedata);
+
+              const blob = new Blob([filedata], { type: doc.mimeType });
+              const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
+
+              if (self.page === 'Dashboard') {
+                let fr = new FileReader;
+                fr.onload = (e) => {
+                  // alert('In fole reader')
+                  this.arrayBuffer = fr.result;
+                  let data = new Uint8Array(this.arrayBuffer);
+                  let arr = new Array();
+                  for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+                  let bstr = arr.join("");
+                  let workbook = XLSX.read(bstr, { type: "binary" });
+                  let first_sheet_name = workbook.SheetNames[0];
+                  let worksheet = workbook.Sheets[first_sheet_name];
+                  let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+                  // console.log("sheet data", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
+
+                  let localData = JSON.parse(localStorage.getItem('securityData'));
+                  if (localData === null) {
+                    localStorage.setItem('securityData', JSON.stringify([]));
+                    localData = JSON.parse(localStorage.getItem('securityData'));
+                  }
+                  let count = localData.length;
+                  // tslint:disable-next-line: forin
+                  for (let record in sheetdata) {
+                    // console.log(sheetdata[record]);
+                    // alert('in forloop');
+                    let port1, comp1, comp2;
+                    port1 = Number.parseInt(sheetdata[record]['portfolio1']);
+                    comp1 = Number.parseInt(sheetdata[record]['comparison1']);
+                    comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+
+                    // console.log(sheetdata[record]['Security ISIN']);
+                    let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
+                    // console.log(security);
+                    if (security) {
+                      try {
+                        let portfilio = portfoliofundlist.findIndex(s => s.security === '');
+                        portfoliofundlist[portfilio].security_id = security.id;
+                        portfoliofundlist[portfilio].security = security.name;
+                        portfoliofundlist[portfilio].yourPortfolio = port1;
+                        portfoliofundlist[portfilio].comparision1 = comp1;
+                        portfoliofundlist[portfilio].comparision2 = comp2;
+                        portfoliofundlist[portfilio].p1record = localData.length;
+                        let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                        localData.push(format);
+                      } catch {
+                        let singlefund: portfolio_fund = {
+                          security: security.name,
+                          security_id: security.id,
+                          p1record: localData.length,
+                          p2record: null,
+                          p3record: null,
+                          yourPortfolio: port1,
+                          comparision1: comp1,
+                          comparision2: comp2
+                        };
+                        portfoliofundlist.push(singlefund);
+                        let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                        localData.push(format);
+                      }
+                    }
+                    // this.interconn.Filuplodedsettable();
+                  }
+                  // console.log('two counts', count, localData.length);
+
+                  if (count === localData.length) {
+                    Swal.fire('File Upload', 'Your data is not in proper format', 'error');
+                  } else {
+                    localStorage.setItem('securityData', JSON.stringify(localData));
+                    this.interconn.Filuplodedsettable();
+                  }
+                };
+                fr.readAsArrayBuffer(file);
+              } else {
+                const formData = new FormData();
+                formData.append('data_file', file);
+                self.userservice.uploadfile(formData).subscribe(
+                  resp => {
+                    console.log(resp);
+                    this.interconn.afterfileupload();
+                  },
+                  error => {
+                    console.log(error);
+                  }
+                );
+              }
+            },
+            error => {
+              console.log(error);
+            }
+          );
+          // console.log(error);
         }
       );
     }
   }
 
+
+  exportGDrivefile(fileId) {
+    return this.http.get<Blob>('https://www.googleapis.com/drive/v2/files/' + fileId + '/export', {
+      responseType: 'blob' as 'json',
+      params: {
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        alt: 'media'
+      },
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${this.oauthToken}`
+      })
+    });
+  }
+
   downloadGDriveFile(fileId) {
+
     return this.http.get<Blob>('https://www.googleapis.com/drive/v2/files/' + fileId, {
       responseType: 'blob' as 'json',
       params: { alt: 'media' },

@@ -180,7 +180,7 @@ export class ServercommunicationService {
   }
 
   logout() {
-    localStorage.clear();
+    localStorage.removeItem('authkey');
     this.http.post(this.api_link + 'rest-auth/logout/',
       { headers: this.httpHeaders }).subscribe(
         data => {
@@ -334,7 +334,7 @@ export class ServercommunicationService {
       { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
   }
 
-  addPortfolioFund(name, description, owner_1, owner_2, marginal_tax_range, type, location) {
+  addPortfolioFund(name, description, owner_1, owner_2, type, marginal_tax_range, location) {
     const body = {
       name: name,
       description: description,
@@ -344,7 +344,9 @@ export class ServercommunicationService {
       marginal_tax_range: marginal_tax_range,
       location: location,
       created_by: this.currentuser.id,
-    }
+    };
+    // console.log(body);
+
     return this.http.post(this.api_link + 'api/portfolio/',
       body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
 
