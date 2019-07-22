@@ -16,7 +16,7 @@
                             <option [ngValue]="50">50</option>
                             <option [ngValue]="100">100</option>
                         </select>
-                    <!-- </span> -->
+                        <!-- </span> -->
                         <p-confirmDialog></p-confirmDialog>
                         <span class="form-group d-flex align-items-center ml-auto mb-0 w-60" style="width: 350px">
                             <input class="form-control search ml-2 w-100" type="text" name="searchText"
@@ -30,6 +30,7 @@
                             <tr>
                                 <th>Funds</th>
                                 <th>Description</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,9 +38,10 @@
                             <tr *ngFor="let fund of result.results  | filter : searchText; let i = index">
                                 <td> {{fund.name}}</td>
                                 <td> {{fund.description}}</td>
-                                <a (click)='header_modals(updateportfolio, fund)'><i class="fas fa-pen"
+                                <a pTooltip="Edit" tooltipPosition="bottom"
+                                    (click)='header_modals(updateportfolio, fund)'><i class="fas fa-pen"
                                         style="color: #5ace9f;font-size:22px"></i></a>
-                                <a (click)="delete_Portfolio(fund.id)">
+                                <a pTooltip="Delete" tooltipPosition="bottom" (click)="delete_Portfolio(fund.id)">
                                     <i class="fa fa-times" aria-hidden="true"
                                         style="color: red;font-size:25px; padding-left: 20px"></i>
                                 </a>

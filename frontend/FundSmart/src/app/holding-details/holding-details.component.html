@@ -180,13 +180,13 @@
 
                                         </td>
                                         <td>{{item.asset_class}}</td>
-                                        <td><input *ngIf="item.industry === null" [(ngModel)]="industry[i]"
+                                        <td><input class="form-control" *ngIf="item.industry === null" [(ngModel)]="industry[i]"
                                                 style="width: 4cm;text-align: center" name='industry_{{i}}'
                                                 (change)="item.industry=industry[i];UpdateHoldingDetails(item,i)">
                                             <span *ngIf="item.industry !== null">{{item.industry}}</span>
 
                                         </td>
-                                        <td><input *ngIf="item.rating === null" [(ngModel)]="rating[i]"
+                                        <td><input class="form-control" *ngIf="item.rating === null" [(ngModel)]="rating[i]"
                                                 style="width: 4cm;text-align: center" name='rating_{{i}}'
                                                 (change)="item.rating = rating[i];UpdateHoldingDetails(item,i)">
                                             <span *ngIf="item.rating !== null">{{item.rating}}</span>
