@@ -62,6 +62,8 @@ export class HoldingDetailsComponent implements OnInit {
   country = [];
   industry = [];
   rating = [];
+  serchportfolio: any;
+
   constructor(private userservice: ServercommunicationService,
     public sortlist: HoldingdetailsSortService,
     private formBuilder: FormBuilder,
@@ -167,13 +169,36 @@ export class HoldingDetailsComponent implements OnInit {
       this.getHoldingdetail();
 
     }
-
-
-
-
-
   }
 
+  getportfoliobyportfolio() {
+    // console.log(this.serchportfolio);
+    if (this.serchportfolio === 'All') {
+      // alert('all' + this.serchportfolio);
+      this.getHoldingdetail();
+    } else {
+      // alert('came in else');
+      this.userservice.get(`api/holding_detail/?portfolio_ids=${this.serchportfolio}`).toPromise().then(
+        mtdata => {
+          holdingList.length = 0;
+          console.log(mtdata);
+
+          // tslint:disable-next-line: forin
+          for (var obj in mtdata) {
+            holdingList.push(mtdata[obj]);
+          }
+          this.sortlist.resetHoldingDetails();
+          this.sortlist.hlist$.subscribe(f => {
+            this.HoldingDetailList = f;
+          });
+          this.sortlist.total$.subscribe(total => {
+            this.total = total;
+          });
+
+        }
+      );
+    }
+  }
 
   getHoldingdetail() {
     this.route.queryParamMap.subscribe((queryParams: Params) => {

@@ -20,8 +20,6 @@ import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
 
-
-
 declare var Dropbox: Dropbox;
 
 interface Dropbox {
@@ -54,7 +52,6 @@ interface DropboxFile {
 })
 
 export class HomeComponent implements OnInit {
-    // Form conversion
 
     registeruserForm: FormGroup;
     submitted = false;
@@ -65,10 +62,6 @@ export class HomeComponent implements OnInit {
     comparision1Form: FormGroup;
     comparision2Form: FormGroup;
     fundrowForm: FormGroup;
-
-
-
-    // end form conversion
 
     funds$: portfolio_fund[];
     total$;
@@ -106,7 +99,6 @@ export class HomeComponent implements OnInit {
     showdetail_flag = false;
     email2: string;
 
-
     portfolioinput: string[] = [];
     comp1input: string[] = [];
     comp2input: string[] = [];
@@ -117,14 +109,12 @@ export class HomeComponent implements OnInit {
     comparision2: any;
 
     pietype = 'PieChart';
-    // pietitle = 'Pie Chart';
     piedata = [];
     pieoptions;
     columnNames = [];
     pieheight = 350;
     piewidth = 500;
 
-    // donutitle = 'Donought Chart';
     donutdata = [];
     donutwidth = 500;
     donutheight = 350;
@@ -140,14 +130,16 @@ export class HomeComponent implements OnInit {
     linecolumnNames = [];
     securitylist = securitylist;
     arrayBuffer: any;
-    // securitylist = [];
-    constructor(private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
+
+    constructor(
+        private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
         private userservice: ServercommunicationService,
         private fileupload: GetfileforuploadService,
         private authService: AuthService,
         private formBuilder: FormBuilder,
-        public portfolioservice: PortfoliofundhelperService,
-        private toastrService: ToastrService) {
+        private toastrService: ToastrService,
+        public portfolioservice: PortfoliofundhelperService
+    ) {
 
         this.portfolioservice.funds$.subscribe(f => {
             this.funds$ = f;
@@ -321,6 +313,18 @@ export class HomeComponent implements OnInit {
             password: new FormControl('', Validators.compose([Validators.required, Validators.minLength(6)]))
         });
 
+        this.interconn.googledriveuploadcalled$.subscribe(
+            () => {
+                this.setdataindeshboard();
+                this.portfolioservice.resetfunds();
+                this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+                this.portfolioservice.total$.subscribe(f => {
+                    this.total$ = f;
+                    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                    this.portfolioservice.page = pageno;
+                });
+            }
+        );
 
         this.registeruserForm = this.formBuilder.group(
             {
@@ -359,15 +363,10 @@ export class HomeComponent implements OnInit {
         //   //console.log('Fund', f);
         //   // this.resetfundlist();
         // });
-
-
-
     }
 
 
     resetfundlist() {
-        // console.log('method called , i');
-        // i++;
         Swal.fire({
             title: 'Are you sure?',
             text: 'You will not be able to recover this data',
@@ -390,8 +389,6 @@ export class HomeComponent implements OnInit {
                     comparision2: ''
                 };
                 portfoliofundlist.push(singlefund);
-
-                // localStorage.getItem('securityData');
                 this.portfolioservice.resetfunds();
                 this.setdataindeshboard();
             } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -721,10 +718,7 @@ export class HomeComponent implements OnInit {
             portfoliofundlist.length = 0;
         }
         fundlist.forEach(element => {
-            // console.log(element);
             let security = this.securitylist.find(s => s['id'] === element.securityId);
-            // console.log("security is", security);
-
             let singlefund: portfolio_fund = {
                 // created_by: 0
                 security: security.name,
@@ -758,21 +752,15 @@ export class HomeComponent implements OnInit {
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
         });
-
-
-
     }
 
     get loginf() { return this.loginForm.controls; }
     userlogin() {
-        console.log("form value is", this.loginForm.value);
-
+        // console.log("form value is", this.loginForm.value);
         this.loginformSubmitted = true;
-
         // stop here if form is invalid
         if (this.loginForm.invalid) {
-            console.log("form is invalid");
-
+            // console.log("form is invalid");
             return;
         }
         this.userservice.doLogin(JSON.stringify(this.loginForm.value)).subscribe(
@@ -787,7 +775,6 @@ export class HomeComponent implements OnInit {
 
             },
             error => {
-
                 // console.log(error);
                 $('#Loginerror').removeClass('hidden');
                 // alert('Wrong Credentials / Server Problem');
@@ -798,7 +785,7 @@ export class HomeComponent implements OnInit {
     openmodal(modalid, str) {
         // alert("type of modal is" + typeof(modalid));
         var addclass = '';
-        if (str == 'login' || str == 'register') {
+        if (str === 'login' || str === 'register') {
             addclass = 'long-pop sign-pop';
         }
         this.modalService.open(modalid, { centered: true, windowClass: addclass }).result.then((result) => {
@@ -1214,21 +1201,17 @@ export class HomeComponent implements OnInit {
         Dropbox.choose(options);
     }
 
-    onedrivefileupload() {
-    }
-
-    drive_fileupload() {
-        // alert('abc');
-        this.fileupload.onApiLoad("Dashboard");
-
-        this.modalService.dismissAll('File upload');
-    }
-
     setcurrent_user() {
         this.currentUser = this.userservice.currentuser;
     }
 
+    onedrivefileupload() {
+    }
 
+    drive_fileupload() {
+        this.fileupload.onApiLoad("Dashboard");
+        this.modalService.dismissAll('File upload');
+    }
 
     onSort({ column, direction }: SortEvent) {
         // resetting other headers

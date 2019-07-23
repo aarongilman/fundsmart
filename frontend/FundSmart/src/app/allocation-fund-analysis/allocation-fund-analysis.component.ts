@@ -65,9 +65,13 @@ export class AllocationFundAnalysisComponent implements OnInit {
     ) {
         this.interconn.componentMethodCalled$.subscribe(
             () => {
-                this.getCurrentAllocation();
-                this.getHistoricalPerformance();
-                this.getLinegraph();
+                this.route.queryParamMap.subscribe((queryParams: Params) => {
+                    if (queryParams.params.id) {
+                        this.getCurrentAllocation();
+                        this.getHistoricalPerformance();
+                        this.getLinegraph();
+                    }
+                });
             }
         );
 

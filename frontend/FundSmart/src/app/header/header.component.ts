@@ -34,7 +34,6 @@ export class HeaderComponent implements OnInit {
             });
         this.intercon.logoutcomponentMethodCalled$.subscribe(
             () => {
-                // this.setcurrent_user();
                 this.currentuser = undefined;
             });
     }
@@ -69,7 +68,6 @@ export class HeaderComponent implements OnInit {
     }
 
     userlogout() {
-        // alert('logout');
         this.service.logout();
     }
 
@@ -86,12 +84,11 @@ export class HeaderComponent implements OnInit {
     changepassword() {
         if (this.newpass == this.confirmpass) {
             this.service.change_password(this.oldpass, this.newpass, this.confirmpass).subscribe(data => {
-                alert(data['detail']);
-                this.modalService.dismissAll('Change password done');
+                this.toastr.success('success','Password has been changed successfully!')
                 this.oldpass = '';
                 this.newpass = '';
                 this.confirmpass = '';
-            }, error => { });
+            });
         }
         else {
             this.toastr.error('Error!', 'New password and Confirm password does not match!');

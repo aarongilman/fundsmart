@@ -12,22 +12,22 @@
                         <div class='row'>
                             <!-- {{portfoliolist.length}} -->
                             <div class="col-sm-4">
-                                <div *ngIf="portfoliolist.length > 1">
+                                <div *ngIf="portfoliolist.length > 1 && order === undefined">
                                     <div class='input-group align-items-center'>
-                                        Select Portlolios:<select class='form-control' style="width: 25%"
-                                            [(ngModel)]="sortlist.searchTerm">
-                                            <option selected value="">All</option>
+                                        Select Portfolio:<select class='form-control ml-2' [(ngModel)]="serchportfolio"
+                                            (change)='getportfoliobyportfolio()'>
+                                            <option selected=true [value]="">All</option>
                                             <option *ngFor="let pitem of portfoliolist" title="portfolio1"
-                                                [value]="pitem.name" name='p1'>
+                                                [value]="pitem.id" name='p1'>
                                                 {{pitem.name}} </option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
                             <div class="table-btns col-sm-8">
-                                <form action="post">
+                                <form action="post" class="form-holding">
                                     <button type="button" (click)="openModal(addHoldingDetais)" style="cursor: pointer"
-                                        class="tbl-btn button green-btn d-flex align-items-center justify-content-center">
+                                        class="tbl-btn button green-btn">
                                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                             viewBox="0 0 491.86 491.86" style="enable-background:new 0 0 491.86 491.86;"
@@ -71,8 +71,7 @@
                                         </svg>
                                         Add Row
                                     </button>
-                                    <button type="button" (click)="downloadData()"
-                                        class="tbl-btn  dark-green-btn d-flex align-items-center justify-content-center"
+                                    <button type="button" (click)="downloadData()" class="tbl-btn  dark-green-btn"
                                         style="cursor: pointer">
                                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"

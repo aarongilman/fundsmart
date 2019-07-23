@@ -87,7 +87,6 @@ export class FundComponent implements OnInit {
     }
 
     addPortfolioData() {
-        // alert("add portfolio");
         this.userService.addPortfolioFund(
             this.name,
             this.description,
@@ -132,7 +131,6 @@ export class FundComponent implements OnInit {
     }
 
     updatePortfolioData(_id) {
-        console.log(_id);
         let fundupdate = {
             name: this.name,
             description: this.description,
@@ -142,18 +140,10 @@ export class FundComponent implements OnInit {
             marginal_tax_range: this.marginal_tax_range,
             location: this.location,
         };
-        // console.log(this.result.find(fund => fund.id === _id));
         this.userService.update_One_Object(fundupdate, _id).subscribe(
             data => {
-                // console.log(data);
                 let index = this.result.findIndex(fund => fund.id === _id);
-                // console.log(index);
                 this.result[index] = data;
-
-                // console.log(this.result);
-
-
-
                 this.toastr.success('Portfolio Updated!', 'Portfolio Updated!');
             });
     }
