@@ -65,8 +65,7 @@
                                         </svg>
                                         Add Row
                                     </button>
-                                    <button type="button" (click)="downloadData()"
-                                        class="tbl-btn  dark-green-btn"
+                                    <button type="button" (click)="downloadData()" class="tbl-btn  dark-green-btn"
                                         style="cursor: pointer">
                                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -155,7 +154,7 @@
                                                 type="number" style="width: 2cm;text-align: center"
                                                 [(ngModel)]="currentprice[i]"
                                                 (blur)="item.current_price=currentprice[i];UpdateHoldingDetails(item,i)"
-                                                name="current_price_{{i}}">
+                                                name="current_price_{{i}}" oninput="validity.valid||(value='');">
                                             <span *ngIf="item.current_price !== null">{{item.current_price}}</span>
                                         </td>
                                         <td>{{(item.market_value)}}</td>
@@ -163,7 +162,7 @@
                                                 style=" width: 2cm;text-align:
                                                 center" [(ngModel)]="basicprice[i]"
                                                 (blur)="item.basic_price = basicprice[i];UpdateHoldingDetails(item,i)"
-                                                name="basic_price_{{i}}">
+                                                name="basic_price_{{i}}" oninput="validity.valid||(value='');">
                                             <span *ngIf="item.basic_price !== null">{{item.basic_price}}</span>
                                         </td>
                                         <td>{{item.basis}}</td>
@@ -180,14 +179,16 @@
 
                                         </td>
                                         <td>{{item.asset_class}}</td>
-                                        <td><input class="form-control" *ngIf="item.industry === null" [(ngModel)]="industry[i]"
-                                                style="width: 4cm;text-align: center" name='industry_{{i}}'
+                                        <td><input class="form-control" *ngIf="item.industry === null"
+                                                [(ngModel)]="industry[i]" style="width: 4cm;text-align: center"
+                                                name='industry_{{i}}'
                                                 (change)="item.industry=industry[i];UpdateHoldingDetails(item,i)">
                                             <span *ngIf="item.industry !== null">{{item.industry}}</span>
 
                                         </td>
-                                        <td><input class="form-control" *ngIf="item.rating === null" [(ngModel)]="rating[i]"
-                                                style="width: 4cm;text-align: center" name='rating_{{i}}'
+                                        <td><input class="form-control" *ngIf="item.rating === null"
+                                                [(ngModel)]="rating[i]" style="width: 4cm;text-align: center"
+                                                name='rating_{{i}}'
                                                 (change)="item.rating = rating[i];UpdateHoldingDetails(item,i)">
                                             <span *ngIf="item.rating !== null">{{item.rating}}</span>
 
@@ -300,17 +301,17 @@
                             </option>
                         </datalist>
                         <div *ngIf="submitted && f.selectedSecurity.errors" class="invalid-feedback">
-                            <div *ngIf="f.selectedSecurity.errors.required">security is required</div>
+                            <div *ngIf="f.selectedSecurity.errors.required">Security is required</div>
                         </div>
                     </div>
                     <br />
 
                     <div class="input-group">
-                        <input type="number" class="form-control" formControlName="quantity" name='quantity'
+                        <input oninput="validity.valid||(value='');" type="number" class="form-control" formControlName="quantity" name='quantity'
                             placeholder="Enter Quantity" [ngClass]="{ 'is-invalid': submitted && f.quantity.errors }">
                         <div *ngIf="submitted && f.quantity.errors" class="invalid-feedback">
-                            <div *ngIf="f.quantity.errors.required">quantity is required</div>
-                            <div *ngIf="f.quantity.errors.pattern">quantity in numbers only</div>
+                            <div *ngIf="f.quantity.errors.required">Quantity is required</div>
+                            <div *ngIf="f.quantity.errors.pattern">Quantity in numbers only</div>
                         </div>
                     </div>
                     <br />
@@ -330,7 +331,7 @@
                     <p>
                         Basic Price and Current Price are not mandatory.
                     </p>
-                    <button type="button" (click)='AddDetail()' style="cursor: pointer"
+                    <button type="button" (click)='addDetail()' style="cursor: pointer"
                         class="trade-btn button green-btn d-flex align-items-center justify-content-center login-email">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
