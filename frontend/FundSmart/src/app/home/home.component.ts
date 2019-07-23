@@ -1031,7 +1031,7 @@ export class HomeComponent implements OnInit {
                     quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
                     this.createportfoliofundmethod(quantity, item, 'p2', i);
                 } else {
-                    item.comparision1 = null;;
+                    item.comparision1 = null;
                     quantity = null;
                     this.createportfoliofundmethod(quantity, item, 'p2', i);
                 }
