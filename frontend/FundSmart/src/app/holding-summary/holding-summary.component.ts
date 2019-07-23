@@ -20,6 +20,7 @@ export class HoldingSummaryComponent implements OnInit {
     graph = [];
     linedata = [];
     linetype = 'LineChart';
+    linetitle = '';
     // linetitle = 'Portfolio value over time';
     linewidth = 350;
     lineheight = 400;

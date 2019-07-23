@@ -332,8 +332,7 @@
                             <h3>Pie Chart</h3>
                         </div>
                         <div *ngIf="piedata && piedata?.length > 0">
-                            <google-chart [type]="pietype" [data]="piedata" [options]="pieoptions"
-                                [height]="pieheight">
+                            <google-chart [type]="pietype" [data]="piedata" [options]="pieoptions" [height]="pieheight">
                             </google-chart>
                         </div>
                         <div *ngIf="piedata?.length <= 0" class="align-items-center" style="text-align: center;">
@@ -592,13 +591,14 @@
                         <p>or</p>
                     </div>
                     <div class="login-form trade-inputs">
-                        <form [formGroup]='loginForm'>
+                        <form [formGroup]='loginForm' id='loginform'>
                             <div class="form-group">
                                 <input type="text" class="form-control" name='username' required=true
                                     formControlName="username" placeholder="Enter Username"
                                     [ngClass]="{ 'is-invalid': submitted && loginf.username.errors }">
                                 <div *ngIf="submitted && loginf.username.errors" class="invalid-feedback">
-                                    <div *ngIf="loginf.username.errors.required">Username is required</div>
+                                    <div *ngIf="loginf.username.errors.required" style="text-emphasis-color: green">
+                                        Username is required</div>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -663,7 +663,8 @@
                     </div>
                 </div>
                 <div class="forgot-password-wrap">
-                    <p>Please enter the email address you used to register to receive the passoword reset instruction.</p>
+                    <p>Please enter the email address you used to register to receive the passoword reset instruction.
+                    </p>
                     <div class="login-form trade-inputs">
                         <form action="post">
                             <div class="input-group">

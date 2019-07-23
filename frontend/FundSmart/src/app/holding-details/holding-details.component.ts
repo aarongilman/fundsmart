@@ -97,6 +97,12 @@ export class HoldingDetailsComponent implements OnInit {
               this.portfoliolist.push(data['results'][d]);
             }
           });
+
+        this.fundForm = this.formBuilder.group({
+          selectedPortfolio: new FormControl('', Validators.required),
+          selectedSecurity: new FormControl('', Validators.required),
+          quantity: new FormControl('', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')]))
+        });
       });
 
     this.interconn.logoutcomponentMethodCalled$.subscribe(
@@ -144,32 +150,27 @@ export class HoldingDetailsComponent implements OnInit {
       );
     }
 
-    this.userservice.getUserPortfolio().subscribe(
-      data => {
-        // alert("portfolio data came");
-        // console.log(data);
-        this.portfoliolist.length = 0;
-        // tslint:disable-next-line: forin
-        for (let d in data['results']) {
-          this.portfoliolist.push(data['results'][d]);
-        }
-        // this.portfolio1 = data['results']['0'];
-        // this.comparision1 = data['results']['1'];
-        // this.comparision2 = data['results']['2'];
-      });
     if (this.userservice.currentuser) {
-
+      this.userservice.getUserPortfolio().subscribe(
+        data => {
+          // alert("portfolio data came");
+          // console.log(data);
+          this.portfoliolist.length = 0;
+          // tslint:disable-next-line: forin
+          for (let d in data['results']) {
+            this.portfoliolist.push(data['results'][d]);
+          }
+          // this.portfolio1 = data['results']['0'];
+          // this.comparision1 = data['results']['1'];
+          // this.comparision2 = data['results']['2'];
+        });
       this.getHoldingdetail();
 
     }
 
 
 
-    this.fundForm = this.formBuilder.group({
-      selectedPortfolio: new FormControl('', Validators.required),
-      selectedSecurity: new FormControl('', Validators.required),
-      quantity: new FormControl('', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')]))
-    });
+
 
   }
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ServercommunicationService } from '../servercommunication.service';
 import { AllocationData } from '../historicaldata';
 
@@ -46,17 +46,47 @@ export class AllocationFundAnalysisComponent implements OnInit {
         threeyear: 0,
         fiveyear: 0
     };
+
+    linetitle = '';
+    linedata = [];
+    lineoptions;
+    linewidth = 600;
+    lineheight = 280;
+    linetype = 'LineChart';
+    linecolumnNames = [];
+
+
+
     constructor(
         private interconn: IntercomponentCommunicationService,
         private route: ActivatedRoute,
+        private router: Router,
         private userservice: ServercommunicationService
-    ) { }
+    ) {
+        this.interconn.componentMethodCalled$.subscribe(
+            () => {
+                this.getCurrentAllocation();
+                this.getHistoricalPerformance();
+                this.getLinegraph();
+            }
+        );
+
+        this.interconn.logoutcomponentMethodCalled$.subscribe(
+            () => {
+                router.navigate(['/home']);
+            }
+        );
+    }
+
 
 
     ngOnInit() {
-        this.interconn.titleSettermethod('Allocation & Fund Analysis');
-        this.getCurrentAllocation();
-        this.getHistoricalPerformance();
+        if (this.userservice.currentuser) {
+            this.interconn.titleSettermethod('Allocation & Fund Analysis');
+            this.getCurrentAllocation();
+            this.getHistoricalPerformance();
+            this.getLinegraph();
+        }
     }
 
     getCurrentAllocation() {
@@ -108,6 +138,59 @@ export class AllocationFundAnalysisComponent implements OnInit {
                     this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['Difference']['5-year']).toFixed(2));
                 }
             });
+    }
+
+    getLinegraph() {
+        this.userservice.get(`api/allocation_line_graph/?portfolio_ids=${this.order}`).subscribe(
+            (jsondata: any) => {
+                this.linedata = [];
+                this.linecolumnNames = ['label'];
+                const tempArray = [];
+                const mainObj = {};
+                if (this.linedata == []) {
+                    this.linedata.push(['No data copy', 0, 0]);
+                } else {
+                    for (let i = 0; i < jsondata.length; i++) {
+                        const element = jsondata[i];
+                        if (this.linedata !== null) {
+                            this.linecolumnNames.push(element.portfolio);
+                        }
+                        for (let k = 0; k < element['label'].length; k++) {
+                            const label = element['label'][k];
+                            if (tempArray.filter(x => x === label).length === 0) {
+                                tempArray.push(label);
+                            }
+                            if (mainObj[label]) {
+                                mainObj[label] = mainObj[label] + ',' + element.series[k];
+                            } else {
+                                mainObj[label] = element.series[k];
+                            }
+                        }
+                    }
+                    for (let i = 0; i < tempArray.length; i++) {
+                        const element = tempArray[i];
+                        const values = (mainObj[element].split(',')).filter(Boolean);
+                        const valuesCollection = [];
+                        valuesCollection.push(element.toString());
+                        for (const iterator of values) {
+                            valuesCollection.push(parseFloat(iterator));
+                            // valuesCollection[0] = i;
+                        }
+                        this.linedata.push(valuesCollection);
+                    }
+                }
+
+                this.lineoptions = {
+                    pointSize: 1,
+                    curveType: 'function',
+                    tooltips: {
+                        mode: 'index'
+                    },
+                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+                };
+
+            }
+        );
     }
 
 }
