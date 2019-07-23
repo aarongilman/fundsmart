@@ -160,7 +160,7 @@
                                                 type="number" style="width: 2cm;text-align: center"
                                                 [(ngModel)]="currentprice[i]"
                                                 (blur)="item.current_price=currentprice[i];UpdateHoldingDetails(item,i)"
-                                                name="current_price_{{i}}">
+                                                name="current_price_{{i}}" oninput="validity.valid||(value='');">
                                             <span *ngIf="item.current_price !== null">{{item.current_price}}</span>
                                         </td>
                                         <td>{{(item.market_value)}}</td>
@@ -168,7 +168,7 @@
                                                 style=" width: 2cm;text-align:
                                                 center" [(ngModel)]="basicprice[i]"
                                                 (blur)="item.basic_price = basicprice[i];UpdateHoldingDetails(item,i)"
-                                                name="basic_price_{{i}}">
+                                                name="basic_price_{{i}}" oninput="validity.valid||(value='');">
                                             <span *ngIf="item.basic_price !== null">{{item.basic_price}}</span>
                                         </td>
                                         <td>{{item.basis}}</td>
@@ -201,7 +201,9 @@
                                         </td>
 
                                     </tr>
-
+                                    <div *ngIf="HoldingDetailList.length === 0">
+                                        No data found
+                                    </div>
                                 </tbody>
                             </table>
 
@@ -314,8 +316,9 @@
                     <br />
 
                     <div class="input-group">
-                        <input type="number" class="form-control" formControlName="quantity" name='quantity'
-                            placeholder="Enter Quantity" [ngClass]="{ 'is-invalid': submitted && f.quantity.errors }">
+                        <input oninput="validity.valid||(value='');" type="number" class="form-control"
+                            formControlName="quantity" name='quantity' placeholder="Enter Quantity"
+                            [ngClass]="{ 'is-invalid': submitted && f.quantity.errors }">
                         <div *ngIf="submitted && f.quantity.errors" class="invalid-feedback">
                             <div *ngIf="f.quantity.errors.required">Quantity is required</div>
                             <div *ngIf="f.quantity.errors.pattern">Quantity in numbers only</div>
@@ -338,7 +341,7 @@
                     <p>
                         Basic Price and Current Price are not mandatory.
                     </p>
-                    <button type="button" (click)='AddDetail()' style="cursor: pointer"
+                    <button type="button" (click)='addDetail()' style="cursor: pointer"
                         class="trade-btn button green-btn d-flex align-items-center justify-content-center login-email">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
