@@ -25,9 +25,10 @@
                         </div>
 
                         <div class="col-sm-3">
-                            <div class='input-group align-items-center'>Select Portfolio:<select
-                                    class='form-control ml-2' [(ngModel)]="fundservice.searchTerm">
-                                    <option selected value=""></option>
+                            <div class='input-group align-items-center'>
+                                <select class='form-control ml-2' [(ngModel)]="fundservice.searchTerm"
+                                    style="width:100%">
+                                    <option selected value="">Select a portfolio</option>
                                     <option *ngFor="let pitem of portfoliolist" title="portfolio1" [value]="pitem.name"
                                         name='p1'>
                                         {{pitem.name}} </option>
@@ -60,9 +61,12 @@
                     <table id="security-table" class="width-100 trade-datatables ">
                         <thead>
                             <tr>
-                                <th scope="col" sortable="security_name" (sort)="onSort($event)">Security</th>
-                                <th scope="col" sortable="asset_type" (sort)="onSort($event)">Assets type</th>
-                                <th scope="col" sortable="isin" (sort)="onSort($event)">ISIN</th>
+                                <th scope="col" sortable="security_name" (sort)="onSort($event)">Security
+                                    <i class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i></th>
+                                <th scope="col" sortable="asset_type" (sort)="onSort($event)">Assets type <i
+                                        class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i></th>
+                                <th scope="col" sortable="isin" (sort)="onSort($event)">ISIN <i
+                                        class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i></th>
                                 <th scope="col" sortable="quantity" (sort)="onSort($event)">Quantity</th>
                                 <th>Price</th>
                             </tr>
@@ -223,20 +227,11 @@
                             </svg>
                             Save
                         </button>
-
                     </form>
-
                 </div>
             </div>
-
-
-
         </ng-template>
 
-
-
-
-        <!-- upload pop up -->
         <ng-template #upload let-modal>
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" (click)="modal.dismiss('Cross click')"

@@ -1,5 +1,4 @@
 <div class="right-panel-wrap no-padding-right">
-    <!-- Fund content -->
     <div class="dashboard-content">
         <div class="row">
             <div class="col-lg-12">
@@ -9,14 +8,12 @@
                     </div>
                     <div class='row align-items-center ml-2 mr-2' style="float:right; margin-bottom: 75px;">
                         Items
-                        <!-- <span class='form-group'> -->
                         <select class="form-control" style="width: 60px;margin: 0 10px">
                             <option [ngValue]="10">10</option>
                             <option [ngValue]="25">25</option>
                             <option [ngValue]="50">50</option>
                             <option [ngValue]="100">100</option>
                         </select>
-                        <!-- </span> -->
                         <p-confirmDialog></p-confirmDialog>
                         <span class="form-group d-flex align-items-center ml-auto mb-0 w-60" style="width: 350px">
                             <input class="form-control search ml-2 w-100" type="text" name="searchText"
@@ -25,7 +22,7 @@
                         </span>
                     </div>
 
-                    <table dataid="security-table" class="width-100 trade-datatables ">
+                    <table *ngIf="result" dataid="security-table" class="width-100 trade-datatables ">
                         <thead>
                             <tr>
                                 <th>Funds</th>
@@ -34,33 +31,35 @@
                             </tr>
                         </thead>
                         <tbody>
-
-                            <tr *ngFor="let fund of result  | filter : searchText; let i = index">
-                                <td> {{fund.name}}</td>
-                                <td> {{fund.description}}</td>
-                                <a pTooltip="Edit" tooltipPosition="bottom"
-                                    (click)='header_modals(updateportfolio, fund)'><i class="fas fa-pen"
-                                        style="color: #5ace9f;font-size:22px"></i></a>
-                                <a pTooltip="Delete" tooltipPosition="bottom" (click)="delete_Portfolio(fund.id)">
-                                    <i class="fa fa-times" aria-hidden="true"
-                                        style="color: red;font-size:25px; padding-left: 20px"></i>
-                                </a>
-                                <a style="padding-left: 20px; ">
-                                    <input style=" width: 17px; height: 17px;cursor: pointer;"
-                                        (contextmenu)="onContextMenu($event, item)" type="checkbox" class="checkbox"
-                                        (change)="selectID(fund.id)">
-                                </a>
-                                <div style="position: fixed" [style.left]="contextMenuPosition.x"
-                                    [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu"
-                                    [matMenuTriggerData]="{item: item}">
-                                </div>
-                            </tr>
-
+                            <ng-container *ngIf="(result  | filter : searchText) as results">
+                                <tr *ngFor="let fund of results  ;let i = index">
+                                    <td> {{fund.name}}</td>
+                                    <td> {{fund.description}}</td>
+                                    <a pTooltip="Edit" tooltipPosition="bottom"
+                                        (click)='header_modals(updateportfolio, fund)'><i class="fas fa-pen"
+                                            style="color: #5ace9f;font-size:22px"></i></a>
+                                    <a pTooltip="Delete" tooltipPosition="bottom" (click)="delete_Portfolio(fund.id)">
+                                        <i class="fa fa-times" aria-hidden="true"
+                                            style="color: red;font-size:25px; padding-left: 20px"></i>
+                                    </a>
+                                    <a style="padding-left: 20px; ">
+                                        <input style=" width: 17px; height: 17px;cursor: pointer;"
+                                            (contextmenu)="onContextMenu($event, item)" type="checkbox" class="checkbox"
+                                            (change)="selectID(fund.id)">
+                                    </a>
+                                    <div style="position: fixed" [style.left]="contextMenuPosition.x"
+                                        [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu"
+                                        [matMenuTriggerData]="{item: item}">
+                                    </div>
+                                </tr>
+                                <p *ngIf="results && results.length === 0"> No Portfolio's Found </p>
+                            </ng-container>
                         </tbody>
                     </table>
+
                     <div class="upload-wrap">
                         <form class="d-flex justify-content-end align-items-center">
-                            <div class="input-file-wrap ml-auto">
+                            <div class="input-file-wrap ml-auto w-100">
 
                                 <button type="button" (click)="header_modals(addPortfolio) " class="upload-icon-btn"
                                     style="cursor: pointer">
@@ -172,24 +171,23 @@
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Description:</label>
-                            <input type="text" required class="form-control Description" [(ngModel)]="description"
+                            <input type="text" required class="form-control description" [(ngModel)]="description"
                                 name='description' placeholder="Description">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Owner 1:</label>
-                            <input type="text" required class="form-control owner1" [(ngModel)]="owner_1"
-                                name='owner_1' placeholder="Owner 1">
+                            <input type="text" required class="form-control owner1" [(ngModel)]="owner_1" name='owner_1'
+                                placeholder="Owner 1">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Owner 2:</label>
-                            <input type="text" required class="form-control owner2" [(ngModel)]="owner_2"
-                                name='owner_2' placeholder="Owner 2">
+                            <input type="text" required class="form-control owner2" [(ngModel)]="owner_2" name='owner_2'
+                                placeholder="Owner 2">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Type:</label>
-                            <input type="text" required class="form-control marginal_tax_range"
-                                [(ngModel)]="type" name='type'
-                                placeholder="Type">
+                            <input type="text" required class="form-control type" [(ngModel)]="type"
+                                name='type' placeholder="Type">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Marginal Range:</label>
@@ -373,5 +371,5 @@
             <button mat-menu-item (click)="onContextMenuAction4()">Allocation Recommendation</button>
         </ng-template>
     </mat-menu>
-    <!-- Fund content -->
+
 </div>
