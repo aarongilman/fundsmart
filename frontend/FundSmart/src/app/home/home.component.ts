@@ -171,6 +171,7 @@ export class HomeComponent implements OnInit {
         this.userservice.get_security().subscribe(
             datasecuritylist => {
                 securitylist.length = 0;
+                // tslint:disable-next-line: forin
                 for (var obj in datasecuritylist) {
                     var securityobj: security = {
                         id: -1,
@@ -614,7 +615,7 @@ export class HomeComponent implements OnInit {
     }
 
     userlogin() {
-        this.userservice.doLogin(this.model.username,this.model.password).subscribe(
+        this.userservice.doLogin(this.model.username, this.model.password).subscribe(
             data => {
                 localStorage.setItem('authkey', data['key']);
                 this.userservice.getUser(data['key']);
