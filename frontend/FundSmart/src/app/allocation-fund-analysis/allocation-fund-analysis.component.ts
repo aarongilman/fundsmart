@@ -24,6 +24,7 @@ export class AllocationFundAnalysisComponent implements OnInit {
     currentAllocationOption = {
         legend: { position: "top", alignment: 'start', maxLines: 10 },
         pieHole: 0.8,
+        pieSliceText: 'none',
         colors: ['#5F9EA0', '#A52A2A', '#DC143C', '#556B2F', '#2F4F4F'],
         animation: {
             duration: 10000,

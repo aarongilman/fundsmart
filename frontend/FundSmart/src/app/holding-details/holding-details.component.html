@@ -12,7 +12,7 @@
                         <div class='row'>
                             <!-- {{portfoliolist.length}} -->
                             <div class="col-sm-4">
-                                <div *ngIf="portfoliolist.length > 1 && order === undefined">
+                                <div *ngIf="portfoliolist.length > 1">
                                     <div class='input-group align-items-center'>
                                         Select Portfolio:<select class='form-control ml-2' [(ngModel)]="serchportfolio"
                                             (change)='getportfoliobyportfolio()'>
