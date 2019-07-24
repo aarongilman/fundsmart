@@ -28,49 +28,23 @@ class ImportPortfolioFund(APIView):
             data_file = request.FILES['data_file']
             wb = xlrd.open_workbook(file_contents=data_file.read())
             ws = wb.sheet_by_index(0)
-            portfolios = Portfolio.objects.filter(created_by=request.user)
-            try:
-                if len(portfolios) < 3:
-                    for i in range(0, 3 - len(portfolios)):
-                        portfolios = Portfolio.objects.create(
-                            name="Portfolio"+str(i+1), created_by=request.user)
-                    portfolios = Portfolio.objects.filter(created_by=request.user)
-            except Exception as e:
-                LOGGER.error(
-                    'ImportPortfolioFund:Error {} occurred while creating\
-                    portfolios'.format(e))
-                return Response("Failed to import funds",
-                                status.HTTP_400_BAD_REQUEST)
-            try:
-                security_isin = ws.col_values(0)
-                securities = Security.objects.filter(isin__in=security_isin)
-                objects = []
-                user = request.user
-                for i in range(1, ws.nrows):
-                    row = ws.row_values(i)
-                    security = securities.filter(isin=row[0]).first()
-                    if security:
-                        obj1 = PortfolioFund(security=security,
-                                             quantity=row[1],
-                                             portfolio=portfolios[0],
-                                             created_by=user)
-                        obj2 = PortfolioFund(security=security,
-                                             quantity=row[2],
-                                             portfolio=portfolios[1],
-                                             created_by=user)
-                        obj3 = PortfolioFund(security=security,
-                                             quantity=row[3],
-                                             portfolio=portfolios[2],
-                                             created_by=user)
-                        objects += [obj1, obj2, obj3]
-                PortfolioFund.objects.bulk_create(objects, ignore_conflicts=True)
-                return Response("Data imported successfully", status=204)
-            except Exception as e:
-                LOGGER.error(
-                    'ImportPortfolioFund:Error {} occurred while creating\
-                    funds'.format(e))
-                return Response("Failed to import funds",
-                                status.HTTP_400_BAD_REQUEST)
+            portfolio_ids = request.GET.get('portfolio_ids').split(",")
+            portfolios = Portfolio.objects.filter(
+                created_by=request.user, id__in=portfolio_ids)
+            security_isin = ws.col_values(0)
+            securities = Security.objects.filter(isin__in=security_isin)
+            objects = []
+            user = request.user
+            for i in range(1, ws.nrows):
+                row = ws.row_values(i)
+                security = securities.filter(isin=row[0]).first()
+                if security:
+                    for portfolio in portfolios:
+                        objects.append(PortfolioFund(
+                            security=security, quantity=row[1],
+                            portfolio=portfolio, created_by=user))
+            PortfolioFund.objects.bulk_create(objects, ignore_conflicts=True)
+            return Response("Data imported successfully", status=204)
         except Exception as e:
             LOGGER.error(
                 'ImportPortfolioFund:Error {} occurred while importing'.format(
