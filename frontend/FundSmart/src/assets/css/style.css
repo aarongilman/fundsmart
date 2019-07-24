@@ -43,7 +43,9 @@ a, a:hover {
     outline: none;
     cursor: pointer;
 }
-
+button:focus {
+    outline: none;
+}
 /* 
 input:focus,
 select:focus,
