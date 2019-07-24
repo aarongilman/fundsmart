@@ -52,14 +52,14 @@ const cookieConfig: NgcCookieConsentConfig = {
     },
     palette: {
         popup: {
-            background: '#5ace9f'
+            background: '#2b9d75'
         },
         button: {
             background: '#fca62b'
         }
     },
-    theme: 'classic',
-    type: 'opt-out'
+    theme: 'edgeless',
+    type: 'info'
 };
 
 
