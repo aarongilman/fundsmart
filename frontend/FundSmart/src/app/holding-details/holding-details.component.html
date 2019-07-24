@@ -1,6 +1,4 @@
-<!-- right panel -->
 <div class="right-panel-wrap no-padding-right">
-    <!-- Fund content -->
     <div class="dashboard-content">
         <div class="row">
             <div class="col-lg-12">
@@ -10,7 +8,6 @@
                     </div>
                     <div class="">
                         <div class='row'>
-                            <!-- {{portfoliolist.length}} -->
                             <div class="col-sm-4">
                                 <div *ngIf="portfoliolist.length > 1">
                                     <div class='input-group align-items-center'>
@@ -148,9 +145,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- {{HoldingDetailList}} -->
                                     <tr *ngFor="let item of HoldingDetailList ; let i = index">
-
                                         <td>{{item.portfolio}}</td>
                                         <td>{{item.security}}</td>
                                         <td>{{item.isin}}</td>
@@ -197,39 +192,31 @@
                                                 name='rating_{{i}}'
                                                 (change)="item.rating = rating[i];UpdateHoldingDetails(item,i)">
                                             <span *ngIf="item.rating !== null">{{item.rating}}</span>
-
                                         </td>
-
                                     </tr>
-                                    <div *ngIf="HoldingDetailList.length === 0">
+                                    <div *ngIf="HoldingDetailList.length === 0"
+                                        style="text-align: center; color: black">
                                         No data found
                                     </div>
                                 </tbody>
                             </table>
-
                         </div>
                         <div>
                             <br />
-                            <!-- Showing {{sortlist.pageSize}} records from {{total}} -->
                             <div class="d-flex ">
                                 <ngb-pagination class="ml-auto" [collectionSize]="total" [(page)]="sortlist.page"
                                     [pageSize]="sortlist.pageSize">
                                 </ngb-pagination>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Fund content -->
-
 </div>
 
 <ng-template #addHoldingDetais role="document">
-    <!-- #addHoldingDetais -->
     <div class="modal-header">
         <div class="pop-logo">
             <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -314,7 +301,6 @@
                         </div>
                     </div>
                     <br />
-
                     <div class="input-group">
                         <input oninput="validity.valid||(value='');" type="number" class="form-control"
                             formControlName="quantity" name='quantity' placeholder="Enter Quantity"
@@ -338,9 +324,7 @@
 
                     </div>
                     <br />
-                    <p>
-                        Basic Price and Current Price are not mandatory.
-                    </p>
+                    <p>Basic Price and Current Price are not mandatory. </p>
                     <button type="button" (click)='addDetail()' style="cursor: pointer"
                         class="trade-btn button green-btn d-flex align-items-center justify-content-center login-email">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"

@@ -16,13 +16,13 @@ import { ConfirmationService } from 'primeng/api';
 export class FundComponent implements OnInit {
     @ViewChild(MatMenuTrigger)
     contextMenu: MatMenuTrigger;
-    result: any = [];
-    closeResult: string;
-    _id: any;
-    fund: any;
-    SelectedIDs: any = [];
-    searchText: string;
     contextMenuPosition = { x: '0px', y: '0px' };
+    closeResult: string;
+    fund: any;
+    _id: any;
+    result: any = [];
+    selectedIDs: any = [];
+    searchText: string;
     name: any;
     description: any;
     owner_1: any;
@@ -41,13 +41,10 @@ export class FundComponent implements OnInit {
         private confirmationService: ConfirmationService,
         private router: Router
     ) {
-
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.router.navigate(['/home']);
-            }
-        );
-
+            });
     }
 
     ngOnInit() {
@@ -67,23 +64,18 @@ export class FundComponent implements OnInit {
         this.userService.getUserPortfolio().subscribe(
             fundlist => {
                 this.result = fundlist['results'];
-                console.log(fundlist['results']);
-
                 this.result.sort((a, b) => {
-                    const nameA = a.name.toUpperCase(); // ignore upper and lowercase
-                    const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+                    const nameA = a.name.toUpperCase();
+                    const nameB = b.name.toUpperCase();
                     if (nameA < nameB) {
                         return -1;
                     }
                     if (nameA > nameB) {
                         return 1;
                     }
-                    // names must be equal
                     return 0;
                 });
-                console.log(this.result);
             });
-
     }
 
     addPortfolioData() {
@@ -166,27 +158,27 @@ export class FundComponent implements OnInit {
     }
 
     selectID(item) {
-        if (this.SelectedIDs.find(x => x == item)) {
-            this.SelectedIDs.splice(this.SelectedIDs.indexOf(item), 1);
+        if (this.selectedIDs.find(x => x == item)) {
+            this.selectedIDs.splice(this.selectedIDs.indexOf(item), 1);
         } else {
-            this.SelectedIDs.push(item);
+            this.selectedIDs.push(item);
         }
     }
 
     onContextMenuAction1() {
-        this.router.navigate(['/holding_summary'], { queryParams: { id: this.SelectedIDs } });
+        this.router.navigate(['/holding_summary'], { queryParams: { id: this.selectedIDs } });
     }
 
     onContextMenuAction2() {
-        this.router.navigate(['/holding_details'], { queryParams: { id: this.SelectedIDs } });
+        this.router.navigate(['/holding_details'], { queryParams: { id: this.selectedIDs } });
     }
 
     onContextMenuAction3() {
-        this.router.navigate(['/fund_recommendation'], { queryParams: { id: this.SelectedIDs } });
+        this.router.navigate(['/fund_recommendation'], { queryParams: { id: this.selectedIDs } });
     }
 
     onContextMenuAction4() {
-        this.router.navigate(['/allocation_recommendation'], { queryParams: { id: this.SelectedIDs } });
+        this.router.navigate(['/allocation_recommendation'], { queryParams: { id: this.selectedIDs } });
     }
 
 }

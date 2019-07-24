@@ -301,8 +301,6 @@ export class FundCreateComponent implements OnInit {
     }
 
     updatefundquantity(item) {
-        console.log(item);
-
         if (item.id === -1) {
             this.userservice.add_portfolio_fund(
                 item.quantity,
@@ -335,13 +333,9 @@ export class FundCreateComponent implements OnInit {
     getUserPortfolios() {
         this.userservice.getUserPortfolio().subscribe(data => {
             this.portfoliolist.length = 0;
-            // tslint:disable-next-line: forin
             for (let d in data['results']) {
                 this.portfoliolist.push(data['results'][d]);
             }
-            // this.portfolio1 = data['results']['0'];
-            // this.comparision1 = data['results']['1'];
-            // this.comparision2 = data['results']['2'];
         });
     }
 
@@ -356,11 +350,6 @@ export class FundCreateComponent implements OnInit {
             date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
         }
         this.userservice.postPrice(fund.id, fund.price, date).subscribe();
-        // data => {
-        // let resfund = this.fundlist.find(x => x === fund);
-        // let index = this.fundlist.indexOf(resfund);
-        // apiresultfundlist[index]['price'] = data['current_price'];
-        // });
     }
 
     addRow() {
@@ -464,20 +453,13 @@ export class FundCreateComponent implements OnInit {
         }
     }
     getportfoliobyportfolio() {
-        // console.log(this.serchportfolio);
         if (this.serchportfolio === 'All') {
-            // alert('all' + this.serchportfolio);
             this.getfunds();
         } else {
-            // alert('came in else');
             this.userservice.get(`api/portfolio_fund/?portfolio=${this.serchportfolio}`).subscribe(
                 data => {
-                    // console.log(data);
-
                     this.setfunds(data);
-
-                }
-            );
+                });
         }
     }
 
@@ -524,8 +506,6 @@ export class FundCreateComponent implements OnInit {
                     console.log(typeof (file), "type of fie", file);
                     url = file.link;
                     fetch(url).then(response => response.blob()).then(filedata => {
-                        // console.log("hjs", filedata);
-
                         const formData = new FormData();
                         const blob = new Blob([filedata], { type: filedata.type });
                         const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
@@ -538,9 +518,7 @@ export class FundCreateComponent implements OnInit {
                                 this.modalService.dismissAll('File uploaded');
                             }
                         );
-                    }).catch(reason => {
-                        console.error(reason);
-                    });
+                    }).catch(reason => { });
                 }
             },
             cancel: () => {

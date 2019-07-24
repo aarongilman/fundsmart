@@ -52,7 +52,6 @@ export class FundRecommendationComponent implements OnInit {
         this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
             this.id = queryParams.params.id;
         });
-
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.route.navigate(['/home']);

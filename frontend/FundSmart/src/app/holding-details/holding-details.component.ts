@@ -15,18 +15,18 @@ import * as $ from 'jquery';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import 'rxjs/add/operator/filter';
 
-
 @Component({
     selector: 'app-holding-details',
     templateUrl: './holding-details.component.html',
     styleUrls: ['./holding-details.component.css'],
     providers: [HoldingdetailsSortService, DecimalPipe]
 })
+
 export class HoldingDetailsComponent implements OnInit {
+    @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     securitylist = securitylist;
     HoldingDetailList = holdingList;
     total;
-    @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     portfolio1: any;
     comparision1: any;
     comparision2: any;

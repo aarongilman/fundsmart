@@ -1,6 +1,4 @@
-<!-- right panel -->
 <div class="right-panel-wrap no-padding-right">
-    <!-- Fund content -->
     <div class="dashboard-content">
         <div class="row ">
             <div class="col-lg-12">
@@ -24,11 +22,9 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-sm-3">
                             <div *ngIf="portfoliolist.length > 1">
                                 <div class='input-group align-items-center'>
-
                                     Select Portfolio:<select class='form-control ml-2' [(ngModel)]="serchportfolio"
                                         (change)='getportfoliobyportfolio()'>
                                         <option selected [value]="">All</option>
@@ -40,6 +36,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class='row align-items-center ml-2 mr-2 mt-3'>
                         <div class="col-lg-9">
                             <label style="color: #000034">Show</label>
@@ -63,7 +60,7 @@
                         </div>
                     </div>
 
-                    <table id="security-table" class="width-100 trade-datatables ">
+                    <table id="security-table" class="width-100 trade-datatables">
                         <thead>
                             <tr>
                                 <th scope="col" sortable="security_name" (sort)="onSort($event)">Security
@@ -77,40 +74,40 @@
                             </tr>
                         </thead>
                         <tbody>
-
-                            <tr *ngFor="let fund of fundlist;let i = index;">
-                                <td>
-                                    <input *ngIf="fund.security == '' " [(ngModel)]="securityinput[i]"
-                                        id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
-                                        name='security_{{i}}' (change)="currentUser ? setrowdata(fund,i) : null"
-                                        type="text">
-
-
-                                    <datalist id="securityname">
-                                        <option *ngFor="let security of securitylist;let d = index"
-                                            data-value='{{security.name}}' data-id={{security.id}}>
-                                            Name:{{security.name}} Isin:{{security.isin}}
-                                            Ticker:{{security.ticker}}
-                                        </option>
-                                    </datalist>
-                                    <span *ngIf="fund.security_name != ''"
-                                        style="width: 3cm">{{fund.security_name}}</span>
-                                </td>
-                                <td>{{fund.asset_type}}</td>
-                                <td>{{fund.isin}}</td>
-                                <td><input type="text" class="form-control" [(ngModel)]="fund.quantity"
-                                        name='quantity_{{i}}' style="text-align: center; width: 130px"
-                                        (keypress)="numberOnly($event)" (change)='updatefundquantity(fund)'></td>
-                                <td><input type="text" class="form-control" [(ngModel)]="fund.price"
-                                        name='quantity_{{i}}' style="text-align: center; width: 130px"
-                                        (keypress)="numberOnly($event)" (change)='updateprice(fund)'
-                                        (click)="fund.price === 0 ? fund.price = '' : null "
-                                        (blur)="fund.price === '' ? fund.price = 0 : null"></td>
-                            </tr>
+                            <ng-container *ngIf="fundlist.length > 0">
+                                <tr *ngFor="let fund of fundlist;let i = index;">
+                                    <td>
+                                        <input *ngIf="fund.security == '' " [(ngModel)]="securityinput[i]"
+                                            id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
+                                            name='security_{{i}}' (change)="currentUser ? setrowdata(fund,i) : null"
+                                            type="text">
+                                        <datalist id="securityname">
+                                            <option *ngFor="let security of securitylist;let d = index"
+                                                data-value='{{security.name}}' data-id={{security.id}}>
+                                                Name:{{security.name}} Isin:{{security.isin}}
+                                                Ticker:{{security.ticker}}
+                                            </option>
+                                        </datalist>
+                                        <span *ngIf="fund.security_name != ''"
+                                            style="width: 3cm">{{fund.security_name}}</span>
+                                    </td>
+                                    <td>{{fund.asset_type}}</td>
+                                    <td>{{fund.isin}}</td>
+                                    <td><input type="text" class="form-control" [(ngModel)]="fund.quantity"
+                                            name='quantity_{{i}}' style="text-align: center; width: 130px"
+                                            (keypress)="numberOnly($event)" (change)='updatefundquantity(fund)'></td>
+                                    <td><input type="text" class="form-control" [(ngModel)]="fund.price"
+                                            name='quantity_{{i}}' style="text-align: center; width: 130px"
+                                            (keypress)="numberOnly($event)" (change)='updateprice(fund)'
+                                            (click)="fund.price === 0 ? fund.price = '' : null "
+                                            (blur)="fund.price === '' ? fund.price = 0 : null"></td>
+                                </tr>
+                                <p *ngIf="fundlist && fundlist.length === 0">No data found in selected category.</p>
+                            </ng-container>
                         </tbody>
-                        <div *ngIf="fundlist.length === 0">No data found in selected category.</div>
                     </table>
-                    <div class="d-flex ">
+
+                    <div class="d-flex">
                         <ngb-pagination class="ml-auto" [collectionSize]="total" [(page)]="fundservice.page"
                             [pageSize]="fundservice.pageSize">
                         </ngb-pagination>
@@ -194,8 +191,6 @@
                             </button>
                         </form>
                     </div>
-
-
                 </div>
             </div>
         </div>
@@ -370,12 +365,9 @@
                             </div>
                         </li>
                     </ul>
-                    <!-- </div> -->
                 </div>
             </div>
-
         </ng-template>
-        <!-- upload pop up-->
+        
     </div>
-    <!-- Fund content -->
 </div>

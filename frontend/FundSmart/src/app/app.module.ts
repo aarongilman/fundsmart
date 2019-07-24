@@ -13,9 +13,7 @@ import { FundRecommendationComponent } from './fund-recommendation/fund-recommen
 import { HoldingSummaryComponent } from './holding-summary/holding-summary.component';
 import { HoldingDetailsComponent } from './holding-details/holding-details.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { ConfirmemailComponent } from './confirmemail/confirmemail.component';
 import { TestingdataComponent } from './testingdata/testingdata.component';
-import { HeadSearchComponent } from './head-search/head-search.component';
 import { FundCreateComponent } from './fund-create/fund-create.component';
 import { HeaderComponent } from './header/header.component';
 import { HomeComponent } from './home/home.component';
@@ -92,7 +90,6 @@ export function provideConfig() {
 @NgModule({
     declarations: [
         AppComponent,
-        HeadSearchComponent,
         HomeComponent,
         HoldingSummaryComponent,
         HoldingDetailsComponent,
@@ -105,7 +102,6 @@ export function provideConfig() {
         ResetPasswordComponent,
         DragAndDropDirective,
         SortableDirective,
-        ConfirmemailComponent,
         FilterPipe,
         TestingdataComponent
     ],
