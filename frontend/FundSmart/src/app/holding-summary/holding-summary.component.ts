@@ -22,8 +22,8 @@ export class HoldingSummaryComponent implements OnInit {
     linetype = 'LineChart';
     linetitle = '';
     // linetitle = 'Portfolio value over time';
-    linewidth = 350;
-    lineheight = 400;
+    linewidth = 450;
+    lineheight = 300;
     linecolumnNames = [];
     lineoptions;
     total = {};
@@ -256,13 +256,16 @@ export class HoldingSummaryComponent implements OnInit {
         this.service.holding_summary_historicalPerformance(this.id).subscribe((historicalData: any) => {
             historicalData.forEach(historical => {
                 const names = Object.keys(historical);
+                for (let a in historical[names[0]]) {
+                    if (historical[names[0]][a] !== null) {
+                        historical[names[0]][a] = Number.parseFloat(historical[names[0]][a]).toFixed(4) + '%';
+                    }
+                }
                 const historicalObj = {
                     name: names[0],
                     value: historical[names[0]]
-                }
+                };
                 if (names[0] !== 'Total') {
-                    console.log("historical perfomance", historicalObj);
-
                     this.historical.push(historicalObj);
                 } else {
                     this.total4.push(historicalObj);

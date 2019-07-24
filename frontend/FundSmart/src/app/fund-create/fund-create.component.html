@@ -12,6 +12,7 @@
                         <div class="col-sm-9">
                             <div class="date-picker-wrap">
                                 <div class="input-group">
+                                    <label style="color: #000034">Portfolio Date</label>
                                     <input class="form-control " placeholder="yyyy-mm-dd" [(ngModel)]="selectedDate"
                                         #c="ngModel" ngbDatepicker #d="ngbDatepicker" [(maxDate)]="maxdate"
                                         (dateSelect)="onDateSelect($event)">
@@ -41,7 +42,7 @@
                     </div>
                     <div class='row align-items-center ml-2 mr-2 mt-3'>
                         <div class="col-lg-9">
-                            Show
+                            <label style="color: #000034">Show</label>
                             <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
                                 [(ngModel)]="fundservice.pageSize">
                                 <option [ngValue]="10">10</option>
@@ -49,11 +50,12 @@
                                 <option [ngValue]="50">50</option>
                                 <option [ngValue]="100">100</option>
                             </select>
-                            Entries
+                            <label style="color: #000034">Entries</label>
                         </div>
                         <div class="col-lg-3">
                             <span
-                                class="form-group d-flex justify-content-between align-items-center ml-auto mb-0 w-60 search_box">
+                                class="form-group d-flex justify-content-between align-items-center ml-auto mb-0 w-60 search_box"
+                                style="color: #000034">
                                 Search: <input class="form-control search ml-2 " type="text" name="searchTerm"
                                     [(ngModel)]="fundservice.searchTerm" />
                                 <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
@@ -114,9 +116,9 @@
                         </ngb-pagination>
                     </div>
 
-                    <div class="upload-wrap">
-                        <form class="d-flex justify-content-end align-items-center">
-                            <div class="input-file-wrap ml-auto">
+                    <div class="upload-wrap d-flex">
+                        <form class="ml-auto d-inline-flex">
+                            <div class="input-file-wrap">
                                 <button type="button" (click)="currentUser ? openmodal(upload,'upload') : null"
                                     class="upload-btn trade-btn green-btn d-flex align-items-center justify-content-center"
                                     data-toggle="modal" data-target="#uploadpop">

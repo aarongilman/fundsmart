@@ -78,8 +78,8 @@
                     <div class="head-global head-full">
                         <h3>Current <span>Allocation</span></h3>
                     </div>
-                     <div class="graph-labels label-left">
-                    </div> 
+                    <div class="graph-labels label-left">
+                    </div>
                     <div *ngIf="currentAllocationData && currentAllocationData?.length > 0">
                         <google-chart #chart [title]="currentAllocationTitle" [type]="currentAllocationType"
                             [data]="currentAllocationData" [columnNames]="columnNames"
@@ -112,9 +112,9 @@
                 </div>
             </div>
             <div class="col-lg-12">
-                <form action="post">
+                <form action="post" class="text-center form-cen">
                     <button type="button" (click)="routeTo()" routerLink="/allocation_fund_analysis"
-                        class="details-btn trade-btn green-btn d-flex align-items-center justify-content-center investment-btn">
+                        class="details-btn trade-btn green-btn investment-btn">
                         <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="m437.019531 74.980469c-48.351562-48.351563-112.640625-74.980469-181.019531-74.980469-53.925781 0-105.515625 16.582031-149.191406 47.957031-4.484375 3.222657-5.511719 9.472657-2.289063 13.957031 3.222657 4.484376 9.472657 5.511719 13.957031 2.289063 40.253907-28.917969 87.808594-44.203125 137.523438-44.203125 130.128906 0 236 105.871094 236 236s-105.871094 236-236 236-236-105.871094-236-236c0-49.71875 15.28125-97.269531 44.195312-137.515625 3.222657-4.488281 2.199219-10.734375-2.285156-13.957031-4.488281-3.222656-10.734375-2.199219-13.957031 2.285156-31.371094 43.671875-47.953125 95.257812-47.953125 149.1875 0 68.378906 26.628906 132.667969 74.980469 181.019531 48.351562 48.351563 112.640625 74.980469 181.019531 74.980469s132.667969-26.628906 181.019531-74.980469c48.351563-48.351562 74.980469-112.640625 74.980469-181.019531s-26.628906-132.667969-74.980469-181.019531zm0 0" />
