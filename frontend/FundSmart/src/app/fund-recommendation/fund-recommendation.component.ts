@@ -60,12 +60,14 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.interconn.titleSettermethod('Fund Recommendation');
-        this.getHistoricalPerformance();
-        this.getLinePlotChart();
-        this.getPortfolioPerformance();
-        this.getRecommendedPerformance();
-        this.getPlotFundRecommendation();
+        if (this.id) {
+            this.interconn.titleSettermethod('Fund Recommendation');
+            this.getHistoricalPerformance();
+            this.getLinePlotChart();
+            this.getPortfolioPerformance();
+            this.getRecommendedPerformance();
+            this.getPlotFundRecommendation();
+        }
     }
 
     getHistoricalPerformance() {

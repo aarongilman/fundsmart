@@ -22,7 +22,7 @@ interface Dropbox {
 interface DropboxChooseOptions {
     success(files: DropboxFile[]);
     cancel?(): void;
-    // linkType: "direct";
+    linkType: "direct";
     multiselect: boolean;
     extensions?: string[];
 }
@@ -144,13 +144,14 @@ export class FundCreateComponent implements OnInit {
     showdetail_flag = false;
     files: any = [];
     newFile: File;
-    // maxdate = (date:NgbDate, current: {month:number})
+    maxdate: any;
     portfoliolist = [];
     portfolio1: any;
     comparision1: any;
     comparision2: any;
     selectedp: any;
     selectedDate: any;
+    serchportfolio: any;
 
     @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     // private spread: GC.Spread.Sheets.Workbook;
@@ -178,7 +179,14 @@ export class FundCreateComponent implements OnInit {
                 this.portfoliolist.length = 0;
             });
 
+        this.interconn.reloadmethodcalled$.subscribe(
+            () => {
+                this.getfunds();
+            }
+        );
+
         this.selectedDate = calendar.getToday();
+        this.maxdate = calendar.getToday();
     }
 
     ngOnInit() {
@@ -455,6 +463,23 @@ export class FundCreateComponent implements OnInit {
             return `with: ${reason}`;
         }
     }
+    getportfoliobyportfolio() {
+        // console.log(this.serchportfolio);
+        if (this.serchportfolio === 'All') {
+            // alert('all' + this.serchportfolio);
+            this.getfunds();
+        } else {
+            // alert('came in else');
+            this.userservice.get(`api/portfolio_fund/?portfolio=${this.serchportfolio}`).subscribe(
+                data => {
+                    // console.log(data);
+
+                    this.setfunds(data);
+
+                }
+            );
+        }
+    }
 
     resetpass_modal() {
         $(".forgot-password-wrap").addClass("show-forgot");
@@ -499,7 +524,7 @@ export class FundCreateComponent implements OnInit {
                     console.log(typeof (file), "type of fie", file);
                     url = file.link;
                     fetch(url).then(response => response.blob()).then(filedata => {
-                        console.log("hjs", filedata);
+                        // console.log("hjs", filedata);
 
                         const formData = new FormData();
                         const blob = new Blob([filedata], { type: filedata.type });
@@ -519,8 +544,9 @@ export class FundCreateComponent implements OnInit {
                 }
             },
             cancel: () => {
+                window.close();
             },
-            // linkType: "direct",
+            linkType: 'direct',
             multiselect: false,
             extensions: ['.xlsx', '.xls', '.csv'],
         };

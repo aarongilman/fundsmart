@@ -66,8 +66,24 @@ export class FundComponent implements OnInit {
     getFunds() {
         this.userService.getUserPortfolio().subscribe(
             fundlist => {
-                this.result = fundlist['results'];                
+                this.result = fundlist['results'];
+                console.log(fundlist['results']);
+
+                this.result.sort((a, b) => {
+                    const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+                    const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+                    if (nameA < nameB) {
+                        return -1;
+                    }
+                    if (nameA > nameB) {
+                        return 1;
+                    }
+                    // names must be equal
+                    return 0;
+                });
+                console.log(this.result);
             });
+
     }
 
     addPortfolioData() {

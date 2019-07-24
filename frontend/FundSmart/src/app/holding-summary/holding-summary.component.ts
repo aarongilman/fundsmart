@@ -11,7 +11,7 @@ import { IntercomponentCommunicationService } from '../intercomponent-communicat
 })
 export class HoldingSummaryComponent implements OnInit {
 
-    id: any;
+    id = [];
     result: any = [];
     historical: any = [];
     fund: any = [];
@@ -20,6 +20,7 @@ export class HoldingSummaryComponent implements OnInit {
     graph = [];
     linedata = [];
     linetype = 'LineChart';
+    linetitle = '';
     // linetitle = 'Portfolio value over time';
     linewidth = 350;
     lineheight = 400;
@@ -101,10 +102,14 @@ export class HoldingSummaryComponent implements OnInit {
 
         this.interconn.componentMethodCalled$.subscribe(
             () => {
-                this.getHistoricalPerformance();
-                this.getFund();
-                this.getCountry();
-                this.getLineGraph();
+                this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
+                    if (queryParams.params.id > 0) {
+                        this.getHistoricalPerformance();
+                        this.getFund();
+                        this.getCountry();
+                        this.getLineGraph();
+                    }
+                });
             }
         );
         this.interconn.logoutcomponentMethodCalled$.subscribe(

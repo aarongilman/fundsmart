@@ -83,9 +83,9 @@ export class GetfileforuploadService {
 
   pickerCallback(data) {
     let self = this;
-    if (data[google.picker.Response.ACTION] == google.picker.Action.PICKED) {
+    if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
       var doc = data[google.picker.Response.DOCUMENTS][0];
-      console.log(doc.id, doc.name);
+      // console.log(doc.id, doc.name);
       self.downloadGDriveFile(doc.id).subscribe(
         filedata => {
           // console.log(filedata);
@@ -170,11 +170,11 @@ export class GetfileforuploadService {
             formData.append('data_file', file);
             self.userservice.uploadfile(formData).subscribe(
               resp => {
-                console.log(resp);
+                // console.log(resp);
                 this.interconn.afterfileupload();
               },
               error => {
-                console.log(error);
+                // console.log(error);
               }
             );
           }
@@ -264,17 +264,17 @@ export class GetfileforuploadService {
                 formData.append('data_file', file);
                 self.userservice.uploadfile(formData).subscribe(
                   resp => {
-                    console.log(resp);
+                    // console.log(resp);
                     this.interconn.afterfileupload();
                   },
                   error => {
-                    console.log(error);
+                    // console.log(error);
                   }
                 );
               }
             },
             error => {
-              console.log(error);
+              // console.log(error);
             }
           );
           // console.log(error);
@@ -320,45 +320,5 @@ export class GetfileforuploadService {
   //   });
   // }
   // google get file finish
-
-
-  // drop box file upload
-
-  dropboxlogin() {
-    this.http.get<any>('https://www.dropbox.com/oauth2/authorize?client_id=thwqni27y9hfknh&response_type=code').subscribe(
-      result => {
-        console.log(result);
-      },
-      error => {
-        console.log(error);
-      }
-    );
-  }
-
-
-  setAccessToken(token) {
-    this.accessToken = token;
-  }
-
-  getUserInfo() {
-    let headers = new HttpHeaders();
-
-    headers.append('Authorization', 'Bearer ' + this.accessToken);
-    headers.append('Content-Type', 'application/json');
-
-    this.http.post('https://api.dropboxapi.com/2-beta-2/users/get_current_account', "null", { headers: headers })
-      .subscribe(res => {
-        console.log(res);
-      });
-
-  }
-
-  getFolders(path?) {
-
-  }
-
-  goBackFolder() {
-
-  }
 
 }

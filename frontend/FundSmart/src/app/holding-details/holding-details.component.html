@@ -10,13 +10,19 @@
                     </div>
                     <div class="">
                         <div class='row'>
-                            <div class='input-group align-items-center col-sm-4'>
-                                Select Portlolios:<select class='form-control' [(ngModel)]="sortlist.searchTerm">
-                                    <option selected value="">All</option>
-                                    <option *ngFor="let pitem of portfoliolist" title="portfolio1" [value]="pitem.name"
-                                        name='p1'>
-                                        {{pitem.name}} </option>
-                                </select>
+                            <!-- {{portfoliolist.length}} -->
+                            <div class="col-sm-4">
+                                <div *ngIf="portfoliolist.length > 1 && order === undefined">
+                                    <div class='input-group align-items-center'>
+                                        Select Portfolio:<select class='form-control ml-2' [(ngModel)]="serchportfolio"
+                                            (change)='getportfoliobyportfolio()'>
+                                            <option selected=true [value]="">All</option>
+                                            <option *ngFor="let pitem of portfoliolist" title="portfolio1"
+                                                [value]="pitem.id" name='p1'>
+                                                {{pitem.name}} </option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <div class="table-btns col-sm-8">
                                 <form action="post" class="form-holding">
@@ -195,7 +201,9 @@
                                         </td>
 
                                     </tr>
-
+                                    <div *ngIf="HoldingDetailList.length === 0">
+                                        No data found
+                                    </div>
                                 </tbody>
                             </table>
 
@@ -278,8 +286,8 @@
                         <datalist id="portfolioselect">
                             <option *ngFor="let pitem of portfoliolist" [value]="pitem.name">
                                 {{pitem.name}} </option>
-
                         </datalist>
+
 
                         <div *ngIf="submitted && f.selectedPortfolio.errors" class="invalid-feedback">
                             <div *ngIf="f.selectedPortfolio.errors.required">Select Portfolio</div>
@@ -300,6 +308,7 @@
                                 Ticker:{{security.ticker}} {{security.id}}
                             </option>
                         </datalist>
+
                         <div *ngIf="submitted && f.selectedSecurity.errors" class="invalid-feedback">
                             <div *ngIf="f.selectedSecurity.errors.required">Security is required</div>
                         </div>
@@ -307,8 +316,9 @@
                     <br />
 
                     <div class="input-group">
-                        <input oninput="validity.valid||(value='');" type="number" class="form-control" formControlName="quantity" name='quantity'
-                            placeholder="Enter Quantity" [ngClass]="{ 'is-invalid': submitted && f.quantity.errors }">
+                        <input oninput="validity.valid||(value='');" type="number" class="form-control"
+                            formControlName="quantity" name='quantity' placeholder="Enter Quantity"
+                            [ngClass]="{ 'is-invalid': submitted && f.quantity.errors }">
                         <div *ngIf="submitted && f.quantity.errors" class="invalid-feedback">
                             <div *ngIf="f.quantity.errors.required">Quantity is required</div>
                             <div *ngIf="f.quantity.errors.pattern">Quantity in numbers only</div>

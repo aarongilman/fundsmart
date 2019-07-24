@@ -18,6 +18,7 @@ import { MustMatch } from '../must-match.validator';
 import { securitylist } from '../securitylist';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 
 declare var Dropbox: Dropbox;
 
@@ -137,7 +138,10 @@ export class HomeComponent implements OnInit {
         private fileupload: GetfileforuploadService,
         private authService: AuthService,
         private formBuilder: FormBuilder,
-        public portfolioservice: PortfoliofundhelperService) {
+        private toastrService: ToastrService,
+        public portfolioservice: PortfoliofundhelperService
+    ) {
+
         this.portfolioservice.funds$.subscribe(f => {
             this.funds$ = f;
         });
@@ -152,6 +156,7 @@ export class HomeComponent implements OnInit {
                 this.portfolioservice.total$.subscribe(f => {
                     this.total$ = f;
                     const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                    // console.log(pageno);
                     this.portfolioservice.page = pageno;
                 });
             });
@@ -188,6 +193,7 @@ export class HomeComponent implements OnInit {
             });
         this.interconn.componentMethodCalled$.subscribe(
             () => {
+                // alert("In first method");
                 this.setcurrent_user();
             });
     }
@@ -195,8 +201,12 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.interconn.titleSettermethod("Multi Portfolio Analyzer");
         this.setdataindeshboard();
+        // this.securitylist = [{ "id": 1, "name": "Motilal Oswal Dynamic Fund", "isin": "INF247L01585", "id_value": "ISIN_INF247L01585", "date": "2019-01-31", "ticker": "MOFDERG IN", "asset_type": "Mutual Fund", "currency": "INR", "country": "IN", "industry": null, "rating": null, "created_at": "2019-06-12T11:25:46.929006Z", "created_by": 6 }];
         if (this.userservice.currentuser) {
             this.setcurrent_user();
+            // this.resetfundlist();
+            // // this.createFundlist();
+
         }
         this.registeruserForm = this.formBuilder.group(
             {
@@ -248,28 +258,38 @@ export class HomeComponent implements OnInit {
                 );
             }
         });
+
     }
 
     createFundlist() {
         this.userservice.dashboardDataTable().subscribe(
             fundlist => {
+                // console.log(fundlist);
                 this.setfunds(fundlist);
+
             });
     }
 
     serAttribute(item, i) {
         var opt = $('option[value="' + $('#security_' + i).val() + '"]');
         item.security_id = Number.parseInt(opt.attr('id'));
+        console.log(item.security_id);
+
         try {
             item.security = securitylist.find(s => s.id === item.security_id).name;
         } catch {
             return null;
         }
+
+
     }
 
     setdataindeshboard() {
+        // console.log("set data in dashboard");
+
         this.userservice.get_historical_perfomance().subscribe(
             result => {
+                // console.log("result", result);
                 this.existing = {
                     annualexpense: 0,
                     oneyear: 0,
@@ -292,23 +312,34 @@ export class HomeComponent implements OnInit {
                     this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
                     this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
                     this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
-                    this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));;
+                    this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
+
+                    // console.log("Existing", result[0]['existing']['annual_expense'], result[0]['existing']['1-year'],
+                    //  result[0]['existing']['3-year'],
+                    //   result[0]['existing']['5-year']);
 
                     this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
                     this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
                     this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
                     this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['5-year']).toFixed(2));
+                    // console.log("recommended", result[0]['recommended']['annual_expense'], result[0]['recommended']['1-year'],
+                    //   result[0]['recommended']['3-year'], result[0]['recommended']['5-year']);
 
                     this.diffrence.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['difference']['annual_expense']).toFixed(2));
                     this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['1-year']).toFixed(2));
                     this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
                     this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
+                    // console.log("difference", result[0]['difference']['annual_expense'], result[0]['difference']['1-year'],
+                    //   result[0]['difference']['3-year'], result[0]['difference']['5-year']);
+
                 }
             });
 
         this.userservice.get_home_pie_chart().subscribe(
             jsondata => {
                 this.piedata = [];
+                // tslint:disable-next-line: forin
+
                 let arrData = [];
                 let arrvalue = [];
                 Object.keys(jsondata).forEach((element) => {
@@ -318,6 +349,8 @@ export class HomeComponent implements OnInit {
                         this.piedata.push([key, arrvalue[value]]);
                     });
                 });
+
+                // this.pietitle = '';
                 this.pietype = 'PieChart';
                 this.columnNames = ['Security Industry', 'Total'];
                 this.pieoptions = {
@@ -334,6 +367,7 @@ export class HomeComponent implements OnInit {
         this.userservice.get_deshboard_doughnut_chart().subscribe(
             jsondata => {
                 this.donutdata = [];
+
                 let arrData = [];
                 let arrvalue = [];
                 Object.keys(jsondata).forEach((element) => {
@@ -343,6 +377,7 @@ export class HomeComponent implements OnInit {
                         this.donutdata.push([key, arrvalue[value]]);
                     });
                 });
+
                 this.donutoptions = {
                     pieHole: 0.8,
                     legend: { position: 'top', alignment: 'start', maxLines: 10 },
@@ -384,10 +419,12 @@ export class HomeComponent implements OnInit {
                         valuesCollection.push(element.toString());
                         for (const iterator of values) {
                             valuesCollection.push(parseFloat(iterator));
+                            // valuesCollection[0] = i;
                         }
                         this.linedata.push(valuesCollection);
                     }
                 }
+
                 this.lineoptions = {
                     pointSize: 1,
                     curveType: 'function',
@@ -396,7 +433,9 @@ export class HomeComponent implements OnInit {
                     },
                     colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
                 };
-            });
+
+            }
+        );
     }
 
     signInWithGoogle(): void {
@@ -404,6 +443,9 @@ export class HomeComponent implements OnInit {
             this.userservice.socialLogin(user);
             this.setcurrent_user();
             this.modalService.dismissAll('Log in Done');
+
+            // this.setdataindeshboard();
+            // this.createFundlist();
         });
     }
 
@@ -412,6 +454,8 @@ export class HomeComponent implements OnInit {
             this.userservice.socialLogin(user);
             this.setcurrent_user();
             this.modalService.dismissAll('Log in Done');
+            // this.setdataindeshboard();
+            // this.createFundlist();
         });
     }
 
@@ -419,7 +463,10 @@ export class HomeComponent implements OnInit {
         this.authService.signOut();
     }
 
+
     addRow() {
+        // debugger
+
         let singlefund: portfolio_fund = {
             security: '',
             security_id: -1,
@@ -431,18 +478,25 @@ export class HomeComponent implements OnInit {
             comparision2: ''
         };
         portfoliofundlist.push(singlefund);
+        // portfoliofundlist.unshift(singlefund);
         this.portfolioservice.resetfunds();
         this.portfolioservice.funds$.subscribe(f => {
             this.funds$ = f;
         });
         this.portfolioservice.total$.subscribe(total => {
+            // alert('came here to set new row');
             this.total$ = total;
             let pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+            // console.log("Page number", pageno);
             this.portfolioservice.page = pageno;
         });
+        // portfoliofundlist.push(singlefund);
+
     }
 
     removeRow(p1record, id) {
+        // debugger
+        // console.log("ID", id);
         if (id >= 0) {
             Swal.fire({
                 title: 'Are you sure?',
@@ -457,6 +511,7 @@ export class HomeComponent implements OnInit {
                         this.userservice.removedata(p1record);
                     }
                     portfoliofundlist.splice(id, 1);
+                    console.log("portfoliofundlist", portfoliofundlist);
                     this.portfolioservice.resetfunds();
                     this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
                     this.portfolioservice.total$.subscribe(total => {
@@ -471,9 +526,17 @@ export class HomeComponent implements OnInit {
                 }
             });
         }
+        // portfoliofundlist.push(singlefund);
+        // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+
+        // console.log(pageno);
+        // ()
+        // this.portfolioservice.page = pageno - 1;
     }
 
+
     get f() { return this.registeruserForm.controls; }
+
 
     registerUser() {
         if (this.showdetail_flag === false) {
@@ -481,31 +544,30 @@ export class HomeComponent implements OnInit {
             this.showdetail_flag = true;
         } else {
             this.submitted = true;
+
+            // stop here if form is invalid
             if (this.registeruserForm.invalid) {
                 return;
             }
+
+            // alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registeruserForm.value));
             this.userservice.doRegistration(JSON.stringify(this.registeruserForm.value)).subscribe(data => {
                 localStorage.setItem('authkey', data['key']);
+                // console.log("Key is", data['key']);
+                // alert('registration successful. Plese confirm email');
                 this.showdetail_flag = false;
                 Swal.fire('Registration', 'Please verify your email from your mail box', 'success');
                 this.modalService.dismissAll('Registration Done');
                 this.registeruserForm.reset();
-                portfoliofundlist.forEach((element, key) => {
-                    if (element.security !== '') {
-                        if (element.yourPortfolio !== '') {
-                            this.addportfolioFund('portfolio', element, key);
-                        }
-                        if (element.comparision1 !== '') {
-                            this.addportfolioFund('comp1', element, key);
-                        }
-                        if (element.comparision2 !== '') {
-                            this.addportfolioFund('comp2', element, key);
-                        }
-                    }
-                });
-
+                this.submitted = false
             },
                 error => {
+                    // alert('error occured');
+                    // console.log(error);
+
+
+                    this.toastrService.error('The user with this username/email already exist!', 'Error');
+
                 });
         }
     }
@@ -570,7 +632,7 @@ export class HomeComponent implements OnInit {
     openmodal(modalid, str) {
         // alert("type of modal is" + typeof(modalid));
         var addclass = '';
-        if (str == 'login' || str == 'register') {
+        if (str === 'login' || str === 'register') {
             addclass = 'long-pop sign-pop';
         }
         this.modalService.open(modalid, { centered: true, windowClass: addclass }).result.then((result) => {
@@ -726,7 +788,7 @@ export class HomeComponent implements OnInit {
                 };
                 fr.readAsArrayBuffer(element);
             } else {
-                Swal.fire('File Upload', 'Please upload excel or csv files', 'error');
+                Swal.fire('File Upload', 'Please upload exel or csv files', 'error');
             }
 
         }
@@ -788,19 +850,35 @@ export class HomeComponent implements OnInit {
             var quantity;
             const Tempportfoliofundlist = JSON.parse(JSON.stringify(portfoliofundlist));
             if (string1.match('portfolio')) {
-
-                quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
-
+                if (item.yourPortfolio) {
+                    quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
+                } else {
+                    item.yourPortfolio = null;
+                    quantity = null;
+                }
                 this.createportfoliofundmethod(quantity, item, 'p1', i);
 
             } else if (string1.match('comp1')) {
-
-                quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
-                this.createportfoliofundmethod(quantity, item, 'p2', i);
+                // console.log("string1.match('comp1')", string1.match('comp1'));
+                // console.log("item.comparision1", item.comparision1);
+                if (item.comparision1) {
+                    quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
+                    this.createportfoliofundmethod(quantity, item, 'p2', i);
+                } else {
+                    item.comparision1 = null;
+                    quantity = null;
+                    this.createportfoliofundmethod(quantity, item, 'p2', i);
+                }
+                // console.log("quantity", quantity);
 
             } else if (string1.match('comp2')) {
                 // alert(this.comparision2);
-                quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+                if (item.comparision2) {
+                    quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
+                } else {
+                    quantity = null;
+                    item.comparision2 = null;;
+                }
                 this.createportfoliofundmethod(quantity, item, 'p3', i);
             }
 
@@ -843,6 +921,7 @@ export class HomeComponent implements OnInit {
             //   // alert('put method');
             //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
             // }
+            console.log("quantity", quantity);
             this.userservice.storedata({ 'recordId': item.p1record, "key": recordid, "quantity": quantity, "recid": recid, "securityId": item.security_id });
 
             this.setdataindeshboard();
@@ -969,16 +1048,16 @@ export class HomeComponent implements OnInit {
         Dropbox.choose(options);
     }
 
+    setcurrent_user() {
+        this.currentUser = this.userservice.currentuser;
+    }
+
     onedrivefileupload() {
     }
 
     drive_fileupload() {
         this.fileupload.onApiLoad("Dashboard");
         this.modalService.dismissAll('File upload');
-    }
-
-    setcurrent_user() {
-        this.currentUser = this.userservice.currentuser;
     }
 
     onSort({ column, direction }: SortEvent) {
@@ -988,6 +1067,7 @@ export class HomeComponent implements OnInit {
                 header.direction = '';
             }
         });
+
         this.portfolioservice.sortColumn = column;
         this.portfolioservice.sortDirection = direction;
     }
