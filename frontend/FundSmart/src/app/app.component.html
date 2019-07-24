@@ -70,7 +70,7 @@
       </a>
     </li>
     <li routerLinkActive="active">
-      <a routerLink="funds" (click)='!currentuser ? openmodal(login,"login") : null'>
+      <a routerLink="funds" (click)='!currentuser ? openmodal(login,"login") : alert(currentuser)'>
         <div class="svg-wrap">
           <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
             x="0px" y="0px" viewBox="0 0 442.003 442.003" style="enable-background:new 0 0 442.003 442.003;"
@@ -651,32 +651,40 @@
         <p>or</p>
       </div>
       <div class="login-form trade-inputs">
-        <form [formGroup]='loginForm' id='loginform'>
-          <div class="form-group">
-            <input type="text" class="form-control" name='username' required=true formControlName="username"
-              placeholder="Enter Username" [ngClass]="{ 'is-invalid': submitted && loginf.username.errors }">
-            <div *ngIf="submitted && loginf.username.errors" class="invalid-feedback">
-              <div *ngIf="loginf.username.errors.required" style="text-emphasis-color: green">
-                Username is required</div>
+        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && userlogin()">
+
+          <div class="form-group has-feedback has-feedback-left">
+            <input type="text" placeholder="Username" class="form-control" name="username" [(ngModel)]="model.username"
+              #username="ngModel" [ngClass]="{ 'is-invalid': f.submitted && username.invalid }" required username />
+            <div class="form-control-feedback">
+              <i class="icon-user text-muted"></i>
+            </div>
+            <div *ngIf="f.submitted && username.invalid" class="invalid-feedback">
+              <div *ngIf="username.errors.required">Username is required</div>
             </div>
           </div>
-          <div class="form-group">
-            <input type="password" class="form-control pwd" name='password' required=true formControlName="password"
-              placeholder="Enter Password" [ngClass]="{ 'is-invalid': submitted && loginf.password.errors }">
-            <div *ngIf="submitted && loginf.password.errors" class="invalid-feedback">
-              <div *ngIf="loginf.password.errors.required">Password is required</div>
-              <div *ngIf="loginf.password.errors.minlength">Password must be at least 6 characters
+
+          <div class="form-group has-feedback has-feedback-left">
+            <input type="password" placeholder="Password" class="form-control" name="password"
+              [(ngModel)]="model.password" #password="ngModel"
+              [ngClass]="{ 'is-invalid': f.submitted && password.invalid }" required minlength="6" />
+            <div class="form-control-feedback">
+              <i class="icon-lock2 text-muted"></i>
+            </div>
+            <div *ngIf="f.submitted && password.invalid" class="invalid-feedback">
+              <div *ngIf="password.errors.required">Password is required</div>
+              <div *ngIf="password.errors.minlength">Password must be at least 6 characters
               </div>
             </div>
           </div>
+
           <div class="forgot-password d-flex align-items-center justify-content-end">
             <a (click)='resetpass_modal()'>Forgot Password?</a>
           </div>
-          <div id='Loginerror' class="hidden">
-            <label style="color: red">Invalid Login Credentials</label>
-          </div>
-          <button type="button" (click)='userlogin()'
-            class="trade-btn green-btn d-flex align-items-center justify-content-center">
+          <!-- <div id='Loginerror'>
+            <label style="color: red">{{loginerror}}</label>
+          </div> -->
+          <button type="submit" class="trade-btn green-btn d-flex align-items-center justify-content-center">
             <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
               x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
               <g>
@@ -719,7 +727,7 @@
       </div>
     </div>
     <div class="forgot-password-wrap">
-      <p>Please enter the email address you used to register to receive the passoword reset instruction.
+      <p>Please enter the email address you used to register to receive the password reset instructions.
       </p>
       <div class="login-form trade-inputs">
         <form action="post">

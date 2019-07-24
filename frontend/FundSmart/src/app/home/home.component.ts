@@ -620,7 +620,7 @@ export class HomeComponent implements OnInit {
                 localStorage.setItem('authkey', data['key']);
                 this.userservice.getUser(data['key']);
                 this.modalService.dismissAll('Login Done');
-                this.loginForm.reset();
+                // this.loginForm.reset();
                 $('#Loginerror').addClass('hidden');
             },
             error => {

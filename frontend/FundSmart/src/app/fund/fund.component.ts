@@ -41,7 +41,12 @@ export class FundComponent implements OnInit {
         private confirmationService: ConfirmationService,
         private router: Router
     ) {
+        this.interconn.componentMethodCalled$.subscribe(
+            () => {
+                this.getFunds();
 
+            }
+        );
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.router.navigate(['/home']);
@@ -52,7 +57,9 @@ export class FundComponent implements OnInit {
 
     ngOnInit() {
         this.interconn.titleSettermethod("Funds");
-        this.getFunds();
+        if (this.userService.currentuser) {
+            this.getFunds();
+        }
     }
 
     onContextMenu(event: MouseEvent, item: Item) {

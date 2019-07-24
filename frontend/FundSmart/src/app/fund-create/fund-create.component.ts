@@ -191,7 +191,6 @@ export class FundCreateComponent implements OnInit {
 
     ngOnInit() {
         this.interconn.titleSettermethod("Create Fund");
-        this.getUserPortfolios();
         this.userservice.get_security().subscribe(
             datasecuritylist => {
                 securitylist.length = 0;
@@ -214,10 +213,12 @@ export class FundCreateComponent implements OnInit {
             }
         );
         this.setcurrent_user();
-        if (this.userservice.currentuser !== null) {
+        if (this.userservice.currentuser) {
+            this.getUserPortfolios();
             apiresultfundlist.length = 0;
             this.getfunds();
         }
+
     }
 
     setcurrent_user() {
