@@ -40,10 +40,30 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { GoogleApiModule, NgGapiClientConfig, NG_GAPI_CONFIG } from 'ng-gapi';
 import { ToastrModule } from 'ngx-toastr';
+import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
 
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
+
+const cookieConfig: NgcCookieConsentConfig = {
+    cookie: {
+        domain: 'localhost'
+        //domain: 'http://ec2-3-16-111-80.us-east-2.compute.amazonaws.com/' 
+        // it is mandatory to set a domain, for cookies to work properly (see https://goo.gl/S2Hy2A)
+    },
+    palette: {
+        popup: {
+            background: '#5ace9f'
+        },
+        button: {
+            background: '#fca62b'
+        }
+    },
+    theme: 'classic',
+    type: 'opt-out'
+};
+
 
 let gapiClientConfig: NgGapiClientConfig = {
     client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
@@ -102,6 +122,7 @@ export function provideConfig() {
         NgSelectModule,
         ReactiveFormsModule,
         MatMenuModule,
+        NgcCookieConsentModule.forRoot(cookieConfig),
         ToastrModule.forRoot(),
         SocialLoginModule,
         GoogleChartsModule.forRoot(),
