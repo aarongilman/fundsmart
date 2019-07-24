@@ -11,6 +11,7 @@ import { AllocationData } from '../historicaldata';
 })
 
 export class AllocationFundAnalysisComponent implements OnInit {
+
     historical: any = [];
     total4 = [];
 
@@ -24,6 +25,7 @@ export class AllocationFundAnalysisComponent implements OnInit {
     currentAllocationOption = {
         legend: { position: "top", alignment: 'start', maxLines: 10 },
         pieHole: 0.8,
+        pieSliceText: 'none',
         colors: ['#5F9EA0', '#A52A2A', '#DC143C', '#556B2F', '#2F4F4F'],
         animation: {
             duration: 10000,
@@ -55,13 +57,11 @@ export class AllocationFundAnalysisComponent implements OnInit {
     linetype = 'LineChart';
     linecolumnNames = [];
 
-
-
     constructor(
         private interconn: IntercomponentCommunicationService,
         private route: ActivatedRoute,
-        private router: Router,
-        private userservice: ServercommunicationService
+        private userservice: ServercommunicationService,
+        private router: Router
     ) {
         this.interconn.componentMethodCalled$.subscribe(
             () => {
@@ -72,17 +72,13 @@ export class AllocationFundAnalysisComponent implements OnInit {
                         this.getLinegraph();
                     }
                 });
-            }
-        );
+            });
 
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
-                router.navigate(['/home']);
-            }
-        );
+                this.router.navigate(['/home']);
+            });
     }
-
-
 
     ngOnInit() {
         if (this.userservice.currentuser) {
@@ -178,12 +174,10 @@ export class AllocationFundAnalysisComponent implements OnInit {
                         valuesCollection.push(element.toString());
                         for (const iterator of values) {
                             valuesCollection.push(parseFloat(iterator));
-                            // valuesCollection[0] = i;
                         }
                         this.linedata.push(valuesCollection);
                     }
                 }
-
                 this.lineoptions = {
                     pointSize: 1,
                     curveType: 'function',
@@ -192,9 +186,7 @@ export class AllocationFundAnalysisComponent implements OnInit {
                     },
                     colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
                 };
-
-            }
-        );
+            });
     }
 
 }
