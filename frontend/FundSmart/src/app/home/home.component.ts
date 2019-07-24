@@ -43,7 +43,6 @@ interface DropboxFile {
 }
 
 @Component({
-
     selector: 'app-home',
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.css'],
@@ -52,6 +51,7 @@ interface DropboxFile {
 
 export class HomeComponent implements OnInit {
 
+    @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     registeruserForm: FormGroup;
     submitted = false;
 
@@ -64,9 +64,9 @@ export class HomeComponent implements OnInit {
 
     funds$: portfolio_fund[];
     total$;
+    model: any = {};
 
     tableData: any = [];
-    @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
 
     existing: HistoricalData = {
         annualexpense: 0,
@@ -131,21 +131,19 @@ export class HomeComponent implements OnInit {
     arrayBuffer: any;
 
     constructor(
-        private modalService: NgbModal, private interconn: IntercomponentCommunicationService,
+        private modalService: NgbModal,
+        private interconn: IntercomponentCommunicationService,
         private userservice: ServercommunicationService,
         private fileupload: GetfileforuploadService,
         private authService: AuthService,
         private formBuilder: FormBuilder,
-        public portfolioservice: PortfoliofundhelperService
-        ) {
-
+        public portfolioservice: PortfoliofundhelperService) {
         this.portfolioservice.funds$.subscribe(f => {
             this.funds$ = f;
         });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
         });
-
         this.interconn.googledriveuploadcalled$.subscribe(
             () => {
                 this.setdataindeshboard();
@@ -156,67 +154,18 @@ export class HomeComponent implements OnInit {
                     const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
                     this.portfolioservice.page = pageno;
                 });
-            }
-        );
-
-
+            });
         this.interconn.reloadmethodcalled$.subscribe(
-            () => {
-                // this.createFundlist();
-                // this.setdataindeshboard();
-                // this.portfolioservice.funds$.subscribe(f => {
-                //   this.funds$ = f;
-                //   // if (f) {
-                //   //   f.map((x, key) => {
-                //   //     if (x.security !== '') {
-                //   //       if (x.yourPortfolio) {
-                //   //         this.userservice.storedata({ 'recordId': key, "key": 'p1', "quantity": x.yourPortfolio, "recid": x.p1record, "portfolio": '', "securityId": x.security_id });
-                //   //       }
-                //   //       if (x.comparision1) {
-                //   //         this.userservice.storedata({ 'recordId': key, "key": 'p2', "quantity": x.comparision1, "recid": x.p2record, "portfolio": '', "securityId": x.security_id });
-                //   //       }
-
-                //   //       if (x.comparision2) {
-                //   //         this.userservice.storedata({ 'recordId': key, "key": 'p3', "quantity": x.comparision2, "recid": x.p3record, "portfolio": '', "securityId": x.security_id });
-                //   //       }
-                //   //       //this.userservice.storedata({ 'recordId': key, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": x.security_id });
-                //   //     }
-                //   //   });
-                //   // }
-
-                // });
-                // this.portfolioservice.total$.subscribe(total => {
-                //   this.total$ = total;
-                // });
-            }
+            () => { }
         );
-
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
-                // alert('logout function');
                 this.currentUser = undefined;
-                // portfoliofundlist.length = 0;
-                // this.resetfundlist();
-                // this.portfolioservice.resetfunds();
-                // this.portfolioservice.funds$.subscribe(f => {
-                //   this.funds$ = f;
-                // });
-                // // this.portfolioservice.total$.subscribe(total => {
-                // //   this.total$ = total;
-                // //   // console.log(this.total$);
-                // this.total$ = 0;
-                // this.piedata = [];
-                // this.donutdata = [];
-                // this.linedata = [];
-                // });
-            }
-        );
+            });
         this.tableData = JSON.parse(localStorage.getItem('securityData'));
         this.userservice.get_security().subscribe(
             datasecuritylist => {
                 securitylist.length = 0;
-                // // console.log(securitylist);
-                // tslint:disable-next-line: forin
                 for (var obj in datasecuritylist) {
                     var securityobj: security = {
                         id: -1,
@@ -236,55 +185,10 @@ export class HomeComponent implements OnInit {
                     this.setfunds(this.tableData);
                     this.setdataindeshboard();
                 }
-            }
-        );
-
+            });
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.setcurrent_user();
-                // this.userservice.getUserPortfolio().subscribe(
-                //   data => {
-                //     // alert("portfolio data came");
-                //     // console.log(data);
-                //     this.portfolio1 = data['results']['0'];
-                //     this.comparision1 = data['results']['1'];
-                //     this.comparision2 = data['results']['2'];
-                //     // console.log("Portfolios", this.portfolio1, this.comparision1, this.comparision2);
-
-                //     portfoliofundlist.forEach((element, key) => {
-                //       // console.log(element);
-                //       if (element.security !== '') {
-                //         if (element.yourPortfolio !== '') {
-                //           this.addportfolioFund('portfolio', element, key);
-                //         }
-                //         if (element.comparision1 !== '') {
-                //           this.addportfolioFund('comp1', element, key);
-                //         }
-                //         if (element.comparision2 !== '') {
-                //           this.addportfolioFund('comp2', element, key);
-                //         }
-                //       }
-                //     });
-                //     // this.createFundlist();
-                //     // this.setdataindeshboard();
-                //     // this.portfolioservice.funds$.subscribe(f => {
-                //     //   this.funds$ = f;
-                //     // });
-                //     // this.portfolioservice.total$.subscribe(total => {
-                //     //   this.total$ = total;
-                //     // });
-                //   }
-                // );
-
-                // this.createFundlist();
-                // this.setdataindeshboard();
-                // this.portfolioservice.funds$.subscribe(f => {
-                //   this.funds$ = f;
-                // });
-                // this.portfolioservice.total$.subscribe(total => {
-                //   this.total$ = total;
-                // });
-                // alert(this.currentUser.name);
             });
     }
 
@@ -294,10 +198,6 @@ export class HomeComponent implements OnInit {
         if (this.userservice.currentuser) {
             this.setcurrent_user();
         }
-        this.loginForm = this.formBuilder.group({
-            username: new FormControl('', Validators.required),
-            password: new FormControl('', Validators.compose([Validators.required, Validators.minLength(6)]))
-        });
         this.registeruserForm = this.formBuilder.group(
             {
                 username: new FormControl('', Validators.required),
@@ -313,30 +213,7 @@ export class HomeComponent implements OnInit {
             {
                 validator: MustMatch('password1', 'password2')
             });
-
-        // this.portfolioservice.funds$.subscribe(f => {
-        //   if (f) {
-        //     f.map((x, key) => {
-        //       if (x.security !== '') {
-        //         if (x.yourPortfolio) {
-        //           this.userservice.storedata({ 'recordId': key, "key": 'p1', "quantity": x.yourPortfolio, "recid": x.p1record, "portfolio": '', "securityId": x.security_id });
-        //         }
-        //         if (x.comparision1) {
-        //           this.userservice.storedata({ 'recordId': key, "key": 'p2', "quantity": x.comparision1, "recid": x.p2record, "portfolio": '', "securityId": x.security_id });
-        //         }
-
-        //         if (x.comparision2) {
-        //           this.userservice.storedata({ 'recordId': key, "key": 'p3', "quantity": x.comparision2, "recid": x.p3record, "portfolio": '', "securityId": x.security_id });
-        //         }
-        //         //this.userservice.storedata({ 'recordId': key, "key": recordid, "quantity": quantity, "recid": recid, "portfolio": portfolio, "securityId": x.security_id });
-        //       }
-        //     });
-        //   }
-        //   //console.log('Fund', f);
-        //   // this.resetfundlist();
-        // });
     }
-
 
     resetfundlist() {
         Swal.fire({
@@ -674,26 +551,16 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    get loginf() { return this.loginForm.controls; }
     userlogin() {
-        this.loginformSubmitted = true;
-        if (this.loginForm.invalid) {
-            return;
-        }
-        this.userservice.doLogin(JSON.stringify(this.loginForm.value)).subscribe(
+        this.userservice.doLogin(this.model.username,this.model.password).subscribe(
             data => {
                 localStorage.setItem('authkey', data['key']);
-
-                // console.log(data);
                 this.userservice.getUser(data['key']);
                 this.modalService.dismissAll('Login Done');
                 this.loginForm.reset();
                 $('#Loginerror').addClass('hidden');
-
             },
             error => {
-
-                console.log(error);
                 $('#Loginerror').removeClass('hidden');
                 // alert('Wrong Credentials / Server Problem');
             }

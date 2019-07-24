@@ -29,8 +29,12 @@ export class ServercommunicationService {
 
   }
 
-  doLogin(body) {
-    return this.http.post(this.api_link + 'rest-auth/login/', body, { headers: this.httpHeaders });
+  doLogin(username,password) {
+    const user = {
+      username: username,
+      password: password
+  };
+    return this.http.post(this.api_link + 'rest-auth/login/', user, { headers: this.httpHeaders });
   }
 
   socialLogin(user) {
