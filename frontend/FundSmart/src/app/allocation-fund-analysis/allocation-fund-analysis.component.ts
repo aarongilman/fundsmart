@@ -52,7 +52,7 @@ export class AllocationFundAnalysisComponent implements OnInit {
     linetitle = '';
     linedata = [];
     lineoptions;
-    linewidth = 600;
+    linewidth = 550;
     lineheight = 280;
     linetype = 'LineChart';
     linecolumnNames = [];

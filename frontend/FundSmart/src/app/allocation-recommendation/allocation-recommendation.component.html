@@ -73,7 +73,7 @@
             </div>
             <div class="col-lg-6 col-md-12">
                 <div
-                    class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap">
+                    class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap p-b-0">
                     <div class="head-global head-full">
                         <h3>Current <span>Allocation</span></h3>
                     </div>
@@ -86,14 +86,15 @@
                             [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
-                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center; color:red">
+                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center; color:red; display: block;
+                    width: 100%;">
                         Data not found
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-12">
                 <div
-                    class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap">
+                    class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap p-b-0">
                     <div class="head-global head-full">
                         <h3>Recommended <span>Allocation</span></h3>
                     </div>

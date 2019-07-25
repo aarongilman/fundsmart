@@ -127,15 +127,17 @@
                                     <div class="heading">
                                         <h3 style="color: #5ace9f">Holding Type</h3>
                                     </div>
-                                    <div *ngIf="bardata_fund" class="summary-content">
+                                    <div class="summary-content">
                                         <div class="holding-graph">
-                                            <ng-container *ngIf="bardata_fund && bardata_fund?.length > 0">
+                                            <div *ngIf="bardata_fund && bardata_fund?.length > 0">
                                                 <google-chart [type]="bartype_fund" [data]="bardata_fund"
                                                     [columnNames]="barcolumnname" [options]="baroptions_fund"
                                                     [height]="barheight_fund" [width]="barwidth_fund">
-                                                    <p *ngIf="bardata_fund?.length <= 0"> Data not found</p>
                                                 </google-chart>
-                                            </ng-container>
+                                            </div>
+                                            <div *ngIf="bardata_fund?.length <= 0" style="text-align:center;color: red">
+                                                Data not found
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -151,17 +153,18 @@
                                     <div class="heading">
                                         <h3 style="color: #5ace9f">Holding Type</h3>
                                     </div>
-                                    <div *ngIf="assets_bardata_fund" class="summary-content">
+                                    <div class="summary-content">
                                         <div class="holding-graph">
-                                            <ng-container
-                                                *ngIf="assets_bardata_fund && assets_bardata_fund?.length > 0">
+                                            <div *ngIf="assets_bardata_fund && assets_bardata_fund?.length > 0">
                                                 <google-chart [type]="assets_bartype_fund" [data]="assets_bardata_fund"
                                                     [options]="assets_baroptions_fund"
                                                     [columnNames]="assets_columnNames" [height]="assets_barheight_fund"
                                                     [width]="assets_barwidth_fund">
-                                                    <p *ngIf="assets_bardata_fund?.length === 0"> Data not found</p>
                                                 </google-chart>
-                                            </ng-container>
+                                            </div>
+                                            <div *ngIf="assets_bardata_fund?.length <= 0" style="text-align:center;color: red">
+                                                Data not found
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -206,17 +209,15 @@
                                     <div class="heading">
                                         <h3 style="color: #5ace9f">Industry</h3>
                                     </div>
-                                    <div *ngIf="industry_bardata_fund" class="summary-content">
-                                        <div class="holding-graph">
-                                            <ng-container
-                                                *ngIf="industry_bardata_fund && industry_bardata_fund?.length > 0">
-                                                <google-chart [type]="industry_bartype_fund"
-                                                    [data]="industry_bardata_fund" [columnNames]="industryColumns"
-                                                    [options]="industry_baroptions_fund"
-                                                    [height]="industry_barheight_fund" [width]="industry_barwidth_fund">
-                                                    <p *ngIf="industry_bardata_fund?.length === 0"> Data not found</p>
-                                                </google-chart>
-                                            </ng-container>
+                                    <div class="summary-content">
+                                        <div *ngIf="industry_bardata_fund && industry_bardata_fund?.length > 0">
+                                            <google-chart [type]="industry_bartype_fund" [data]="industry_bardata_fund"
+                                                [columnNames]="industryColumns" [options]="industry_baroptions_fund"
+                                                [height]="industry_barheight_fund" [width]="industry_barwidth_fund">
+                                            </google-chart>
+                                        </div>
+                                        <div *ngIf="industry_bardata_fund?.length <= 0" style="text-align:center;color: red">
+                                            Data not found
                                         </div>
                                         <div class="total-desc">
                                             <div style="margin-top: 30px; margin-left: 10px;width:200px"

@@ -24,7 +24,7 @@
                         </div>
                         <div class="col-sm-3">
                             <div *ngIf="portfoliolist.length > 1">
-                                <div class='input-group align-items-center'>
+                                <div class='input-group align-items-center' style="color: #000034">
                                     Select Portfolio:<select class='form-control ml-2' [(ngModel)]="serchportfolio"
                                         (change)='getportfoliobyportfolio()'>
                                         <option selected [value]="">All</option>
@@ -51,11 +51,12 @@
                         </div>
                         <div class="col-lg-3">
                             <span
-                                class="form-group d-flex justify-content-between align-items-center ml-auto mb-0 w-60 search_box"
+                                class="form-group load-content d-flex justify-content-between align-items-center ml-auto mb-0 w-60 search_box"
                                 style="color: #000034">
+                                <span class="ml-3 load-span" *ngIf="fundservice.loading$ | async">Loading...</span>
                                 Search: <input class="form-control search ml-2 " type="text" name="searchTerm"
                                     [(ngModel)]="fundservice.searchTerm" />
-                                <span class="ml-3" *ngIf="fundservice.loading$ | async">Loading...</span>
+                                
                             </span>
                         </div>
                     </div>

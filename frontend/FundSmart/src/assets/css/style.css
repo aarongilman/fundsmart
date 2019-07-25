@@ -18,6 +18,10 @@ body {
     overflow: hidden;
 }
 
+.p-b-0 {
+    padding-bottom: 0;
+}
+
 .pagination {
     margin-top: 10px;
 }
@@ -43,9 +47,11 @@ a, a:hover {
     outline: none;
     cursor: pointer;
 }
+
 button:focus {
     outline: none;
 }
+
 /* 
 input:focus,
 select:focus,
@@ -71,9 +77,11 @@ ul {
 .no-border {
     border: 0;
 }
-.sidebar-wrap li{
-text-align: center;
+
+.sidebar-wrap li {
+    text-align: center;
 }
+
 .differ .graph-labels {
     position: absolute;
     top: 0;
@@ -195,8 +203,7 @@ body.menu-overlay:after {
     width: 270px;
 }
 
-
-.date-picker-wrap label{
+.date-picker-wrap label {
     margin-right: 10px;
     margin-bottom: 0;
     align-items: center;
@@ -565,9 +572,11 @@ select {
 .chart-wrapper {
     position: relative;
 }
+
 .chart-wrapper.height-100 {
-    height:100%;
+    height: 100%;
 }
+
 .ct-label {
     fill: #fff;
     font-size: 12px;
@@ -742,7 +751,7 @@ table.dataTable thead .sorting_desc {
     overflow: hidden !important;
     font-weight: 500;
     border-right: 0px solid #aaa;
-    padding: 0 10px;
+    padding: 5px 10px;
     position: relative;
 }
 
@@ -780,6 +789,12 @@ table.trade-datatables, .trade-table {
 
 .trade-datatables tbody tr td:first-child, .trade-datatables thead tr th:first-child {
     padding-left: 15px !important;
+}
+
+.content-icon span {
+    margin-left: 5px;
+    display: flex;
+    align-items: center;
 }
 
 .trade-datatables tbody tr:nth-child(4n+1) td:first-child::after {
@@ -881,7 +896,8 @@ body .dataTables_wrapper .dataTables_paginate a.paginate_button.current, .dataTa
 /*Data table*/
 
 /*Buttons*/
-.upload-options ul li div{
+
+.upload-options ul li div {
     width: 100%;
 }
 
@@ -957,16 +973,21 @@ body .dataTables_wrapper .dataTables_paginate a.paginate_button.current, .dataTa
     height: 16px;
     width: 25px;
 }
-.login-form .trade-btn svg{
-    width:40px;
+
+.login-form .trade-btn svg {
+    width: 40px;
 }
+
 .upload-icon-btn svg, .trade-btn svg {
     fill: #fff;
 }
+
 .form-cen .details-btn {
     display: flex;
+    justify-content: center;
     align-items: center;
 }
+
 .upload-icon-btn {
     display: block;
     height: 40px;
@@ -1004,8 +1025,8 @@ body .dataTables_wrapper .dataTables_paginate a.paginate_button.current, .dataTa
     margin: 10px 0 0 0;
 }
 
-.form-holding button svg{
-width:20px;
+.form-holding button svg {
+    width: 20px;
 }
 
 .tbl-btn {
@@ -1141,13 +1162,13 @@ div.custom-sidebar {
     position: relative
 }
 
-.pop-logo{
+.pop-logo {
     width: 50%;
 }
 
 .upload-wrap .input-file-wrap {
-display: flex;
-justify-content: flex-end;
+    display: flex;
+    justify-content: flex-end;
 }
 
 .custom-sidebar ul li:first-child {
@@ -1764,10 +1785,11 @@ a.close-menu svg path {
     color: #000034;
 }
 
-.total-desc .total-label{
+.total-desc .total-label {
     margin-top: 0 !important;
     display: inline-block;
 }
+
 .fund-tabs ul li.active svg path, .fund-tabs ul li.active svg polygon {
     fill: #000034;
 }
@@ -2019,6 +2041,15 @@ td.loss-red.info-red {
     width: calc(100% - 70px);
 }
 
+.load-span {
+    position: absolute;
+    left: -40%;
+}
+
+.load-content {
+    position: relative;
+}
+
 .ch-container {
     display: block;
     position: relative;
@@ -2043,7 +2074,7 @@ td.loss-red.info-red {
     width: 0;
 }
 
-google-chart{
+google-chart {
     margin: 0 auto;
 }
 

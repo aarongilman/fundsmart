@@ -504,7 +504,6 @@ export class FundCreateComponent implements OnInit {
                 let that = this;
                 for (const file of files) {
                     const name = file.name;
-                    console.log(typeof (file), "type of fie", file);
                     url = file.link;
                     fetch(url).then(response => response.blob()).then(filedata => {
                         const formData = new FormData();
@@ -513,7 +512,6 @@ export class FundCreateComponent implements OnInit {
                         formData.append('data_file', myfile);
                         that.userservice.uploadfile(formData).subscribe(
                             resp => {
-                                console.log(resp);
                                 that.interconn.afterfileupload();
                                 this.getfunds();
                                 this.modalService.dismissAll('File uploaded');
@@ -550,9 +548,7 @@ export class FundCreateComponent implements OnInit {
                         const name = file.name;
                         url = file.link;
                         fetch(url).then(response => response.blob()).then(filedata => {
-                            console.log(filedata);
                             var url = URL.createObjectURL(new Blob([filedata], { type: 'application/octet-stream' }));
-                            console.log(url);
                             const formData = new FormData();
                             //   const blob = new Blob([filedata], { type: filedata.type });
                             const blob = new Blob([filedata], { type: 'application/vnd.ms-excel' });
@@ -582,53 +578,6 @@ export class FundCreateComponent implements OnInit {
             OneDrive.open(options);
         });
     }
-
-    // onedrivefileupload() {
-    //     let url: any;
-    //     return new Promise<OneDriveResult | null>((resolve, reject) => {
-    //     var options: OneDriveChooseOptions = {
-    //         clientId: "f6820b1f-b4c5-454a-a050-e88b6e231fb5",
-    //         success: (files) => {
-    //             let that = this;
-    //             for (const file of files.value) {
-    //                 const name = file.name;
-    //                 console.log(typeof (file), "type of fie", file);
-    //                 url = file.link;
-    //                 fetch(url).then(response => response.blob()).then(filedata => {
-    //                     const formData = new FormData();
-    //                     const blob = new Blob([filedata], { type: filedata.type });
-    //                     const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
-    //                     formData.append('data_file', myfile);
-    //                     resolve(files);
-    //                     that.userservice.uploadfile(formData).subscribe(
-    //                         resp => {
-    //                             console.log(resp);
-    //                             that.interconn.afterfileupload();
-    //                             this.getfunds();
-    //                             this.modalService.dismissAll('File uploaded');
-    //                         }
-    //                     );
-    //                 });
-    //             }
-
-    //         },
-
-    //         cancel: () => {
-    //         },
-    //         openInNewWindow: true,
-    //         multiselect: true,
-    //         action: "download",
-    //         viewType: 'files',
-    //         advanced: {
-    //             filter: "folder,.xlsx"
-    //         }
-    //         // fileName: "PortfoliofundsFileupload.xlsx",
-
-    //     };
-
-    //     OneDrive.open(options);
-    //      })
-    //   }
 
     drive_fileupload() {
         this.fileupload.onApiLoad("Create Fund");
