@@ -40,7 +40,6 @@ export class HeaderComponent implements OnInit {
 
     ngOnInit() {
         this.service.checklogin();
-        // this.setcurrent_user();
     }
 
     setcurrent_user() {
@@ -84,7 +83,7 @@ export class HeaderComponent implements OnInit {
     changepassword() {
         if (this.newpass == this.confirmpass) {
             this.service.change_password(this.oldpass, this.newpass, this.confirmpass).subscribe(data => {
-                this.toastr.success('success','Password has been changed successfully!')
+                this.toastr.success('success', 'Password has been changed successfully!')
                 this.oldpass = '';
                 this.newpass = '';
                 this.confirmpass = '';

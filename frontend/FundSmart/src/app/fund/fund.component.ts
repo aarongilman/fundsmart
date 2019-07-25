@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -6,6 +6,9 @@ import { MatMenuTrigger } from '@angular/material';
 import { Router } from '@angular/router';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { ConfirmationService } from 'primeng/api';
+import { SortableDirective, SortEvent } from '../sortable.directive';
+import { FundService } from './fund.service';
+import { portfolioList } from './portfolioList';
 
 @Component({
     selector: 'app-fund',
@@ -14,15 +17,16 @@ import { ConfirmationService } from 'primeng/api';
 })
 
 export class FundComponent implements OnInit {
+    @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     @ViewChild(MatMenuTrigger)
     contextMenu: MatMenuTrigger;
-    result: any = [];
-    closeResult: string;
-    _id: any;
-    fund: any;
-    SelectedIDs: any = [];
-    searchText: string;
     contextMenuPosition = { x: '0px', y: '0px' };
+    closeResult: string;
+    fund: any;
+    _id: any;
+    result: any = [];
+    selectedIDs: any = [];
+    searchText: string;
     name: any;
     description: any;
     owner_1: any;
@@ -31,6 +35,8 @@ export class FundComponent implements OnInit {
     marginal_tax_range: any;
     location: any;
     created_by: any;
+    portfolioDetailList = portfolioList;
+
     updated_by: any;
 
     constructor(
@@ -39,20 +45,23 @@ export class FundComponent implements OnInit {
         private toastr: ToastrService,
         private interconn: IntercomponentCommunicationService,
         private confirmationService: ConfirmationService,
-        private router: Router
+        private router: Router,
+        public sortlist: FundService,
+
     ) {
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.getFunds();
-
-            }
-        );
+            });
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.router.navigate(['/home']);
-            }
-        );
-
+                portfolioList.length = 0;
+                this.sortlist.resetHoldingDetails();
+                this.sortlist.hlist$.subscribe(f => {
+                    this.portfolioDetailList = f;
+                });
+            });
     }
 
     ngOnInit() {
@@ -73,24 +82,15 @@ export class FundComponent implements OnInit {
     getFunds() {
         this.userService.getUserPortfolio().subscribe(
             fundlist => {
-                this.result = fundlist['results'];
-                // console.log(fundlist['results']);
-
-                this.result.sort((a, b) => {
-                    const nameA = a.name.toUpperCase(); // ignore upper and lowercase
-                    const nameB = b.name.toUpperCase(); // ignore upper and lowercase
-                    if (nameA < nameB) {
-                        return -1;
-                    }
-                    if (nameA > nameB) {
-                        return 1;
-                    }
-                    // names must be equal
-                    return 0;
+                portfolioList.length = 0;
+                fundlist['results'].forEach(element => {
+                    portfolioList.push(element);
                 });
-                // console.log(this.result);
+                this.sortlist.resetHoldingDetails();
+                this.sortlist.hlist$.subscribe(f => {
+                    this.portfolioDetailList = f;
+                });
             });
-
     }
 
     addPortfolioData() {
@@ -173,27 +173,37 @@ export class FundComponent implements OnInit {
     }
 
     selectID(item) {
-        if (this.SelectedIDs.find(x => x == item)) {
-            this.SelectedIDs.splice(this.SelectedIDs.indexOf(item), 1);
+        if (this.selectedIDs.find(x => x == item)) {
+            this.selectedIDs.splice(this.selectedIDs.indexOf(item), 1);
         } else {
-            this.SelectedIDs.push(item);
+            this.selectedIDs.push(item);
         }
     }
 
     onContextMenuAction1() {
-        this.router.navigate(['/holding_summary'], { queryParams: { id: this.SelectedIDs } });
+        this.router.navigate(['/holding_summary'], { queryParams: { id: this.selectedIDs } });
     }
 
     onContextMenuAction2() {
-        this.router.navigate(['/holding_details'], { queryParams: { id: this.SelectedIDs } });
+        this.router.navigate(['/holding_details'], { queryParams: { id: this.selectedIDs } });
     }
 
     onContextMenuAction3() {
-        this.router.navigate(['/fund_recommendation'], { queryParams: { id: this.SelectedIDs } });
+        this.router.navigate(['/fund_recommendation'], { queryParams: { id: this.selectedIDs } });
     }
 
     onContextMenuAction4() {
-        this.router.navigate(['/allocation_recommendation'], { queryParams: { id: this.SelectedIDs } });
+        this.router.navigate(['/allocation_recommendation'], { queryParams: { id: this.selectedIDs } });
+    }
+
+    onSort({ column, direction }: SortEvent) {
+        this.headers.forEach(header => {
+            if (header.sortable !== column) {
+                header.direction = '';
+            }
+        });
+        this.sortlist.sortColumn = column;
+        this.sortlist.sortDirection = direction;
     }
 
 }

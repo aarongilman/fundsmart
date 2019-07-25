@@ -50,7 +50,7 @@
                                                 style="text-align: center ;width: 3cm"
                                                 (keypress)="numberOnly($event,item['yourPortfolio'])"
                                                 (input)="addportfolioFund('portfolio',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
-                                                name='portfolio_{{i}}' type="text">
+                                                name='portfolio_{{i}}' type="text" maxlength="10">
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
@@ -176,7 +176,7 @@
                                 [columnNames]="linecolumnNames">
                             </google-chart>
                         </div>
-                        <div *ngIf="linedata?.length <= 0" style="text-align:center">
+                        <div *ngIf="linedata?.length <= 0" style="text-align:center ; color: red">
                             Data not found
                         </div>
                     </div>
@@ -316,12 +316,11 @@
                                 [options]="donutoptions" [height]="donutheight" [width]="donutwidth">
                             </google-chart>
                         </div>
-                        <div *ngIf="donutdata?.length <= 0" style="text-align:center">
+                        <div *ngIf="donutdata?.length === 0" style="text-align:center; color:red">
                             Data not found
                         </div>
                     </div>
                 </div>
-
                 <div
                     class="block-container chart-padding no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block ">
                     <div class="pie-chart">
@@ -332,7 +331,8 @@
                             <google-chart [type]="pietype" [data]="piedata" [options]="pieoptions" [height]="pieheight">
                             </google-chart>
                         </div>
-                        <div *ngIf="piedata?.length <= 0" class="align-items-center" style="text-align: center;">
+                        <div *ngIf="piedata?.length <= 0" class="align-items-center"
+                            style="text-align: center; color: red">
                             Data not found
                         </div>
                     </div>
@@ -716,14 +716,9 @@
                     </div>
                 </div>
             </div>
-            <!-- </div> -->
         </ng-template>
-        <!-- Login pop up -->
-
-        <!-- register pop up -->
 
         <ng-template #register let-modal role="document">
-            <!-- <div class="modal-content"> -->
             <div class="modal-header">
                 <div class="pop-logo">
                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -895,7 +890,6 @@
                                     <div *ngIf="f.password2.errors.mustMatch">Passwords must match</div>
                                 </div>
                             </div>
-
                         </div>
                         <button type="button" (click)='registerUser()'
                             class="trade-btn green-btn d-flex align-items-center justify-content-center login-email">
@@ -916,15 +910,9 @@
                                 Policy</a>
                             of
                             Trade</p>
-
                     </div>
-
                 </div>
             </div>
-
-            <!-- </div> -->
-
         </ng-template>
 
-        <!-- register pop up -->
         <script type="text/javascript" src="https://apis.google.com/js/api.js"></script>

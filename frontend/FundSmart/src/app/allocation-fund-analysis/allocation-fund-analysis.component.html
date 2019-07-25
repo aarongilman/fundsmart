@@ -1,10 +1,9 @@
 <div class="right-panel-wrap no-padding-right">
-    <!-- Fund content -->
     <div class="dashboard-content">
         <div class="row">
             <div class="col-lg-6 col-md-12">
                 <div
-                    class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap">
+                    class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap p-b-0">
                     <div class="head-global head-full">
                         <h3>Current <span>Allocation</span></h3>
                     </div>
@@ -17,14 +16,14 @@
                             [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
-                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align: center;margin-left: -234px;">
+                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align: center;color:red ;width: 100%;">
                         Data not found
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-12">
                 <div
-                    class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap">
+                    class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap p-b-0">
                     <div class="head-global head-full">
                         <h3>Recommended <span>Allocation</span></h3>
                     </div>
@@ -36,7 +35,7 @@
                             [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
-                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center">
+                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center ;color:red">
                         Data not found
                     </div>
                 </div>
@@ -69,7 +68,7 @@
                                         <td>{{recommended.fiveyear}}%</td>
                                     </tr>
                                     <tr class="total-tr">
-                                        <td>Differences</td>
+                                        <td style="color: #000034">Differences</td>
                                         <td class="gain-green">{{diffrence.oneyear}}%</td>
                                         <td class="gain-green">{{diffrence.threeyear}}%</td>
                                         <td class="loss-red">{{diffrence.fiveyear}}%</td>
@@ -83,24 +82,23 @@
             <div class="col-lg-6 col-md-12">
                 <div class="block-container chart-wrapper semi-block">
                     <div class="graph-labels display-contents">
-                        <!-- <ul>
-                            <li><span class="plot-12"></span>BTC</li>
-                            <li><span class="plot-3"></span>ETH</li>
-                            <li><span class="plot-9"></span>ERP</li>
-                        </ul> -->
                     </div>
-                    
-                    <div *ngIf="linedata?.length > 0">
-                        <google-chart [title]="linetitle" [type]="linetype" [data]="linedata" [options]="lineoptions"
-                            [width]="linewidth" [height]="lineheight" [columnNames]="linecolumnNames">
-                        </google-chart>
+                    <div class="hpd-table heading">
+                        <h3>Line Chart</h3>
                     </div>
-                    <div *ngIf="linedata?.length <= 0" style="text-align:center">
+                    <div *ngIf="linedata" class="summary-content">
+                        <ng-container *ngIf="linedata?.length > 0">
+                            <google-chart [title]="linetitle" [type]="linetype" [data]="linedata"
+                                [options]="lineoptions" [width]="linewidth" [height]="lineheight"
+                                [columnNames]="linecolumnNames">
+                            </google-chart>
+                        </ng-container>
+                    </div>
+                    <div *ngIf="linedata?.length <= 0" style="text-align:center; color: red">
                         Data not found
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Fund content -->
 </div>

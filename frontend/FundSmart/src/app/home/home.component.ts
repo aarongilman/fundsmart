@@ -182,7 +182,7 @@ export class HomeComponent implements OnInit {
     linetitle = '';
     linedata = [];
     lineoptions;
-    linewidth = 600;
+    linewidth = 700;
     lineheight = 450;
     linetype = 'LineChart';
     linecolumnNames = [];
@@ -214,7 +214,6 @@ export class HomeComponent implements OnInit {
                 this.portfolioservice.total$.subscribe(f => {
                     this.total$ = f;
                     const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                    // console.log(pageno);
                     this.portfolioservice.page = pageno;
                 });
             });
@@ -229,7 +228,6 @@ export class HomeComponent implements OnInit {
         this.userservice.get_security().subscribe(
             datasecuritylist => {
                 securitylist.length = 0;
-                // tslint:disable-next-line: forin
                 for (var obj in datasecuritylist) {
                     var securityobj: security = {
                         id: -1,
@@ -252,7 +250,6 @@ export class HomeComponent implements OnInit {
             });
         this.interconn.componentMethodCalled$.subscribe(
             () => {
-                // alert("In first method");
                 this.setcurrent_user();
             });
     }
@@ -260,12 +257,8 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.interconn.titleSettermethod("Multi Portfolio Analyzer");
         this.setdataindeshboard();
-        // this.securitylist = [{ "id": 1, "name": "Motilal Oswal Dynamic Fund", "isin": "INF247L01585", "id_value": "ISIN_INF247L01585", "date": "2019-01-31", "ticker": "MOFDERG IN", "asset_type": "Mutual Fund", "currency": "INR", "country": "IN", "industry": null, "rating": null, "created_at": "2019-06-12T11:25:46.929006Z", "created_by": 6 }];
         if (this.userservice.currentuser) {
             this.setcurrent_user();
-            // this.resetfundlist();
-            // // this.createFundlist();
-
         }
         this.registeruserForm = this.formBuilder.group(
             {
@@ -323,32 +316,23 @@ export class HomeComponent implements OnInit {
     createFundlist() {
         this.userservice.dashboardDataTable().subscribe(
             fundlist => {
-                // console.log(fundlist);
                 this.setfunds(fundlist);
-
             });
     }
 
     serAttribute(item, i) {
         var opt = $('option[value="' + $('#security_' + i).val() + '"]');
         item.security_id = Number.parseInt(opt.attr('id'));
-        // console.log(item.security_id);
-
         try {
             item.security = securitylist.find(s => s.id === item.security_id).name;
         } catch {
             return null;
         }
-
-
     }
 
     setdataindeshboard() {
-        // console.log("set data in dashboard");
-
         this.userservice.get_historical_perfomance().subscribe(
             result => {
-                // console.log("result", result);
                 this.existing = {
                     annualexpense: 0,
                     oneyear: 0,
@@ -373,32 +357,21 @@ export class HomeComponent implements OnInit {
                     this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
                     this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
 
-                    // console.log("Existing", result[0]['existing']['annual_expense'], result[0]['existing']['1-year'],
-                    //  result[0]['existing']['3-year'],
-                    //   result[0]['existing']['5-year']);
-
                     this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
                     this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
                     this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
                     this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['5-year']).toFixed(2));
-                    // console.log("recommended", result[0]['recommended']['annual_expense'], result[0]['recommended']['1-year'],
-                    //   result[0]['recommended']['3-year'], result[0]['recommended']['5-year']);
 
                     this.diffrence.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['difference']['annual_expense']).toFixed(2));
                     this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['1-year']).toFixed(2));
                     this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
                     this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
-                    // console.log("difference", result[0]['difference']['annual_expense'], result[0]['difference']['1-year'],
-                    //   result[0]['difference']['3-year'], result[0]['difference']['5-year']);
-
                 }
             });
 
         this.userservice.get_home_pie_chart().subscribe(
             jsondata => {
                 this.piedata = [];
-                // tslint:disable-next-line: forin
-
                 let arrData = [];
                 let arrvalue = [];
                 Object.keys(jsondata).forEach((element) => {
@@ -408,8 +381,6 @@ export class HomeComponent implements OnInit {
                         this.piedata.push([key, arrvalue[value]]);
                     });
                 });
-
-                // this.pietitle = '';
                 this.pietype = 'PieChart';
                 this.columnNames = ['Security Industry', 'Total'];
                 this.pieoptions = {
@@ -420,14 +391,13 @@ export class HomeComponent implements OnInit {
                     pieSliceText: 'label',
                     legend: 'none',
                     colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
-                    // colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+
                 };
             });
 
         this.userservice.get_deshboard_doughnut_chart().subscribe(
             jsondata => {
                 this.donutdata = [];
-
                 let arrData = [];
                 let arrvalue = [];
                 Object.keys(jsondata).forEach((element) => {
@@ -504,9 +474,6 @@ export class HomeComponent implements OnInit {
             this.userservice.socialLogin(user);
             this.setcurrent_user();
             this.modalService.dismissAll('Log in Done');
-
-            // this.setdataindeshboard();
-            // this.createFundlist();
         });
     }
 
@@ -515,8 +482,6 @@ export class HomeComponent implements OnInit {
             this.userservice.socialLogin(user);
             this.setcurrent_user();
             this.modalService.dismissAll('Log in Done');
-            // this.setdataindeshboard();
-            // this.createFundlist();
         });
     }
 
@@ -526,8 +491,6 @@ export class HomeComponent implements OnInit {
 
 
     addRow() {
-        // debugger
-
         let singlefund: portfolio_fund = {
             security: '',
             security_id: -1,
@@ -539,25 +502,18 @@ export class HomeComponent implements OnInit {
             comparision2: ''
         };
         portfoliofundlist.push(singlefund);
-        // portfoliofundlist.unshift(singlefund);
         this.portfolioservice.resetfunds();
         this.portfolioservice.funds$.subscribe(f => {
             this.funds$ = f;
         });
         this.portfolioservice.total$.subscribe(total => {
-            // alert('came here to set new row');
             this.total$ = total;
             let pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-            // console.log("Page number", pageno);
             this.portfolioservice.page = pageno;
         });
-        // portfoliofundlist.push(singlefund);
-
     }
 
     removeRow(p1record, id) {
-        // debugger
-        // console.log("ID", id);
         if (id >= 0) {
             Swal.fire({
                 title: 'Are you sure?',
@@ -572,7 +528,6 @@ export class HomeComponent implements OnInit {
                         this.userservice.removedata(p1record);
                     }
                     portfoliofundlist.splice(id, 1);
-                    // console.log("portfoliofundlist", portfoliofundlist);
                     this.portfolioservice.resetfunds();
                     this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
                     this.portfolioservice.total$.subscribe(total => {
@@ -587,12 +542,6 @@ export class HomeComponent implements OnInit {
                 }
             });
         }
-        // portfoliofundlist.push(singlefund);
-        // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-
-        // console.log(pageno);
-        // ()
-        // this.portfolioservice.page = pageno - 1;
     }
 
 
@@ -605,17 +554,11 @@ export class HomeComponent implements OnInit {
             this.showdetail_flag = true;
         } else {
             this.submitted = true;
-
-            // stop here if form is invalid
             if (this.registeruserForm.invalid) {
                 return;
             }
-
-            // alert('SUCCESS!! :-)\n\n' + JSON.stringify(this.registeruserForm.value));
             this.userservice.doRegistration(JSON.stringify(this.registeruserForm.value)).subscribe(data => {
-                localStorage.setItem('authkey', data['key']);
-                // console.log("Key is", data['key']);
-                // alert('registration successful. Plese confirm email');
+                localStorage.setItem('authkey', data['key']);;
                 this.showdetail_flag = false;
                 Swal.fire('Registration', 'Please verify your email from your mail box', 'success');
                 this.modalService.dismissAll('Registration Done');
@@ -623,12 +566,7 @@ export class HomeComponent implements OnInit {
                 this.submitted = false
             },
                 error => {
-                    // alert('error occured');
-                    // console.log(error);
-
-
                     this.toastrService.error('The user with this username/email already exist!', 'Error');
-
                 });
         }
     }
@@ -640,7 +578,6 @@ export class HomeComponent implements OnInit {
         fundlist.forEach(element => {
             let security = this.securitylist.find(s => s['id'] === element.securityId);
             let singlefund: portfolio_fund = {
-                // created_by: 0
                 security: security.name,
                 security_id: element['securityId'],
                 p1record: element['recordId'],
@@ -661,10 +598,6 @@ export class HomeComponent implements OnInit {
             }
             portfoliofundlist.push(singlefund);
         });
-
-        // portfoliofundlist.sort(function (a, b) {
-        //   return a.p1record - b.p1record;
-        // });
         this.portfolioservice.resetfunds();
         this.portfolioservice.funds$.subscribe(f => {
             this.funds$ = f;
@@ -679,20 +612,15 @@ export class HomeComponent implements OnInit {
             data => {
                 localStorage.setItem('authkey', data['key']);
                 this.userservice.getUser(data['key']);
-                this.modalService.dismissAll('Login Done');
-                // this.loginForm.reset();
-
+                this.modalService.dismissAll('Login Done'); 
             },
             error => {
-                this.toastrService.error('Invalid Login credentials', 'Error');
-                // $('#Loginerror').removeClass('hidden');
-                // alert('Wrong Credentials / Server Problem');
+                this.toastrService.error('Invalid Credentials', 'Error');
             }
         );
     }
 
     openmodal(modalid, str) {
-        // alert("type of modal is" + typeof(modalid));
         var addclass = '';
         if (str === 'login' || str === 'register') {
             addclass = 'long-pop sign-pop';
@@ -705,23 +633,16 @@ export class HomeComponent implements OnInit {
     }
 
     resetpassword() {
-        // console.log(this.email2);
-
-
         this.userservice.reset_pwd_sendemail(this.email2).subscribe(data => {
-            // console.log(data);
             this.email2 = undefined;
             this.modalService.dismissAll('Email sent.');
             Swal.fire({
                 title: 'Reset Password',
                 text: 'Token has been sent to your email address.',
                 type: "success",
-
             });
         },
-            error => {
-                // console.log(error);
-            });
+            error => { });
     }
 
     getDismissReason(reason: any): string {
@@ -738,9 +659,7 @@ export class HomeComponent implements OnInit {
         }
     }
 
-
     resetpass_modal() {
-        // alert('click on forget password');
         $(".forgot-password-wrap").addClass("show-forgot");
         $(".login-content").addClass("hide-login");
         $(".forgot-password-title").addClass("show-forgot");
@@ -750,20 +669,10 @@ export class HomeComponent implements OnInit {
 
 
     uploadFile(event) {
-
-        // const tabledata = JSON.parse(localStorage.getItem('securityData'));
-        // let i = tabledata.length;
-        // let tableobj = tabledata[i - 1];
-        // console.log("Last object of stored data", tableobj);
-
-        // alert('upload file event');
         for (let index = 0; index < event.length; index++) {
             const element = event[index];
             if (element.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-                // console.log(element.type);
-
                 this.files.push(element.name);
-                // console.log(element);
                 let fr = new FileReader;
                 fr.onload = (e) => {
                     this.arrayBuffer = fr.result;
@@ -775,28 +684,19 @@ export class HomeComponent implements OnInit {
                     let first_sheet_name = workbook.SheetNames[0];
                     let worksheet = workbook.Sheets[first_sheet_name];
                     let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-                    // console.log("hello", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
-
                     let localData = JSON.parse(localStorage.getItem('securityData'));
-
                     if (localData === null) {
                         localStorage.setItem('securityData', JSON.stringify([]));
                         localData = JSON.parse(localStorage.getItem('securityData'));
-
                     }
                     let count = localData.length;
-
                     // tslint:disable-next-line: forin
                     for (let record in sheetdata) {
-                        // console.log(sheetdata[record]);
                         let port1, comp1, comp2;
                         port1 = Number.parseInt(sheetdata[record]['portfolio1']);
                         comp1 = Number.parseInt(sheetdata[record]['comparison1']);
                         comp2 = Number.parseInt(sheetdata[record]['comparison2']);
-
-                        // console.log(sheetdata[record]['Security ISIN']);
                         let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
-                        // console.log(security);
                         if (security) {
                             try {
                                 let portfilio = portfoliofundlist.findIndex(s => s.security === '');
@@ -820,15 +720,8 @@ export class HomeComponent implements OnInit {
                                     comparision2: comp2
                                 };
                                 portfoliofundlist.push(singlefund);
-
-                                // let lastrow = localData[localData.length - 1];
-                                // console.log(lastrow);
                                 let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-                                // console.log(format);
-
                                 localData.push(format);
-
-
                             }
                         }
                     }
@@ -842,33 +735,23 @@ export class HomeComponent implements OnInit {
                         this.portfolioservice.total$.subscribe(f => {
                             this.total$ = f;
                             pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                            // console.log(pageno);
                             this.portfolioservice.page = pageno;
                         });
                         this.setdataindeshboard();
                     }
                     this.modalService.dismissAll('Upload Done');
-                    // this.setfunds(sheetdata);
-
                 };
                 fr.readAsArrayBuffer(element);
             } else {
                 Swal.fire('File Upload', 'Please upload exel or csv files', 'error');
             }
-
         }
-
     }
 
     searchsecurity(secinput) {
-        // // console.log(this.securityinput);
         var securityList1 = [];
         if (secinput.length >= 1) {
-            // if ($event.timeStamp - this.lastkeydown1 > 200) {
             securityList1 = this.searchFromArray(securitylist, secinput);
-
-            // }
-            // // console.log(securityList1);
         }
     }
 
@@ -888,7 +771,6 @@ export class HomeComponent implements OnInit {
                 }
             }
         }
-        // // console.log(matches);
         return matches;
     }
 
@@ -910,9 +792,7 @@ export class HomeComponent implements OnInit {
 
 
     addportfolioFund(string1, item, i) {
-        // alert(item.security);
         if (item.security_id === -1) {
-            // alert('Plese select security first');
             return false;
         } else {
             var quantity;
@@ -927,8 +807,6 @@ export class HomeComponent implements OnInit {
                 this.createportfoliofundmethod(quantity, item, 'p1', i);
 
             } else if (string1.match('comp1')) {
-                // console.log("string1.match('comp1')", string1.match('comp1'));
-                // console.log("item.comparision1", item.comparision1);
                 if (item.comparision1) {
                     quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
                     this.createportfoliofundmethod(quantity, item, 'p2', i);
@@ -937,10 +815,7 @@ export class HomeComponent implements OnInit {
                     quantity = null;
                     this.createportfoliofundmethod(quantity, item, 'p2', i);
                 }
-                // console.log("quantity", quantity);
-
             } else if (string1.match('comp2')) {
-                // alert(this.comparision2);
                 if (item.comparision2) {
                     quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
                 } else {
@@ -949,21 +824,16 @@ export class HomeComponent implements OnInit {
                 }
                 this.createportfoliofundmethod(quantity, item, 'p3', i);
             }
-
         }
     }
 
     createportfoliofundmethod(quantity, item: portfolio_fund, recordid, i) {
-        // alert('came in create portfolio fund');
         let localData = JSON.parse(localStorage.getItem('securityData'));
         if (localData === null) {
             localStorage.setItem('securityData', JSON.stringify([]));
             localData = JSON.parse(localStorage.getItem('securityData'));
         }
         var security = securitylist.find(x => x.name === item.security);
-        // console.log(security);
-
-        // name = this.securityinput);
         var recid;
         if (recordid === 'p1') {
             recid = item.p1record;
@@ -977,49 +847,26 @@ export class HomeComponent implements OnInit {
         }
 
         if (security === undefined) {
-            // alert("Please select valid security");
             return null;
         } else {
-            // console.log(item.security_id);
-
-            // if (recid === null) {
-            //   // alert('post method');
-            //   this.userservice.add_portfolio_fund(quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-            // } else {
-            //   // alert('put method');
-            //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
-            // }
-            // console.log("quantity", quantity);
             this.userservice.storedata({ 'recordId': item.p1record, "key": recordid, "quantity": quantity, "recid": recid, "securityId": item.security_id });
-
             this.setdataindeshboard();
         }
     }
 
     dropboxupload() {
         let url: any;
-        // document.getElementById("OpenDropboxFilePicker").addEventListener("click", e => {
         var options: DropboxChooseOptions = {
             success: (files) => {
                 let that = this;
                 for (const file of files) {
-                    // console.log(file, typeof (file));
                     const name = file.name;
-                    // console.log(typeof (file), "type of fie", file);
                     url = file.link;
-                    // console.log({ name: name, url: url });
                     fetch(url).then(response => response.blob()).then(filedata => {
-                        // TODO do something useful with the blob
-
-                        // For instance, display the image
-                        // console.log("blob is ", filedata.type);
                         const blob = new Blob([filedata], { type: filedata.type });
                         const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
-                        // console.log('myfile', myfile);
-
                         let fr = new FileReader;
                         fr.onload = (e) => {
-
                             this.arrayBuffer = fr.result;
                             let data = new Uint8Array(this.arrayBuffer);
                             let arr = new Array();
@@ -1029,27 +876,19 @@ export class HomeComponent implements OnInit {
                             let first_sheet_name = workbook.SheetNames[0];
                             let worksheet = workbook.Sheets[first_sheet_name];
                             let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-                            // console.log("sheetdata", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
-
                             let localData = JSON.parse(localStorage.getItem('securityData'));
                             if (localData === null) {
                                 localStorage.setItem('securityData', JSON.stringify([]));
                                 localData = JSON.parse(localStorage.getItem('securityData'));
                             }
                             let count = localData.length;
-                            // console.log(count);
-
                             // tslint:disable-next-line: forin
                             for (let record in sheetdata) {
-                                // console.log(sheetdata[record]);
                                 let port1, comp1, comp2;
                                 port1 = Number.parseInt(sheetdata[record]['portfolio1']);
                                 comp1 = Number.parseInt(sheetdata[record]['comparison1']);
                                 comp2 = Number.parseInt(sheetdata[record]['comparison2']);
-
-                                // console.log(sheetdata[record]['Security ISIN']);
                                 let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
-                                // console.log(security);
                                 if (security) {
                                     try {
                                         let portfilio = portfoliofundlist.findIndex(s => s.security === '');
@@ -1073,17 +912,11 @@ export class HomeComponent implements OnInit {
                                             comparision2: comp2
                                         };
                                         portfoliofundlist.push(singlefund);
-
-                                        // let lastrow = localData[localData.length - 1];
-                                        // console.log(lastrow);
                                         let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-                                        // console.log(format);
                                         localData.push(format);
                                     }
                                 }
                             }
-                            // console.log("length", localData.length);
-
                             if (count === localData.length) {
                                 Swal.fire('File Upload', 'Your data is not in proper format', 'error');
                             } else {
@@ -1093,12 +926,10 @@ export class HomeComponent implements OnInit {
                                 this.portfolioservice.total$.subscribe(f => {
                                     this.total$ = f;
                                     const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                                    // console.log(pageno);
                                     this.portfolioservice.page = pageno;
                                 });
                                 this.setdataindeshboard();
                             }
-
                             this.modalService.dismissAll('File upload');
                         };
                         fr.readAsArrayBuffer(myfile);
@@ -1112,7 +943,6 @@ export class HomeComponent implements OnInit {
             multiselect: false,
             extensions: ['.xlsx', '.xls', '.csv'],
         };
-
         Dropbox.choose(options);
     }
 
@@ -1213,10 +1043,8 @@ export class HomeComponent implements OnInit {
                                                 };
                                                 portfoliofundlist.push(singlefund);
 
-                                                // let lastrow = localData[localData.length - 1];
-                                                // console.log(lastrow);
                                                 let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-                                                // console.log(format);
+                                              
                                                 localData.push(format);
                                             }
                                         }
@@ -1232,7 +1060,7 @@ export class HomeComponent implements OnInit {
                                         this.portfolioservice.total$.subscribe(f => {
                                             this.total$ = f;
                                             const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                                            // console.log(pageno);
+                                           
                                             this.portfolioservice.page = pageno;
                                         });
                                         this.setdataindeshboard();
@@ -1255,7 +1083,6 @@ export class HomeComponent implements OnInit {
     }
 
     onSort({ column, direction }: SortEvent) {
-        // resetting other headers
         this.headers.forEach(header => {
             if (header.sortable !== column) {
                 header.direction = '';
@@ -1265,5 +1092,6 @@ export class HomeComponent implements OnInit {
         this.portfolioservice.sortColumn = column;
         this.portfolioservice.sortDirection = direction;
     }
+
 }
 

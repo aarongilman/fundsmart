@@ -1,6 +1,4 @@
-<!-- right panel -->
 <div class="right-panel-wrap no-padding-right">
-    <!-- Fund content -->
     <div class="dashboard-content">
         <div class="row">
             <div class="col-lg-12">
@@ -10,10 +8,9 @@
                     </div>
                     <div class="">
                         <div class='row'>
-                            <!-- {{portfoliolist.length}} -->
                             <div class="col-sm-4">
                                 <div *ngIf="portfoliolist.length > 1">
-                                    <div class='input-group align-items-center'>
+                                    <div class='input-group align-items-center' style="color: #000034">
                                         Select Portfolio:<select class='form-control ml-2' [(ngModel)]="serchportfolio"
                                             (change)='getportfoliobyportfolio()'>
                                             <option selected=true [value]="">All</option>
@@ -107,7 +104,7 @@
                             </div>
                         </div>
                         <br />
-                        <div class='row align-items-center ml-2 mr-2'>
+                        <div class='row align-items-center ml-2 mr-2' style="color: #000034">
                             Show
                             <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
                                 [(ngModel)]="sortlist.pageSize">
@@ -118,7 +115,7 @@
                             </select>
                             Entries
 
-                            <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
+                            <span class="form-group d-flex align-items-center ml-auto mb-0 w-60" style="color: #000034">
                                 Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
                                     [(ngModel)]="sortlist.searchTerm" />
                                 <span class="ml-3" *ngIf="sortlist.loading$ | async">Loading...</span>
@@ -126,47 +123,83 @@
                         </div>
 
                         <div class="scrollauto">
-                            <table id="holding-table" class="trade-datatables nowrap">
+                            <table id="holding-table" class="trade-datatables nowrap content-icon">
                                 <thead>
                                     <tr>
-                                        <th scope="col" sortable="portfolio" (sort)="onSort($event)">Portfolio</th>
-                                        <th scope="col" sortable="security" (sort)="onSort($event)">Security</th>
-                                        <th scope="col" sortable="isin" (sort)="onSort($event)">ISIN</th>
-                                        <th scope="col" sortable="ticker" (sort)="onSort($event)">Ticker</th>
-                                        <th scope="col" sortable="quantity" (sort)="onSort($event)">Quantity</th>
-                                        <th scope="col" sortable="current_price" (sort)="onSort($event)">Current Price
+                                        <th scope="col" sortable="portfolio" (sort)="onSort($event)">
+                                            <span>Portfolio <i class="fa fa-chevron-up"></i><i
+                                                    class="fa fa-chevron-down"></i>
+                                            </span>
                                         </th>
-                                        <th scope="col" sortable="market_value" (sort)="onSort($event)">MKt value</th>
-                                        <th scope="col" sortable="basic_price" (sort)="onSort($event)">Basic Price</th>
-                                        <th scope="col" sortable="basis" (sort)="onSort($event)">Basis</th>
-                                        <th scope="col" sortable="country" (sort)="onSort($event)">Country</th>
-                                        <th scope="col" sortable="currency" (sort)="onSort($event)">Currency</th>
-                                        <th scope="col" sortable="asset_class" (sort)="onSort($event)">Asset Class </th>
-                                        <th scope="col" sortable="industry" (sort)="onSort($event)">Industry</th>
-                                        <th scope="col" sortable="rating" (sort)="onSort($event)">Rating</th>
+                                        <th scope="col" sortable="security" (sort)="onSort($event)">
+                                            <span>Security <i class="fa fa-chevron-up"></i><i
+                                                    class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="isin" (sort)="onSort($event)"><span>ISIN <i
+                                                    class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="ticker" (sort)="onSort($event)"><span>Ticker
+                                                <i class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="quantity" (sort)="onSort($event)">
+                                            <span>Quantity <i class="fa fa-chevron-up"></i><i
+                                                    class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="current_price" (sort)="onSort($event)">
+                                            <span>Current Price<i class="fa fa-chevron-up"></i><i
+                                                    class="fa fa-chevron-down"></i>
+                                            </span>
+                                        </th>
+                                        <th scope="col" sortable="market_value" (sort)="onSort($event)">
+                                            <span>MKt Value <i class="fa fa-chevron-up"></i><i
+                                                    class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="basic_price" (sort)="onSort($event)">
+                                            <span>Basic Price <i class="fa fa-chevron-up"></i><i
+                                                    class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="basis" (sort)="onSort($event)"><span>Basis <i
+                                                    class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="country" (sort)="onSort($event)">
+                                            <span>Country <i class="fa fa-chevron-up"></i><i
+                                                    class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="currency" (sort)="onSort($event)">
+                                            <span>Currency <i class="fa fa-chevron-up"></i><i
+                                                    class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="asset_class" (sort)="onSort($event)"><span>Asset
+                                                Class <i class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i>
+                                            </span> </th>
+                                        <th scope="col" sortable="industry" (sort)="onSort($event)">
+                                            <span>Industry <i class="fa fa-chevron-up"></i><i
+                                                    class="fa fa-chevron-down"></i>
+                                            </span></th>
+                                        <th scope="col" sortable="rating" (sort)="onSort($event)"><span>Rating
+                                                <i class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i>
+                                            </span></th>
 
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- {{HoldingDetailList}} -->
                                     <tr *ngFor="let item of HoldingDetailList ; let i = index">
-
                                         <td>{{item.portfolio}}</td>
                                         <td>{{item.security}}</td>
                                         <td>{{item.isin}}</td>
                                         <td>{{item.ticker}}</td>
                                         <td>{{item.quantity}}</td>
-                                        <td><input class="form-control" *ngIf="item.current_price === null"
-                                                type="number" step="any" style="width: 2cm;text-align: center"
-                                                [(ngModel)]="currentprice[i]" min="0"
+                                        <td><input maxlength="10" class="form-control" step="any"
+                                                *ngIf="item.current_price === null" type="number"
+                                                style="width: 2cm;text-align: center" [(ngModel)]="currentprice[i]"
                                                 (blur)="item.current_price=currentprice[i];UpdateHoldingDetails(item,i)"
-                                                name="current_price_{{i}}" oninput="validity.valid||(value='');">
+                                                name="current_price_{{i}}" oninput="validity.valid||(value='');" min="0">
                                             <span *ngIf="item.current_price !== null">{{item.current_price}}</span>
                                         </td>
-                                        <td>{{item.market_value}}</td>
-                                        <td><input class="form-control" step="any" *ngIf="item.basic_price === null"
+                                        <td>{{(item.market_value)}}</td>
+                                        <td><input maxlength="10" step="any" class="form-control" min="0" *ngIf="item.basic_price === null"
                                                 type="number" style=" width: 2cm;text-align:
-                                                center" [(ngModel)]="basicprice[i]" min="0"
+                                                center" [(ngModel)]="basicprice[i]"
                                                 (blur)="item.basic_price = basicprice[i];UpdateHoldingDetails(item,i)"
                                                 name="basic_price_{{i}}" oninput="validity.valid||(value='');">
                                             <span *ngIf="item.basic_price !== null">{{item.basic_price}}</span>
@@ -197,39 +230,31 @@
                                                 name='rating_{{i}}'
                                                 (change)="item.rating = rating[i];UpdateHoldingDetails(item,i)">
                                             <span *ngIf="item.rating !== null">{{item.rating}}</span>
-
                                         </td>
-
                                     </tr>
-                                    <div *ngIf="HoldingDetailList.length === 0">
+                                    <div *ngIf="HoldingDetailList.length === 0"
+                                        style="text-align: center; color: red; width: 100%; position: absolute;">
                                         No data found
                                     </div>
                                 </tbody>
                             </table>
-
                         </div>
                         <div>
                             <br />
-                            <!-- Showing {{sortlist.pageSize}} records from {{total}} -->
                             <div class="d-flex ">
                                 <ngb-pagination class="ml-auto" [collectionSize]="total" [(page)]="sortlist.page"
                                     [pageSize]="sortlist.pageSize">
                                 </ngb-pagination>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Fund content -->
-
 </div>
 
 <ng-template #addHoldingDetais role="document">
-    <!-- #addHoldingDetais -->
     <div class="modal-header">
         <div class="pop-logo">
             <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -272,13 +297,9 @@
     </div>
     <div class="modal-body">
         <div class="login-with-btn">
-
             <div class="login-form trade-inputs">
-
                 <form id='regform' [formGroup]='fundForm' action="post">
-
                     <div class="input-group">
-                        <!-- <label class="form-control label">Select Portfolio:</label> -->
                         <input class="form-control" id='portfolio' name='selected' title="
                                 Select Portfolio" formControlName="selectedPortfolio" placeholder="select Portfolio"
                             list="portfolioselect"
@@ -287,8 +308,6 @@
                             <option *ngFor="let pitem of portfoliolist" [value]="pitem.name">
                                 {{pitem.name}} </option>
                         </datalist>
-
-
                         <div *ngIf="submitted && f.selectedPortfolio.errors" class="invalid-feedback">
                             <div *ngIf="f.selectedPortfolio.errors.required">Select Portfolio</div>
                         </div>
@@ -303,18 +322,15 @@
                         <datalist id="securityname">
                             <option *ngFor="let security of securitylist;let d = index" data-value={{security.name}}
                                 data-id={{security.id}}>
-                                <!-- title="{{security.name}} Isin:{{security.isin}} Ticker:{{security.ticker}}"> -->
                                 Name:{{security.name}} Isin:{{security.isin}}
                                 Ticker:{{security.ticker}} {{security.id}}
                             </option>
                         </datalist>
-
                         <div *ngIf="submitted && f.selectedSecurity.errors" class="invalid-feedback">
                             <div *ngIf="f.selectedSecurity.errors.required">Security is required</div>
                         </div>
                     </div>
                     <br />
-
                     <div class="input-group">
                         <input oninput="validity.valid||(value='');" type="number" class="form-control"
                             formControlName="quantity" name='quantity' placeholder="Enter Quantity"
@@ -328,19 +344,15 @@
                     <div class="input-group">
                         <input type="number" class="form-control" [ngModelOptions]="{standalone: true}"
                             name='inputBasicPrice' [(ngModel)]=" inputBasicPrice" placeholder="Enter Basic Price">
-
                     </div>
                     <br />
                     <div class="input-group">
                         <input type="number" class="form-control" [ngModelOptions]="{standalone: true}"
                             name='inputCurrentPrice' [(ngModel)]="
                             inputCurrentPrice" placeholder="Enter Current Price">
-
                     </div>
                     <br />
-                    <p>
-                        Basic Price and Current Price are not mandatory.
-                    </p>
+                    <p>Basic Price and Current Price are not mandatory. </p>
                     <button type="button" (click)='addDetail()' style="cursor: pointer"
                         class="trade-btn button green-btn d-flex align-items-center justify-content-center login-email">
                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"

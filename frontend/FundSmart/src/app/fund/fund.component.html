@@ -6,7 +6,7 @@
                     <div class="head-global">
                         <h3>Fund <span>Lists</span></h3>
                     </div>
-                    <div class='row align-items-center ml-2 mr-2' style="float:right; margin-bottom: 75px;">
+                    <div class='row align-items-center ml-2 mr-2' style="float:right; margin-bottom: 75px;color: #000034">
                         Items
                         <select class="form-control" style="width: 60px;margin: 0 10px">
                             <option [ngValue]="10">10</option>
@@ -15,24 +15,26 @@
                             <option [ngValue]="100">100</option>
                         </select>
                         <p-confirmDialog></p-confirmDialog>
-                        <span class="form-group d-flex align-items-center ml-auto mb-0 w-60" style="width: 350px">
-                            <input class="form-control search ml-2 w-100" type="text" name="searchText"
-                                [(ngModel)]="searchText" placeholder="Filter Table By Name" />&nbsp;&nbsp;
+                        <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
+                            <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
+                                [(ngModel)]="sortlist.searchTerm" placeholder="Filter Table By Name" />&nbsp;&nbsp;
                             <i class="fa fa-filter"></i>
+                            <span class="ml-3" *ngIf="sortlist.loading$ | async">Loading...</span>
                         </span>
                     </div>
-
-                    <table *ngIf="result" dataid="security-table" class="width-100 trade-datatables ">
+                    <table dataid="security-table" class="width-100 trade-datatables ">
                         <thead>
                             <tr>
-                                <th>Funds</th>
-                                <th>Description</th>
+                                <th scope="col" sortable="name" (sort)="onSort($event)">Funds<i
+                                        class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i></th>
+                                <th scope="col" sortable="description" (sort)="onSort($event)">Description<i
+                                        class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i></th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <ng-container *ngIf="(result  | filter : searchText) as results">
-                                <tr *ngFor="let fund of results  ;let i = index">
+                            <ng-container *ngIf="portfolioDetailList && portfolioDetailList.length > 0">
+                                <tr *ngFor="let fund of portfolioDetailList  ;let i = index">
                                     <td> {{fund.name}}</td>
                                     <td> {{fund.description}}</td>
                                     <a pTooltip="Edit" tooltipPosition="bottom"
@@ -52,11 +54,12 @@
                                         [matMenuTriggerData]="{item: item}">
                                     </div>
                                 </tr>
-                                <p *ngIf="results && results.length === 0"> No Portfolio's Found </p>
+                                <p *ngIf="portfolioDetailList && portfolioDetailList.length === 0"
+                                    style="text-align:center; color:red"> No
+                                    Portfolio's Found </p>
                             </ng-container>
                         </tbody>
                     </table>
-
                     <div class="upload-wrap">
                         <form class="d-flex justify-content-end align-items-center">
                             <div class="input-file-wrap ml-auto w-100">
@@ -120,7 +123,6 @@
             <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
                 <span aria-hidden="true">&times;</span>
             </button>
-
             <div class="pop-logo">
                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 486.742 486.742"
@@ -186,8 +188,8 @@
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Type:</label>
-                            <input type="text" required class="form-control type" [(ngModel)]="type"
-                                name='type' placeholder="Type">
+                            <input type="text" required class="form-control type" [(ngModel)]="type" name='type'
+                                placeholder="Type">
                         </div>
                         <div class="input-group">
                             <label style="margin-top: 9px;font-size: 14px;color: black">Marginal Range:</label>

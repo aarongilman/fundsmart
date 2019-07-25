@@ -15,18 +15,18 @@ import * as $ from 'jquery';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import 'rxjs/add/operator/filter';
 
-
 @Component({
     selector: 'app-holding-details',
     templateUrl: './holding-details.component.html',
     styleUrls: ['./holding-details.component.css'],
     providers: [HoldingdetailsSortService, DecimalPipe]
 })
+
 export class HoldingDetailsComponent implements OnInit {
+    @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     securitylist = securitylist;
     HoldingDetailList = holdingList;
     total;
-    @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     portfolio1: any;
     comparision1: any;
     comparision2: any;
@@ -70,35 +70,17 @@ export class HoldingDetailsComponent implements OnInit {
         private route: ActivatedRoute,
         private router: Router,
         private interconn: IntercomponentCommunicationService) {
-
-        // this.sortlist.hlist$.subscribe(f => {
-        //   this.HoldingDetailList = f;
-        // });
-        // this.sortlist.total$.subscribe(total => {
-        //   this.total = total;
-        // });
-
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 holdingList.length = 0;
                 this.getHoldingdetail();
-
-
-
                 this.userservice.getUserPortfolio().subscribe(
                     data => {
-                        // alert("portfolio data came");
-                        // console.log(data);
-                        // this.portfolio1 = data['results']['0'];
-                        // this.comparision1 = data['results']['1'];
-                        // this.comparision2 = data['results']['2'];
                         this.portfoliolist.length = 0;
-                        // tslint:disable-next-line: forin
                         for (let d in data['results']) {
                             this.portfoliolist.push(data['results'][d]);
                         }
                     });
-
                 this.fundForm = this.formBuilder.group({
                     selectedPortfolio: new FormControl('', Validators.required),
                     selectedSecurity: new FormControl('', Validators.required),
@@ -117,18 +99,14 @@ export class HoldingDetailsComponent implements OnInit {
                 this.sortlist.total$.subscribe(total => {
                     this.total = total;
                 });
-            }
-        );
+            });
     }
 
     ngOnInit() {
         this.interconn.titleSettermethod('Holding Details');
-
         if (securitylist.length === 0) {
             this.userservice.get_security().subscribe(
                 datasecuritylist => {
-                    // // console.log(securitylist);
-                    // tslint:disable-next-line: forin
                     for (var obj in datasecuritylist) {
                         var securityobj: security = {
                             id: -1,
@@ -143,36 +121,21 @@ export class HoldingDetailsComponent implements OnInit {
                         securityobj.ticker = datasecuritylist[obj]['ticker'];
                         securityobj.asset_type = datasecuritylist[obj]['asset_type'];
                         securitylist.push(securityobj);
-
                     }
                     this.securitylist = securitylist;
-                    // this.seclist1 = securitylist;
-                }
-            );
+                });
         }
 
         if (this.userservice.currentuser) {
             this.userservice.getUserPortfolio().subscribe(
                 data => {
-                    // alert("portfolio data came");
-                    // console.log(data);
                     this.portfoliolist.length = 0;
-                    // tslint:disable-next-line: forin
                     for (let d in data['results']) {
                         this.portfoliolist.push(data['results'][d]);
                     }
-                    // this.portfolio1 = data['results']['0'];
-                    // this.comparision1 = data['results']['1'];
-                    // this.comparision2 = data['results']['2'];
                 });
             this.getHoldingdetail();
-
         }
-
-
-
-
-
     }
 
 
@@ -183,7 +146,6 @@ export class HoldingDetailsComponent implements OnInit {
                 this.userservice.getHoldings().toPromise().then(
                     mtdata => {
                         holdingList.length = 0;
-                        // tslint:disable-next-line: forin
                         for (var obj in mtdata) {
                             holdingList.push(mtdata[obj]);
                         }
@@ -199,7 +161,6 @@ export class HoldingDetailsComponent implements OnInit {
                 this.userservice.get(`api/holding_detail/?portfolio_ids=${this.order}`).toPromise().then(
                     mtdata => {
                         holdingList.length = 0;
-                        // tslint:disable-next-line: forin
                         for (var obj in mtdata) {
                             holdingList.push(mtdata[obj]);
                         }
@@ -210,20 +171,15 @@ export class HoldingDetailsComponent implements OnInit {
                         this.sortlist.total$.subscribe(total => {
                             this.total = total;
                         });
-                    }
-                );
+                    });
             }
         });
-
-
-
     }
 
 
     setSecurity() {
         var opt = $('option[value="' + $('#secinput').val() + '"]');
         this.selectboxsecurityid = Number.parseInt(opt.attr('id'));
-        // console.log(this.selectboxsecurityid);
         try {
             this.fundForm.controls['selectedSecurity'].setValue(securitylist.find(s => s.id === this.selectboxsecurityid).name);
         } catch {
@@ -232,8 +188,6 @@ export class HoldingDetailsComponent implements OnInit {
     }
 
     downloadData() {
-
-        // tslint:disable-next-line: no-unused-expression
         new ngxCsv(holdingList, "Holding_Summary", this.option);
     }
 
@@ -241,17 +195,14 @@ export class HoldingDetailsComponent implements OnInit {
 
     AddDetail() {
         this.submitted = true;
-        // stop here if form is invalid
         if (this.fundForm.invalid) {
             return;
         }
         let portfolioid = this.portfoliolist.find(p => p.name === this.fundForm.controls['selectedPortfolio'].value).id;
-
         this.userservice.add_portfolio_fund(this.fundForm.controls['quantity'].value,
             portfolioid,
             this.selectboxsecurityid, this.userservice.currentuser.id).subscribe(
                 res => {
-                    // console.log(res);
                     let mysecurity: security;
                     mysecurity = securitylist.find(x => x.id === res['security']);
                     var holding: holdindDetail = {
@@ -272,10 +223,8 @@ export class HoldingDetailsComponent implements OnInit {
                         rating: null
                     };
                     this.selectboxsecurityid = undefined;
-                    // this.UpdateHoldingDetails(holding, -1);
                     this.userservice.UpdateHoldingDetails(holding).subscribe(
                         sucess => {
-                            // console.log(sucess);
                             var successdata: holdindDetail = {
                                 fund_id: sucess['fund_id'],
                                 portfolio: sucess['portfolio'],
@@ -302,17 +251,8 @@ export class HoldingDetailsComponent implements OnInit {
                             this.inputBasicPrice = null;
                             this.inputCurrentPrice = null;
                         },
-                        error => {
-                            // console.log(error);
-
-                        }
-                    );
-                }
-            );
-
-
-
-
+                        error => { });
+                });
     }
 
     UpdateHoldingDetails(item, i) {
@@ -324,7 +264,6 @@ export class HoldingDetailsComponent implements OnInit {
                 this.country[i] = null;
                 this.industry[i] = null;
                 this.rating[i] = null;
-                // console.log(res);
                 let toUpdate = this.HoldingDetailList.find(x => x.fund_id === res['fund_id']);
                 let index = this.HoldingDetailList.indexOf(toUpdate);
                 this.HoldingDetailList[index].currency = res['currency'];
@@ -334,35 +273,23 @@ export class HoldingDetailsComponent implements OnInit {
                 this.HoldingDetailList[index].market_value = res['market_value'];
                 this.HoldingDetailList[index].rating = res['rating'];
                 this.HoldingDetailList[index].industry = res['industry'];
-                // holdingList[index].country = res['country'];
-                // holdingList[index].country = res['country'];
-
             },
-            error => {
-                // console.log(error);
-
-            }
-        );
+            error => { });
     }
 
     onSort({ column, direction }: SortEvent) {
-        // resetting other headers
         this.headers.forEach(header => {
             if (header.sortable !== column) {
                 header.direction = '';
             }
         });
-
         this.sortlist.sortColumn = column;
         this.sortlist.sortDirection = direction;
     }
 
     openModal(modalid) {
-        // alert("type of modal is" + typeof(modalid));
         var addclass = '';
-
         addclass = 'long-pop sign-pop custom-dialog-container';
-
         this.modalService.open(modalid, { centered: true, windowClass: addclass }).result.then((result) => {
             this.closeResult = `Closed with: ${result}`;
         }, (reason) => {
@@ -382,23 +309,10 @@ export class HoldingDetailsComponent implements OnInit {
     }
 
     searchsecurity() {
-        // // console.log(this.securityinput);
         var securityList1 = [];
-
         if (this.fundForm.controls['selectedSecurity'].value.length > 1) {
-            // if ($event.timeStamp - this.lastkeydown1 > 200) {
             securityList1 = this.searchFromArray(securitylist, this.fundForm.controls['selectedSecurity'].value);
-
-            // }
-            // console.log(securityList1);
         }
-        // if (this.securityinput.length > 1) {
-        //   // if ($event.timeStamp - this.lastkeydown1 > 200) {
-        //   securityList1 = this.searchFromArray(securitylist, this.securityinput);
-
-        //   // }
-        //   // // console.log(securityList1);
-        // }
     }
 
     searchFromArray(arr, regex) {
@@ -417,23 +331,16 @@ export class HoldingDetailsComponent implements OnInit {
                 }
             }
         }
-        // // console.log(matches);
         return matches;
     }
 
     getportfoliobyportfolio() {
-        // console.log(this.serchportfolio);
         if (this.serchportfolio === 'All') {
-            // alert('all' + this.serchportfolio);
             this.getHoldingdetail();
         } else {
-            // alert('came in else');
             this.userservice.get(`api/holding_detail/?portfolio_ids=${this.serchportfolio}`).toPromise().then(
                 mtdata => {
                     holdingList.length = 0;
-                    // console.log(mtdata);
-
-                    // tslint:disable-next-line: forin
                     for (var obj in mtdata) {
                         holdingList.push(mtdata[obj]);
                     }
@@ -444,11 +351,8 @@ export class HoldingDetailsComponent implements OnInit {
                     this.sortlist.total$.subscribe(total => {
                         this.total = total;
                     });
-
-                }
-            );
+                });
         }
     }
-
 
 }
