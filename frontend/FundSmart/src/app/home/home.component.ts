@@ -43,6 +43,64 @@ interface DropboxFile {
     isDir: boolean;
 }
 
+interface OneDriveResult {
+    value: OneDriveFile[];
+    webUrl: string | null;
+}
+
+
+interface OneDriveFile {
+    id: string;
+    name: string;
+    link: any;
+    // "@microsoft.graph.downloadUrl": string;
+    // "thumbnails@odata.context": string;
+    size: number;
+    thumbnails: Thumbnails[];
+    webUrl: string;
+}
+
+interface Thumbnails {
+    id: string;
+    large: Thumbnail;
+    medium: Thumbnail;
+    small: Thumbnail;
+}
+
+interface Thumbnail {
+    height: number;
+    width: number;
+    url: string;
+}
+
+interface OneDriveOpenOptions {
+    clientId: 'f6820b1f-b4c5-454a-a050-e88b6e231fb5';
+    action: "save" | "download" | "share" | "query";
+    multiSelect: boolean;
+    openInNewWindow: boolean;
+    advanced: {
+        filter?: string;
+    };
+    success(files: OneDriveResult): void;
+    cancel(): void;
+    error(e: any): void;
+
+}
+
+interface OneDrive {
+    open(options: OneDriveOpenOptions);
+}
+
+declare var OneDrive: OneDrive;
+interface DropboxFile {
+    name: string;
+    link: string;
+    bytes: number;
+    icon: string;
+    thumbnailLink?: string;
+    isDir: boolean;
+}
+
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -274,7 +332,7 @@ export class HomeComponent implements OnInit {
     serAttribute(item, i) {
         var opt = $('option[value="' + $('#security_' + i).val() + '"]');
         item.security_id = Number.parseInt(opt.attr('id'));
-        console.log(item.security_id);
+        // console.log(item.security_id);
 
         try {
             item.security = securitylist.find(s => s.id === item.security_id).name;
@@ -361,7 +419,8 @@ export class HomeComponent implements OnInit {
                     },
                     pieSliceText: 'label',
                     legend: 'none',
-                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+                    // colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
                 };
             });
 
@@ -383,7 +442,7 @@ export class HomeComponent implements OnInit {
                     pieHole: 0.8,
                     legend: { position: 'top', alignment: 'start', maxLines: 10 },
                     pieSliceText: 'none',
-                    colors: ['#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', '#5ace9f', '#fca622'],
+                    colors: ['#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', '#5ace9f', '#fca622', '#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
                 };
             });
 
@@ -432,7 +491,8 @@ export class HomeComponent implements OnInit {
                     tooltips: {
                         mode: 'index'
                     },
-                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+                    // colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
                 };
 
             }
@@ -512,7 +572,7 @@ export class HomeComponent implements OnInit {
                         this.userservice.removedata(p1record);
                     }
                     portfoliofundlist.splice(id, 1);
-                    console.log("portfoliofundlist", portfoliofundlist);
+                    // console.log("portfoliofundlist", portfoliofundlist);
                     this.portfolioservice.resetfunds();
                     this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
                     this.portfolioservice.total$.subscribe(total => {
@@ -621,10 +681,11 @@ export class HomeComponent implements OnInit {
                 this.userservice.getUser(data['key']);
                 this.modalService.dismissAll('Login Done');
                 // this.loginForm.reset();
-                $('#Loginerror').addClass('hidden');
+
             },
             error => {
-                $('#Loginerror').removeClass('hidden');
+                this.toastrService.error('Invalid Login credentials', 'Error');
+                // $('#Loginerror').removeClass('hidden');
                 // alert('Wrong Credentials / Server Problem');
             }
         );
@@ -665,6 +726,9 @@ export class HomeComponent implements OnInit {
 
     getDismissReason(reason: any): string {
         this.showdetail_flag = false;
+        this.model.username = '';
+        this.model.password = '';
+        this.registeruserForm.reset();
         if (reason === ModalDismissReasons.ESC) {
             return 'by pressing ESC';
         } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
@@ -696,7 +760,7 @@ export class HomeComponent implements OnInit {
         for (let index = 0; index < event.length; index++) {
             const element = event[index];
             if (element.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-                console.log(element.type);
+                // console.log(element.type);
 
                 this.files.push(element.name);
                 // console.log(element);
@@ -711,7 +775,7 @@ export class HomeComponent implements OnInit {
                     let first_sheet_name = workbook.SheetNames[0];
                     let worksheet = workbook.Sheets[first_sheet_name];
                     let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-                    console.log("hello", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
+                    // console.log("hello", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
 
                     let localData = JSON.parse(localStorage.getItem('securityData'));
 
@@ -760,7 +824,7 @@ export class HomeComponent implements OnInit {
                                 // let lastrow = localData[localData.length - 1];
                                 // console.log(lastrow);
                                 let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-                                console.log(format);
+                                // console.log(format);
 
                                 localData.push(format);
 
@@ -830,8 +894,10 @@ export class HomeComponent implements OnInit {
 
     numberOnly(event, value) {
         const charCode = (event.which) ? event.which : event.keyCode;
-        if (value.includes('%')) {
-            return false;
+        if (value !== null) {
+            if (value.includes('%')) {
+                return false;
+            }
         } else if ((charCode > 47 && charCode < 58) || charCode === 37) {
             if (charCode === 37 && Number.parseInt(value) > 100) {
                 return false;
@@ -841,6 +907,7 @@ export class HomeComponent implements OnInit {
             return false;
         }
     }
+
 
     addportfolioFund(string1, item, i) {
         // alert(item.security);
@@ -878,7 +945,7 @@ export class HomeComponent implements OnInit {
                     quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
                 } else {
                     quantity = null;
-                    item.comparision2 = null;;
+                    item.comparision2 = null;
                 }
                 this.createportfoliofundmethod(quantity, item, 'p3', i);
             }
@@ -913,7 +980,7 @@ export class HomeComponent implements OnInit {
             // alert("Please select valid security");
             return null;
         } else {
-            console.log(item.security_id);
+            // console.log(item.security_id);
 
             // if (recid === null) {
             //   // alert('post method');
@@ -922,7 +989,7 @@ export class HomeComponent implements OnInit {
             //   // alert('put method');
             //   this.userservice.updateportfoliofund(recid, quantity, portfolio, security.id, this.currentUser['id']).subscribe();
             // }
-            console.log("quantity", quantity);
+            // console.log("quantity", quantity);
             this.userservice.storedata({ 'recordId': item.p1record, "key": recordid, "quantity": quantity, "recid": recid, "securityId": item.security_id });
 
             this.setdataindeshboard();
@@ -962,7 +1029,7 @@ export class HomeComponent implements OnInit {
                             let first_sheet_name = workbook.SheetNames[0];
                             let worksheet = workbook.Sheets[first_sheet_name];
                             let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-                            console.log("sheetdata", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
+                            // console.log("sheetdata", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
 
                             let localData = JSON.parse(localStorage.getItem('securityData'));
                             if (localData === null) {
@@ -1053,7 +1120,133 @@ export class HomeComponent implements OnInit {
         this.currentUser = this.userservice.currentuser;
     }
 
+    openOneDrivePicker() {
+        return new Promise<OneDriveResult | null>((resolve, reject) => {
+            var odOptions: OneDriveOpenOptions = {
+                clientId: 'f6820b1f-b4c5-454a-a050-e88b6e231fb5',
+                action: 'download',
+                multiSelect: false,
+                openInNewWindow: false,
+                advanced: {
+                    filter: "folder,.xlsx"
+                },
+                success: (files) => {
+                    resolve(files);
+                },
+                cancel: () => { resolve(null); },
+                error: (e) => { reject(e); }
+            };
+
+            OneDrive.open(odOptions);
+        });
+    }
+
     onedrivefileupload() {
+        this.openOneDrivePicker().then(
+            (result) => {
+                if (result) {
+                    for (const file of result.value) {
+                        const name = file.name;
+                        const url = file["@microsoft.graph.downloadUrl"];
+                        // console.log({ name: name, url: url });
+                        fetch(url)
+                            .then(response => response.blob())
+                            .then(blob => {
+                                // TODO do something useful with the blob
+                                // console.log(blob);
+                                const myblob = new Blob([blob], { type: blob.type });
+                                const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
+                                let fr = new FileReader;
+                                fr.onload = (e) => {
+
+                                    this.arrayBuffer = fr.result;
+                                    let data = new Uint8Array(this.arrayBuffer);
+                                    let arr = new Array();
+                                    for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+                                    let bstr = arr.join("");
+                                    let workbook = XLSX.read(bstr, { type: "binary" });
+                                    let first_sheet_name = workbook.SheetNames[0];
+                                    let worksheet = workbook.Sheets[first_sheet_name];
+                                    let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+                                    // console.log("sheetdata", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
+
+                                    let localData = JSON.parse(localStorage.getItem('securityData'));
+                                    if (localData === null) {
+                                        localStorage.setItem('securityData', JSON.stringify([]));
+                                        localData = JSON.parse(localStorage.getItem('securityData'));
+                                    }
+                                    let count = localData.length;
+                                    // console.log(count);
+
+                                    // tslint:disable-next-line: forin
+                                    for (let record in sheetdata) {
+                                        // console.log(sheetdata[record]);
+                                        let port1, comp1, comp2;
+                                        port1 = Number.parseInt(sheetdata[record]['portfolio1']);
+                                        comp1 = Number.parseInt(sheetdata[record]['comparison1']);
+                                        comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+
+                                        // console.log(sheetdata[record]['Security ISIN']);
+                                        let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
+                                        // console.log(security);
+                                        if (security) {
+                                            try {
+                                                let portfilio = portfoliofundlist.findIndex(s => s.security === '');
+                                                portfoliofundlist[portfilio].security_id = security.id;
+                                                portfoliofundlist[portfilio].security = security.name;
+                                                portfoliofundlist[portfilio].yourPortfolio = port1;
+                                                portfoliofundlist[portfilio].comparision1 = comp1;
+                                                portfoliofundlist[portfilio].comparision2 = comp2;
+                                                portfoliofundlist[portfilio].p1record = localData.length;
+                                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                                localData.push(format);
+                                            } catch {
+                                                let singlefund: portfolio_fund = {
+                                                    security: security.name,
+                                                    security_id: security.id,
+                                                    p1record: localData.length,
+                                                    p2record: null,
+                                                    p3record: null,
+                                                    yourPortfolio: port1,
+                                                    comparision1: comp1,
+                                                    comparision2: comp2
+                                                };
+                                                portfoliofundlist.push(singlefund);
+
+                                                // let lastrow = localData[localData.length - 1];
+                                                // console.log(lastrow);
+                                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                                // console.log(format);
+                                                localData.push(format);
+                                            }
+                                        }
+                                    }
+                                    // console.log("length", localData.length);
+
+                                    if (count === localData.length) {
+                                        Swal.fire('File Upload', 'Your data is not in proper format', 'error');
+                                    } else {
+                                        localStorage.setItem('securityData', JSON.stringify(localData));
+                                        this.portfolioservice.resetfunds();
+                                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+                                        this.portfolioservice.total$.subscribe(f => {
+                                            this.total$ = f;
+                                            const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                                            // console.log(pageno);
+                                            this.portfolioservice.page = pageno;
+                                        });
+                                        this.setdataindeshboard();
+                                    }
+
+                                    this.modalService.dismissAll('File upload');
+                                };
+                                fr.readAsArrayBuffer(myfile);
+                            });
+                    }
+                }
+            }).catch(reason => {
+                console.error(reason);
+            });
     }
 
     drive_fileupload() {

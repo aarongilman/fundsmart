@@ -157,16 +157,16 @@
                                         <td>{{item.ticker}}</td>
                                         <td>{{item.quantity}}</td>
                                         <td><input class="form-control" *ngIf="item.current_price === null"
-                                                type="number" style="width: 2cm;text-align: center"
-                                                [(ngModel)]="currentprice[i]"
+                                                type="number" step="any" style="width: 2cm;text-align: center"
+                                                [(ngModel)]="currentprice[i]" min="0"
                                                 (blur)="item.current_price=currentprice[i];UpdateHoldingDetails(item,i)"
                                                 name="current_price_{{i}}" oninput="validity.valid||(value='');">
                                             <span *ngIf="item.current_price !== null">{{item.current_price}}</span>
                                         </td>
-                                        <td>{{(item.market_value)}}</td>
-                                        <td><input class="form-control" *ngIf="item.basic_price === null" type="number"
-                                                style=" width: 2cm;text-align:
-                                                center" [(ngModel)]="basicprice[i]"
+                                        <td>{{item.market_value}}</td>
+                                        <td><input class="form-control" step="any" *ngIf="item.basic_price === null"
+                                                type="number" style=" width: 2cm;text-align:
+                                                center" [(ngModel)]="basicprice[i]" min="0"
                                                 (blur)="item.basic_price = basicprice[i];UpdateHoldingDetails(item,i)"
                                                 name="basic_price_{{i}}" oninput="validity.valid||(value='');">
                                             <span *ngIf="item.basic_price !== null">{{item.basic_price}}</span>

@@ -431,7 +431,7 @@ export class HoldingDetailsComponent implements OnInit {
             this.userservice.get(`api/holding_detail/?portfolio_ids=${this.serchportfolio}`).toPromise().then(
                 mtdata => {
                     holdingList.length = 0;
-                    console.log(mtdata);
+                    // console.log(mtdata);
 
                     // tslint:disable-next-line: forin
                     for (var obj in mtdata) {

@@ -26,15 +26,22 @@ export class FundRecommendationComponent implements OnInit {
     linedata = [];
     linetype = 'LineChart';
     linetitle = '';
-    linewidth = 500;
+    linewidth = 650;
     lineheight = 300;
     linecolumnNames = [];
-    lineoptions;
+    lineoptions = {
+        pointSize: 1,
+        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        curveType: 'function',
+        tooltips: {
+            mode: 'index'
+        },
+    };
 
 
     bartitle = 'Bar Chart';
     bardata = [];
-    barwidth = 550;
+    barwidth = 650;
     barheight = 300;
     bartype = 'ColumnChart';
     baroptions = {
@@ -75,6 +82,7 @@ export class FundRecommendationComponent implements OnInit {
             historicalData.forEach(historical => {
                 const names = Object.keys(historical);
                 names.forEach((key, value) => {
+                    
                     const historicalObj = {
                         name: names[value],
                         value: historical[names[value]]
@@ -136,15 +144,7 @@ export class FundRecommendationComponent implements OnInit {
                         }
                         this.linedata.push(valuesCollection);
                     }
-                };
-                this.lineoptions = {
-                    pointSize: 1,
-                    curveType: 'function',
-                    tooltips: {
-                        mode: 'index'
-                    },
-                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
-                };
+                }
             });
     }
 
@@ -153,11 +153,13 @@ export class FundRecommendationComponent implements OnInit {
             historicalData.forEach(historical => {
                 const name = Object.keys(historical);
                 const obj = Object.values(historical);
+                // tslint:disable-next-line: forin
                 for (const n in name) {
                     let barobj = Object.values(obj[n]);
                     barobj.unshift(name[n]);
                     this.bardata.push(barobj);
                 }
+                // tslint:disable-next-line: forin
                 for (let i in obj[1]) {
                     this.barcolumnNames.push(i);
                 }

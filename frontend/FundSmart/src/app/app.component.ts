@@ -52,6 +52,11 @@ export class AppComponent implements OnInit, OnDestroy {
                 this.currentuser = this.userservice.currentuser;
             }
         );
+        this.interconn.logoutcomponentMethodCalled$.subscribe(
+            () => {
+                this.currentuser = undefined;
+            }
+        );
     }
 
     ngOnInit() {

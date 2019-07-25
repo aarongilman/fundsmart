@@ -51,7 +51,14 @@ export class AllocationFundAnalysisComponent implements OnInit {
 
     linetitle = '';
     linedata = [];
-    lineoptions;
+    lineoptions = {
+        pointSize: 1,
+        curveType: 'function',
+        tooltips: {
+            mode: 'index'
+        },
+        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+    };
     linewidth = 600;
     lineheight = 280;
     linetype = 'LineChart';
@@ -63,10 +70,17 @@ export class AllocationFundAnalysisComponent implements OnInit {
         private userservice: ServercommunicationService,
         private router: Router
     ) {
+        this.route.queryParamMap.subscribe((queryParams: Params) => {
+            this.order = queryParams.params.id;
+        });
+
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.route.queryParamMap.subscribe((queryParams: Params) => {
                     if (queryParams.params.id) {
+
+                        // console.log('came here component method', queryParams.params.id);
+
                         this.getCurrentAllocation();
                         this.getHistoricalPerformance();
                         this.getLinegraph();
@@ -141,52 +155,47 @@ export class AllocationFundAnalysisComponent implements OnInit {
     }
 
     getLinegraph() {
-        this.userservice.get(`api/allocation_line_graph/?portfolio_ids=${this.order}`).subscribe(
-            (jsondata: any) => {
-                this.linedata = [];
-                this.linecolumnNames = ['label'];
-                const tempArray = [];
-                const mainObj = {};
-                if (this.linedata == []) {
-                    this.linedata.push(['No data copy', 0, 0]);
-                } else {
-                    for (let i = 0; i < jsondata.length; i++) {
-                        const element = jsondata[i];
-                        if (this.linedata !== null) {
-                            this.linecolumnNames.push(element.portfolio);
+        // console.log('Order', this.order);
+        if (this.order !== undefined) {
+            this.userservice.get(`api/allocation_line_graph/?portfolio_ids=${this.order}`).subscribe(
+                (jsondata: any) => {
+                    this.linedata = [];
+                    this.linecolumnNames = ['label'];
+                    const tempArray = [];
+                    const mainObj = {};
+                    if (this.linedata == []) {
+                        this.linedata.push(['No data copy', 0, 0]);
+                    } else {
+                        for (let i = 0; i < jsondata.length; i++) {
+                            const element = jsondata[i];
+                            if (this.linedata !== null) {
+                                this.linecolumnNames.push(element.portfolio);
+                            }
+                            for (let k = 0; k < element['label'].length; k++) {
+                                const label = element['label'][k];
+                                if (tempArray.filter(x => x === label).length === 0) {
+                                    tempArray.push(label);
+                                }
+                                if (mainObj[label]) {
+                                    mainObj[label] = mainObj[label] + ',' + element.series[k];
+                                } else {
+                                    mainObj[label] = element.series[k];
+                                }
+                            }
                         }
-                        for (let k = 0; k < element['label'].length; k++) {
-                            const label = element['label'][k];
-                            if (tempArray.filter(x => x === label).length === 0) {
-                                tempArray.push(label);
+                        for (let i = 0; i < tempArray.length; i++) {
+                            const element = tempArray[i];
+                            const values = (mainObj[element].split(',')).filter(Boolean);
+                            const valuesCollection = [];
+                            valuesCollection.push(element.toString());
+                            for (const iterator of values) {
+                                valuesCollection.push(parseFloat(iterator));
                             }
-                            if (mainObj[label]) {
-                                mainObj[label] = mainObj[label] + ',' + element.series[k];
-                            } else {
-                                mainObj[label] = element.series[k];
-                            }
+                            this.linedata.push(valuesCollection);
                         }
                     }
-                    for (let i = 0; i < tempArray.length; i++) {
-                        const element = tempArray[i];
-                        const values = (mainObj[element].split(',')).filter(Boolean);
-                        const valuesCollection = [];
-                        valuesCollection.push(element.toString());
-                        for (const iterator of values) {
-                            valuesCollection.push(parseFloat(iterator));
-                        }
-                        this.linedata.push(valuesCollection);
-                    }
-                }
-                this.lineoptions = {
-                    pointSize: 1,
-                    curveType: 'function',
-                    tooltips: {
-                        mode: 'index'
-                    },
-                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
-                };
-            });
-    }
 
+                });
+        }
+    }
 }

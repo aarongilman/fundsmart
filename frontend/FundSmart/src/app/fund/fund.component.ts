@@ -74,7 +74,7 @@ export class FundComponent implements OnInit {
         this.userService.getUserPortfolio().subscribe(
             fundlist => {
                 this.result = fundlist['results'];
-                console.log(fundlist['results']);
+                // console.log(fundlist['results']);
 
                 this.result.sort((a, b) => {
                     const nameA = a.name.toUpperCase(); // ignore upper and lowercase
@@ -88,7 +88,7 @@ export class FundComponent implements OnInit {
                     // names must be equal
                     return 0;
                 });
-                console.log(this.result);
+                // console.log(this.result);
             });
 
     }

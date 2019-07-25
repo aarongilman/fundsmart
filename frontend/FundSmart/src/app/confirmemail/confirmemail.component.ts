@@ -17,7 +17,7 @@ export class ConfirmemailComponent implements OnInit {
       // this.token = params['token'];
       this.userservice.confirm_email(params['token']).subscribe(
         data => {
-          console.log(data);
+          // console.log(data);
         }
       );
       // console.log(params['uid']);

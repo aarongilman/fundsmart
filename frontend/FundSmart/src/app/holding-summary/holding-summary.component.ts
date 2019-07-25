@@ -25,13 +25,17 @@ export class HoldingSummaryComponent implements OnInit {
     linewidth = 450;
     lineheight = 300;
     linecolumnNames = [];
-    lineoptions;
+    lineoptions = {
+        pointSize: 5,
+        curveType: 'function',
+        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+    };
     total = {};
     total1 = {};
     total2 = {};
     total3 = {};
     total4 = [];
-    colors = ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'];
+    colors = ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'];
 
     // holding type
     bartitle_fund = 'Bar Chart';
@@ -42,7 +46,8 @@ export class HoldingSummaryComponent implements OnInit {
     baroptions_fund = {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+        // colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
         // animation: {
         //     duration: 10000,
         //     easing: 'out'
@@ -60,7 +65,9 @@ export class HoldingSummaryComponent implements OnInit {
     industry_baroptions_fund = {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+
+        // colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
         // animation: {
         //     duration: 10000,
         //     easing: 'out'
@@ -80,7 +87,8 @@ export class HoldingSummaryComponent implements OnInit {
     assets_baroptions_fund = {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+
         // animation: {
         //     duration: 10000,
         //     easing: 'out'
@@ -148,7 +156,7 @@ export class HoldingSummaryComponent implements OnInit {
 
     getFund() {
         if (this.bardata_fund.length === 0) {
-            console.log(this.bardata_fund);
+            // console.log(this.bardata_fund);
             this.service.holding_summary_fund(this.id).subscribe((fundData: any) => {
                 let i = 0;
                 let names: any;
@@ -244,7 +252,7 @@ export class HoldingSummaryComponent implements OnInit {
                     }
 
                 });
-                console.log(this.industry_bardata_fund);
+                // console.log(this.industry_bardata_fund);
 
                 this.industryColumns = ['Type', 'Total', { role: 'style' }];
             });
@@ -313,12 +321,6 @@ export class HoldingSummaryComponent implements OnInit {
                         this.linedata.push(valuesCollection);
                     }
                 }
-                this.lineoptions = {
-                    pointSize: 5,
-                    curveType: 'function',
-                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
-
-                };
             });
     }
 
@@ -472,12 +474,7 @@ export class HoldingSummaryComponent implements OnInit {
                         this.linedata.push(valuesCollection);
                     }
                 }
-                this.lineoptions = {
-                    pointSize: 5,
-                    curveType: 'function',
-                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
 
-                };
             });
     }
 

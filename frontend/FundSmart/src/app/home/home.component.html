@@ -441,7 +441,7 @@
                         </li>
                         <li>
                             <div #container2 style="display:inline-block;position:relative">
-                                <a onclick="launchSaveToOneDrive()" pTooltip="One Drive" tooltipPosition="bottom"
+                                <a (click)="onedrivefileupload()" pTooltip="One Drive" tooltipPosition="bottom"
                                     [appendTo]="container2">
                                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
@@ -620,9 +620,9 @@
                             <div class="forgot-password d-flex align-items-center justify-content-end">
                                 <a (click)='resetpass_modal()'>Forgot Password?</a>
                             </div>
-                            <div id='Loginerror' class="hidden">
+                            <!-- <div id='Loginerror' class="hidden">
                                 <label style="color: red">Invalid Login Credentials</label>
-                            </div>
+                            </div> -->
                             <button type="submit"
                                 class="trade-btn green-btn d-flex align-items-center justify-content-center">
                                 <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"

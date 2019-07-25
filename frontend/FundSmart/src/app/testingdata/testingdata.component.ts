@@ -408,7 +408,7 @@ export class TestingdataComponent implements OnInit {
       // console.log("------------");
 
     }
-    console.log(this.fundlist);
+    // console.log(this.fundlist);
 
   }
 
