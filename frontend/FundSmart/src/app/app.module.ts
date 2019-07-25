@@ -13,7 +13,6 @@ import { FundRecommendationComponent } from './fund-recommendation/fund-recommen
 import { HoldingSummaryComponent } from './holding-summary/holding-summary.component';
 import { HoldingDetailsComponent } from './holding-details/holding-details.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { TestingdataComponent } from './testingdata/testingdata.component';
 import { FundCreateComponent } from './fund-create/fund-create.component';
 import { HeaderComponent } from './header/header.component';
 import { HomeComponent } from './home/home.component';
@@ -47,8 +46,6 @@ import { TooltipModule } from 'primeng/tooltip';
 const cookieConfig: NgcCookieConsentConfig = {
     cookie: {
         domain: 'localhost'
-        //domain: 'http://ec2-3-16-111-80.us-east-2.compute.amazonaws.com/' 
-        // it is mandatory to set a domain, for cookies to work properly (see https://goo.gl/S2Hy2A)
     },
     palette: {
         popup: {
@@ -61,7 +58,6 @@ const cookieConfig: NgcCookieConsentConfig = {
     theme: 'edgeless',
     type: 'info'
 };
-
 
 let gapiClientConfig: NgGapiClientConfig = {
     client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
@@ -103,7 +99,6 @@ export function provideConfig() {
         DragAndDropDirective,
         SortableDirective,
         FilterPipe,
-        TestingdataComponent
     ],
     imports: [
         BrowserModule,

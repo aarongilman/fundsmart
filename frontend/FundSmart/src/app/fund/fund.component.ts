@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -6,6 +6,9 @@ import { MatMenuTrigger } from '@angular/material';
 import { Router } from '@angular/router';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { ConfirmationService } from 'primeng/api';
+import { SortableDirective, SortEvent } from '../sortable.directive';
+import { FundService } from './fund.service';
+import { portfolioList } from './portfolioList';
 
 @Component({
     selector: 'app-fund',
@@ -14,6 +17,7 @@ import { ConfirmationService } from 'primeng/api';
 })
 
 export class FundComponent implements OnInit {
+    @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     @ViewChild(MatMenuTrigger)
     contextMenu: MatMenuTrigger;
     contextMenuPosition = { x: '0px', y: '0px' };
@@ -31,6 +35,8 @@ export class FundComponent implements OnInit {
     marginal_tax_range: any;
     location: any;
     created_by: any;
+    portfolioDetailList = portfolioList;
+
     updated_by: any;
 
     constructor(
@@ -39,17 +45,22 @@ export class FundComponent implements OnInit {
         private toastr: ToastrService,
         private interconn: IntercomponentCommunicationService,
         private confirmationService: ConfirmationService,
-        private router: Router
+        private router: Router,
+        public sortlist: FundService,
+
     ) {
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.getFunds();
-
-            }
-        );
+            });
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.router.navigate(['/home']);
+                portfolioList.length = 0;
+                this.sortlist.resetHoldingDetails();
+                this.sortlist.hlist$.subscribe(f => {
+                    this.portfolioDetailList = f;
+                });
             });
     }
 
@@ -71,17 +82,13 @@ export class FundComponent implements OnInit {
     getFunds() {
         this.userService.getUserPortfolio().subscribe(
             fundlist => {
-                this.result = fundlist['results'];
-                this.result.sort((a, b) => {
-                    const nameA = a.name.toUpperCase();
-                    const nameB = b.name.toUpperCase();
-                    if (nameA < nameB) {
-                        return -1;
-                    }
-                    if (nameA > nameB) {
-                        return 1;
-                    }
-                    return 0;
+                portfolioList.length = 0;
+                fundlist['results'].forEach(element => {
+                    portfolioList.push(element);
+                });
+                this.sortlist.resetHoldingDetails();
+                this.sortlist.hlist$.subscribe(f => {
+                    this.portfolioDetailList = f;
                 });
             });
     }
@@ -187,6 +194,16 @@ export class FundComponent implements OnInit {
 
     onContextMenuAction4() {
         this.router.navigate(['/allocation_recommendation'], { queryParams: { id: this.selectedIDs } });
+    }
+
+    onSort({ column, direction }: SortEvent) {
+        this.headers.forEach(header => {
+            if (header.sortable !== column) {
+                header.direction = '';
+            }
+        });
+        this.sortlist.sortColumn = column;
+        this.sortlist.sortDirection = direction;
     }
 
 }

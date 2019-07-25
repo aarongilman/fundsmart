@@ -16,7 +16,7 @@
                             [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
-                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align: center;margin-left: -234px;">
+                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align: center;color:red">
                         Data not found
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                             [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
-                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center">
+                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center ;color:red">
                         Data not found
                     </div>
                 </div>
@@ -68,7 +68,7 @@
                                         <td>{{recommended.fiveyear}}%</td>
                                     </tr>
                                     <tr class="total-tr">
-                                        <td>Differences</td>
+                                        <td style="color: #000034">Differences</td>
                                         <td class="gain-green">{{diffrence.oneyear}}%</td>
                                         <td class="gain-green">{{diffrence.threeyear}}%</td>
                                         <td class="loss-red">{{diffrence.fiveyear}}%</td>

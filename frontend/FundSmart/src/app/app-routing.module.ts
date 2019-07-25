@@ -9,7 +9,6 @@ import { HoldingSummaryComponent } from './holding-summary/holding-summary.compo
 import { AllocationFundAnalysisComponent } from './allocation-fund-analysis/allocation-fund-analysis.component';
 import { AllocationRecommendationComponent } from './allocation-recommendation/allocation-recommendation.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { TestingdataComponent } from './testingdata/testingdata.component';
 
 const routes: Routes = [
     {
@@ -53,10 +52,6 @@ const routes: Routes = [
         path: 'reset-password/:uid/:token',
         component: ResetPasswordComponent
     },
-    {
-        path: 'abc',
-        component: TestingdataComponent
-    }
 ];
 
 @NgModule({

@@ -21,7 +21,6 @@ export class HoldingSummaryComponent implements OnInit {
     linedata = [];
     linetype = 'LineChart';
     linetitle = '';
-    // linetitle = 'Portfolio value over time';
     linewidth = 450;
     lineheight = 300;
     linecolumnNames = [];
@@ -33,7 +32,6 @@ export class HoldingSummaryComponent implements OnInit {
     total4 = [];
     colors = ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'];
 
-    // holding type
     bartitle_fund = 'Bar Chart';
     bardata_fund = [];
     barwidth_fund = 600;
@@ -43,15 +41,10 @@ export class HoldingSummaryComponent implements OnInit {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
         colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
-        // animation: {
-        //     duration: 10000,
-        //     easing: 'out'
-        // },
         enableInteractivity: true,
     };
     barcolumnname = [];
 
-    // industry graph
     industry_bartitle_fund = 'Bar Chart';
     industry_bardata_fund = [];
     industry_barwidth_fund = 600;
@@ -61,16 +54,10 @@ export class HoldingSummaryComponent implements OnInit {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
         colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
-        // animation: {
-        //     duration: 10000,
-        //     easing: 'out'
-        // },
         enableInteractivity: true,
     };
     industryColumns = [];
 
-
-    // Assets classes
     assets_bartitle_fund = 'Bar Chart';
     assets_bardata_fund = [];
     assets_barwidth_fund = 600;
@@ -81,10 +68,6 @@ export class HoldingSummaryComponent implements OnInit {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
         colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
-        // animation: {
-        //     duration: 10000,
-        //     easing: 'out'
-        // },
         interpolateNulls: true,
         enableInteractivity: true,
     };
@@ -113,18 +96,14 @@ export class HoldingSummaryComponent implements OnInit {
                         this.getCountrywithoutpid();
                         this.getfundswithoutpid();
                         this.getLineGraphwithoutpid();
-
                     }
-
                 });
             }
         );
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.route.navigate(['/home']);
-            }
-        );
-
+            });
     }
 
     ngOnInit() {
@@ -144,11 +123,8 @@ export class HoldingSummaryComponent implements OnInit {
         }
     }
 
-
-
     getFund() {
         if (this.bardata_fund.length === 0) {
-            console.log(this.bardata_fund);
             this.service.holding_summary_fund(this.id).subscribe((fundData: any) => {
                 let i = 0;
                 let names: any;
@@ -162,14 +138,10 @@ export class HoldingSummaryComponent implements OnInit {
                         this.bardata_fund.push([names[0], fund[names[0]], `color:${this.colors[i]}`]);
                         this.fund.push(FundObj);
                         i++;
-
                     } else {
                         this.total = FundObj;
                     }
-                    // console.log(this.bardata_fund);
-
                 });
-
                 this.barcolumnname = ['Fund', 'value', { role: 'style' }];
             });
         }
@@ -178,30 +150,22 @@ export class HoldingSummaryComponent implements OnInit {
     getAssets() {
         if (this.assets_bardata_fund.length === 0) {
             this.service.holding_summary_asset(this.id).subscribe((resultData: any) => {
-                // console.log(resultData);
                 let i = 0;
                 resultData.forEach(result => {
-                    // console.log("result", result);
-
                     const names = Object.keys(result);
                     const ResultObj = {
                         name: names[0],
                         value: result[names[0]]
                     };
-                    // console.log(names[0]);
                     if (names[0] !== 'Total') {
                         this.assets_bardata_fund.push([names[0], result[names[0]], `color:${this.colors[i]}`]);
                         this.result.push(ResultObj);
-                        // console.log();
-
                         i++;
                     } else {
                         this.total1 = ResultObj;
                     }
-
                 });
             });
-            // console.log("assets data", this.assets_bardata_fund);
             this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
         }
     }
@@ -233,8 +197,6 @@ export class HoldingSummaryComponent implements OnInit {
                         name: names[0],
                         value: industry[names[0]]
                     };
-                    // console.log(names[0]);
-
                     if (names[0] !== 'Total') {
                         this.industry_bardata_fund.push([names[0], industry[names[0]], `color:${this.colors[i]}`]);
                         this.industry.push(industryObj);
@@ -242,13 +204,9 @@ export class HoldingSummaryComponent implements OnInit {
                     } else {
                         this.total3 = industryObj;
                     }
-
                 });
-                console.log(this.industry_bardata_fund);
-
                 this.industryColumns = ['Type', 'Total', { role: 'style' }];
             });
-
         }
     }
 
@@ -322,8 +280,6 @@ export class HoldingSummaryComponent implements OnInit {
             });
     }
 
-
-
     getHistoricalPerformancewithoutpid() {
         this.service.get('api/historical_performance_holding_summary/').subscribe((historicalData: any) => {
             historicalData.forEach(historical => {
@@ -337,10 +293,7 @@ export class HoldingSummaryComponent implements OnInit {
                     name: names[0],
                     value: historical[names[0]]
                 };
-
                 if (names[0] !== 'Total') {
-                    // console.log("historical perfomance", historicalObj);
-
                     this.historical.push(historicalObj);
                 } else {
                     this.total4.push(historicalObj);
@@ -368,10 +321,7 @@ export class HoldingSummaryComponent implements OnInit {
                     } else {
                         this.total = FundObj;
                     }
-                    // console.log(this.bardata_fund);
-
                 });
-
                 this.barcolumnname = ['Fund', 'value', { role: 'style' }];
             });
         }
@@ -380,30 +330,22 @@ export class HoldingSummaryComponent implements OnInit {
     getAssetswithoutpid() {
         if (this.assets_bardata_fund.length === 0) {
             this.service.get('api/asset_class_holding_summary/').subscribe((resultData: any) => {
-                // console.log(resultData);
                 let i = 0;
                 resultData.forEach(result => {
-                    // console.log("result", result);
-
                     const names = Object.keys(result);
                     const ResultObj = {
                         name: names[0],
                         value: result[names[0]]
                     };
-                    // console.log(names[0]);
                     if (names[0] !== 'Total') {
                         this.assets_bardata_fund.push([names[0], result[names[0]], `color:${this.colors[i]}`]);
                         this.result.push(ResultObj);
-                        // console.log();
-
                         i++;
                     } else {
                         this.total1 = ResultObj;
                     }
-
                 });
             });
-            // console.log("assets data", this.assets_bardata_fund);
             this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
         }
     }
@@ -418,8 +360,6 @@ export class HoldingSummaryComponent implements OnInit {
                         name: names[0],
                         value: industry[names[0]]
                     };
-                    // console.log(names[0]);
-
                     if (names[0] !== 'Total') {
                         this.industry_bardata_fund.push([names[0], industry[names[0]], `color:${this.colors[i]}`]);
                         this.industry.push(industryObj);
@@ -427,7 +367,6 @@ export class HoldingSummaryComponent implements OnInit {
                     } else {
                         this.total3 = industryObj;
                     }
-
                 });
                 this.industryColumns = ['Type', 'Total', { role: 'style' }];
             });

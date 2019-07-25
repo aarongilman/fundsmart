@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
-import { holdindDetail } from './holdingDetail';
-import { holdingList } from './holdingList';
+import { portfolioDetails } from './portfolioDetails';
+import { portfolioList } from './portfolioList';
 import { debounceTime, delay, switchMap, tap } from 'rxjs/operators';
 import { SortDirection } from '../sortable.directive';
 
 interface SearchResult {
-    holdinglist: holdindDetail[];
+    portfoliolist: portfolioDetails[];
     total: number;
 }
 
@@ -22,33 +22,29 @@ function compare(v1, v2) {
     return v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
 }
 
-function sort(holdinglist: holdindDetail[], column: string, direction: string): holdindDetail[] {
+function sort(portfoliolist: portfolioDetails[], column: string, direction: string): portfolioDetails[] {
     if (direction === '') {
-        return holdinglist;
+        return portfoliolist;
     } else {
-        return [...holdinglist].sort((a, b) => {
+        return [...portfoliolist].sort((a, b) => {
             const res = compare(a[column], b[column]);
             return direction === 'asc' ? res : -res;
         });
     }
 }
 
-function matches(holding: holdindDetail, term: string) {
-    return holding.security.toLowerCase().includes(term)
-        || holding.isin.toLocaleLowerCase().includes(term)
-        || holding.asset_class.toLocaleLowerCase().includes(term)
-        || holding.portfolio.toLocaleLowerCase().includes(term)
-        || holding.quantity.toLocaleLowerCase().includes(term);
+function matches(portfolio: portfolioDetails, term: string) {
+    return portfolio.name.toLowerCase().includes(term);
 }
 
 @Injectable({
     providedIn: 'root'
 })
 
-export class HoldingdetailsSortService {
+export class FundService {
     private _loading$ = new BehaviorSubject<boolean>(true);
     private _search$ = new Subject<void>();
-    private _holdings$ = new BehaviorSubject<holdindDetail[]>([]);
+    private _portfolio$ = new BehaviorSubject<portfolioDetails[]>([]);
     private _total$ = new BehaviorSubject<number>(0);
 
     private _state: State = {
@@ -59,7 +55,7 @@ export class HoldingdetailsSortService {
         sortDirection: ''
     };
 
-    constructor( ) {
+    constructor() {
         this._search$.pipe(
             tap(() => this._loading$.next(true)),
             debounceTime(200),
@@ -67,7 +63,7 @@ export class HoldingdetailsSortService {
             delay(200),
             tap(() => this._loading$.next(false))
         ).subscribe(result => {
-            this._holdings$.next(result.holdinglist);
+            this._portfolio$.next(result.portfoliolist);
             this._total$.next(result.total);
         });
         this._search$.next();
@@ -81,13 +77,13 @@ export class HoldingdetailsSortService {
             delay(200),
             tap(() => this._loading$.next(false))
         ).subscribe(result => {
-            this._holdings$.next(result.holdinglist);
+            this._portfolio$.next(result.portfoliolist);
             this._total$.next(result.total);
         });
         this._search$.next();
     }
 
-    get hlist$() { return this._holdings$.asObservable(); }
+    get hlist$() { return this._portfolio$.asObservable(); }
     get total$() { return this._total$; }
     get loading$() { return this._loading$.asObservable(); }
     get page() { return this._state.page; }
@@ -107,14 +103,13 @@ export class HoldingdetailsSortService {
 
     private _search(): Observable<SearchResult> {
         const { sortColumn, sortDirection, pageSize, page, searchTerm } = this._state;
-        // 1. Sort
-        let holdinglist = sort(holdingList, sortColumn, sortDirection);
+        //1.sort
+        let portfoliolist = sort(portfolioList, sortColumn, sortDirection);
         //2. Filter
-        holdinglist = holdinglist.filter(holding =>matches(holding, searchTerm));
-        const total = holdinglist.length;
-        //3. Pagination
-        holdinglist = holdinglist.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
-        return of({ holdinglist, total });
+        portfoliolist = portfoliolist.filter(holding => matches(holding, searchTerm));
+        const total = portfoliolist.length;
+
+        return of({ portfoliolist, total });
     }
-    
+
 }

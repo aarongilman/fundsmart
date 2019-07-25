@@ -42,25 +42,34 @@
             <div class="col-lg-3"></div>
             <div class="col-lg-6 col-md-12">
                 <div class="block-container  chart-wrapper">
+                    <div class="hpd-table heading">
+                        <h3>Line Chart</h3>
+                    </div>
                     <div *ngIf="linedata && linedata?.length > 0">
                         <google-chart [type]="linetype" [data]="linedata" [columnNames]="linecolumnNames"
                             [options]="lineoptions" [height]="lineheight" [width]="linewidth">
                         </google-chart>
                     </div>
-                    <div *ngIf="linedata?.length <= 0" style="text-align:center; color: black">
+                    <p></p>
+                    <div *ngIf="linedata?.length <= 0" style="text-align:center; color: red">
                         Data not found
                     </div>
                 </div>
             </div>
             <div class="col-lg-6 col-md-12">
                 <div class="block-container chart-wrapper ">
-                    <ng-container *ngIf="bardata && bardata?.length > 0">
+                    <div class="hpd-table heading">
+                        <h3>Bar Chart</h3>
+                    </div>
+                    <div *ngIf="bardata && bardata?.length > 0">
                         <google-chart [type]="bartype" [data]="bardata" [columnNames]="barcolumnNames"
                             [options]="baroptions" [height]="barheight" [width]="barwidth">
                         </google-chart>
-                        <p *ngIf="bardata && bardata?.length <= 0" style="text-align:center; color: black">Data not found
-                        </p>
-                    </ng-container>
+                    </div>
+                    <p></p>
+                    <div *ngIf="bardata?.length <= 0" style="text-align:center; color: red">Data not
+                        found
+                    </div>
                 </div>
             </div>
 

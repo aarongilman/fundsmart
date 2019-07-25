@@ -102,7 +102,8 @@
                                             (click)="fund.price === 0 ? fund.price = '' : null "
                                             (blur)="fund.price === '' ? fund.price = 0 : null"></td>
                                 </tr>
-                                <p *ngIf="fundlist && fundlist.length === 0">No data found in selected category.</p>
+                                <p *ngIf="fundlist && fundlist.length === 0" style="text-align:center; color:red">No
+                                    data found in selected category.</p>
                             </ng-container>
                         </tbody>
                     </table>
@@ -368,6 +369,6 @@
                 </div>
             </div>
         </ng-template>
-        
+
     </div>
 </div>

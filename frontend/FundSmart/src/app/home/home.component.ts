@@ -361,14 +361,13 @@ export class HomeComponent implements OnInit {
                     },
                     pieSliceText: 'label',
                     legend: 'none',
-                    colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+                    colors: ['#fca622', '#e65c00', '#5ace9f', '#1395b9', '#0e3c54', '#cc0000', '#ecaa39', '#eac843', '#a2b86d'],
                 };
             });
 
         this.userservice.get_deshboard_doughnut_chart().subscribe(
             jsondata => {
                 this.donutdata = [];
-
                 let arrData = [];
                 let arrvalue = [];
                 Object.keys(jsondata).forEach((element) => {

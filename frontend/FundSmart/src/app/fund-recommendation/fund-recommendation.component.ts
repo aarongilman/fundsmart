@@ -144,6 +144,7 @@ export class FundRecommendationComponent implements OnInit {
                     },
                     colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
                 };
+
             });
     }
 

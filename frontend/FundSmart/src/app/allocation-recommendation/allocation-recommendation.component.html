@@ -86,7 +86,7 @@
                             [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
-                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center; margin-left: -234px;">
+                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center; color:red">
                         Data not found
                     </div>
                 </div>
@@ -105,7 +105,7 @@
                             [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
-                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center">
+                    <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center; color:red">
                         Data not found
                     </div>
                 </div>

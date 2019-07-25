@@ -38,8 +38,7 @@ export class ResetPasswordComponent implements OnInit {
                 },
                 error => {
                     this.toastr.error('error', 'Password has not been reset successfully!')
-                }
-            );
+                });
         }
         else {
             this.toastr.error('error', 'Password and confirmation password does not match each other!')
