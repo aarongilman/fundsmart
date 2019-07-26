@@ -47,4 +47,8 @@ class PortfolioFundViewSet(ModelViewSet):
     search_fields = ('security__name', )
 
     def get_queryset(self):
-        return PortfolioFund.objects.filter(created_by=self.request.user)
+        portfolio_ids = []
+        if self.request.GET.get('portfolio_ids'):
+            portfolio_ids = self.request.GET.get('portfolio_ids').split(",")
+        return PortfolioFund.objects.filter(created_by=self.request.user,
+                                            portfolio__in=portfolio_ids)
