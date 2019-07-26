@@ -53,8 +53,6 @@ interface OneDriveFile {
     id: string;
     name: string;
     link: any;
-    // "@microsoft.graph.downloadUrl": string;
-    // "thumbnails@odata.context": string;
     size: number;
     thumbnails: Thumbnails[];
     webUrl: string;
@@ -449,7 +447,6 @@ export class HomeComponent implements OnInit {
                         valuesCollection.push(element.toString());
                         for (const iterator of values) {
                             valuesCollection.push(parseFloat(iterator));
-                            // valuesCollection[0] = i;
                         }
                         this.linedata.push(valuesCollection);
                     }
@@ -462,11 +459,8 @@ export class HomeComponent implements OnInit {
                         mode: 'index'
                     },
                     colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
-                    // colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
                 };
-
-            }
-        );
+            });
     }
 
     signInWithGoogle(): void {
@@ -612,12 +606,11 @@ export class HomeComponent implements OnInit {
             data => {
                 localStorage.setItem('authkey', data['key']);
                 this.userservice.getUser(data['key']);
-                this.modalService.dismissAll('Login Done'); 
+                this.modalService.dismissAll('Login Done');
             },
             error => {
                 this.toastrService.error('Invalid Credentials', 'Error');
-            }
-        );
+            });
     }
 
     openmodal(modalid, str) {
@@ -978,12 +971,9 @@ export class HomeComponent implements OnInit {
                     for (const file of result.value) {
                         const name = file.name;
                         const url = file["@microsoft.graph.downloadUrl"];
-                        // console.log({ name: name, url: url });
                         fetch(url)
                             .then(response => response.blob())
                             .then(blob => {
-                                // TODO do something useful with the blob
-                                // console.log(blob);
                                 const myblob = new Blob([blob], { type: blob.type });
                                 const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
                                 let fr = new FileReader;
@@ -998,27 +988,19 @@ export class HomeComponent implements OnInit {
                                     let first_sheet_name = workbook.SheetNames[0];
                                     let worksheet = workbook.Sheets[first_sheet_name];
                                     let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-                                    // console.log("sheetdata", XLSX.utils.sheet_to_json(worksheet, { raw: true }));
-
                                     let localData = JSON.parse(localStorage.getItem('securityData'));
                                     if (localData === null) {
                                         localStorage.setItem('securityData', JSON.stringify([]));
                                         localData = JSON.parse(localStorage.getItem('securityData'));
                                     }
                                     let count = localData.length;
-                                    // console.log(count);
-
                                     // tslint:disable-next-line: forin
                                     for (let record in sheetdata) {
-                                        // console.log(sheetdata[record]);
                                         let port1, comp1, comp2;
                                         port1 = Number.parseInt(sheetdata[record]['portfolio1']);
                                         comp1 = Number.parseInt(sheetdata[record]['comparison1']);
                                         comp2 = Number.parseInt(sheetdata[record]['comparison2']);
-
-                                        // console.log(sheetdata[record]['Security ISIN']);
                                         let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
-                                        // console.log(security);
                                         if (security) {
                                             try {
                                                 let portfilio = portfoliofundlist.findIndex(s => s.security === '');
@@ -1044,13 +1026,11 @@ export class HomeComponent implements OnInit {
                                                 portfoliofundlist.push(singlefund);
 
                                                 let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-                                              
+
                                                 localData.push(format);
                                             }
                                         }
                                     }
-                                    // console.log("length", localData.length);
-
                                     if (count === localData.length) {
                                         Swal.fire('File Upload', 'Your data is not in proper format', 'error');
                                     } else {
@@ -1060,7 +1040,7 @@ export class HomeComponent implements OnInit {
                                         this.portfolioservice.total$.subscribe(f => {
                                             this.total$ = f;
                                             const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                                           
+
                                             this.portfolioservice.page = pageno;
                                         });
                                         this.setdataindeshboard();
@@ -1072,9 +1052,7 @@ export class HomeComponent implements OnInit {
                             });
                     }
                 }
-            }).catch(reason => {
-                console.error(reason);
-            });
+            }).catch(reason => { });
     }
 
     drive_fileupload() {

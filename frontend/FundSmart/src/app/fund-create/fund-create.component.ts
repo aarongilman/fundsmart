@@ -11,8 +11,9 @@ import { funds } from '../funds';
 import { FundcreatesortService } from '../fundcreatesort.service';
 import { SortEvent, SortableDirective } from '../sortable.directive';
 import { securitylist } from '../securitylist';
-import { Router } from '@angular/router';
+import { Router, Params, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 declare var Dropbox: Dropbox;
 
@@ -37,8 +38,6 @@ interface OneDriveFile {
     id: string;
     name: string;
     link: any;
-    // "@microsoft.graph.downloadUrl": string;
-    // "thumbnails@odata.context": string;
     size: number;
     thumbnails: Thumbnails[];
     webUrl: string;
@@ -93,6 +92,7 @@ interface DropboxFile {
 })
 
 export class FundCreateComponent implements OnInit {
+
     currentUser: any;
     fundlist = [];
     total = 0;
@@ -110,32 +110,38 @@ export class FundCreateComponent implements OnInit {
     comparision2: any;
     selectedp: any;
     selectedDate: any;
+    id: any;
     serchportfolio: any;
 
     @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
-    // private spread: GC.Spread.Sheets.Workbook;
 
     oneDriveApplicationId: 'f6820b1f-b4c5-454a-a050-e88b6e231fb5';
 
-
-    private excelIO;
     constructor(
         private modalService: NgbModal,
         private fileupload: GetfileforuploadService,
-        private userservice: ServercommunicationService,
+        private userService: ServercommunicationService,
         private interconn: IntercomponentCommunicationService,
         public fundservice: FundcreatesortService,
         public route: Router,
         private toast: ToastrService,
         private calendar: NgbCalendar,
+        private activatedRoute: ActivatedRoute,
     ) {
-        // this.excelIO = new Excel.IO();
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.setcurrent_user();
                 this.getUserPortfolios();
-                this.getfunds();
+                this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
+                    this.id = queryParams.params.id;
+                    if (queryParams.params.id) {
+                        this.getSelectedPortfolio();
+                    } else {
+                        this.getfunds();
+                    }
+                });
             });
+
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.route.navigate(['/home']);
@@ -155,7 +161,7 @@ export class FundCreateComponent implements OnInit {
 
     ngOnInit() {
         this.interconn.titleSettermethod("Create Fund");
-        this.userservice.get_security().subscribe(
+        this.userService.get_security().subscribe(
             datasecuritylist => {
                 securitylist.length = 0;
                 // tslint:disable-next-line: forin
@@ -177,16 +183,22 @@ export class FundCreateComponent implements OnInit {
             }
         );
         this.setcurrent_user();
-        if (this.userservice.currentuser) {
-            this.getUserPortfolios();
+        if (this.userService.currentuser) {
             apiresultfundlist.length = 0;
-            this.getfunds();
+            this.getUserPortfolios();
+            this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
+                this.id = queryParams.params.id;
+                if (queryParams.params.id) {
+                    this.getSelectedPortfolio();
+                } else {
+                    this.getfunds();
+                }
+            });
         }
-
     }
 
     setcurrent_user() {
-        this.currentUser = this.userservice.currentuser;
+        this.currentUser = this.userService.currentuser;
     }
 
     setfunds(data) {
@@ -226,7 +238,7 @@ export class FundCreateComponent implements OnInit {
     }
 
     getfunds() {
-        this.userservice.get_portfolio_fund().subscribe(
+        this.userService.get_portfolio_fund().subscribe(
             data => {
                 if (data['count'] > 0) {
                     this.setfunds(data);
@@ -241,7 +253,7 @@ export class FundCreateComponent implements OnInit {
         } else {
             date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
         }
-        this.userservice.get_portfolio_fund_by_date(date).subscribe(
+        this.userService.get_portfolio_fund_by_date(date).subscribe(
             data => {
                 if (data['count'] > 0) {
                     this.setfunds(data);
@@ -259,7 +271,6 @@ export class FundCreateComponent implements OnInit {
             fund.asset_type = sec.asset_type;
             fund.isin = sec.isin;
             fund.security_name = sec.name;
-            // fund.security = name;
         } catch {
             return null;
         }
@@ -267,7 +278,7 @@ export class FundCreateComponent implements OnInit {
 
     updatefundquantity(item) {
         if (item.id === -1) {
-            this.userservice.add_portfolio_fund(
+            this.userService.add_portfolio_fund(
                 item.quantity,
                 item.portfolio,
                 item.security,
@@ -286,7 +297,7 @@ export class FundCreateComponent implements OnInit {
                     }
                 );
         } else {
-            this.userservice.updateportfoliofund(
+            this.userService.updateportfoliofund(
                 item.id,
                 item.quantity,
                 item.portfolio,
@@ -296,7 +307,7 @@ export class FundCreateComponent implements OnInit {
     }
 
     getUserPortfolios() {
-        this.userservice.getUserPortfolio().subscribe(data => {
+        this.userService.getUserPortfolio().subscribe(data => {
             this.portfoliolist.length = 0;
             for (let d in data['results']) {
                 this.portfoliolist.push(data['results'][d]);
@@ -314,7 +325,7 @@ export class FundCreateComponent implements OnInit {
         } else {
             date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
         }
-        this.userservice.postPrice(fund.id, fund.price, date).subscribe();
+        this.userService.postPrice(fund.id, fund.price, date).subscribe();
     }
 
     addRow() {
@@ -417,15 +428,26 @@ export class FundCreateComponent implements OnInit {
             return `with: ${reason}`;
         }
     }
+
     getportfoliobyportfolio() {
-        if (this.serchportfolio === 'All') {
-            this.getfunds();
-        } else {
-            this.userservice.get(`api/portfolio_fund/?portfolio=${this.serchportfolio}`).subscribe(
-                data => {
-                    this.setfunds(data);
-                });
-        }
+        this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
+            this.serchportfolio = queryParams.params.id;
+            if (this.serchportfolio === 'All') {
+                this.getfunds();
+            } else {
+                this.userService.get(`api/portfolio_fund/?portfolio_ids=${this.serchportfolio}`).subscribe(
+                    data => {
+                        this.setfunds(data);
+                    });
+            }
+        });
+    }
+
+    getSelectedPortfolio() {
+        this.userService.get(`api/portfolio_fund/?portfolio_ids=${this.id}`).subscribe(
+            data => {
+                this.setfunds(data);
+            });
     }
 
     resetpass_modal() {
@@ -439,7 +461,7 @@ export class FundCreateComponent implements OnInit {
             this.files.push(element.name);
             const formData = new FormData();
             formData.append('data_file', element);
-            this.userservice.uploadfile(formData).subscribe(
+            this.userService.uploadfile(formData).subscribe(
                 res => {
                     this.getfunds();
                 },
@@ -474,7 +496,7 @@ export class FundCreateComponent implements OnInit {
                         const blob = new Blob([filedata], { type: filedata.type });
                         const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
                         formData.append('data_file', myfile);
-                        that.userservice.uploadfile(formData).subscribe(
+                        that.userService.uploadfile(formData).subscribe(
                             resp => {
                                 that.interconn.afterfileupload();
                                 this.getfunds();
@@ -522,35 +544,27 @@ export class FundCreateComponent implements OnInit {
                     for (const file of result.value) {
                         const name = file.name;
                         const url = file["@microsoft.graph.downloadUrl"];
-                        // console.log({ name: name, url: url });
                         fetch(url)
                             .then(response => response.blob())
                             .then(blob => {
-                                // TODO do something useful with the blob
-                                // console.log(blob);
                                 const formData = new FormData();
                                 const myblob = new Blob([blob], { type: blob.type });
                                 const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
                                 formData.append('data_file', myfile);
-                                this.userservice.uploadfile(formData).subscribe(
+                                this.userService.uploadfile(formData).subscribe(
                                     resp => {
-                                        // console.log(resp);
                                         this.interconn.afterfileupload();
                                         this.getfunds();
                                         this.modalService.dismissAll('File uploaded');
                                         this.toast.success('File uploaded sucessfuly', 'Success');
-
                                     },
                                     error => {
                                         this.toast.error('Improper file,Could not upload file', 'Error');
-                                    }
-                                );
+                                    });
                             });
                     }
                 }
-            }).catch(reason => {
-                console.error(reason);
-            });
+            }).catch(reason => { });
     }
 
     drive_fileupload() {
@@ -567,6 +581,31 @@ export class FundCreateComponent implements OnInit {
         });
         this.fundservice.sortColumn = column;
         this.fundservice.sortDirection = direction;
+    }
+
+    delete_Portfolio(id) {
+        if (id >= 0) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this data',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, keep it'
+            }).then((result) => {
+                if (result.value) {
+                    this.userService.delete_PortfolioFund(id).subscribe(result => {
+                        this.getfunds();
+                    })
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    Swal.fire(
+                        'Cancelled',
+                        'Your data is safe :)',
+                        'error'
+                    );
+                }
+            });
+        }
     }
 
 }
