@@ -56,7 +56,6 @@
                                 <span class="ml-3 load-span" *ngIf="fundservice.loading$ | async">Loading...</span>
                                 Search: <input class="form-control search ml-2 " type="text" name="searchTerm"
                                     [(ngModel)]="fundservice.searchTerm" />
-
                             </span>
                         </div>
                     </div>
@@ -72,40 +71,43 @@
                                         class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i></th>
                                 <th scope="col" sortable="quantity" (sort)="onSort($event)">Quantity</th>
                                 <th>Price</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <ng-container *ngIf="fundlist.length > 0">
-                                <tr *ngFor="let fund of fundlist;let i = index;">
-                                    <td>
-                                        <input *ngIf="fund.security == '' " [(ngModel)]="securityinput[i]"
-                                            id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
-                                            name='security_{{i}}' (change)="currentUser ? setrowdata(fund,i) : null"
-                                            type="text">
-                                        <datalist id="securityname">
-                                            <option *ngFor="let security of securitylist;let d = index"
-                                                data-value='{{security.name}}' data-id={{security.id}}>
-                                                Name:{{security.name}} Isin:{{security.isin}}
-                                                Ticker:{{security.ticker}}
-                                            </option>
-                                        </datalist>
-                                        <span *ngIf="fund.security_name != ''"
-                                            style="width: 3cm">{{fund.security_name}}</span>
-                                    </td>
-                                    <td>{{fund.asset_type}}</td>
-                                    <td>{{fund.isin}}</td>
-                                    <td><input type="text" class="form-control" [(ngModel)]="fund.quantity"
-                                            name='quantity_{{i}}' style="text-align: center; width: 130px"
-                                            (keypress)="numberOnly($event)" (change)='updatefundquantity(fund)'></td>
-                                    <td><input type="text" class="form-control" [(ngModel)]="fund.price"
-                                            name='quantity_{{i}}' style="text-align: center; width: 130px"
-                                            (keypress)="numberOnly($event)" (change)='updateprice(fund)'
-                                            (click)="fund.price === 0 ? fund.price = '' : null "
-                                            (blur)="fund.price === '' ? fund.price = 0 : null"></td>
-                                </tr>
-                                <p *ngIf="fundlist && fundlist.length === 0" style="text-align:center; color:red">No
-                                    data found in selected category.</p>
-                            </ng-container>
+                            <tr *ngFor="let fund of fundlist;let i = index;">
+                                <td>
+                                    <input *ngIf="fund.security == '' " [(ngModel)]="securityinput[i]"
+                                        id='security_{{i}}' (keyup)="searchsecurity($event)" list="securityname"
+                                        name='security_{{i}}' (change)="currentUser ? setrowdata(fund,i) : null"
+                                        type="text">
+                                    <datalist id="securityname">
+                                        <option *ngFor="let security of securitylist;let d = index"
+                                            data-value='{{security.name}}' data-id={{security.id}}>
+                                            Name:{{security.name}} Isin:{{security.isin}}
+                                            Ticker:{{security.ticker}}
+                                        </option>
+                                    </datalist>
+                                    <span *ngIf="fund.security_name != ''"
+                                        style="width: 3cm">{{fund.security_name}}</span>
+                                </td>
+                                <td>{{fund.asset_type}}</td>
+                                <td>{{fund.isin}}</td>
+                                <td><input type="text" class="form-control" [(ngModel)]="fund.quantity"
+                                        name='quantity_{{i}}' style="text-align: center; width: 130px"
+                                        (keypress)="numberOnly($event)" (change)='updatefundquantity(fund)'></td>
+                                <td><input type="text" class="form-control" [(ngModel)]="fund.price"
+                                        name='quantity_{{i}}' style="text-align: center; width: 130px"
+                                        (keypress)="numberOnly($event)" (change)='updateprice(fund)'
+                                        (click)="fund.price === 0 ? fund.price = '' : null "
+                                        (blur)="fund.price === '' ? fund.price = 0 : null"></td>
+                                <td>
+                                    <button type="button" class="btn btn-outline-danger"
+                                        (click)="delete_Portfolio(fund.id)">Delete</button>
+                                </td>
+                            </tr>
+                            <div *ngIf="fundlist && fundlist.length === 0" style="text-align:center; color:red; position: absolute;
+                            left: 0; right: 0">No data found in selected category.</div>
                         </tbody>
                     </table>
 

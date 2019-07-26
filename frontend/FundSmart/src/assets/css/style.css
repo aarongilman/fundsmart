@@ -2129,3 +2129,8 @@ google-chart {
     -ms-transform: rotate(45deg);
     transform: rotate(45deg);
 }
+
+.ui-tooltip .ui-tooltip-arrow {
+    position: absolute;
+    width: 10px;
+}

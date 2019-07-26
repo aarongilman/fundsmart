@@ -185,14 +185,18 @@ export class FundComponent implements OnInit {
     }
 
     onContextMenuAction2() {
-        this.router.navigate(['/holding_details'], { queryParams: { id: this.selectedIDs } });
+        this.router.navigate(['/create_fund'], { queryParams: { id: this.selectedIDs } });
     }
 
     onContextMenuAction3() {
-        this.router.navigate(['/fund_recommendation'], { queryParams: { id: this.selectedIDs } });
+        this.router.navigate(['/holding_details'], { queryParams: { id: this.selectedIDs } });
     }
 
     onContextMenuAction4() {
+        this.router.navigate(['/fund_recommendation'], { queryParams: { id: this.selectedIDs } });
+    }
+
+    onContextMenuAction5() {
         this.router.navigate(['/allocation_recommendation'], { queryParams: { id: this.selectedIDs } });
     }
 

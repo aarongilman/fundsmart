@@ -175,7 +175,8 @@ export class ServercommunicationService {
     }
 
     getUserPortfolio() {
-        return this.http.get(this.api_link + 'api/portfolio/', { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+        return this.http.get(this.api_link + 'api/portfolio/',
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
     checklogin() {
@@ -489,6 +490,11 @@ export class ServercommunicationService {
 
     fundRecommendationLineChart(ids) {
         return this.http.get(this.api_link + 'api/line_graph_fund_recommendation/?portfolio_ids=' + ids,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    delete_PortfolioFund(id) {
+        return this.http.delete(this.api_link + 'api/portfolio_fund/' + id + '/',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 

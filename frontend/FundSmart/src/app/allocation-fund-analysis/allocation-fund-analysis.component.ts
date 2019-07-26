@@ -78,9 +78,6 @@ export class AllocationFundAnalysisComponent implements OnInit {
             () => {
                 this.route.queryParamMap.subscribe((queryParams: Params) => {
                     if (queryParams.params.id) {
-
-                        // console.log('came here component method', queryParams.params.id);
-
                         this.getCurrentAllocation();
                         this.getHistoricalPerformance();
                         this.getLinegraph();
@@ -155,7 +152,6 @@ export class AllocationFundAnalysisComponent implements OnInit {
     }
 
     getLinegraph() {
-        // console.log('Order', this.order);
         if (this.order !== undefined) {
             this.userservice.get(`api/allocation_line_graph/?portfolio_ids=${this.order}`).subscribe(
                 (jsondata: any) => {
