@@ -257,6 +257,43 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.interconn.titleSettermethod("Multi Portfolio Analyzer");
         this.setdataindeshboard();
+        this.userservice.get_historical_perfomance().subscribe(
+            result => {
+                this.existing = {
+                    annualexpense: 0,
+                    oneyear: 0,
+                    threeyear: 0,
+                    fiveyear: 0
+                };
+                this.recommended = {
+                    annualexpense: 0,
+                    oneyear: 0,
+                    threeyear: 0,
+                    fiveyear: 0
+                };
+                this.diffrence = {
+                    annualexpense: 0,
+                    oneyear: 0,
+                    threeyear: 0,
+                    fiveyear: 0
+                };
+                if (result[0]) {
+                    this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
+                    this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
+                    this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
+                    this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
+
+                    this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
+                    this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
+                    this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
+                    this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['5-year']).toFixed(2));
+
+                    this.diffrence.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['difference']['annual_expense']).toFixed(2));
+                    this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['1-year']).toFixed(2));
+                    this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
+                    this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
+                }
+            });
         if (this.userservice.currentuser) {
             this.setcurrent_user();
         }
@@ -612,7 +649,7 @@ export class HomeComponent implements OnInit {
             data => {
                 localStorage.setItem('authkey', data['key']);
                 this.userservice.getUser(data['key']);
-                this.modalService.dismissAll('Login Done'); 
+                this.modalService.dismissAll('Login Done');
             },
             error => {
                 this.toastrService.error('Invalid Credentials', 'Error');
@@ -1044,7 +1081,7 @@ export class HomeComponent implements OnInit {
                                                 portfoliofundlist.push(singlefund);
 
                                                 let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-                                              
+
                                                 localData.push(format);
                                             }
                                         }
@@ -1060,7 +1097,7 @@ export class HomeComponent implements OnInit {
                                         this.portfolioservice.total$.subscribe(f => {
                                             this.total$ = f;
                                             const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                                           
+
                                             this.portfolioservice.page = pageno;
                                         });
                                         this.setdataindeshboard();

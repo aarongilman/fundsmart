@@ -13,6 +13,7 @@ import { SortEvent, SortableDirective } from '../sortable.directive';
 import { securitylist } from '../securitylist';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { isUndefined } from 'util';
 
 declare var Dropbox: Dropbox;
 
@@ -118,7 +119,6 @@ export class FundCreateComponent implements OnInit {
     oneDriveApplicationId: 'f6820b1f-b4c5-454a-a050-e88b6e231fb5';
 
 
-    private excelIO;
     constructor(
         private modalService: NgbModal,
         private fileupload: GetfileforuploadService,
@@ -241,7 +241,9 @@ export class FundCreateComponent implements OnInit {
         } else {
             date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
         }
-        this.userservice.get_portfolio_fund_by_date(date).subscribe(
+        console.log(this.serchportfolio);
+
+        this.userservice.get_portfolio_fund_by_date(date, this.serchportfolio).subscribe(
             data => {
                 if (data['count'] > 0) {
                     this.setfunds(data);
@@ -417,14 +419,35 @@ export class FundCreateComponent implements OnInit {
             return `with: ${reason}`;
         }
     }
+
     getportfoliobyportfolio() {
-        if (this.serchportfolio === 'All') {
+        console.log('get by portfolio', this.serchportfolio);
+
+        if ((this.serchportfolio === 'All' || this.serchportfolio === undefined) && (this.selectedDate === this.calendar.getToday())) {
+            console.log('all Portfolio');
+
             this.getfunds();
         } else {
-            this.userservice.get(`api/portfolio_fund/?portfolio=${this.serchportfolio}`).subscribe(
+            var date;
+            if (this.selectedDate.month < 10) {
+                date = this.selectedDate.year + '-0' + this.selectedDate.month + '-' + this.selectedDate.day;
+            } else {
+                date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
+            }
+            // if (isUndefined(this.serchportfolio)) {
+            // console.log("is undefined", this.serchportfolio);
+            this.userservice.get_portfolio_fund_by_date(date, this.serchportfolio).subscribe(
                 data => {
                     this.setfunds(data);
                 });
+
+            // } else {
+            // console.log('not undefined', this.serchportfolio);
+            // this.userservice.get(`api/portfolio_fund/?date=${date}&portfolio=${this.serchportfolio}`).subscribe(
+            //     data => {
+            //         this.setfunds(data);
+            //     });
+            // }
         }
     }
 

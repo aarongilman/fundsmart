@@ -27,9 +27,9 @@
                                 <div class='input-group align-items-center' style="color: #000034">
                                     Select Portfolio:<select class='form-control ml-2' [(ngModel)]="serchportfolio"
                                         (change)='getportfoliobyportfolio()'>
-                                        <option selected [value]="">All</option>
+                                        <option selected="selected" [ngValue]="All">All</option>
                                         <option *ngFor="let pitem of portfoliolist" title="portfolio1"
-                                            [value]="pitem.id" name='p1'>
+                                            [ngValue]="pitem.id" name='p1'>
                                             {{pitem.name}} </option>
                                     </select>
                                 </div>
@@ -56,7 +56,7 @@
                                 <span class="ml-3 load-span" *ngIf="fundservice.loading$ | async">Loading...</span>
                                 Search: <input class="form-control search ml-2 " type="text" name="searchTerm"
                                     [(ngModel)]="fundservice.searchTerm" />
-                                
+
                             </span>
                         </div>
                     </div>
