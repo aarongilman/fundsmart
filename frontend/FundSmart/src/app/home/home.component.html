@@ -4,7 +4,7 @@
             <div class="col-lg-7 pr-0">
                 <div class="block-container">
                     <form>
-                        <div class='row align-items-center ml-2 mr-2'>
+                        <div class='row align-items-center ml-2 mr-2' style="color: #000034">
                             Show
                             <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
                                 [(ngModel)]="portfolioservice.pageSize">
@@ -14,7 +14,7 @@
                                 <option [ngValue]="100">100</option>
                             </select>
                             Entries
-                            <span class="form-group d-flex align-items-center ml-auto mb-0 w-60">
+                            <span class="form-group d-flex align-items-center ml-auto mb-0 w-60" style="color: #000034" >
                                 Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
                                     [(ngModel)]="portfolioservice.searchTerm" />
                             </span>
@@ -35,8 +35,9 @@
                                     <tr *ngFor="let item of funds$  ;let i = index;">
                                         <td>
                                             <input [(ngModel)]="item['security']" id='security_{{i}}'
-                                                (keyup)="searchsecurity($event,item['security'])" list="securityname"
-                                                name='security_{{i}}' (change)='serAttribute(item,i)' type="text">
+                                                (keyup)="searchsecurity($event,item['security'],item)"
+                                                list="securityname" name='security_{{i}}'
+                                                (change)='serAttribute(item,i)' type="text">
                                             <datalist id="securityname">
                                                 <option *ngFor="let security of securitylist;let d = index"
                                                     data-value='{{security.name}}' data-id={{security.id}}>
@@ -50,14 +51,15 @@
                                                 style="text-align: center ;width: 3cm"
                                                 (keypress)="numberOnly($event,item['yourPortfolio'])"
                                                 (input)="addportfolioFund('portfolio',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
-                                                name='portfolio_{{i}}' type="text" maxlength="10">
+                                                name='portfolio_{{i}}' type="text" maxlength="10"
+                                                [disabled]="item.security_id <= 0 ?  'disabled' : null ">
                                         </td>
                                         <td>
                                             <input [(ngModel)]="item['comparision1']" name='comp1_{{i}}'
                                                 style="text-align: center ; width: 3cm"
                                                 (keypress)="numberOnly($event,item['comparision1'])"
                                                 (input)="addportfolioFund('comp1',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
-                                                type="text">
+                                                type="text" [disabled]="item.security_id <= 0 ?  'disabled' : null ">
 
                                         </td>
                                         <td>
@@ -65,7 +67,7 @@
                                                 style="text-align: center ; width: 3cm"
                                                 (input)="addportfolioFund('comp2',item,(i + portfolioservice.pageSize * (portfolioservice.page - 1)))"
                                                 name='comp2_{{i}}' (keypress)="numberOnly($event,item['comparision2'])"
-                                                type="text">
+                                                type="text" [disabled]="item.security_id <= 0 ?  'disabled' : null ">
 
                                         </td>
                                         <td>

@@ -188,7 +188,7 @@ export class HomeComponent implements OnInit {
     linecolumnNames = [];
     securitylist = securitylist;
     arrayBuffer: any;
-
+    DynamicDisable = [];
     constructor(
         private modalService: NgbModal,
         private interconn: IntercomponentCommunicationService,
@@ -228,6 +228,7 @@ export class HomeComponent implements OnInit {
         this.userservice.get_security().subscribe(
             datasecuritylist => {
                 securitylist.length = 0;
+                // tslint:disable-next-line: forin
                 for (var obj in datasecuritylist) {
                     var securityobj: security = {
                         id: -1,
@@ -257,6 +258,7 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.interconn.titleSettermethod("Multi Portfolio Analyzer");
         this.setdataindeshboard();
+        this.DynamicDisable[0] = false;
         this.userservice.get_historical_perfomance().subscribe(
             result => {
                 this.existing = {
@@ -358,14 +360,41 @@ export class HomeComponent implements OnInit {
     }
 
     serAttribute(item, i) {
+        // console.log('setAttribute called');
+
+        // console.log(i);
+
         var opt = $('option[value="' + $('#security_' + i).val() + '"]');
         item.security_id = Number.parseInt(opt.attr('id'));
+        if (isNaN(item.security_id)) {
+            item.security_id = -1;
+        }
+        console.log(item.security_id);
+
         try {
             item.security = securitylist.find(s => s.id === item.security_id).name;
+            // console.log(item);
+            let localData = JSON.parse(localStorage.getItem('securityData'));
+            let index = localData.findIndex(data => data.recordId === item.p1record);
+            localData[index].securityId = item.security_id;
+            // console.log(localData[index]);
+            localStorage.setItem('securityData', JSON.stringify(localData));
+            this.setdataindeshboard();
         } catch {
             return null;
         }
     }
+
+
+    // serAttribute(item, i) {
+    //     var opt = $('option[value="' + $('#security_' + i).val() + '"]');
+    //     item.security_id = Number.parseInt(opt.attr('id'));
+    //     try {
+    //         item.security = securitylist.find(s => s.id === item.security_id).name;
+    //     } catch {
+    //         return null;
+    //     }
+    // }
 
     setdataindeshboard() {
         this.userservice.get_historical_perfomance().subscribe(
@@ -522,11 +551,6 @@ export class HomeComponent implements OnInit {
         });
     }
 
-    signOut(): void {
-        this.authService.signOut();
-    }
-
-
     addRow() {
         let singlefund: portfolio_fund = {
             security: '',
@@ -565,11 +589,25 @@ export class HomeComponent implements OnInit {
                         this.userservice.removedata(p1record);
                     }
                     portfoliofundlist.splice(id, 1);
+                    if (portfoliofundlist.length === 0) {
+                        let singlefund: portfolio_fund = {
+                            security: '',
+                            security_id: -1,
+                            p1record: null,
+                            p2record: null,
+                            p3record: null,
+                            yourPortfolio: '',
+                            comparision1: '',
+                            comparision2: ''
+                        };
+                        portfoliofundlist.push(singlefund);
+                    }
                     this.portfolioservice.resetfunds();
                     this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
                     this.portfolioservice.total$.subscribe(total => {
                         this.total$ = total;
                     });
+                    this.setdataindeshboard();
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     Swal.fire(
                         'Cancelled',
@@ -785,7 +823,15 @@ export class HomeComponent implements OnInit {
         }
     }
 
-    searchsecurity(secinput) {
+    searchsecurity(event, secinput, item) {
+        const charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode === 127 || charCode === 8) {
+            const newsec = this.securitylist.find(sec => sec.id === item.security_id).name;
+            // console.log(newsec);
+            if (secinput !== newsec) {
+                item.security_id = -1;
+            }
+        }
         var securityList1 = [];
         if (secinput.length >= 1) {
             securityList1 = this.searchFromArray(securitylist, secinput);
@@ -813,10 +859,9 @@ export class HomeComponent implements OnInit {
 
     numberOnly(event, value) {
         const charCode = (event.which) ? event.which : event.keyCode;
-        if (value !== null) {
-            if (value.includes('%')) {
-                return false;
-            }
+
+        if (value.includes('%')) {
+            return false;
         } else if ((charCode > 47 && charCode < 58) || charCode === 37) {
             if (charCode === 37 && Number.parseInt(value) > 100) {
                 return false;
@@ -829,6 +874,8 @@ export class HomeComponent implements OnInit {
 
 
     addportfolioFund(string1, item, i) {
+        // console.log(item);
+
         if (item.security_id === -1) {
             return false;
         } else {
