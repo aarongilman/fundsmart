@@ -81,12 +81,13 @@ export class HoldingDetailsComponent implements OnInit {
                             this.portfoliolist.push(data['results'][d]);
                         }
                     });
-                this.fundForm = this.formBuilder.group({
-                    selectedPortfolio: new FormControl('', Validators.required),
-                    selectedSecurity: new FormControl('', Validators.required),
-                    quantity: new FormControl('', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')]))
-                });
+
             });
+        this.fundForm = this.formBuilder.group({
+            selectedPortfolio: new FormControl('', Validators.required),
+            selectedSecurity: new FormControl('', Validators.required),
+            quantity: new FormControl('', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')]))
+        });
 
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
@@ -103,10 +104,16 @@ export class HoldingDetailsComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.fundForm = this.formBuilder.group({
+            selectedPortfolio: new FormControl('', Validators.required),
+            selectedSecurity: new FormControl('', Validators.required),
+            quantity: new FormControl('', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')]))
+        });
         this.interconn.titleSettermethod('Holding Details');
         if (securitylist.length === 0) {
             this.userservice.get_security().subscribe(
                 datasecuritylist => {
+                    // tslint:disable-next-line: forin
                     for (var obj in datasecuritylist) {
                         var securityobj: security = {
                             id: -1,
@@ -146,6 +153,7 @@ export class HoldingDetailsComponent implements OnInit {
                 this.userservice.getHoldings().toPromise().then(
                     mtdata => {
                         holdingList.length = 0;
+                        // tslint:disable-next-line: forin
                         for (var obj in mtdata) {
                             holdingList.push(mtdata[obj]);
                         }
@@ -193,7 +201,7 @@ export class HoldingDetailsComponent implements OnInit {
 
     get f() { return this.fundForm.controls; }
 
-    AddDetail() {
+    addDetail() {
         this.submitted = true;
         if (this.fundForm.invalid) {
             return;
