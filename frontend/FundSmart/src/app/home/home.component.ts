@@ -818,13 +818,16 @@ export class HomeComponent implements OnInit {
 
     searchsecurity(event, secinput, item) {
         const charCode = (event.which) ? event.which : event.keyCode;
+        const newsec = this.securitylist.find(sec => sec.id === item.security_id);
         if (charCode === 127 || charCode === 8) {
-            const newsec = this.securitylist.find(sec => sec.id === item.security_id).name;
             // console.log(newsec);
-            if (secinput !== newsec) {
+            if (secinput !== newsec.name) {
                 item.security_id = -1;
+                
+            } else {
+                item.security_id = newsec.id;
             }
-        }
+            }
         var securityList1 = [];
         if (secinput.length >= 1) {
             securityList1 = this.searchFromArray(securitylist, secinput);
