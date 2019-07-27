@@ -19,6 +19,7 @@ import { securitylist } from '../securitylist';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
+import { forEach } from '@angular/router/src/utils/collection';
 
 declare var Dropbox: Dropbox;
 
@@ -367,7 +368,7 @@ export class HomeComponent implements OnInit {
         if (isNaN(item.security_id)) {
             item.security_id = -1;
         }
-        console.log(item.security_id);
+        // console.log(item.security_id);
 
         try {
             item.security = securitylist.find(s => s.id === item.security_id).name;
@@ -819,15 +820,17 @@ export class HomeComponent implements OnInit {
     searchsecurity(event, secinput, item) {
         const charCode = (event.which) ? event.which : event.keyCode;
         const newsec = this.securitylist.find(sec => sec.id === item.security_id);
-        if (charCode === 127 || charCode === 8) {
-            // console.log(newsec);
-            if (secinput !== newsec.name) {
-                item.security_id = -1;
-                
-            } else {
-                item.security_id = newsec.id;
+        if (newsec !== undefined) {
+            if (charCode === 127 || charCode === 8) {
+                // console.log(newsec);
+                if (secinput !== newsec.name) {
+                    item.security_id = -1;
+
+                } else {
+                    item.security_id = newsec.id;
+                }
             }
-            }
+        }
         var securityList1 = [];
         if (secinput.length >= 1) {
             securityList1 = this.searchFromArray(securitylist, secinput);
@@ -929,8 +932,18 @@ export class HomeComponent implements OnInit {
         if (security === undefined) {
             return null;
         } else {
-            this.userservice.storedata({ 'recordId': item.p1record, "key": recordid, "quantity": quantity, "recid": recid, "securityId": item.security_id });
-            this.setdataindeshboard();
+            this.userservice.storedata({
+                'recordId': item.p1record, "key": recordid,
+                "quantity": quantity, "recid": recid, "securityId": item.security_id
+            });
+            let undefsec = this.funds$.filter(fund => fund.security_id === -1);
+            // console.log(undefsec);
+            if (undefsec.length === 0) {
+                this.setdataindeshboard();
+            } else {
+                this.toastrService.error('Please select porper Security', 'Error');
+            }
+
         }
     }
 
