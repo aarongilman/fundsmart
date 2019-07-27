@@ -3,7 +3,6 @@ import { HttpClient, HttpHeaders, } from '@angular/common/http';
 import { SocialUser } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
 import { holdindDetail } from './holding-details/holdingDetail';
-import { isUndefined } from 'util';
 
 @Injectable({
     providedIn: 'root'
@@ -109,21 +108,19 @@ export class ServercommunicationService {
     }
 
 
-    get_portfolio_fund_by_date(date: any, portfolioid: any) {
+    get_portfolio_fund_by_date(date: any, portfolioid: any, portfolio_ids: any) {
         if (this.userkey) {
-            console.log(portfolioid);
             if (portfolioid === undefined) {
-                return this.http.get(this.api_link + 'api/portfolio_fund/?date=' + date, {
+                return this.http.get(this.api_link + 'api/portfolio_fund/?date=' + date + '&portfolio_ids=' + portfolio_ids, {
                     headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
                 });
-            } else {
-                return this.http.get(this.api_link + 'api/portfolio_fund/?date=' + date + '&portfolio=' + portfolioid, {
+            }
+            else {
+                return this.http.get(this.api_link + 'api/portfolio_fund/?date=' + date + '&portfolio=' + portfolioid + '&portfolio_ids=' + portfolio_ids, {
                     headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
                 });
-
             }
         }
-
     }
 
     get_security() {
@@ -423,7 +420,6 @@ export class ServercommunicationService {
                         format.COMPARISON1 = data.quantity;
                         format.COMPARISON2 = resultObject.COMPARISON2;
                         format.securityId = resultObject.securityId;
-
                         localData.forEach((key, value) => {
                             if ((localData[value].recordId == data.recordId)) {
                                 localData[value] = format;
