@@ -6,7 +6,8 @@
                     <div class="head-global">
                         <h3>Fund <span>Lists</span></h3>
                     </div>
-                    <div class='row align-items-center ml-2 mr-2' style="float:right; margin-bottom: 75px;color: #000034">
+                    <div class='row align-items-center ml-2 mr-2'
+                        style="float:right; margin-bottom: 75px;color: #000034">
                         Items
                         <select class="form-control" style="width: 60px;margin: 0 10px">
                             <option [ngValue]="10">10</option>
@@ -54,10 +55,10 @@
                                         [matMenuTriggerData]="{item: item}">
                                     </div>
                                 </tr>
-                                <p *ngIf="portfolioDetailList && portfolioDetailList.length === 0"
-                                    style="text-align:center; color:red"> No
-                                    Portfolio's Found </p>
                             </ng-container>
+                            <p *ngIf="portfolioDetailList && portfolioDetailList.length === 0" style="text-align:center; color:red; position: absolute;
+                                left: 0; right: 0"> No
+                                Portfolio's Found </p>
                         </tbody>
                     </table>
                     <div class="upload-wrap">

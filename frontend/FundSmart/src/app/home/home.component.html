@@ -36,8 +36,8 @@
                                         <td>
                                             <input [(ngModel)]="item['security']" id='security_{{i}}'
                                                 (keyup)="searchsecurity($event,item['security'],item)"
-                                                list="securityname" name='security_{{i}}' (input)='serAttribute(item,i)'
-                                                type="text">
+                                                list="securityname" name='security_{{i}}'
+                                                (input)='serAttribute(item,i)' type="text">
                                             <datalist id="securityname">
                                                 <option *ngFor="let security of securitylist;let d = index"
                                                     data-value='{{security.name}}' data-id={{security.id}}>
