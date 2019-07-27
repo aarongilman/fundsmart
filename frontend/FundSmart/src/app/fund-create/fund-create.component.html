@@ -103,7 +103,7 @@
                                         (blur)="fund.price === '' ? fund.price = 0 : null"></td>
                                 <td>
                                     <button type="button" class="btn btn-outline-danger"
-                                        (click)="delete_Portfolio(fund.id)">Delete</button>
+                                        (click)="delete_Portfolio(fund)">Delete</button>
                                 </td>
                             </tr>
                             <div *ngIf="fundlist && fundlist.length === 0" style="text-align:center; color:red; position: absolute;

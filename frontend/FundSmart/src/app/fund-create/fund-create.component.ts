@@ -240,9 +240,7 @@ export class FundCreateComponent implements OnInit {
     getfunds() {
         this.userService.get_portfolio_fund().subscribe(
             data => {
-                if (data['count'] > 0) {
-                    this.setfunds(data);
-                }
+                this.setfunds(data);
             });
     }
 
@@ -582,7 +580,7 @@ export class FundCreateComponent implements OnInit {
     }
 
     delete_Portfolio(id) {
-        if (id >= 0) {
+        if (id.id >= 0) {
             Swal.fire({
                 title: 'Are you sure?',
                 text: 'You will not be able to recover this data',
@@ -592,8 +590,13 @@ export class FundCreateComponent implements OnInit {
                 cancelButtonText: 'No, keep it'
             }).then((result) => {
                 if (result.value) {
-                    this.userService.delete_PortfolioFund(id).subscribe(result => {
-                        this.getfunds();
+                    this.userService.delete_PortfolioFund(id.id, this.id).subscribe(result => {
+                        const index = apiresultfundlist.findIndex(fund => fund.id === id.id);
+                        apiresultfundlist.splice(index, 1);
+                        this.fundservice.resetfunds();
+                        this.fundservice.funds$.subscribe(
+                            f => this.fundlist = f
+                        );
                     })
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     Swal.fire(

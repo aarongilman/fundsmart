@@ -489,8 +489,8 @@ export class ServercommunicationService {
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    delete_PortfolioFund(id) {
-        return this.http.delete(this.api_link + 'api/portfolio_fund/' + id + '/',
+    delete_PortfolioFund(id,portfolioIds) {
+        return this.http.delete(this.api_link + 'api/portfolio_fund/' + id + '/?portfolio_ids=' + portfolioIds,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
