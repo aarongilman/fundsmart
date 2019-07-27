@@ -597,11 +597,11 @@ export class FundCreateComponent implements OnInit {
                         this.fundservice.funds$.subscribe(
                             f => this.fundlist = f
                         );
-                    })
+                    });
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     Swal.fire(
                         'Cancelled',
-                        'Your data is safe :)',
+                        'Your data is safe !)',
                         'error'
                     );
                 }
