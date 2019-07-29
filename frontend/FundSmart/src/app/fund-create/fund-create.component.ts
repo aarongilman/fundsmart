@@ -348,7 +348,11 @@ export class FundCreateComponent implements OnInit {
 
     addRow() {
         if (this.selectedp === undefined) {
-            this.selectedp = Number.parseInt(this.id);
+            if (typeof (this.id) === 'string') {
+                this.selectedp = Number.parseInt(this.id);
+            } else {
+                this.selectedp = Number.parseInt(this.id[0]);
+            }
         }
         const singlefund: funds = {
             id: -1,
@@ -464,7 +468,8 @@ export class FundCreateComponent implements OnInit {
     }
 
     getSelectedPortfolio() {
-        console.log(this.id);
+
+        console.log(typeof (this.id));
         this.userService.get(`api/portfolio_fund/?portfolio_ids=${this.id}`).subscribe(
             data => {
                 this.setfunds(data);
@@ -497,6 +502,8 @@ export class FundCreateComponent implements OnInit {
             // console.log("type of", typeof (this.id));
 
             if (typeof (this.id) === 'string') {
+                this.addRow();
+            } else if (typeof (this.id) === 'object' && this.id.length === 1) {
                 this.addRow();
             } else {
                 var addclass = '';
