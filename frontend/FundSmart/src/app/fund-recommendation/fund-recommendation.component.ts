@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-fund-recommendation',
@@ -54,7 +55,8 @@ export class FundRecommendationComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
         private activatedRoute: ActivatedRoute,
-        private route: Router
+        private route: Router,
+        private toastr: ToastrService
     ) {
         this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
             this.id = queryParams.params.id;
@@ -73,6 +75,9 @@ export class FundRecommendationComponent implements OnInit {
             this.getPortfolioPerformance();
             this.getRecommendedPerformance();
             this.getPlotFundRecommendation();
+        } else {
+            this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+
         }
     }
 

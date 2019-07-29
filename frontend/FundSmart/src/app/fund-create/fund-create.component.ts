@@ -5,7 +5,6 @@ import { NgbModal, ModalDismissReasons, NgbCalendar } from '@ng-bootstrap/ng-boo
 import { security } from '../security';
 import * as $ from 'jquery';
 import { DecimalPipe } from '@angular/common';
-import { GetfileforuploadService } from '../getfileforupload.service';
 import { apiresultfundlist } from '../apiresult_fundlist';
 import { funds } from '../funds';
 import { FundcreatesortService } from '../fundcreatesort.service';
@@ -14,6 +13,7 @@ import { securitylist } from '../securitylist';
 import { Router, Params, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 declare var Dropbox: Dropbox;
 
@@ -84,6 +84,8 @@ interface DropboxFile {
     isDir: boolean;
 }
 
+declare const google: any;
+
 @Component({
     selector: 'app-fund-create',
     templateUrl: './fund-create.component.html',
@@ -112,14 +114,23 @@ export class FundCreateComponent implements OnInit {
     selectedDate: any;
     id: any;
     serchportfolio: any;
+    client_id = "883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com";
+    developerKey = 'AIzaSyA_1Y6HBXXhTvDVN0vM4OCYhCZzj1j6OA4';
+    scope: ['https://www.googleapis.com/auth/drive'];
+    pickerApiLoaded = false;
+    oauthToken: any;
+    page: string;
+    accessToken: any;
+    folderHistory: any = [];
+    arrayBuffer: any;
 
     @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
 
     oneDriveApplicationId: 'f6820b1f-b4c5-454a-a050-e88b6e231fb5';
 
     constructor(
+        private http: HttpClient,
         private modalService: NgbModal,
-        private fileupload: GetfileforuploadService,
         private userService: ServercommunicationService,
         private interconn: IntercomponentCommunicationService,
         public fundservice: FundcreatesortService,
@@ -127,7 +138,11 @@ export class FundCreateComponent implements OnInit {
         private toast: ToastrService,
         private calendar: NgbCalendar,
         private activatedRoute: ActivatedRoute,
+        private toastr: ToastrService
     ) {
+        this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
+            this.id = queryParams.params.id;
+        });
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.setcurrent_user();
@@ -137,7 +152,8 @@ export class FundCreateComponent implements OnInit {
                     if (queryParams.params.id) {
                         this.getSelectedPortfolio();
                     } else {
-                        this.getfunds();
+                        this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+
                     }
                 });
             });
@@ -148,13 +164,6 @@ export class FundCreateComponent implements OnInit {
                 this.resetfunds();
                 this.portfoliolist.length = 0;
             });
-
-        this.interconn.reloadmethodcalled$.subscribe(
-            () => {
-                this.getfunds();
-            }
-        );
-
         this.selectedDate = calendar.getToday();
         this.maxdate = calendar.getToday();
     }
@@ -191,7 +200,7 @@ export class FundCreateComponent implements OnInit {
                 if (queryParams.params.id) {
                     this.getSelectedPortfolio();
                 } else {
-                    this.getfunds();
+                    this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
                 }
             });
         }
@@ -215,6 +224,8 @@ export class FundCreateComponent implements OnInit {
                 isin: '',
                 price: ''
             };
+            // console.log(data['results'][i]);
+
             fund.id = data['results'][i]['id'];
             fund.isin = data['results'][i]['isin'];
             fund.asset_type = data['results'][i]['asset_type'];
@@ -305,10 +316,19 @@ export class FundCreateComponent implements OnInit {
     }
 
     getUserPortfolios() {
+        // console.log('id in gerportfolios', this.id);
+
         this.userService.getUserPortfolio().subscribe(data => {
+
             this.portfoliolist.length = 0;
-            for (let d in data['results']) {
-                this.portfoliolist.push(data['results'][d]);
+            try {
+                this.id.forEach(element => {
+                    let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
+                    this.portfoliolist.push(portfolio);
+                });
+            } catch {
+                let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(this.id));
+                this.portfoliolist.push(portfolio);
             }
         });
     }
@@ -327,6 +347,9 @@ export class FundCreateComponent implements OnInit {
     }
 
     addRow() {
+        if (this.selectedp === undefined) {
+            this.selectedp = Number.parseInt(this.id);
+        }
         const singlefund: funds = {
             id: -1,
             quantity: null,
@@ -441,6 +464,7 @@ export class FundCreateComponent implements OnInit {
     }
 
     getSelectedPortfolio() {
+        console.log(this.id);
         this.userService.get(`api/portfolio_fund/?portfolio_ids=${this.id}`).subscribe(
             data => {
                 this.setfunds(data);
@@ -458,9 +482,9 @@ export class FundCreateComponent implements OnInit {
             this.files.push(element.name);
             const formData = new FormData();
             formData.append('data_file', element);
-            this.userService.uploadfile(formData).subscribe(
+            this.userService.uploadfile_Createfund(formData, this.id).subscribe(
                 res => {
-                    this.getfunds();
+                    this.getSelectedPortfolio();
                 },
                 error => { }
             );
@@ -469,15 +493,27 @@ export class FundCreateComponent implements OnInit {
     }
 
     openmodal(modalid, str) {
-        var addclass = '';
-        if (str == 'select portfolio' || str == 'register') {
-            addclass = 'long-pop sign-pop';
+        if (this.id !== undefined) {
+            // console.log("type of", typeof (this.id));
+
+            if (typeof (this.id) === 'string') {
+                this.addRow();
+            } else {
+                var addclass = '';
+                if (str === 'select portfolio' || str === 'register') {
+                    addclass = 'long-pop sign-pop';
+                }
+                this.modalService.open(modalid, { centered: true, windowClass: addclass }).result.then((result) => {
+                    this.closeResult = `Closed with: ${result}`;
+                }, (reason) => {
+                    this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+                });
+            }
+        } else {
+            if (this.userService.currentuser !== undefined) {
+                this.toastr.error('Please select Portfolio id/ids from Fund Page.', 'No portfolio ids detected');
+            }
         }
-        this.modalService.open(modalid, { centered: true, windowClass: addclass }).result.then((result) => {
-            this.closeResult = `Closed with: ${result}`;
-        }, (reason) => {
-            this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-        });
     }
 
     dropboxupload() {
@@ -493,10 +529,9 @@ export class FundCreateComponent implements OnInit {
                         const blob = new Blob([filedata], { type: filedata.type });
                         const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
                         formData.append('data_file', myfile);
-                        that.userService.uploadfile(formData).subscribe(
+                        that.userService.uploadfile_Createfund(formData, this.id).subscribe(
                             resp => {
-                                that.interconn.afterfileupload();
-                                this.getfunds();
+                                this.getSelectedPortfolio();
                                 this.modalService.dismissAll('File uploaded');
                             }
                         );
@@ -547,10 +582,9 @@ export class FundCreateComponent implements OnInit {
                                 const myblob = new Blob([blob], { type: blob.type });
                                 const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
                                 formData.append('data_file', myfile);
-                                this.userService.uploadfile(formData).subscribe(
+                                this.userService.uploadfile_Createfund(formData, this.id).subscribe(
                                     resp => {
-                                        this.interconn.afterfileupload();
-                                        this.getfunds();
+                                        this.getSelectedPortfolio();
                                         this.modalService.dismissAll('File uploaded');
                                         this.toast.success('File uploaded sucessfuly', 'Success');
                                     },
@@ -564,9 +598,9 @@ export class FundCreateComponent implements OnInit {
     }
 
     drive_fileupload() {
-        this.fileupload.onApiLoad("Create Fund");
+        this.onApiLoad();
+        this.getSelectedPortfolio();
         this.modalService.dismissAll('File upload');
-        this.getfunds();
     }
 
     onSort({ column, direction }: SortEvent) {
@@ -606,6 +640,91 @@ export class FundCreateComponent implements OnInit {
                     );
                 }
             });
+        }
+    }
+
+
+    onApiLoad() {
+        gapi.load('auth', { callback: this.onAuthApiLoad.bind(this) });
+        gapi.load('picker', { callback: undefined });
+    }
+
+    onAuthApiLoad() {
+        (<any>window).gapi.auth.authorize(
+            {
+                client_id: this.client_id,
+                scope: ['https://www.googleapis.com/auth/drive.file'],
+                immediate: false
+            },
+            this.handleAuthResult.bind(this));
+    }
+
+    handleAuthResult(authResult: any) {
+        if (authResult && !authResult.error) {
+            this.oauthToken = authResult.access_token;
+            this.createPicker();
+        }
+    }
+
+    createPicker() {
+        if (this.oauthToken) {
+            var pickerBuilder = new google.picker.PickerBuilder();
+            var picker = pickerBuilder
+                .enableFeature(google.picker.Feature.NAV_HIDDEN)
+                .setOAuthToken(this.oauthToken)
+                .addView(google.picker.ViewId.SPREADSHEETS)
+                .setDeveloperKey('AIzaSyA_1Y6HBXXhTvDVN0vM4OCYhCZzj1j6OA4')
+                .setCallback(this.pickerCallback.bind(this))
+                .build();
+            picker.setVisible(true);
+        }
+    }
+
+    exportGDrivefile(fileId) {
+        return this.http.get<Blob>('https://www.googleapis.com/drive/v2/files/' + fileId + '/export', {
+            responseType: 'blob' as 'json',
+            params: {
+                mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                alt: 'media'
+            },
+            headers: new HttpHeaders({
+                Authorization: `Bearer ${this.oauthToken}`
+            })
+        });
+    }
+
+    downloadGDriveFile(fileId) {
+        return this.http.get<Blob>('https://www.googleapis.com/drive/v2/files/' + fileId, {
+            responseType: 'blob' as 'json',
+            params: { alt: 'media' },
+            headers: new HttpHeaders({
+                Authorization: `Bearer ${this.oauthToken}`,
+            })
+        });
+    }
+
+    pickerCallback(data) {
+        // let self = this;
+        if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+            var doc = data[google.picker.Response.DOCUMENTS][0];
+            this.downloadGDriveFile(doc.id).subscribe(
+                filedata => {
+                    const blob = new Blob([filedata], { type: doc.mimeType });
+                    const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
+                    const formData = new FormData();
+                    formData.append('data_file', file);
+                    this.userService.uploadfile_Createfund(formData, this.id).subscribe(res => { this.getSelectedPortfolio(); });
+                },
+                error => {
+                    this.exportGDrivefile(doc.id).subscribe(
+                        filedata => {
+                            const blob = new Blob([filedata], { type: doc.mimeType });
+                            const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
+                            const formData = new FormData();
+                            formData.append('data_file', file);
+                            this.userService.uploadfile_Createfund(formData, this.id).subscribe(res => { this.getSelectedPortfolio(); });
+                        });
+                });
         }
     }
 

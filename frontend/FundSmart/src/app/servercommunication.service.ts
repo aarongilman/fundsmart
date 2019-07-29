@@ -9,9 +9,9 @@ import { holdindDetail } from './holding-details/holdingDetail';
 })
 
 export class ServercommunicationService {
-    api_link = 'http://3.16.111.80/';
+    // api_link = 'http://3.16.111.80/';
     // api_link = 'http://localhost:8000/';
-    // api_link = 'http://192.168.100.111:8000/';
+    api_link = 'http://192.168.100.111:8000/';
     // api_link = 'http://127.0.0.1:8000/';
     socialuser: SocialUser;
     currentuser: any;
@@ -98,6 +98,13 @@ export class ServercommunicationService {
             headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
         });
     }
+
+    uploadfile_Createfund(file, pids) {
+        return this.http.post(this.api_link + 'api/import_portfolio_fund/?portfolio_ids=' + pids, file, {
+            headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
+        });
+    }
+
 
     get_portfolio_fund() {
         if (this.userkey) {
@@ -489,7 +496,7 @@ export class ServercommunicationService {
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    delete_PortfolioFund(id,portfolioIds) {
+    delete_PortfolioFund(id, portfolioIds) {
         return this.http.delete(this.api_link + 'api/portfolio_fund/' + id + '/?portfolio_ids=' + portfolioIds,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }

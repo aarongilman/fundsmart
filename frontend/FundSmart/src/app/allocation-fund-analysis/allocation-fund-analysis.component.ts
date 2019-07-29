@@ -3,6 +3,7 @@ import { IntercomponentCommunicationService } from '../intercomponent-communicat
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ServercommunicationService } from '../servercommunication.service';
 import { AllocationData } from '../historicaldata';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-allocation-fund-analysis',
@@ -68,7 +69,8 @@ export class AllocationFundAnalysisComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         private route: ActivatedRoute,
         private userservice: ServercommunicationService,
-        private router: Router
+        private router: Router,
+        private tostr: ToastrService,
     ) {
         this.route.queryParamMap.subscribe((queryParams: Params) => {
             this.order = queryParams.params.id;
@@ -92,6 +94,12 @@ export class AllocationFundAnalysisComponent implements OnInit {
     }
 
     ngOnInit() {
+
+        this.route.queryParamMap.subscribe((queryParams: Params) => {
+            if (queryParams.params.id === undefined) {
+                this.tostr.info('Please select portfolio id/ids from Fund page', 'Information');
+            }
+        });
         if (this.userservice.currentuser) {
             this.interconn.titleSettermethod('Allocation & Fund Analysis');
             this.getCurrentAllocation();
@@ -108,6 +116,7 @@ export class AllocationFundAnalysisComponent implements OnInit {
                     (result: any) => {
                         result.forEach((resultlist: any) => {
                             const names = Object.keys(resultlist);
+                            // tslint:disable-next-line: forin
                             for (const i in names) {
                                 this.currentAllocationData.push([names[i], resultlist[names[i]]]);
                             }

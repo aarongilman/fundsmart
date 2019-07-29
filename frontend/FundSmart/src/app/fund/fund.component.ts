@@ -9,6 +9,7 @@ import { ConfirmationService } from 'primeng/api';
 import { SortableDirective, SortEvent } from '../sortable.directive';
 import { FundService } from './fund.service';
 import { portfolioList } from './portfolioList';
+import { portfolioidSelect } from './portfolioid_select';
 
 @Component({
     selector: 'app-fund',
@@ -178,6 +179,11 @@ export class FundComponent implements OnInit {
         } else {
             this.selectedIDs.push(item);
         }
+        // if (portfolioidSelect.find(x => x === item)) {
+        //     portfolioidSelect.splice(portfolioidSelect.indexOf(item, 1));
+        // } else {
+        //     portfolioidSelect.push(item);
+        // }
     }
 
     onContextMenuAction1() {

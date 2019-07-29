@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { ServercommunicationService } from '../servercommunication.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-allocation-recommendation',
@@ -31,7 +32,8 @@ export class AllocationRecommendationComponent implements OnInit {
     constructor(
         private interconn: IntercomponentCommunicationService,
         private router: Router, private route: ActivatedRoute,
-        private userservice: ServercommunicationService) {
+        private userservice: ServercommunicationService,
+        private toastr: ToastrService) {
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.router.navigate(['/home']);
@@ -56,6 +58,9 @@ export class AllocationRecommendationComponent implements OnInit {
                             }
                         });
                     });
+            } else {
+                this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+
             }
         });
     }

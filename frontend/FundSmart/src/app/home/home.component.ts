@@ -690,6 +690,7 @@ export class HomeComponent implements OnInit {
     }
 
     openmodal(modalid, str) {
+
         var addclass = '';
         if (str === 'login' || str === 'register') {
             addclass = 'long-pop sign-pop';
@@ -699,6 +700,7 @@ export class HomeComponent implements OnInit {
         }, (reason) => {
             this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
         });
+
     }
 
     resetpassword() {
@@ -859,8 +861,10 @@ export class HomeComponent implements OnInit {
     numberOnly(event, value) {
         const charCode = (event.which) ? event.which : event.keyCode;
 
-        if (value.includes('%')) {
-            return false;
+        if (value !== null) {
+            if (value.includes('%')) {
+                return false;
+            }
         } else if ((charCode > 47 && charCode < 58) || charCode === 37) {
             if (charCode === 37 && Number.parseInt(value) > 100) {
                 return false;
@@ -869,6 +873,8 @@ export class HomeComponent implements OnInit {
         } else {
             return false;
         }
+
+
     }
 
 

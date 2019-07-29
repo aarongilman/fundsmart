@@ -121,7 +121,6 @@
                                 <span class="ml-3" *ngIf="sortlist.loading$ | async">Loading...</span>
                             </span>
                         </div>
-
                         <div class="scrollauto">
                             <table id="holding-table" class="trade-datatables nowrap content-icon">
                                 <thead>
@@ -193,18 +192,19 @@
                                                 *ngIf="item.current_price === null" type="number"
                                                 style="width: 2cm;text-align: center" [(ngModel)]="currentprice[i]"
                                                 (blur)="item.current_price=currentprice[i];UpdateHoldingDetails(item,i)"
-                                                name="current_price_{{i}}" oninput="validity.valid||(value='');" min="0">
+                                                name="current_price_{{i}}" oninput="validity.valid||(value='');"
+                                                min="0">
                                             <span *ngIf="item.current_price !== null">{{item.current_price}}</span>
                                         </td>
-                                        <td>{{(item.market_value)}}</td>
-                                        <td><input maxlength="10" step="any" class="form-control" min="0" *ngIf="item.basic_price === null"
-                                                type="number" style=" width: 2cm;text-align:
+                                        <td>{{item.market_value | number : '.2'}}</td>
+                                        <td><input maxlength="10" step="any" class="form-control" min="0"
+                                                *ngIf="item.basic_price === null" type="number" style=" width: 2cm;text-align:
                                                 center" [(ngModel)]="basicprice[i]"
                                                 (blur)="item.basic_price = basicprice[i];UpdateHoldingDetails(item,i)"
                                                 name="basic_price_{{i}}" oninput="validity.valid||(value='');">
                                             <span *ngIf="item.basic_price !== null">{{item.basic_price}}</span>
                                         </td>
-                                        <td>{{item.basis}}</td>
+                                        <td>{{item.basis | number : '.2'}}</td>
                                         <td><input *ngIf="item.country === null" [(ngModel)]="country[i]"
                                                 style="width: 2cm;text-align: center" name="country_{{i}}"
                                                 (change)="item.country=country[i];UpdateHoldingDetails(item,i)">

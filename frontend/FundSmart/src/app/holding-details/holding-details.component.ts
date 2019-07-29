@@ -14,6 +14,7 @@ import { security } from '../security';
 import * as $ from 'jquery';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import 'rxjs/add/operator/filter';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-holding-details',
@@ -33,7 +34,7 @@ export class HoldingDetailsComponent implements OnInit {
     inputBasicPrice: number;
     inputCurrentPrice: number;
     portfoliolist = [];
-    order = [];
+    order: any;
     option = {
         fieldSeparator: ' ',
         quoteStrings: '"',
@@ -56,6 +57,7 @@ export class HoldingDetailsComponent implements OnInit {
     HoldingDetailForm: FormGroup;
     submitted = false;
 
+    testdata = 152.39856456454;
     currentprice = [];
     basicprice = [];
     currency = [];
@@ -69,7 +71,12 @@ export class HoldingDetailsComponent implements OnInit {
         private modalService: NgbModal,
         private route: ActivatedRoute,
         private router: Router,
+        private toastr: ToastrService,
         private interconn: IntercomponentCommunicationService) {
+        this.route.queryParamMap.subscribe((queryParams: Params) => {
+            this.order = queryParams.params.id;
+        });
+        holdingList.length = 0;
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 holdingList.length = 0;
@@ -77,8 +84,14 @@ export class HoldingDetailsComponent implements OnInit {
                 this.userservice.getUserPortfolio().subscribe(
                     data => {
                         this.portfoliolist.length = 0;
-                        for (let d in data['results']) {
-                            this.portfoliolist.push(data['results'][d]);
+                        try {
+                            this.order.forEach(element => {
+                                let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
+                                this.portfoliolist.push(portfolio);
+                            });
+                        } catch {
+                            let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(this.order));
+                            this.portfoliolist.push(portfolio);
                         }
                     });
 
@@ -137,9 +150,10 @@ export class HoldingDetailsComponent implements OnInit {
             this.userservice.getUserPortfolio().subscribe(
                 data => {
                     this.portfoliolist.length = 0;
-                    for (let d in data['results']) {
-                        this.portfoliolist.push(data['results'][d]);
-                    }
+                    this.order.forEach(element => {
+                        let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
+                        this.portfoliolist.push(portfolio);
+                    });
                 });
             this.getHoldingdetail();
         }
@@ -150,25 +164,27 @@ export class HoldingDetailsComponent implements OnInit {
         this.route.queryParamMap.subscribe((queryParams: Params) => {
             this.order = queryParams.params.id;
             if (queryParams.params.id === undefined) {
-                this.userservice.getHoldings().toPromise().then(
-                    mtdata => {
-                        holdingList.length = 0;
-                        // tslint:disable-next-line: forin
-                        for (var obj in mtdata) {
-                            holdingList.push(mtdata[obj]);
-                        }
-                        this.sortlist.resetHoldingDetails();
-                        this.sortlist.hlist$.subscribe(f => {
-                            this.HoldingDetailList = f;
-                        });
-                        this.sortlist.total$.subscribe(total => {
-                            this.total = total;
-                        });
-                    });
+                this.toastr.info('Please select portfolio id/ids from Fund page', 'Information˝');
+                // this.userservice.getHoldings().toPromise().then(
+                //     mtdata => {
+                //         holdingList.length = 0;
+                //         // tslint:disable-next-line: forin
+                //         for (var obj in mtdata) {
+                //             holdingList.push(mtdata[obj]);
+                //         }
+                //         this.sortlist.resetHoldingDetails();
+                //         this.sortlist.hlist$.subscribe(f => {
+                //             this.HoldingDetailList = f;
+                //         });
+                //         this.sortlist.total$.subscribe(total => {
+                //             this.total = total;
+                //         });
+                //     });
             } else {
                 this.userservice.get(`api/holding_detail/?portfolio_ids=${this.order}`).toPromise().then(
                     mtdata => {
                         holdingList.length = 0;
+                        // tslint:disable-next-line: forin
                         for (var obj in mtdata) {
                             holdingList.push(mtdata[obj]);
                         }

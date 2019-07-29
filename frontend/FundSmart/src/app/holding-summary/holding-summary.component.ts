@@ -3,6 +3,7 @@ import { ServercommunicationService } from '../servercommunication.service';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { HistoricalData } from '../historicaldata';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
     selector: 'app-holding-summary',
@@ -81,7 +82,8 @@ export class HoldingSummaryComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
         private activatedRoute: ActivatedRoute,
-        private route: Router
+        private route: Router,
+        private toastr: ToastrService,
     ) {
         this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
             this.id = queryParams.params.id;
@@ -96,10 +98,12 @@ export class HoldingSummaryComponent implements OnInit {
                         this.getCountry();
                         this.getLineGraph();
                     } else {
-                        this.getHistoricalPerformancewithoutpid();
-                        this.getCountrywithoutpid();
-                        this.getfundswithoutpid();
-                        this.getLineGraphwithoutpid();
+                        // this.getHistoricalPerformancewithoutpid();
+                        // this.getCountrywithoutpid();
+                        // this.getfundswithoutpid();
+                        // this.getLineGraphwithoutpid();
+                        this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+
                     }
                 });
             }
@@ -119,10 +123,12 @@ export class HoldingSummaryComponent implements OnInit {
                 this.getCountry();
                 this.getLineGraph();
             } else {
-                this.getHistoricalPerformancewithoutpid();
-                this.getCountrywithoutpid();
-                this.getfundswithoutpid();
-                this.getLineGraphwithoutpid();
+                this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+
+                // this.getHistoricalPerformancewithoutpid();
+                // this.getCountrywithoutpid();
+                // this.getfundswithoutpid();
+                // this.getLineGraphwithoutpid();
             }
         }
     }

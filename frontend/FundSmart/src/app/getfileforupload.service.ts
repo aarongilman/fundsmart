@@ -7,6 +7,7 @@ import { securitylist } from './securitylist';
 import { portfoliofundlist } from './portfolio_fundlist';
 import { portfolio_fund } from './portfolio_fund';
 import Swal from 'sweetalert2';
+import { ActivatedRoute, Params } from '@angular/router';
 
 
 declare const google: any;
@@ -26,12 +27,17 @@ export class GetfileforuploadService {
     accessToken: any;
     folderHistory: any = [];
     arrayBuffer: any;
-
+    id = [];
     constructor(
         private http: HttpClient,
         private interconn: IntercomponentCommunicationService,
-        private userservice: ServercommunicationService
-    ) { }
+        private userservice: ServercommunicationService,
+        private activatedRoute: ActivatedRoute,
+    ) {
+        this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
+            this.id = queryParams.params.id;
+        });
+    }
 
     onApiLoad(page: string) {
         this.page = page;
@@ -146,7 +152,11 @@ export class GetfileforuploadService {
                     } else {
                         const formData = new FormData();
                         formData.append('data_file', file);
-                        self.userservice.uploadfile(formData).subscribe(
+                        // this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
+                        //     this.id = queryParams.params.id;
+                        //     alert(this.id);
+                        // });
+                        self.userservice.uploadfile_Createfund(formData, self.id).subscribe(
                             resp => {
                                 this.interconn.afterfileupload();
                             },
@@ -222,11 +232,11 @@ export class GetfileforuploadService {
                             } else {
                                 const formData = new FormData();
                                 formData.append('data_file', file);
-                                self.userservice.uploadfile(formData).subscribe(
+
+                                self.userservice.uploadfile_Createfund(formData, self.id).toPromise().then(
                                     resp => {
                                         this.interconn.afterfileupload();
-                                    },
-                                    error => { });
+                                    });
                             }
                         },
                         error => { });
