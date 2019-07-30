@@ -115,89 +115,100 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     getFund() {
-        if (this.bardata_fund.length === 0) {
-            this.service.holding_summary_fund(portfolioidSelect).toPromise().then((fundData: any) => {
-                let i = 0;
-                let names: any;
-                fundData.forEach(fund => {
-                    names = Object.keys(fund);
-                    const FundObj = {
-                        name: names[0],
-                        value: fund[names[0]]
-                    }
-                    if (names[0] !== 'Total') {
-                        this.bardata_fund.push([names[0], fund[names[0]], `color:${this.colors[i]}`]);
-                        this.fund.push(FundObj);
-                        i++;
-                    } else {
-                        this.total = FundObj;
-                    }
+        if (portfolioidSelect.length > 0) {
+            if (this.bardata_fund.length === 0) {
+                this.service.holding_summary_fund(portfolioidSelect).toPromise().then((fundData: any) => {
+                    let i = 0;
+                    let names: any;
+                    fundData.forEach(fund => {
+                        names = Object.keys(fund);
+                        const FundObj = {
+                            name: names[0],
+                            value: fund[names[0]]
+                        }
+                        if (names[0] !== 'Total') {
+                            this.bardata_fund.push([names[0], fund[names[0]], `color:${this.colors[i]}`]);
+                            this.fund.push(FundObj);
+                            i++;
+                        } else {
+                            this.total = FundObj;
+                        }
+                    });
+                    this.barcolumnname = ['Fund', 'value', { role: 'style' }];
                 });
-                this.barcolumnname = ['Fund', 'value', { role: 'style' }];
-            });
+            }
         }
     }
 
     getAssets() {
-        if (this.assets_bardata_fund.length === 0) {
-            this.service.holding_summary_asset(portfolioidSelect).toPromise().then((resultData: any) => {
-                let i = 0;
-                resultData.forEach(result => {
-                    const names = Object.keys(result);
-                    const ResultObj = {
-                        name: names[0],
-                        value: result[names[0]]
-                    };
-                    if (names[0] !== 'Total') {
-                        this.assets_bardata_fund.push([names[0], result[names[0]], `color:${this.colors[i]}`]);
-                        this.result.push(ResultObj);
-                        i++;
-                    } else {
-                        this.total1 = ResultObj;
-                    }
+        if (portfolioidSelect.length > 0) {
+
+            if (this.assets_bardata_fund.length === 0) {
+                this.service.holding_summary_asset(portfolioidSelect).toPromise().then((resultData: any) => {
+                    let i = 0;
+                    resultData.forEach(result => {
+                        const names = Object.keys(result);
+                        const ResultObj = {
+                            name: names[0],
+                            value: result[names[0]]
+                        };
+                        if (names[0] !== 'Total') {
+                            this.assets_bardata_fund.push([names[0], result[names[0]], `color:${this.colors[i]}`]);
+                            this.result.push(ResultObj);
+                            i++;
+                        } else {
+                            this.total1 = ResultObj;
+                        }
+                    });
                 });
-            });
-            this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
+                this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
+            }
         }
     }
 
     getCountry() {
-        this.service.holding_summary_country(portfolioidSelect).toPromise().then((countryData: any) => {
-            countryData.forEach(country => {
-                const names = Object.keys(country);
-                const CountryObj = {
-                    name: names[0],
-                    value: country[names[0]]
-                }
-                if (names[0] !== 'Total') {
-                    this.country.push(CountryObj);
-                } else {
-                    this.total2 = CountryObj;
-                }
+        if (portfolioidSelect.length > 0) {
+
+            this.service.holding_summary_country(portfolioidSelect).toPromise().then((countryData: any) => {
+                countryData.forEach(country => {
+                    const names = Object.keys(country);
+                    const CountryObj = {
+                        name: names[0],
+                        value: country[names[0]]
+                    }
+                    if (names[0] !== 'Total') {
+                        this.country.push(CountryObj);
+                    } else {
+                        this.total2 = CountryObj;
+                    }
+                });
             });
-        });
+        }
     }
 
     getIndustry() {
-        if (this.industry_bardata_fund.length === 0) {
-            this.service.holding_summary_industry(portfolioidSelect).toPromise().then((industryData: any) => {
-                let i = 0;
-                industryData.forEach(industry => {
-                    const names = Object.keys(industry);
-                    const industryObj = {
-                        name: names[0],
-                        value: industry[names[0]]
-                    };
-                    if (names[0] !== 'Total') {
-                        this.industry_bardata_fund.push([names[0], industry[names[0]], `color:${this.colors[i]}`]);
-                        this.industry.push(industryObj);
-                        i++;
-                    } else {
-                        this.total3 = industryObj;
-                    }
+        if (portfolioidSelect.length > 0) {
+
+            if (this.industry_bardata_fund.length === 0) {
+                this.service.holding_summary_industry(portfolioidSelect).toPromise().then((industryData: any) => {
+                    let i = 0;
+                    industryData.forEach(industry => {
+                        const names = Object.keys(industry);
+                        const industryObj = {
+                            name: names[0],
+                            value: industry[names[0]]
+                        };
+                        if (names[0] !== 'Total') {
+                            this.industry_bardata_fund.push([names[0], industry[names[0]], `color:${this.colors[i]}`]);
+                            this.industry.push(industryObj);
+                            i++;
+                        } else {
+                            this.total3 = industryObj;
+                        }
+                    });
+                    this.industryColumns = ['Type', 'Total', { role: 'style' }];
                 });
-                this.industryColumns = ['Type', 'Total', { role: 'style' }];
-            });
+            }
         }
     }
 
