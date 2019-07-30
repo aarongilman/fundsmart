@@ -268,7 +268,7 @@ def get_holding_list(data, base_currency):
         fund_detail = fund_details.filter(fund_id=security.id_value)
         if fx_rate_obj and price_obj:
             for item in quantity_data:
-                quantity = item.get('portfolio')
+                quantity = str(item.get('portfolio'))
                 if '%' in quantity:
                     a = float(quantity.replace("%", "")) * 1000000
                     if security.asset_type == 'Mutual Fund':
