@@ -81,22 +81,18 @@ export class FundComponent implements OnInit {
     }
 
     getFunds() {
-        this.userService.getUserPortfolio().subscribe(
+        this.userService.getUserPortfolio().toPromise().then(
             fundlist => {
                 portfolioList.length = 0;
-
-
                 fundlist['results'].forEach(element => {
                     element['ischecked'] = false;
                     if (portfolioidSelect.length > 0) {
                         portfolioidSelect.forEach(id => {
                             if (element['id'] === Number.parseInt(id)) {
                                 element['ischecked'] = true;
-                                return;
                             }
                         });
                     }
-                    // console.log(element);
                     portfolioList.push(element);
                 });
                 this.sortlist.resetHoldingDetails();
@@ -114,7 +110,7 @@ export class FundComponent implements OnInit {
             this.owner_2,
             this.type,
             this.marginal_tax_range,
-            this.location).subscribe(result => {
+            this.location).toPromise().then(result => {
                 this.getFunds();
             });
         this.name = '';
@@ -167,7 +163,7 @@ export class FundComponent implements OnInit {
             marginal_tax_range: this.marginal_tax_range,
             location: this.location,
         };
-        this.userService.update_One_Object(fundupdate, _id).subscribe(
+        this.userService.update_One_Object(fundupdate, _id).toPromise().then(
             data => {
                 let index = this.result.findIndex(fund => fund.id === _id);
                 this.result[index] = data;
@@ -181,7 +177,7 @@ export class FundComponent implements OnInit {
             header: 'Delete Confirmation',
             icon: 'pi pi-info-circle',
             accept: () => {
-                this.userService.delete_Portfolio(id).subscribe(result => {
+                this.userService.delete_Portfolio(id).toPromise().then(result => {
                     this.getFunds();
                     this.toastr.success('Success', 'Portfolio Deleted Successfully');
                 });
@@ -204,8 +200,6 @@ export class FundComponent implements OnInit {
         } else {
             portfolioList[index]['ischecked'] = true;
         }
-        // console.log(portfolioList[index]);
-
         if (portfolioidSelect.find(x => x === item)) {
             console.log(item);
             console.log("index", portfolioidSelect.indexOf(item));

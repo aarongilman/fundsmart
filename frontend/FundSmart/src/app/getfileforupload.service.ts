@@ -7,8 +7,6 @@ import { securitylist } from './securitylist';
 import { portfoliofundlist } from './portfolio_fundlist';
 import { portfolio_fund } from './portfolio_fund';
 import Swal from 'sweetalert2';
-import { ActivatedRoute, Params } from '@angular/router';
-
 
 declare const google: any;
 
@@ -27,16 +25,12 @@ export class GetfileforuploadService {
     folderHistory: any = [];
     arrayBuffer: any;
     id = [];
+
     constructor(
         private http: HttpClient,
         private interconn: IntercomponentCommunicationService,
         private userservice: ServercommunicationService,
-        private activatedRoute: ActivatedRoute,
-    ) {
-        this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
-            this.id = queryParams.params.id;
-        });
-    }
+    ) { }
 
     onApiLoad(page: string) {
         this.page = page;
@@ -87,7 +81,7 @@ export class GetfileforuploadService {
         let self = this;
         if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
             var doc = data[google.picker.Response.DOCUMENTS][0];
-            self.downloadGDriveFile(doc.id).subscribe(
+            self.downloadGDriveFile(doc.id).toPromise().then(
                 filedata => {
                     const blob = new Blob([filedata], { type: doc.mimeType });
                     const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
@@ -155,11 +149,7 @@ export class GetfileforuploadService {
                     } else {
                         const formData = new FormData();
                         formData.append('data_file', file);
-                        // this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
-                        //     this.id = queryParams.params.id;
-                        //     alert(this.id);
-                        // });
-                        self.userservice.uploadfile_Createfund(formData, self.id).subscribe(
+                        self.userservice.uploadfile_Createfund(formData, self.id).toPromise().then(
                             resp => {
                                 this.interconn.afterfileupload();
                             },
@@ -167,7 +157,7 @@ export class GetfileforuploadService {
                     }
                 },
                 error => {
-                    self.exportGDrivefile(doc.id).subscribe(
+                    self.exportGDrivefile(doc.id).toPromise().then(
                         filedata => {
                             const blob = new Blob([filedata], { type: doc.mimeType });
                             const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });

@@ -18,8 +18,8 @@ export class ResetPasswordComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private userservice: ServercommunicationService,
-        private toastr: ToastrService) {
-    }
+        private toastr: ToastrService
+    ) { }
 
     ngOnInit() {
         this.route.params.subscribe(params => {
@@ -32,7 +32,7 @@ export class ResetPasswordComponent implements OnInit {
 
     resetpasswordreq() {
         if (this.password1 == this.password2) {
-            this.userservice.resetpassword_req(this.uid, this.token, this.password1, this.password2).subscribe(
+            this.userservice.resetpassword_req(this.uid, this.token, this.password1, this.password2).toPromise().then(
                 data => {
                     this.toastr.success('success', 'Password has been succesfully reset!')
                 },

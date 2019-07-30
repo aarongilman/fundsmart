@@ -80,7 +80,7 @@ export class HoldingDetailsComponent implements OnInit {
             () => {
                 holdingList.length = 0;
                 this.getHoldingdetail();
-                this.userservice.getUserPortfolio().subscribe(
+                this.userservice.getUserPortfolio().toPromise().then(
                     data => {
                         this.portfoliolist.length = 0;
                         portfolioidSelect.forEach(element => {
@@ -95,7 +95,7 @@ export class HoldingDetailsComponent implements OnInit {
             quantity: new FormControl('', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')]))
         });
 
-        this.interconn.logoutcomponentMethodCalled$.subscribe(
+        this.interconn.logoutcomponentMethodCalled$.toPromise().then(
             () => {
                 this.router.navigate(['/home']);
                 holdingList.length = 0;
@@ -117,7 +117,7 @@ export class HoldingDetailsComponent implements OnInit {
         });
         this.interconn.titleSettermethod('Holding Details');
         if (securitylist.length === 0) {
-            this.userservice.get_security().subscribe(
+            this.userservice.get_security().toPromise().then(
                 datasecuritylist => {
                     // tslint:disable-next-line: forin
                     for (var obj in datasecuritylist) {
@@ -140,7 +140,7 @@ export class HoldingDetailsComponent implements OnInit {
         }
 
         if (this.userservice.currentuser) {
-            this.userservice.getUserPortfolio().subscribe(
+            this.userservice.getUserPortfolio().toPromise().then(
                 data => {
                     this.portfoliolist.length = 0;
                     portfolioidSelect.forEach(element => {
@@ -198,7 +198,7 @@ export class HoldingDetailsComponent implements OnInit {
         let portfolioid = this.portfoliolist.find(p => p.name === this.fundForm.controls['selectedPortfolio'].value).id;
         this.userservice.add_portfolio_fund(this.fundForm.controls['quantity'].value,
             portfolioid,
-            this.selectboxsecurityid, this.userservice.currentuser.id).subscribe(
+            this.selectboxsecurityid, this.userservice.currentuser.id).toPromise().then(
                 res => {
                     let mysecurity: security;
                     mysecurity = securitylist.find(x => x.id === res['security']);
@@ -220,7 +220,7 @@ export class HoldingDetailsComponent implements OnInit {
                         rating: null
                     };
                     this.selectboxsecurityid = undefined;
-                    this.userservice.UpdateHoldingDetails(holding).subscribe(
+                    this.userservice.UpdateHoldingDetails(holding).toPromise().then(
                         sucess => {
                             var successdata: holdindDetail = {
                                 fund_id: sucess['fund_id'],
@@ -253,7 +253,7 @@ export class HoldingDetailsComponent implements OnInit {
     }
 
     UpdateHoldingDetails(item, i) {
-        this.userservice.UpdateHoldingDetails(item).subscribe(
+        this.userservice.UpdateHoldingDetails(item).toPromise().then(
             res => {
                 this.currentprice[i] = null;
                 this.basicprice[i] = null;

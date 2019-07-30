@@ -77,7 +77,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getHistoricalPerformance() {
-        this.service.get(`api/historical_performance_fund_recommendation/?portfolio_ids=${portfolioidSelect}`).subscribe((historicalData: any) => {
+        this.service.get(`api/historical_performance_fund_recommendation/?portfolio_ids=${portfolioidSelect}`).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 const names = Object.keys(historical);
                 names.forEach((key, value) => {
@@ -93,7 +93,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getPortfolioPerformance() {
-        this.service.get(`api/portfolio_performance/?portfolio_ids=${portfolioidSelect}`).subscribe((historicalData: any) => {
+        this.service.get(`api/portfolio_performance/?portfolio_ids=${portfolioidSelect}`).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 this.PortfolioPerformance.push(historical);
             });
@@ -101,7 +101,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getRecommendedPerformance() {
-        this.service.get(`api/recommended_performance/?portfolio_ids=${portfolioidSelect}`).subscribe((historicalData: any) => {
+        this.service.get(`api/recommended_performance/?portfolio_ids=${portfolioidSelect}`).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 this.RecommendedPerformance.push(historical);
             });
@@ -109,7 +109,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getLinePlotChart() {
-        this.service.fundRecommendationLineChart(portfolioidSelect).subscribe(
+        this.service.fundRecommendationLineChart(portfolioidSelect).toPromise().then(
             (jsondata: any) => {
                 this.linedata = [];
                 this.linecolumnNames = ['label'];
@@ -148,7 +148,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getPlotFundRecommendation() {
-        this.service.get(`api/bar_plot_fund_recommendation/?portfolio_ids=${portfolioidSelect}`).subscribe((historicalData: any) => {
+        this.service.get(`api/bar_plot_fund_recommendation/?portfolio_ids=${portfolioidSelect}`).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 const name = Object.keys(historical);
                 const obj = Object.values(historical);

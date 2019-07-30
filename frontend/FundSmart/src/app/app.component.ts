@@ -131,7 +131,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     userlogin() {
-        this.userservice.doLogin(this.model.username, this.model.password).subscribe(
+        this.userservice.doLogin(this.model.username, this.model.password).toPromise().then(
             data => {
                 localStorage.setItem('authkey', data['key']);
                 this.userservice.getUser(data['key']);
@@ -153,7 +153,7 @@ export class AppComponent implements OnInit, OnDestroy {
             if (this.registeruserForm.invalid) {
                 return;
             }
-            this.userservice.doRegistration(JSON.stringify(this.registeruserForm.value)).subscribe(data => {
+            this.userservice.doRegistration(JSON.stringify(this.registeruserForm.value)).toPromise().then(data => {
                 localStorage.setItem('authkey', data['key']);
                 this.showdetail_flag = false;
                 Swal.fire('Registration', 'Please verify your email from your mail box', 'success');

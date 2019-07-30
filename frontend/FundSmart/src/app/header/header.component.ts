@@ -82,7 +82,7 @@ export class HeaderComponent implements OnInit {
 
     changepassword() {
         if (this.newpass == this.confirmpass) {
-            this.service.change_password(this.oldpass, this.newpass, this.confirmpass).subscribe(data => {
+            this.service.change_password(this.oldpass, this.newpass, this.confirmpass).toPromise().then(data => {
                 this.toastr.success('success', 'Password has been changed successfully!')
                 this.oldpass = '';
                 this.newpass = '';
@@ -102,7 +102,7 @@ export class HeaderComponent implements OnInit {
     }
 
     updateuserprofile() {
-        this.service.update_User(this.currentuser).subscribe(
+        this.service.update_User(this.currentuser).toPromise().then(
             data => {
                 this.setcurrent_user();
                 this.modalService.dismissAll();
