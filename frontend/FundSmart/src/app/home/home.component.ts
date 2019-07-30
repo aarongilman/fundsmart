@@ -19,7 +19,6 @@ import { securitylist } from '../securitylist';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
-import { forEach } from '@angular/router/src/utils/collection';
 
 declare var Dropbox: Dropbox;
 
@@ -188,6 +187,7 @@ export class HomeComponent implements OnInit {
     securitylist = securitylist;
     arrayBuffer: any;
     DynamicDisable = [];
+
     constructor(
         private modalService: NgbModal,
         private interconn: IntercomponentCommunicationService,
@@ -359,41 +359,22 @@ export class HomeComponent implements OnInit {
     }
 
     serAttribute(item, i) {
-        // console.log('setAttribute called');
-
-        // console.log(i);
-
         var opt = $('option[value="' + $('#security_' + i).val() + '"]');
         item.security_id = Number.parseInt(opt.attr('id'));
         if (isNaN(item.security_id)) {
             item.security_id = -1;
         }
-        // console.log(item.security_id);
-
         try {
             item.security = securitylist.find(s => s.id === item.security_id).name;
-            // console.log(item);
             let localData = JSON.parse(localStorage.getItem('securityData'));
             let index = localData.findIndex(data => data.recordId === item.p1record);
             localData[index].securityId = item.security_id;
-            // console.log(localData[index]);
             localStorage.setItem('securityData', JSON.stringify(localData));
             this.setdataindeshboard();
         } catch {
             return null;
         }
     }
-
-
-    // serAttribute(item, i) {
-    //     var opt = $('option[value="' + $('#security_' + i).val() + '"]');
-    //     item.security_id = Number.parseInt(opt.attr('id'));
-    //     try {
-    //         item.security = securitylist.find(s => s.id === item.security_id).name;
-    //     } catch {
-    //         return null;
-    //     }
-    // }
 
     setdataindeshboard() {
         this.userservice.get_historical_perfomance().subscribe(
@@ -614,9 +595,7 @@ export class HomeComponent implements OnInit {
         }
     }
 
-
     get f() { return this.registeruserForm.controls; }
-
 
     registerUser() {
         if (this.showdetail_flag === false) {
@@ -690,7 +669,6 @@ export class HomeComponent implements OnInit {
     }
 
     openmodal(modalid, str) {
-
         var addclass = '';
         if (str === 'login' || str === 'register') {
             addclass = 'long-pop sign-pop';
@@ -736,8 +714,6 @@ export class HomeComponent implements OnInit {
         $(".forgot-password-title").addClass("show-forgot");
         $(".login-title").addClass("d-none");
     }
-
-
 
     uploadFile(event) {
         for (let index = 0; index < event.length; index++) {
@@ -824,10 +800,8 @@ export class HomeComponent implements OnInit {
         const newsec = this.securitylist.find(sec => sec.id === item.security_id);
         if (newsec !== undefined) {
             if (charCode === 127 || charCode === 8) {
-                // console.log(newsec);
                 if (secinput !== newsec.name) {
                     item.security_id = -1;
-
                 } else {
                     item.security_id = newsec.id;
                 }
@@ -865,7 +839,8 @@ export class HomeComponent implements OnInit {
             if (value.includes('%')) {
                 return false;
             }
-        } else if ((charCode > 47 && charCode < 58) || charCode === 37) {
+        }
+        if ((charCode > 47 && charCode < 58) || charCode === 37) {
             if (charCode === 37 && Number.parseInt(value) > 100) {
                 return false;
             }
@@ -873,14 +848,10 @@ export class HomeComponent implements OnInit {
         } else {
             return false;
         }
-
-
     }
 
 
     addportfolioFund(string1, item, i) {
-        // console.log(item);
-
         if (item.security_id === -1) {
             return false;
         } else {
@@ -943,7 +914,6 @@ export class HomeComponent implements OnInit {
                 "quantity": quantity, "recid": recid, "securityId": item.security_id
             });
             let undefsec = this.funds$.filter(fund => fund.security_id === -1);
-            // console.log(undefsec);
             if (undefsec.length === 0) {
                 this.setdataindeshboard();
             } else {

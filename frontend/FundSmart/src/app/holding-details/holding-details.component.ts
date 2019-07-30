@@ -12,9 +12,10 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { securitylist } from '../securitylist';
 import { security } from '../security';
 import * as $ from 'jquery';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import 'rxjs/add/operator/filter';
 import { ToastrService } from 'ngx-toastr';
+import { portfolioidSelect } from '../fund/portfolioid_select';
 
 @Component({
     selector: 'app-holding-details',
@@ -65,17 +66,15 @@ export class HoldingDetailsComponent implements OnInit {
     industry = [];
     rating = [];
     serchportfolio: any;
+
     constructor(private userservice: ServercommunicationService,
         public sortlist: HoldingdetailsSortService,
         private formBuilder: FormBuilder,
         private modalService: NgbModal,
-        private route: ActivatedRoute,
         private router: Router,
         private toastr: ToastrService,
-        private interconn: IntercomponentCommunicationService) {
-        this.route.queryParamMap.subscribe((queryParams: Params) => {
-            this.order = queryParams.params.id;
-        });
+        private interconn: IntercomponentCommunicationService
+    ) {
         holdingList.length = 0;
         this.interconn.componentMethodCalled$.subscribe(
             () => {
@@ -84,17 +83,11 @@ export class HoldingDetailsComponent implements OnInit {
                 this.userservice.getUserPortfolio().subscribe(
                     data => {
                         this.portfoliolist.length = 0;
-                        try {
-                            this.order.forEach(element => {
-                                let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
-                                this.portfoliolist.push(portfolio);
-                            });
-                        } catch {
-                            let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(this.order));
+                        portfolioidSelect.forEach(element => {
+                            let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
                             this.portfoliolist.push(portfolio);
-                        }
+                        });
                     });
-
             });
         this.fundForm = this.formBuilder.group({
             selectedPortfolio: new FormControl('', Validators.required),
@@ -150,7 +143,7 @@ export class HoldingDetailsComponent implements OnInit {
             this.userservice.getUserPortfolio().subscribe(
                 data => {
                     this.portfoliolist.length = 0;
-                    this.order.forEach(element => {
+                    portfolioidSelect.forEach(element => {
                         let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
                         this.portfoliolist.push(portfolio);
                     });
@@ -159,47 +152,27 @@ export class HoldingDetailsComponent implements OnInit {
         }
     }
 
-
     getHoldingdetail() {
-        this.route.queryParamMap.subscribe((queryParams: Params) => {
-            this.order = queryParams.params.id;
-            if (queryParams.params.id === undefined) {
-                this.toastr.info('Please select portfolio id/ids from Fund page', 'Information˝');
-                // this.userservice.getHoldings().toPromise().then(
-                //     mtdata => {
-                //         holdingList.length = 0;
-                //         // tslint:disable-next-line: forin
-                //         for (var obj in mtdata) {
-                //             holdingList.push(mtdata[obj]);
-                //         }
-                //         this.sortlist.resetHoldingDetails();
-                //         this.sortlist.hlist$.subscribe(f => {
-                //             this.HoldingDetailList = f;
-                //         });
-                //         this.sortlist.total$.subscribe(total => {
-                //             this.total = total;
-                //         });
-                //     });
-            } else {
-                this.userservice.get(`api/holding_detail/?portfolio_ids=${this.order}`).toPromise().then(
-                    mtdata => {
-                        holdingList.length = 0;
-                        // tslint:disable-next-line: forin
-                        for (var obj in mtdata) {
-                            holdingList.push(mtdata[obj]);
-                        }
-                        this.sortlist.resetHoldingDetails();
-                        this.sortlist.hlist$.subscribe(f => {
-                            this.HoldingDetailList = f;
-                        });
-                        this.sortlist.total$.subscribe(total => {
-                            this.total = total;
-                        });
+        if (portfolioidSelect.length === 0) {
+            this.toastr.info('Please select portfolio id/ids from Fund page', 'Information˝');
+        } else {
+            this.userservice.get(`api/holding_detail/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
+                mtdata => {
+                    holdingList.length = 0;
+                    // tslint:disable-next-line: forin
+                    for (var obj in mtdata) {
+                        holdingList.push(mtdata[obj]);
+                    }
+                    this.sortlist.resetHoldingDetails();
+                    this.sortlist.hlist$.subscribe(f => {
+                        this.HoldingDetailList = f;
                     });
-            }
-        });
+                    this.sortlist.total$.subscribe(total => {
+                        this.total = total;
+                    });
+                });
+        };
     }
-
 
     setSecurity() {
         var opt = $('option[value="' + $('#secinput').val() + '"]');

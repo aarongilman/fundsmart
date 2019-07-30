@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { ToastrService } from 'ngx-toastr';
+import { portfolioidSelect } from '../fund/portfolioid_select';
 
 @Component({
     selector: 'app-fund-recommendation',
@@ -39,7 +40,6 @@ export class FundRecommendationComponent implements OnInit {
         },
     };
 
-
     bartitle = 'Bar Chart';
     bardata = [];
     barwidth = 650;
@@ -54,13 +54,9 @@ export class FundRecommendationComponent implements OnInit {
     constructor(
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
-        private activatedRoute: ActivatedRoute,
         private route: Router,
         private toastr: ToastrService
     ) {
-        this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
-            this.id = queryParams.params.id;
-        });
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.route.navigate(['/home']);
@@ -68,7 +64,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     ngOnInit() {
-        if (this.id) {
+        if (portfolioidSelect.length > 0) {
             this.interconn.titleSettermethod('Fund Recommendation');
             this.getHistoricalPerformance();
             this.getLinePlotChart();
@@ -77,16 +73,15 @@ export class FundRecommendationComponent implements OnInit {
             this.getPlotFundRecommendation();
         } else {
             this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
-
         }
     }
 
     getHistoricalPerformance() {
-        this.service.get(`api/historical_performance_fund_recommendation/?portfolio_ids=${this.id}`).subscribe((historicalData: any) => {
+        this.service.get(`api/historical_performance_fund_recommendation/?portfolio_ids=${portfolioidSelect}`).subscribe((historicalData: any) => {
             historicalData.forEach(historical => {
                 const names = Object.keys(historical);
                 names.forEach((key, value) => {
-                    
+
                     const historicalObj = {
                         name: names[value],
                         value: historical[names[value]]
@@ -98,7 +93,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getPortfolioPerformance() {
-        this.service.get(`api/portfolio_performance/?portfolio_ids=${this.id}`).subscribe((historicalData: any) => {
+        this.service.get(`api/portfolio_performance/?portfolio_ids=${portfolioidSelect}`).subscribe((historicalData: any) => {
             historicalData.forEach(historical => {
                 this.PortfolioPerformance.push(historical);
             });
@@ -106,7 +101,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getRecommendedPerformance() {
-        this.service.get(`api/recommended_performance/?portfolio_ids=${this.id}`).subscribe((historicalData: any) => {
+        this.service.get(`api/recommended_performance/?portfolio_ids=${portfolioidSelect}`).subscribe((historicalData: any) => {
             historicalData.forEach(historical => {
                 this.RecommendedPerformance.push(historical);
             });
@@ -114,7 +109,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getLinePlotChart() {
-        this.service.fundRecommendationLineChart(this.id).subscribe(
+        this.service.fundRecommendationLineChart(portfolioidSelect).subscribe(
             (jsondata: any) => {
                 this.linedata = [];
                 this.linecolumnNames = ['label'];
@@ -153,7 +148,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getPlotFundRecommendation() {
-        this.service.get(`api/bar_plot_fund_recommendation/?portfolio_ids=${this.id}`).subscribe((historicalData: any) => {
+        this.service.get(`api/bar_plot_fund_recommendation/?portfolio_ids=${portfolioidSelect}`).subscribe((historicalData: any) => {
             historicalData.forEach(historical => {
                 const name = Object.keys(historical);
                 const obj = Object.values(historical);
