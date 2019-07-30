@@ -740,9 +740,9 @@ export class HomeComponent implements OnInit {
                     // tslint:disable-next-line: forin
                     for (let record in sheetdata) {
                         let port1, comp1, comp2;
-                        port1 = Number.parseInt(sheetdata[record]['portfolio1']);
-                        comp1 = Number.parseInt(sheetdata[record]['comparison1']);
-                        comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+                        port1 = sheetdata[record]['portfolio1'];
+                        comp1 = sheetdata[record]['comparison1'];
+                        comp2 = sheetdata[record]['comparison2'];
                         let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
                         if (security) {
                             try {
@@ -886,6 +886,7 @@ export class HomeComponent implements OnInit {
     }
 
     createportfoliofundmethod(quantity, item: portfolio_fund, recordid, i) {
+     
         let localData = JSON.parse(localStorage.getItem('securityData'));
         if (localData === null) {
             localStorage.setItem('securityData', JSON.stringify([]));
@@ -950,9 +951,9 @@ export class HomeComponent implements OnInit {
                             // tslint:disable-next-line: forin
                             for (let record in sheetdata) {
                                 let port1, comp1, comp2;
-                                port1 = Number.parseInt(sheetdata[record]['portfolio1']);
-                                comp1 = Number.parseInt(sheetdata[record]['comparison1']);
-                                comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+                                port1 = sheetdata[record]['portfolio1'];
+                                comp1 = sheetdata[record]['comparison1'];
+                                comp2 = sheetdata[record]['comparison2'];
                                 let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
                                 if (security) {
                                     try {
@@ -1069,9 +1070,9 @@ export class HomeComponent implements OnInit {
                                     // tslint:disable-next-line: forin
                                     for (let record in sheetdata) {
                                         let port1, comp1, comp2;
-                                        port1 = Number.parseInt(sheetdata[record]['portfolio1']);
-                                        comp1 = Number.parseInt(sheetdata[record]['comparison1']);
-                                        comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+                                        port1 = sheetdata[record]['portfolio1'];
+                                        comp1 = sheetdata[record]['comparison1'];
+                                        comp2 = sheetdata[record]['comparison2'];
                                         let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
                                         if (security) {
                                             try {

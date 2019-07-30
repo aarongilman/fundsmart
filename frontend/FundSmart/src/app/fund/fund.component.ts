@@ -144,6 +144,13 @@ export class FundComponent implements OnInit {
     }
 
     private getDismissReason(reason: any): string {
+        this.name = '';
+        this.description = '';
+        this.owner_1 = '';
+        this.owner_2 = '';
+        this.type = '';
+        this.marginal_tax_range = '';
+        this.location = '';
         if (reason === ModalDismissReasons.ESC) {
             return 'by pressing ESC';
         } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
