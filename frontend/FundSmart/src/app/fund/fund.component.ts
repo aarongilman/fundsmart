@@ -174,36 +174,36 @@ export class FundComponent implements OnInit {
     }
 
     selectID(item) {
-        if (this.selectedIDs.find(x => x == item)) {
-            this.selectedIDs.splice(this.selectedIDs.indexOf(item), 1);
-        } else {
-            this.selectedIDs.push(item);
-        }
-        // if (portfolioidSelect.find(x => x === item)) {
-        //     portfolioidSelect.splice(portfolioidSelect.indexOf(item, 1));
+        // if (this.selectedIDs.find(x => x == item)) {
+        //     this.selectedIDs.splice(this.selectedIDs.indexOf(item), 1);
         // } else {
-        //     portfolioidSelect.push(item);
+        //     this.selectedIDs.push(item);
         // }
+        if (portfolioidSelect.find(x => x === item)) {
+            portfolioidSelect.splice(portfolioidSelect.indexOf(item, 1));
+        } else {
+            portfolioidSelect.push(item);
+        }
     }
 
     onContextMenuAction1() {
-        this.router.navigate(['/holding_summary'], { queryParams: { id: this.selectedIDs } });
+        this.router.navigate(['/holding_summary']);
     }
 
     onContextMenuAction2() {
-        this.router.navigate(['/create_fund'], { queryParams: { id: this.selectedIDs } });
+        this.router.navigate(['/create_fund']);
     }
 
     onContextMenuAction3() {
-        this.router.navigate(['/holding_details'], { queryParams: { id: this.selectedIDs } });
+        this.router.navigate(['/holding_details']);
     }
 
     onContextMenuAction4() {
-        this.router.navigate(['/fund_recommendation'], { queryParams: { id: this.selectedIDs } });
+        this.router.navigate(['/fund_recommendation']);
     }
 
     onContextMenuAction5() {
-        this.router.navigate(['/allocation_recommendation'], { queryParams: { id: this.selectedIDs } });
+        this.router.navigate(['/allocation_recommendation']);
     }
 
     onSort({ column, direction }: SortEvent) {
