@@ -85,6 +85,20 @@ export class FundComponent implements OnInit {
             fundlist => {
                 portfolioList.length = 0;
                 fundlist['results'].forEach(element => {
+                    if (portfolioidSelect.length > 0) {
+                        portfolioidSelect.forEach(id => {
+                            if (element['id'] === Number.parseInt(id)) {
+                                element['ischecked'] = true;
+                            } else {
+                                element['ischecked'] = false;
+                            }
+                        });
+                    } else {
+                        element['ischecked'] = false;
+                    }
+
+                    console.log(element);
+
                     portfolioList.push(element);
                 });
                 this.sortlist.resetHoldingDetails();
@@ -179,6 +193,14 @@ export class FundComponent implements OnInit {
         // } else {
         //     this.selectedIDs.push(item);
         // }
+        let index = portfolioList.findIndex(p => p['id'] === item);
+        if (portfolioList[index]['ischecked'] === true) {
+            portfolioList[index]['ischecked'] = false;
+        } else {
+            portfolioList[index]['ischecked'] = true;
+        }
+        console.log(portfolioList[index]);
+
         if (portfolioidSelect.find(x => x === item)) {
             portfolioidSelect.splice(portfolioidSelect.indexOf(item, 1));
         } else {

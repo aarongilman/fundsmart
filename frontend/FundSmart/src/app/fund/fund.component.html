@@ -48,7 +48,7 @@
                                     <a style="padding-left: 20px; ">
                                         <input id="check" style=" width: 17px; height: 17px;cursor: pointer;"
                                             (contextmenu)="onContextMenu($event, item)" type="checkbox" class="checkbox"
-                                            autocomplete="off" (change)="selectID(fund.id)">
+                                            [checked]="fund.ischecked" (change)="selectID(fund.id)">
                                     </a>
                                     <div style="position: fixed" [style.left]="contextMenuPosition.x"
                                         [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu"
