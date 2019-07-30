@@ -135,7 +135,6 @@ export class FundCreateComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         public fundservice: FundcreatesortService,
         public route: Router,
-        private toast: ToastrService,
         private calendar: NgbCalendar,
         private toastr: ToastrService
     ) {
@@ -471,7 +470,7 @@ export class FundCreateComponent implements OnInit {
 
     openmodal(modalid, str) {
         if (portfolioidSelect.length > 0) {
-            if (typeof (portfolioidSelect) === 'object' && portfolioidSelect.length === 1) {
+            if (portfolioidSelect.length === 1 && str === 'select portfolio') {
                 this.addRow();
             } else {
                 var addclass = '';
@@ -561,10 +560,10 @@ export class FundCreateComponent implements OnInit {
                                     resp => {
                                         this.getSelectedPortfolio();
                                         this.modalService.dismissAll('File uploaded');
-                                        this.toast.success('File uploaded sucessfuly', 'Success');
+                                        this.toastr.success('File uploaded sucessfuly', 'Success');
                                     },
                                     error => {
-                                        this.toast.error('Improper file,Could not upload file', 'Error');
+                                        this.toastr.error('Improper file,Could not upload file', 'Error');
                                     });
                             });
                     }
@@ -574,8 +573,7 @@ export class FundCreateComponent implements OnInit {
 
     drive_fileupload() {
         this.onApiLoad();
-        this.getSelectedPortfolio();
-        this.modalService.dismissAll('File upload');
+        this.modalService.dismissAll('File uploaded');
     }
 
     onSort({ column, direction }: SortEvent) {
@@ -691,20 +689,32 @@ export class FundCreateComponent implements OnInit {
                     const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
                     const formData = new FormData();
                     formData.append('data_file', file);
-                    this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(res => { this.getSelectedPortfolio(); });
-                },
-                error => {
-                    this.exportGDrivefile(doc.id).toPromise().then(
-                        filedata => {
-                            const blob = new Blob([filedata], { type: doc.mimeType });
-                            const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
-                            const formData = new FormData();
-                            formData.append('data_file', file);
-                            this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(res => { this.getSelectedPortfolio(); });
-                        });
-                });
+                    this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(res => {
+                        this.getSelectedPortfolio();
+                        this.toastr.success('File has beed uploaded successfully', 'Success');
+                        // this.getSelectedPortfolio();
+                    });
+                }).catch(
+                    error => {
+                        this.exportGDrivefile(doc.id).toPromise().then(
+                            filedata => {
+                                const blob = new Blob([filedata], { type: doc.mimeType });
+                                const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
+                                const formData = new FormData();
+                                formData.append('data_file', file);
+                                this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
+                                    res => {
+                                        this.getSelectedPortfolio();
+                                        this.toastr.success('File has beed uploaded successfully', 'Success');
+
+                                    }).catch(
+                                        error => {
+                                            this.toastr.error('Some error occured, Your File can not be uploaded', 'Error');
+                                        });
+                            });
+                    });
         }
-        
+
     }
 
 }

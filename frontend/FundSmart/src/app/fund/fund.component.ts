@@ -165,8 +165,9 @@ export class FundComponent implements OnInit {
         };
         this.userService.update_One_Object(fundupdate, _id).toPromise().then(
             data => {
-                let index = this.result.findIndex(fund => fund.id === _id);
-                this.result[index] = data;
+                let index = this.portfolioDetailList.findIndex(fund => fund['id'] === _id);
+                this.portfolioDetailList[index].name = data['name'];
+                this.portfolioDetailList[index].description = data['description'];
                 this.toastr.success('Portfolio Updated!', 'Portfolio Updated!');
             });
     }
@@ -178,8 +179,11 @@ export class FundComponent implements OnInit {
             icon: 'pi pi-info-circle',
             accept: () => {
                 this.userService.delete_Portfolio(id).toPromise().then(result => {
+                    if (portfolioidSelect.find(xid => xid === id)) {
+                        portfolioidSelect.splice(portfolioidSelect.indexOf(id), 1);
+                    }
                     this.getFunds();
-                    this.toastr.success('Success', 'Portfolio Deleted Successfully');
+                    this.toastr.success('Portfolio Deleted Successfully', 'Success');
                 });
             },
             reject: () => {
@@ -201,15 +205,10 @@ export class FundComponent implements OnInit {
             portfolioList[index]['ischecked'] = true;
         }
         if (portfolioidSelect.find(x => x === item)) {
-            console.log(item);
-            console.log("index", portfolioidSelect.indexOf(item));
-
-
             portfolioidSelect.splice(portfolioidSelect.indexOf(item), 1);
         } else {
             portfolioidSelect.push(item);
         }
-        console.log("Portfolio ids", portfolioidSelect);
     }
 
     onContextMenuAction1() {
