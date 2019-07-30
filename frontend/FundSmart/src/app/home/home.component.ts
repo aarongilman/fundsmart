@@ -224,7 +224,7 @@ export class HomeComponent implements OnInit {
                 this.currentUser = undefined;
             });
         this.tableData = JSON.parse(localStorage.getItem('securityData'));
-        this.userservice.get_security().subscribe(
+        this.userservice.get_security().toPromise().then(
             datasecuritylist => {
                 securitylist.length = 0;
                 // tslint:disable-next-line: forin
@@ -258,7 +258,7 @@ export class HomeComponent implements OnInit {
         this.interconn.titleSettermethod("Multi Portfolio Analyzer");
         this.setdataindeshboard();
         this.DynamicDisable[0] = false;
-        this.userservice.get_historical_perfomance().subscribe(
+        this.userservice.get_historical_perfomance().toPromise().then(
             result => {
                 this.existing = {
                     annualexpense: 0,
@@ -352,7 +352,7 @@ export class HomeComponent implements OnInit {
     }
 
     createFundlist() {
-        this.userservice.dashboardDataTable().subscribe(
+        this.userservice.dashboardDataTable().toPromise().then(
             fundlist => {
                 this.setfunds(fundlist);
             });
@@ -377,7 +377,7 @@ export class HomeComponent implements OnInit {
     }
 
     setdataindeshboard() {
-        this.userservice.get_historical_perfomance().subscribe(
+        this.userservice.get_historical_perfomance().toPromise().then(
             result => {
                 this.existing = {
                     annualexpense: 0,
@@ -415,7 +415,7 @@ export class HomeComponent implements OnInit {
                 }
             });
 
-        this.userservice.get_home_pie_chart().subscribe(
+        this.userservice.get_home_pie_chart().toPromise().then(
             jsondata => {
                 this.piedata = [];
                 let arrData = [];
@@ -441,7 +441,7 @@ export class HomeComponent implements OnInit {
                 };
             });
 
-        this.userservice.get_deshboard_doughnut_chart().subscribe(
+        this.userservice.get_deshboard_doughnut_chart().toPromise().then(
             jsondata => {
                 this.donutdata = [];
                 let arrData = [];
@@ -462,7 +462,7 @@ export class HomeComponent implements OnInit {
                 };
             });
 
-        this.userservice.get_lineplot_chart().subscribe(
+        this.userservice.get_lineplot_chart().toPromise().then(
             (jsondata: any) => {
                 this.linedata = [];
                 this.linecolumnNames = ['label'];
@@ -606,7 +606,7 @@ export class HomeComponent implements OnInit {
             if (this.registeruserForm.invalid) {
                 return;
             }
-            this.userservice.doRegistration(JSON.stringify(this.registeruserForm.value)).subscribe(data => {
+            this.userservice.doRegistration(JSON.stringify(this.registeruserForm.value)).toPromise().then(data => {
                 localStorage.setItem('authkey', data['key']);;
                 this.showdetail_flag = false;
                 Swal.fire('Registration', 'Please verify your email from your mail box', 'success');
@@ -657,7 +657,7 @@ export class HomeComponent implements OnInit {
     }
 
     userlogin() {
-        this.userservice.doLogin(this.model.username, this.model.password).subscribe(
+        this.userservice.doLogin(this.model.username, this.model.password).toPromise().then(
             data => {
                 localStorage.setItem('authkey', data['key']);
                 this.userservice.getUser(data['key']);
@@ -682,7 +682,7 @@ export class HomeComponent implements OnInit {
     }
 
     resetpassword() {
-        this.userservice.reset_pwd_sendemail(this.email2).subscribe(data => {
+        this.userservice.reset_pwd_sendemail(this.email2).toPromise().then(data => {
             this.email2 = undefined;
             this.modalService.dismissAll('Email sent.');
             Swal.fire({
@@ -850,7 +850,6 @@ export class HomeComponent implements OnInit {
         }
     }
 
-
     addportfolioFund(string1, item, i) {
         if (item.security_id === -1) {
             return false;
@@ -865,7 +864,6 @@ export class HomeComponent implements OnInit {
                     quantity = null;
                 }
                 this.createportfoliofundmethod(quantity, item, 'p1', i);
-
             } else if (string1.match('comp1')) {
                 if (item.comparision1) {
                     quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
@@ -905,7 +903,6 @@ export class HomeComponent implements OnInit {
         if (item.p1record === null) {
             item.p1record = localData.length;
         }
-
         if (security === undefined) {
             return null;
         } else {
@@ -919,7 +916,6 @@ export class HomeComponent implements OnInit {
             } else {
                 this.toastrService.error('Please select porper Security', 'Error');
             }
-
         }
     }
 

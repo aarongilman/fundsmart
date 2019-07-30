@@ -40,7 +40,7 @@ export class ServercommunicationService {
     socialLogin(user) {
         this.socialuser = user;
         const body = { access_token: user.authToken };
-        this.http.post(this.api_link + 'rest-auth/google/', body, { headers: this.httpHeaders }).subscribe(data => {
+        this.http.post(this.api_link + 'rest-auth/google/', body, { headers: this.httpHeaders }).toPromise().then(data => {
             localStorage.setItem('authkey', data['key']);
             this.getUser(data['key']);
         });
@@ -50,7 +50,7 @@ export class ServercommunicationService {
         this.userkey = key;
         this.http.get(this.api_link + 'rest-auth/user/', {
             headers: new HttpHeaders({ Authorization: 'Token ' + key })
-        }).subscribe(userdata => {
+        }).toPromise().then(userdata => {
             this.currentuser = userdata;
             this.interconn.callComponentMethod();
         });
@@ -194,7 +194,7 @@ export class ServercommunicationService {
     logout() {
         localStorage.removeItem('authkey');
         this.http.post(this.api_link + 'rest-auth/logout/',
-            { headers: this.httpHeaders }).subscribe(
+            { headers: this.httpHeaders }).toPromise().then(
                 data => {
                     this.userkey = null;
                     this.currentuser = undefined;
