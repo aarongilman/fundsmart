@@ -20,7 +20,6 @@ export class GetfileforuploadService {
 
     client_id = "883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com";
     developerKey = 'AIzaSyA_1Y6HBXXhTvDVN0vM4OCYhCZzj1j6OA4';
-    scope: ['https://www.googleapis.com/auth/drive'];
     pickerApiLoaded = false;
     oauthToken: any;
     page: string;
@@ -51,7 +50,11 @@ export class GetfileforuploadService {
         (<any>window).gapi.auth.authorize(
             {
                 client_id: this.client_id,
-                scope: ['https://www.googleapis.com/auth/drive.file'],
+                scope: ['https://www.googleapis.com/auth/drive.file',
+                    'https://www.googleapis.com/auth/drive',
+                    'https://www.googleapis.com/auth/drive.file',
+                    'https://www.googleapis.com/auth/drive.metadata'
+                ],
                 immediate: false
             },
             self.handleAuthResult.bind(this));

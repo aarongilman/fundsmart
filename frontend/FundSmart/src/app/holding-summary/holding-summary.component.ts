@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { HistoricalData } from '../historicaldata';
+import { Router } from '@angular/router';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { ToastrService } from 'ngx-toastr';
+import { portfolioidSelect } from '../fund/portfolioid_select';
 
 @Component({
     selector: 'app-holding-summary',
@@ -77,38 +77,24 @@ export class HoldingSummaryComponent implements OnInit {
         enableInteractivity: true,
     };
 
-
     constructor(
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
-        private activatedRoute: ActivatedRoute,
         private route: Router,
-        private toastr: ToastrService,
+        private toastr: ToastrService
     ) {
-        this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
-            this.id = queryParams.params.id;
-        });
-
-        this.interconn.componentMethodCalled$.subscribe(
+        this.interconn.componentMethodCalled$.toPromise().then(
             () => {
-                this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
-                    if (queryParams.params.id) {
-                        this.getHistoricalPerformance();
-                        this.getFund();
-                        this.getCountry();
-                        this.getLineGraph();
-                    } else {
-                        // this.getHistoricalPerformancewithoutpid();
-                        // this.getCountrywithoutpid();
-                        // this.getfundswithoutpid();
-                        // this.getLineGraphwithoutpid();
-                        this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
-
-                    }
-                });
-            }
-        );
-        this.interconn.logoutcomponentMethodCalled$.subscribe(
+                if (portfolioidSelect.length > 0) {
+                    this.getHistoricalPerformance();
+                    this.getFund();
+                    this.getCountry();
+                    this.getLineGraph();
+                } else {
+                    this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+                }
+            });
+        this.interconn.logoutcomponentMethodCalled$.toPromise().then(
             () => {
                 this.route.navigate(['/home']);
             });
@@ -117,25 +103,20 @@ export class HoldingSummaryComponent implements OnInit {
     ngOnInit() {
         this.interconn.titleSettermethod("Holding Summary");
         if (this.service.currentuser && this.bardata_fund.length === 0) {
-            if (this.id) {
+            if (portfolioidSelect.length > 0) {
                 this.getHistoricalPerformance();
                 this.getFund();
                 this.getCountry();
                 this.getLineGraph();
             } else {
                 this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
-
-                // this.getHistoricalPerformancewithoutpid();
-                // this.getCountrywithoutpid();
-                // this.getfundswithoutpid();
-                // this.getLineGraphwithoutpid();
             }
         }
     }
 
     getFund() {
         if (this.bardata_fund.length === 0) {
-            this.service.holding_summary_fund(this.id).subscribe((fundData: any) => {
+            this.service.holding_summary_fund(portfolioidSelect).toPromise().then((fundData: any) => {
                 let i = 0;
                 let names: any;
                 fundData.forEach(fund => {
@@ -159,7 +140,7 @@ export class HoldingSummaryComponent implements OnInit {
 
     getAssets() {
         if (this.assets_bardata_fund.length === 0) {
-            this.service.holding_summary_asset(this.id).subscribe((resultData: any) => {
+            this.service.holding_summary_asset(portfolioidSelect).toPromise().then((resultData: any) => {
                 let i = 0;
                 resultData.forEach(result => {
                     const names = Object.keys(result);
@@ -181,7 +162,7 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     getCountry() {
-        this.service.holding_summary_country(this.id).subscribe((countryData: any) => {
+        this.service.holding_summary_country(portfolioidSelect).toPromise().then((countryData: any) => {
             countryData.forEach(country => {
                 const names = Object.keys(country);
                 const CountryObj = {
@@ -199,7 +180,7 @@ export class HoldingSummaryComponent implements OnInit {
 
     getIndustry() {
         if (this.industry_bardata_fund.length === 0) {
-            this.service.holding_summary_industry(this.id).subscribe((industryData: any) => {
+            this.service.holding_summary_industry(portfolioidSelect).toPromise().then((industryData: any) => {
                 let i = 0;
                 industryData.forEach(industry => {
                     const names = Object.keys(industry);
@@ -221,7 +202,7 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     getHistoricalPerformance() {
-        this.service.holding_summary_historicalPerformance(this.id).subscribe((historicalData: any) => {
+        this.service.holding_summary_historicalPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 const names = Object.keys(historical);
                 for (let a in historical[names[0]]) {
@@ -241,10 +222,9 @@ export class HoldingSummaryComponent implements OnInit {
             });
         });
     }
-
 
     getLineGraph() {
-        this.service.holding_summary_lineGraph(this.id).subscribe(
+        this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then(
             (jsondata: any) => {
                 this.linedata = [];
                 this.linecolumnNames = ['label'];
@@ -282,158 +262,6 @@ export class HoldingSummaryComponent implements OnInit {
                     }
                 }
             });
-    }
-
-    getHistoricalPerformancewithoutpid() {
-        this.service.get('api/historical_performance_holding_summary/').subscribe((historicalData: any) => {
-            historicalData.forEach(historical => {
-                const names = Object.keys(historical);
-                for (let a in historical[names[0]]) {
-                    if (historical[names[0]][a] !== null) {
-                        historical[names[0]][a] = Number.parseFloat(historical[names[0]][a]).toFixed(4) + '%';
-                    }
-                }
-                const historicalObj = {
-                    name: names[0],
-                    value: historical[names[0]]
-                };
-                if (names[0] !== 'Total') {
-                    this.historical.push(historicalObj);
-                } else {
-                    this.total4.push(historicalObj);
-                }
-            });
-        });
-    }
-
-    getfundswithoutpid() {
-        if (this.bardata_fund.length === 0) {
-            this.service.get('api/fund_holding_summary/').subscribe((fundData: any) => {
-                let i = 0;
-                let names: any;
-                fundData.forEach(fund => {
-                    names = Object.keys(fund);
-                    const FundObj = {
-                        name: names[0],
-                        value: fund[names[0]]
-                    }
-                    if (names[0] !== 'Total') {
-                        this.bardata_fund.push([names[0], fund[names[0]], `color:${this.colors[i]}`]);
-                        this.fund.push(FundObj);
-                        i++;
-
-                    } else {
-                        this.total = FundObj;
-                    }
-                });
-                this.barcolumnname = ['Fund', 'value', { role: 'style' }];
-            });
-        }
-    }
-
-    getAssetswithoutpid() {
-        if (this.assets_bardata_fund.length === 0) {
-            this.service.get('api/asset_class_holding_summary/').subscribe((resultData: any) => {
-                let i = 0;
-                resultData.forEach(result => {
-                    const names = Object.keys(result);
-                    const ResultObj = {
-                        name: names[0],
-                        value: result[names[0]]
-                    };
-                    if (names[0] !== 'Total') {
-                        this.assets_bardata_fund.push([names[0], result[names[0]], `color:${this.colors[i]}`]);
-                        this.result.push(ResultObj);
-                        i++;
-                    } else {
-                        this.total1 = ResultObj;
-                    }
-                });
-            });
-            this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
-        }
-    }
-
-    getIndustrywithoutpid() {
-        if (this.industry_bardata_fund.length === 0) {
-            this.service.get('api/industry_holding_summary/').subscribe((industryData: any) => {
-                let i = 0;
-                industryData.forEach(industry => {
-                    const names = Object.keys(industry);
-                    const industryObj = {
-                        name: names[0],
-                        value: industry[names[0]]
-                    };
-                    if (names[0] !== 'Total') {
-                        this.industry_bardata_fund.push([names[0], industry[names[0]], `color:${this.colors[i]}`]);
-                        this.industry.push(industryObj);
-                        i++;
-                    } else {
-                        this.total3 = industryObj;
-                    }
-                });
-                this.industryColumns = ['Type', 'Total', { role: 'style' }];
-            });
-        }
-    }
-
-    getLineGraphwithoutpid() {
-        this.service.get('api/line_graph_holding_summary/').subscribe(
-            (jsondata: any) => {
-                this.linedata = [];
-                this.linecolumnNames = ['label'];
-                const tempArray = [];
-                const mainObj = {};
-                if (this.linedata == []) {
-                    this.linedata.push(['No data copy', 0, 0]);
-                } else {
-                    for (let i = 0; i < jsondata.length; i++) {
-                        const element = jsondata[i];
-                        if (this.linedata !== null) {
-                            this.linecolumnNames.push(element.portfolio);
-                        }
-                        for (let k = 0; k < element['label'].length; k++) {
-                            const label = element['label'][k];
-                            if (tempArray.filter(x => x === label).length === 0) {
-                                tempArray.push(label);
-                            }
-                            if (mainObj[label] || mainObj[label] === 0) {
-                                mainObj[label] = mainObj[label] + ',' + ((element.series[k]) ? element.series[k] : 0);
-                            } else {
-                                mainObj[label] = (element.series[k]) ? element.series[k] : 0;
-                            }
-                        }
-                    }
-                    for (let i = 0; i < tempArray.length; i++) {
-                        const element = tempArray[i];
-                        const values = (mainObj[element].split(',')).filter(Boolean);
-                        const valuesCollection = [];
-                        valuesCollection.push(element);
-                        for (const iterator of values) {
-                            valuesCollection.push(parseFloat(iterator));
-                        }
-                        this.linedata.push(valuesCollection);
-                    }
-                }
-
-            });
-    }
-
-    getCountrywithoutpid() {
-        this.service.get('api/country_holding_summary/').subscribe((countryData: any) => {
-            countryData.forEach(country => {
-                const names = Object.keys(country);
-                const CountryObj = {
-                    name: names[0],
-                    value: country[names[0]]
-                }
-                if (names[0] !== 'Total') {
-                    this.country.push(CountryObj);
-                } else {
-                    this.total2 = CountryObj;
-                }
-            });
-        });
     }
 
 }

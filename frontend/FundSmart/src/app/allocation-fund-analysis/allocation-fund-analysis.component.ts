@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ServercommunicationService } from '../servercommunication.service';
 import { AllocationData } from '../historicaldata';
 import { ToastrService } from 'ngx-toastr';
+import { portfolioidSelect } from '../fund/portfolioid_select';
 
 @Component({
     selector: 'app-allocation-fund-analysis',
@@ -67,67 +68,54 @@ export class AllocationFundAnalysisComponent implements OnInit {
 
     constructor(
         private interconn: IntercomponentCommunicationService,
-        private route: ActivatedRoute,
         private userservice: ServercommunicationService,
         private router: Router,
-        private tostr: ToastrService,
+        private tostr: ToastrService
     ) {
-        this.route.queryParamMap.subscribe((queryParams: Params) => {
-            this.order = queryParams.params.id;
-        });
-
-        this.interconn.componentMethodCalled$.subscribe(
+        this.interconn.componentMethodCalled$.toPromise().then(
             () => {
-                this.route.queryParamMap.subscribe((queryParams: Params) => {
-                    if (queryParams.params.id) {
-                        this.getCurrentAllocation();
-                        this.getHistoricalPerformance();
-                        this.getLinegraph();
-                    }
-                });
+                if (portfolioidSelect.length > 0) {
+                    this.getCurrentAllocation();
+                    this.getHistoricalPerformance();
+                    this.getLinegraph();
+                }
             });
-
-        this.interconn.logoutcomponentMethodCalled$.subscribe(
+        this.interconn.logoutcomponentMethodCalled$.toPromise().then(
             () => {
                 this.router.navigate(['/home']);
             });
     }
 
     ngOnInit() {
-
-        this.route.queryParamMap.subscribe((queryParams: Params) => {
-            if (queryParams.params.id === undefined) {
-                this.tostr.info('Please select portfolio id/ids from Fund page', 'Information');
+        this.interconn.titleSettermethod('Allocation & Fund Analysis');
+        if (portfolioidSelect.length === 0) {
+            this.tostr.info('Please select portfolio id/ids from Fund page', 'Information');
+        } else {
+            if (this.userservice.currentuser) {
+                this.getCurrentAllocation();
+                this.getHistoricalPerformance();
+                this.getLinegraph();
             }
-        });
-        if (this.userservice.currentuser) {
-            this.interconn.titleSettermethod('Allocation & Fund Analysis');
-            this.getCurrentAllocation();
-            this.getHistoricalPerformance();
-            this.getLinegraph();
         }
     }
 
     getCurrentAllocation() {
-        this.route.queryParamMap.subscribe((queryParams: Params) => {
-            this.order = queryParams.params.id;
-            if (queryParams.params.id !== undefined) {
-                this.userservice.get(`api/current_allocation/?portfolio_ids=${this.order}`).toPromise().then(
-                    (result: any) => {
-                        result.forEach((resultlist: any) => {
-                            const names = Object.keys(resultlist);
-                            // tslint:disable-next-line: forin
-                            for (const i in names) {
-                                this.currentAllocationData.push([names[i], resultlist[names[i]]]);
-                            }
-                        });
+        if (portfolioidSelect.length > 0) {
+            this.userservice.get(`api/current_allocation/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
+                (result: any) => {
+                    result.forEach((resultlist: any) => {
+                        const names = Object.keys(resultlist);
+                        // tslint:disable-next-line: forin
+                        for (const i in names) {
+                            this.currentAllocationData.push([names[i], resultlist[names[i]]]);
+                        }
                     });
-            }
-        });
+                });
+        }
     }
 
     getHistoricalPerformance() {
-        this.userservice.allocationRecommendationHistorical(this.order).subscribe(
+        this.userservice.allocationRecommendationHistorical(portfolioidSelect).toPromise().then(
             result => {
                 this.existing = {
                     oneyear: 0,
@@ -161,8 +149,8 @@ export class AllocationFundAnalysisComponent implements OnInit {
     }
 
     getLinegraph() {
-        if (this.order !== undefined) {
-            this.userservice.get(`api/allocation_line_graph/?portfolio_ids=${this.order}`).subscribe(
+        if (portfolioidSelect.length > 0) {
+            this.userservice.get(`api/allocation_line_graph/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
                 (jsondata: any) => {
                     this.linedata = [];
                     this.linecolumnNames = ['label'];
@@ -203,4 +191,5 @@ export class AllocationFundAnalysisComponent implements OnInit {
                 });
         }
     }
+
 }

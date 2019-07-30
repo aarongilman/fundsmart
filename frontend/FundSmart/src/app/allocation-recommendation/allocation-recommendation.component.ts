@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import { Router } from '@angular/router';
 import { ServercommunicationService } from '../servercommunication.service';
 import { ToastrService } from 'ngx-toastr';
+import { portfolioidSelect } from '../fund/portfolioid_select';
 
 @Component({
     selector: 'app-allocation-recommendation',
@@ -10,7 +11,6 @@ import { ToastrService } from 'ngx-toastr';
     styleUrls: ['./allocation-recommendation.component.css']
 })
 export class AllocationRecommendationComponent implements OnInit {
-    order = [];
 
     currentAllocationTitle = '';
     currentAllocationData = [];
@@ -31,10 +31,11 @@ export class AllocationRecommendationComponent implements OnInit {
 
     constructor(
         private interconn: IntercomponentCommunicationService,
-        private router: Router, private route: ActivatedRoute,
+        private router: Router,
         private userservice: ServercommunicationService,
-        private toastr: ToastrService) {
-        this.interconn.logoutcomponentMethodCalled$.subscribe(
+        private toastr: ToastrService
+    ) {
+        this.interconn.logoutcomponentMethodCalled$.toPromise().then(
             () => {
                 this.router.navigate(['/home']);
             });
@@ -46,27 +47,24 @@ export class AllocationRecommendationComponent implements OnInit {
     }
 
     getCurrentAllocation() {
-        this.route.queryParamMap.subscribe((queryParams: Params) => {
-            this.order = queryParams.params.id;
-            if (queryParams.params.id !== undefined) {
-                this.userservice.get(`api/current_allocation/?portfolio_ids=${this.order}`).toPromise().then(
-                    (result: any) => {
-                        result.forEach((resultlist: any) => {
-                            const names = Object.keys(resultlist);
-                            for (const i in names) {
-                                this.currentAllocationData.push([names[i], resultlist[names[i]]]);
-                            }
-                        });
+        if (portfolioidSelect.length > 0) {
+            this.userservice.get(`api/current_allocation/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
+                (result: any) => {
+                    result.forEach((resultlist: any) => {
+                        const names = Object.keys(resultlist);
+                        for (const i in names) {
+                            this.currentAllocationData.push([names[i], resultlist[names[i]]]);
+                        }
                     });
-            } else {
-                this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+                });
+        } else {
+            this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
 
-            }
-        });
+        }
     }
 
     routeTo() {
-        this.router.navigate(['/allocation_fund_analysis'], { queryParams: { id: this.order } });
+        this.router.navigate(['/allocation_fund_analysis']);
     }
 
 }

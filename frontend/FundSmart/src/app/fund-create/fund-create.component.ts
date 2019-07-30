@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, QueryList, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { NgbModal, ModalDismissReasons, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
@@ -10,10 +10,11 @@ import { funds } from '../funds';
 import { FundcreatesortService } from '../fundcreatesort.service';
 import { SortEvent, SortableDirective } from '../sortable.directive';
 import { securitylist } from '../securitylist';
-import { Router, Params, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { portfolioidSelect } from '../fund/portfolioid_select';
 
 declare var Dropbox: Dropbox;
 
@@ -116,7 +117,6 @@ export class FundCreateComponent implements OnInit {
     serchportfolio: any;
     client_id = "883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com";
     developerKey = 'AIzaSyA_1Y6HBXXhTvDVN0vM4OCYhCZzj1j6OA4';
-    scope: ['https://www.googleapis.com/auth/drive'];
     pickerApiLoaded = false;
     oauthToken: any;
     page: string;
@@ -137,27 +137,18 @@ export class FundCreateComponent implements OnInit {
         public route: Router,
         private toast: ToastrService,
         private calendar: NgbCalendar,
-        private activatedRoute: ActivatedRoute,
         private toastr: ToastrService
     ) {
-        this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
-            this.id = queryParams.params.id;
-        });
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.setcurrent_user();
                 this.getUserPortfolios();
-                this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
-                    this.id = queryParams.params.id;
-                    if (queryParams.params.id) {
-                        this.getSelectedPortfolio();
-                    } else {
-                        this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
-
-                    }
-                });
+                if (portfolioidSelect.length > 0) {
+                    this.getSelectedPortfolio();
+                } else {
+                    this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+                }
             });
-
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.route.navigate(['/home']);
@@ -195,14 +186,11 @@ export class FundCreateComponent implements OnInit {
         if (this.userService.currentuser) {
             apiresultfundlist.length = 0;
             this.getUserPortfolios();
-            this.activatedRoute.queryParamMap.subscribe((queryParams: Params) => {
-                this.id = queryParams.params.id;
-                if (queryParams.params.id) {
-                    this.getSelectedPortfolio();
-                } else {
-                    this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
-                }
-            });
+            if (portfolioidSelect.length > 0) {
+                this.getSelectedPortfolio();
+            } else {
+                this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+            }
         }
     }
 
@@ -224,8 +212,6 @@ export class FundCreateComponent implements OnInit {
                 isin: '',
                 price: ''
             };
-            // console.log(data['results'][i]);
-
             fund.id = data['results'][i]['id'];
             fund.isin = data['results'][i]['isin'];
             fund.asset_type = data['results'][i]['asset_type'];
@@ -262,7 +248,7 @@ export class FundCreateComponent implements OnInit {
         } else {
             date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
         }
-        this.userService.get_portfolio_fund_by_date(date, this.serchportfolio, this.id).subscribe(
+        this.userService.get_portfolio_fund_by_date(date, this.serchportfolio, portfolioidSelect).subscribe(
             data => {
                 if (data['count'] > 0) {
                     this.setfunds(data);
@@ -316,20 +302,12 @@ export class FundCreateComponent implements OnInit {
     }
 
     getUserPortfolios() {
-        // console.log('id in gerportfolios', this.id);
-
         this.userService.getUserPortfolio().subscribe(data => {
-
             this.portfoliolist.length = 0;
-            try {
-                this.id.forEach(element => {
-                    let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
-                    this.portfoliolist.push(portfolio);
-                });
-            } catch {
-                let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(this.id));
+            portfolioidSelect.forEach(element => {
+                let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
                 this.portfoliolist.push(portfolio);
-            }
+            });
         });
     }
 
@@ -348,11 +326,7 @@ export class FundCreateComponent implements OnInit {
 
     addRow() {
         if (this.selectedp === undefined) {
-            if (typeof (this.id) === 'string') {
-                this.selectedp = Number.parseInt(this.id);
-            } else {
-                this.selectedp = Number.parseInt(this.id[0]);
-            }
+            this.selectedp = Number.parseInt(portfolioidSelect[0]);
         }
         const singlefund: funds = {
             id: -1,
@@ -461,16 +435,14 @@ export class FundCreateComponent implements OnInit {
         } else {
             date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
         }
-        this.userService.get_portfolio_fund_by_date(date, this.serchportfolio, this.id).subscribe(
+        this.userService.get_portfolio_fund_by_date(date, this.serchportfolio, portfolioidSelect).subscribe(
             data => {
                 this.setfunds(data);
             });
     }
 
     getSelectedPortfolio() {
-
-        console.log(typeof (this.id));
-        this.userService.get(`api/portfolio_fund/?portfolio_ids=${this.id}`).subscribe(
+        this.userService.get(`api/portfolio_fund/?portfolio_ids=${portfolioidSelect}`).subscribe(
             data => {
                 this.setfunds(data);
             });
@@ -487,7 +459,7 @@ export class FundCreateComponent implements OnInit {
             this.files.push(element.name);
             const formData = new FormData();
             formData.append('data_file', element);
-            this.userService.uploadfile_Createfund(formData, this.id).subscribe(
+            this.userService.uploadfile_Createfund(formData, portfolioidSelect).subscribe(
                 res => {
                     this.getSelectedPortfolio();
                 },
@@ -498,12 +470,8 @@ export class FundCreateComponent implements OnInit {
     }
 
     openmodal(modalid, str) {
-        if (this.id !== undefined) {
-            // console.log("type of", typeof (this.id));
-
-            if (typeof (this.id) === 'string') {
-                this.addRow();
-            } else if (typeof (this.id) === 'object' && this.id.length === 1) {
+        if (portfolioidSelect.length > 0) {
+            if (typeof (portfolioidSelect) === 'object' && portfolioidSelect.length === 1) {
                 this.addRow();
             } else {
                 var addclass = '';
@@ -536,7 +504,7 @@ export class FundCreateComponent implements OnInit {
                         const blob = new Blob([filedata], { type: filedata.type });
                         const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
                         formData.append('data_file', myfile);
-                        that.userService.uploadfile_Createfund(formData, this.id).subscribe(
+                        that.userService.uploadfile_Createfund(formData, portfolioidSelect).subscribe(
                             resp => {
                                 this.getSelectedPortfolio();
                                 this.modalService.dismissAll('File uploaded');
@@ -589,7 +557,7 @@ export class FundCreateComponent implements OnInit {
                                 const myblob = new Blob([blob], { type: blob.type });
                                 const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
                                 formData.append('data_file', myfile);
-                                this.userService.uploadfile_Createfund(formData, this.id).subscribe(
+                                this.userService.uploadfile_Createfund(formData, portfolioidSelect).subscribe(
                                     resp => {
                                         this.getSelectedPortfolio();
                                         this.modalService.dismissAll('File uploaded');
@@ -631,7 +599,7 @@ export class FundCreateComponent implements OnInit {
                 cancelButtonText: 'No, keep it'
             }).then((result) => {
                 if (result.value) {
-                    this.userService.delete_PortfolioFund(id.id, this.id).subscribe(result => {
+                    this.userService.delete_PortfolioFund(id.id, portfolioidSelect).subscribe(result => {
                         const index = apiresultfundlist.findIndex(fund => fund.id === id.id);
                         apiresultfundlist.splice(index, 1);
                         this.fundservice.resetfunds();
@@ -660,7 +628,11 @@ export class FundCreateComponent implements OnInit {
         (<any>window).gapi.auth.authorize(
             {
                 client_id: this.client_id,
-                scope: ['https://www.googleapis.com/auth/drive.file'],
+                scope: ['https://www.googleapis.com/auth/drive.file',
+                    'https://www.googleapis.com/auth/drive',
+                    'https://www.googleapis.com/auth/drive.file',
+                    'https://www.googleapis.com/auth/drive.metadata'
+                ],
                 immediate: false
             },
             this.handleAuthResult.bind(this));
@@ -711,7 +683,6 @@ export class FundCreateComponent implements OnInit {
     }
 
     pickerCallback(data) {
-        // let self = this;
         if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
             var doc = data[google.picker.Response.DOCUMENTS][0];
             this.downloadGDriveFile(doc.id).subscribe(
@@ -720,7 +691,7 @@ export class FundCreateComponent implements OnInit {
                     const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
                     const formData = new FormData();
                     formData.append('data_file', file);
-                    this.userService.uploadfile_Createfund(formData, this.id).subscribe(res => { this.getSelectedPortfolio(); });
+                    this.userService.uploadfile_Createfund(formData, portfolioidSelect).subscribe(res => { this.getSelectedPortfolio(); });
                 },
                 error => {
                     this.exportGDrivefile(doc.id).subscribe(
@@ -729,7 +700,7 @@ export class FundCreateComponent implements OnInit {
                             const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
                             const formData = new FormData();
                             formData.append('data_file', file);
-                            this.userService.uploadfile_Createfund(formData, this.id).subscribe(res => { this.getSelectedPortfolio(); });
+                            this.userService.uploadfile_Createfund(formData, portfolioidSelect).subscribe(res => { this.getSelectedPortfolio(); });
                         });
                 });
         }
