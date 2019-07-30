@@ -84,21 +84,19 @@ export class FundComponent implements OnInit {
         this.userService.getUserPortfolio().subscribe(
             fundlist => {
                 portfolioList.length = 0;
+
+
                 fundlist['results'].forEach(element => {
+                    element['ischecked'] = false;
                     if (portfolioidSelect.length > 0) {
                         portfolioidSelect.forEach(id => {
                             if (element['id'] === Number.parseInt(id)) {
                                 element['ischecked'] = true;
-                            } else {
-                                element['ischecked'] = false;
+                                return;
                             }
                         });
-                    } else {
-                        element['ischecked'] = false;
                     }
-
-                    console.log(element);
-
+                    // console.log(element);
                     portfolioList.push(element);
                 });
                 this.sortlist.resetHoldingDetails();
@@ -119,6 +117,13 @@ export class FundComponent implements OnInit {
             this.location).subscribe(result => {
                 this.getFunds();
             });
+        this.name = '';
+        this.description = '';
+        this.owner_1 = '';
+        this.owner_2 = '';
+        this.type = '';
+        this.marginal_tax_range = '';
+        this.location = '';
     }
 
     header_modals(modalid, fund?) {
@@ -199,13 +204,18 @@ export class FundComponent implements OnInit {
         } else {
             portfolioList[index]['ischecked'] = true;
         }
-        console.log(portfolioList[index]);
+        // console.log(portfolioList[index]);
 
         if (portfolioidSelect.find(x => x === item)) {
-            portfolioidSelect.splice(portfolioidSelect.indexOf(item, 1));
+            console.log(item);
+            console.log("index", portfolioidSelect.indexOf(item));
+
+
+            portfolioidSelect.splice(portfolioidSelect.indexOf(item), 1);
         } else {
             portfolioidSelect.push(item);
         }
+        console.log("Portfolio ids", portfolioidSelect);
     }
 
     onContextMenuAction1() {
