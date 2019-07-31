@@ -506,9 +506,9 @@ def get_summary_data(request, type):
                 .objects.filter(fund=fund).latest('created_at').price
         except Exception as e:
             price_obj = price.filter(
-                id_value=fund.security.id_value).latest('date')
+                id_value=fund.security.id_value)
             if price_obj:
-                price_value = price_obj.price
+                price_value = price_obj.latest('date').price
         fund_detail = fund_details.filter(fund_id=fund.security.id_value)
         fx_rate_obj = fx_rate.filter(date=date.today(),
                                      currency=fund.security.currency)
@@ -562,9 +562,9 @@ class HoldingSummaryByHoldingType(APIView):
                     .objects.filter(fund=fund).latest('created_at').price
             except Exception as e:
                 price_obj = price.filter(
-                    id_value=fund.security.id_value).latest('date')
+                    id_value=fund.security.id_value)
                 if price_obj:
-                    price_value = price_obj.price
+                    price_value = price_obj.latest('date').price
             fund_detail = fund_details.filter(fund_id=fund.security.id_value)
             fx_rate_obj = fx_rate.filter(date=date.today(),
                                          currency=fund.security.currency)
@@ -640,7 +640,6 @@ def get_historical_performance(request):
     total_1_year = []
     total_3_year = []
     total_5_year = []
-    price = Price.objects.all()
     for portfolio in portfolios:
         isin_list = portfolio_funds.filter(
             portfolio=portfolio, created_by=request.user) \
