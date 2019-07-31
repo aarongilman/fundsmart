@@ -2,6 +2,7 @@
 import xlrd
 import logging
 import itertools
+import collections
 from datetime import date
 
 from django.db.models import F
@@ -499,12 +500,15 @@ def get_summary_data(request, type):
     fx_rate = FXRate.objects.all()
     price = Price.objects.all()
     for fund in funds:
+        price_value = None
         try:
+            price_value = PortfolioFundPrice \
+                .objects.filter(fund=fund).latest('created_at').price
+        except Exception as e:
             price_obj = price.filter(
                 id_value=fund.security.id_value).latest('date')
-            price_value = price_obj.price
-        except Exception as e:
-            price_value = None
+            if price_obj:
+                price_value = price_obj.price
         fund_detail = fund_details.filter(fund_id=fund.security.id_value)
         fx_rate_obj = fx_rate.filter(date=date.today(),
                                      currency=fund.security.currency)
@@ -552,11 +556,15 @@ class HoldingSummaryByHoldingType(APIView):
         price = Price.objects.all()
         fx_rate = FXRate.objects.all()
         for fund in funds:
+            price_value = None
             try:
-                price_obj = price.filter(id_value=fund.security.id_value).latest('date')
-                price_value = price_obj.price
+                price_value = PortfolioFundPrice \
+                    .objects.filter(fund=fund).latest('created_at').price
             except Exception as e:
-                price_value = None
+                price_obj = price.filter(
+                    id_value=fund.security.id_value).latest('date')
+                if price_obj:
+                    price_value = price_obj.price
             fund_detail = fund_details.filter(fund_id=fund.security.id_value)
             fx_rate_obj = fx_rate.filter(date=date.today(),
                                          currency=fund.security.currency)
@@ -605,6 +613,18 @@ class HoldingSummaryByCountry(APIView):
         return Response(data, status=200)
 
 
+def get_price(isin, portfolio, date):
+    try:
+        price_obj = PortfolioFundPrice.objects. \
+            filter(fund__security__id_value=isin, fund__portfolio=portfolio,
+                   created_at=date)
+        if not price_obj:
+            raise Exception
+    except Exception as e:
+        price_obj = Price.objects.filter(id_value=isin, date=date)
+    return price_obj
+
+
 def get_historical_performance(request):
     data = []
     if request.GET.get('portfolio_ids'):
@@ -629,30 +649,18 @@ def get_historical_performance(request):
         return_3_yr = []
         return_5_yr = []
         for isin in isin_list:
-            end_price_1_year = price.filter(id_value=isin,
-                                            date=str(
-                                                date(date.today().year -
-                                                     1, 12, 31)))
-            beg_price_1_year = price.filter(id_value=isin,
-                                            date=str(
-                                                date(date.today().year -
-                                                     2, 12, 31)))
-            end_price_3_year = price.filter(id_value=isin,
-                                            date=str(
-                                                date(date.today().year -
-                                                     3, 12, 31)))
-            beg_price_3_year = price.filter(id_value=isin,
-                                            date=str(
-                                                date(date.today().year -
-                                                     4, 12, 31)))
-            end_price_5_year = price.filter(id_value=isin,
-                                            date=str(
-                                                date(date.today().year -
-                                                     5, 12, 31)))
-            beg_price_5_year = price.filter(id_value=isin,
-                                            date=str(
-                                                date(date.today().year -
-                                                     6, 12, 31)))
+            end_price_1_year = get_price(isin, portfolio, str(
+                date(date.today().year - 1, 12, 31)))
+            beg_price_1_year = get_price(isin, portfolio, str(
+                date(date.today().year - 2, 12, 31)))
+            end_price_3_year = get_price(isin, portfolio, str(
+                date(date.today().year - 3, 12, 31)))
+            beg_price_3_year = get_price(isin, portfolio, str(
+                date(date.today().year - 4, 12, 31)))
+            end_price_5_year = get_price(isin, portfolio, str(
+                date(date.today().year - 5, 12, 31)))
+            beg_price_5_year = get_price(isin, portfolio, str(
+                date(date.today().year - 6, 12, 31)))
             if end_price_1_year and beg_price_1_year:
                 return_1_yr.append((end_price_1_year[0].price -
                                     beg_price_1_year[0].price) /
@@ -703,15 +711,70 @@ class HoldingSummaryHistoricalPerformanceDifference(APIView):
 
 class HoldingSummaryLineGraph(APIView):
     def get(self, request):
-        result = get_historical_performance(request)
+        base_currency = 'INR'
         data = []
-        for item in result:
-            temp_dict = {"portfolio": None, 'series': [], 'label': []}
-            for key, value in item.items():
-                temp_dict.update({'portfolio': key})
-                temp_dict.get('label').extend(value.keys())
-                temp_dict.get('series').extend(value.values())
-                data.append(temp_dict)
+        fund_details = FundDetail.objects.all()
+        fx_rate = FXRate.objects.all()
+        if request.GET.get('portfolio_ids'):
+            portfolio_ids = request.GET.get('portfolio_ids').split(",")
+            portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
+                                                  created_by=request.user)
+            funds = PortfolioFund.objects.filter(
+                portfolio__in=portfolios, security__asset_type='Mutual Fund',
+                created_by=request.user)
+            price = Price.objects.all()
+            try:
+                port_fund_price = PortfolioFundPrice.objects.all()
+                prices = price.filter(id_value__in=funds.
+                                      values_list('security__id_value', flat=True))
+                if prices:
+                    date_list = prices.values_list('id_value').annotate(
+                        count=Min('date')) \
+                        .distinct()
+                    common_date = max([x[1] for x in date_list])
+                for portfolio in portfolios:
+                    portfolio_funds = funds.filter(portfolio=portfolio)
+                    port_mkt_values = {}
+                    for fund in portfolio_funds:
+                        fund_detail = fund_details.filter(fund_id=fund.security.id_value)
+                        fx_rate_obj = fx_rate.filter(base=base_currency,
+                                                     date=date.today(),
+                                                     currency=fund.security.currency)
+                        price_obj = prices.filter(id_value=fund.security.id_value,
+                                                  date__gte=common_date,
+                                                  date__lte=date.today())\
+                            .order_by('date').distinct()
+                        for price in price_obj:
+                            price_date = str(price.date)
+                            try:
+                                fund_price = port_fund_price.\
+                                    filter(fund=fund, created_at=price_date)[0].price
+                                price_value = float(fund_price.price)
+                            except Exception as e:
+                                price_value = float(price.price)
+                            if fx_rate_obj:
+                                if '%' in str(fund.quantity):
+                                    quantity = get_quantity(fund.quantity,
+                                                            fund.security,
+                                                            fund_detail[0].aum,
+                                                            fx_rate_obj[0].rate,
+                                                            price_value)
+                                else:
+                                    quantity = float(fund.quantity)
+                                if port_mkt_values.get(price_date):
+                                    port_mkt_values.get(price_date).append(
+                                        quantity * price_value)
+                                else:
+                                    port_mkt_values.update({price_date: [quantity * price_value]})
+                    port_mkt_values = collections.OrderedDict(sorted(port_mkt_values.items()))
+                    for k, v in port_mkt_values.items():
+                        port_mkt_values[k] = round(sum(v) / len(v), 3)
+                    data.append({'portfolio': portfolio.name,
+                                 'label': port_mkt_values.keys(),
+                                 'series': port_mkt_values.values()})
+            except Exception as e:
+                LOGGER.error("Error {} occurred while getting holding summary\
+                line graph data!".format(e))
         return Response(data, status=200)
 
 
@@ -982,7 +1045,6 @@ class PortfolioFundData(APIView):
             data.append(temp_dict)
         final_data = []
         for dict in data:
-            print("====================",dict)
             security_id = dict.pop('security_id')
             details = list(itertools.zip_longest(*dict.values()))
             for portfolio_data in details:
