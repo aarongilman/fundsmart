@@ -58,10 +58,7 @@ export class FundComponent implements OnInit {
             () => {
                 this.router.navigate(['/home']);
                 portfolioList.length = 0;
-                this.sortlist.resetHoldingDetails();
-                this.sortlist.hlist$.subscribe(f => {
-                    this.portfolioDetailList = f;
-                });
+
             });
     }
 
@@ -118,7 +115,7 @@ export class FundComponent implements OnInit {
         this.owner_1 = '';
         this.owner_2 = '';
         this.type = '';
-        this.marginal_tax_range = '';
+        this.marginal_tax_range = null;
         this.location = '';
     }
 
@@ -149,7 +146,7 @@ export class FundComponent implements OnInit {
         this.owner_1 = '';
         this.owner_2 = '';
         this.type = '';
-        this.marginal_tax_range = '';
+        this.marginal_tax_range = null;
         this.location = '';
         if (reason === ModalDismissReasons.ESC) {
             return 'by pressing ESC';

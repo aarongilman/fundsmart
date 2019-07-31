@@ -9,9 +9,9 @@ import { holdindDetail } from './holding-details/holdingDetail';
 })
 
 export class ServercommunicationService {
-    // api_link = 'http://3.16.111.80/';
+    api_link = 'http://3.16.111.80/';
     // api_link = 'http://localhost:8000/';
-    api_link = 'http://192.168.100.111:8000/';
+    // api_link = 'http://192.168.100.111:8000/';
     // api_link = 'http://127.0.0.1:8000/';
     socialuser: SocialUser;
     currentuser: any;
@@ -167,14 +167,14 @@ export class ServercommunicationService {
         }
     }
 
-    add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby) {
+    add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby, date) {
         const body = {
             quantity: fquantity,
             portfolio: userportfolio,
             security: selectedsecurity,
             created_by: createdby
         };
-        return this.http.post(this.api_link + 'api/portfolio_fund/', body,
+        return this.http.post(this.api_link + 'api/portfolio_fund/?date=' + date, body,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 

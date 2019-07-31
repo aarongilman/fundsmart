@@ -7,7 +7,7 @@ import { IntercomponentCommunicationService } from '../intercomponent-communicat
 import { HoldingdetailsSortService } from './holdingdetails-sort.service';
 import { DecimalPipe } from '@angular/common';
 import { SortableDirective, SortEvent } from '../sortable.directive';
-import { ModalDismissReasons, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalDismissReasons, NgbModal, NgbCalendar } from '@ng-bootstrap/ng-bootstrap';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { securitylist } from '../securitylist';
 import { security } from '../security';
@@ -73,7 +73,8 @@ export class HoldingDetailsComponent implements OnInit {
         private modalService: NgbModal,
         private router: Router,
         private toastr: ToastrService,
-        private interconn: IntercomponentCommunicationService
+        private interconn: IntercomponentCommunicationService,
+        private calendar: NgbCalendar,
     ) {
         holdingList.length = 0;
         this.interconn.componentMethodCalled$.subscribe(
@@ -99,13 +100,7 @@ export class HoldingDetailsComponent implements OnInit {
             () => {
                 this.router.navigate(['/home']);
                 holdingList.length = 0;
-                this.sortlist.resetHoldingDetails();
-                this.sortlist.hlist$.subscribe(f => {
-                    this.HoldingDetailList = f;
-                });
-                this.sortlist.total$.subscribe(total => {
-                    this.total = total;
-                });
+                
             });
     }
 
@@ -195,10 +190,17 @@ export class HoldingDetailsComponent implements OnInit {
         if (this.fundForm.invalid) {
             return;
         }
+        let today = this.calendar.getToday();
+        var date;
+        if (today.month < 10) {
+            date = today.year + '-0' + today.month + '-' + today.day;
+        } else {
+            date = today.year + '-' + today.month + '-' + today.day;
+        }
         let portfolioid = this.portfoliolist.find(p => p.name === this.fundForm.controls['selectedPortfolio'].value).id;
         this.userservice.add_portfolio_fund(this.fundForm.controls['quantity'].value,
             portfolioid,
-            this.selectboxsecurityid, this.userservice.currentuser.id).toPromise().then(
+            this.selectboxsecurityid, this.userservice.currentuser.id, date).toPromise().then(
                 res => {
                     let mysecurity: security;
                     mysecurity = securitylist.find(x => x.id === res['security']);
@@ -338,6 +340,7 @@ export class HoldingDetailsComponent implements OnInit {
             this.userservice.get(`api/holding_detail/?portfolio_ids=${this.serchportfolio}`).toPromise().then(
                 mtdata => {
                     holdingList.length = 0;
+                    // tslint:disable-next-line: forin
                     for (var obj in mtdata) {
                         holdingList.push(mtdata[obj]);
                     }

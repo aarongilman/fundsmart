@@ -116,7 +116,7 @@ export class FundcreatesortService {
 
         // 2. filter
 
-        fundlist = fundlist.filter(fund => matches(fund, searchTerm, this.pipe));
+        fundlist = fundlist.filter(fund => matches(fund, searchTerm.toLowerCase(), this.pipe));
         const total = fundlist.length;
 
 

@@ -272,11 +272,17 @@ export class FundCreateComponent implements OnInit {
 
     updatefundquantity(item) {
         if (item.id === -1) {
+            var date;
+            if (this.selectedDate.month < 10) {
+                date = this.selectedDate.year + '-0' + this.selectedDate.month + '-' + this.selectedDate.day;
+            } else {
+                date = this.selectedDate.year + '-' + this.selectedDate.month + '-' + this.selectedDate.day;
+            }
             this.userService.add_portfolio_fund(
                 item.quantity,
                 item.portfolio,
                 item.security,
-                this.currentUser['id']).toPromise().then(
+                this.currentUser['id'], date).toPromise().then(
                     data => {
                         let resfund = this.fundlist.find(x => x === item);
                         let index = this.fundlist.indexOf(resfund);
@@ -341,12 +347,12 @@ export class FundCreateComponent implements OnInit {
         apiresultfundlist.unshift(singlefund);
         this.securityinput[0] = '';
         this.fundservice.resetfunds();
-        this.fundservice.funds$.subscribe(list => {
-            this.fundlist = list;
-        });
-        this.fundservice.total$.subscribe(total => {
-            this.total = total;
-        });
+        // this.fundservice.funds$.subscribe(list => {
+        //     this.fundlist = list;
+        // });
+        // this.fundservice.total$.subscribe(total => {
+        //     this.total = total;
+        // });
     }
 
     resetfunds() {
@@ -601,9 +607,9 @@ export class FundCreateComponent implements OnInit {
                         const index = apiresultfundlist.findIndex(fund => fund.id === id.id);
                         apiresultfundlist.splice(index, 1);
                         this.fundservice.resetfunds();
-                        this.fundservice.funds$.subscribe(
-                            f => this.fundlist = f
-                        );
+                        // this.fundservice.funds$.subscribe(
+                        //     f => this.fundlist = f
+                        // );
                     });
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     Swal.fire(

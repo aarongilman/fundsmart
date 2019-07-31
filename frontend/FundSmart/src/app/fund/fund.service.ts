@@ -27,7 +27,7 @@ function sort(portfoliolist: portfolioDetails[], column: string, direction: stri
         return portfoliolist;
     } else {
         return [...portfoliolist].sort((a, b) => {
-            const res = compare(a[column], b[column]);
+            const res = compare(a[column].toLowerCase(), b[column].toLowerCase());
             return direction === 'asc' ? res : -res;
         });
     }
@@ -106,7 +106,7 @@ export class FundService {
         //1.sort
         let portfoliolist = sort(portfolioList, sortColumn, sortDirection);
         //2. Filter
-        portfoliolist = portfoliolist.filter(holding => matches(holding, searchTerm));
+        portfoliolist = portfoliolist.filter(holding => matches(holding, searchTerm.toLowerCase()));
         const total = portfoliolist.length;
 
         return of({ portfoliolist, total });

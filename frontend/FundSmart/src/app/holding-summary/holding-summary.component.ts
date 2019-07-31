@@ -80,10 +80,13 @@ export class HoldingSummaryComponent implements OnInit {
     country_data = [];
     country_type = 'GeoChart';
     country_columnNames = [];
-    country_options = {
-        legend:  'none'
-    };
 
+    country_options = {
+        legend: 'none',
+        // datalessRegionColor: '#898989',
+        colorAxis: { colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'] },
+
+    };
     constructor(
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
@@ -185,13 +188,14 @@ export class HoldingSummaryComponent implements OnInit {
                     }
                     if (names[0] !== 'Total') {
                         this.country_data.push([names[0], country[names[0]]]);
+                            // , ['US', 55795.100000000006], ['RU', 700], ['Brazil', 4]);
 
                     } else {
                         this.total2 = CountryObj;
                     }
                 });
             });
-            this.country_columnNames = ['Country', 'data'];
+            this.country_columnNames = ['Country', 'Market Value'];
         }
     }
 

@@ -540,12 +540,6 @@ export class HomeComponent implements OnInit {
         };
         portfoliofundlist.push(singlefund);
         this.portfolioservice.resetfunds();
-        this.portfolioservice.funds$.subscribe(f => {
-            this.funds$ = f;
-        });
-        this.portfolioservice.total$.subscribe(total => {
-            this.total$ = total;
-        });
         let pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
         this.portfolioservice.page = pageno;
     }
@@ -564,7 +558,8 @@ export class HomeComponent implements OnInit {
                     if (portfoliofundlist[id].security !== '') {
                         this.userservice.removedata(p1record);
                     }
-                    portfoliofundlist.splice(id, 1);
+                    let pid = portfoliofundlist.findIndex(fund => fund.p1record === p1record); 
+                    portfoliofundlist.splice(pid, 1);
                     if (portfoliofundlist.length === 0) {
                         let singlefund: portfolio_fund = {
                             security: '',
@@ -691,7 +686,9 @@ export class HomeComponent implements OnInit {
                 type: "success",
             });
         },
-            error => { });
+            error => {
+                this.toastrService.error('Some error Occured', 'Error');
+            });
     }
 
     getDismissReason(reason: any): string {
