@@ -9,8 +9,7 @@
                     <article class="holding-smmary-wrap">
                         <nav class="fund-tabs">
                             <ul class="d-flex align-items-center justify-content-start">
-                                <li class="active" routerLinkActive="active"
-                                    (click)='getFund()'>
+                                <li class="active" routerLinkActive="active" (click)='getFund()'>
                                     <svg viewBox="0 -48 464 464" xmlns="http://www.w3.org/2000/svg">
                                         <path d="m440 103.199219h16v32h-16zm0 0" />
                                         <path d="m256 351.199219h208v16h-208zm0 0" />
@@ -26,8 +25,7 @@
                                     </a>
                                 </li>
                                 <li routerLinkActive="active">
-                                    <a href="javascript:void(0);" data-tab="assestClass"
-                                        (click)="getAssets()">
+                                    <a href="javascript:void(0);" data-tab="assestClass" (click)="getAssets()">
                                         <svg viewBox="0 0 496 496" xmlns="http://www.w3.org/2000/svg">
                                             <path
                                                 d="m472 160h-8v-96h-384v-64h-40c-22.054688 0-40 17.945312-40 40v304c0 22.054688 17.945312 40 40 40h216v88c0 13.230469 10.769531 24 24 24h192c13.230469 0 24-10.769531 24-24v-288c0-13.230469-10.769531-24-24-24zm-456-120c0-13.230469 10.769531-24 24-24h24v288h-24c-9 0-17.3125 2.992188-24 8.015625zm24 328c-13.230469 0-24-10.769531-24-24s10.769531-24 24-24h40v-240h368v80h-165.519531c-13.433594-37.976562-49.726563-64-90.480469-64-52.9375 0-96 43.0625-96 96s43.0625 96 96 96c23.839844 0 46.558594-8.953125 64-24.550781v104.550781zm216-184h-56v-71.550781c30.152344 3.046875 56.28125 23.070312 66.929688 51.472656-6.570313 4.285156-10.929688 11.671875-10.929688 20.078125zm-72 87.59375c-40.367188-4.027344-72-38.1875-72-79.59375s31.632812-75.566406 72-79.59375zm16-71.59375h56v39.824219c-13.472656 17.992187-33.824219 29.449219-56 31.6875zm280 272c0 4.40625-3.59375 8-8 8h-192c-4.40625 0-8-3.59375-8-8v-288c0-4.40625 3.59375-8 8-8h192c4.40625 0 8 3.59375 8 8zm0 0" />
@@ -47,7 +45,7 @@
                                     </a>
                                 </li>
                                 <li routerLinkActive="active">
-                                    <a href="javascript:void(0);" data-tab="country">
+                                    <a href="javascript:void(0);" data-tab="country" (click)='getCountry()'>
                                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                             viewBox="0 0 31.416 31.416" style="enable-background:new 0 0 31.416 31.416;"
@@ -82,8 +80,7 @@
                                     </a>
                                 </li>
                                 <li routerLinkActive="active">
-                                    <a href="javascript:void(0);" data-tab="industry"
-                                        (click)='getIndustry()'>
+                                    <a href="javascript:void(0);" data-tab="industry" (click)='getIndustry()'>
                                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
                                             viewBox="0 0 30.986 30.986" style="enable-background:new 0 0 30.986 30.986;"
@@ -162,7 +159,8 @@
                                                     [width]="assets_barwidth_fund">
                                                 </google-chart>
                                             </div>
-                                            <div *ngIf="assets_bardata_fund?.length <= 0" style="text-align:center;color: red">
+                                            <div *ngIf="assets_bardata_fund?.length <= 0"
+                                                style="text-align:center;color: red">
                                                 Data not found
                                             </div>
                                         </div>
@@ -182,16 +180,24 @@
                                     </div>
                                     <div class="summary-content">
                                         <div class="country-map">
-                                            <img src="assets/img/country-map.png" alt="Country Map">
+                                            <div *ngIf="country_data && country_data?.length > 0">
+                                                <google-chart [type]="country_type" [data]="country_data"
+                                                    [columnNames]="country_columnNames" [options]="country_options">
+                                                </google-chart>
+                                            </div>
+                                            <div *ngIf="country_data?.length <= 0">
+                                                <p style="text-align: center; color:red">Data not found</p>
+                                            </div>
                                         </div>
+                                        <p></p>
                                         <ul>
                                             <div class="total-desc justify-content-between summary_total"
-                                                *ngFor="let data of country" style="margin-bottom:10px;">
+                                                *ngFor="let data of country_data" style="margin-bottom:10px;">
                                                 <div class="total-label" style="width: 200px">
-                                                    <p>{{data.name}}</p>
+                                                    <p>{{data[0]}}</p>
                                                 </div>
                                                 <div class="total-label" style="width: 200px">
-                                                    <p>{{data.value}}</p>
+                                                    <p>{{data[1]}}</p>
                                                 </div>
                                             </div>
                                             <div class="total-desc justify-content-between summary_total">
@@ -216,7 +222,8 @@
                                                 [height]="industry_barheight_fund" [width]="industry_barwidth_fund">
                                             </google-chart>
                                         </div>
-                                        <div *ngIf="industry_bardata_fund?.length <= 0" style="text-align:center;color: red">
+                                        <div *ngIf="industry_bardata_fund?.length <= 0"
+                                            style="text-align:center;color: red">
                                             Data not found
                                         </div>
                                         <div class="total-desc">

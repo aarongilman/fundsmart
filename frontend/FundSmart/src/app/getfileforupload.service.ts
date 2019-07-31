@@ -119,7 +119,7 @@ export class GetfileforuploadService {
                                         portfoliofundlist[portfilio].comparision1 = comp1;
                                         portfoliofundlist[portfilio].comparision2 = comp2;
                                         portfoliofundlist[portfilio].p1record = localData.length;
-                                        let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                        let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                         localData.push(format);
                                     } catch {
                                         let singlefund: portfolio_fund = {
@@ -133,7 +133,7 @@ export class GetfileforuploadService {
                                             comparision2: comp2
                                         };
                                         portfoliofundlist.push(singlefund);
-                                        let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                        let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                         localData.push(format);
                                     }
                                 }
@@ -195,7 +195,7 @@ export class GetfileforuploadService {
                                                 portfoliofundlist[portfilio].comparision1 = comp1;
                                                 portfoliofundlist[portfilio].comparision2 = comp2;
                                                 portfoliofundlist[portfilio].p1record = localData.length;
-                                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                                let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                                 localData.push(format);
                                             } catch {
                                                 let singlefund: portfolio_fund = {
@@ -209,7 +209,7 @@ export class GetfileforuploadService {
                                                     comparision2: comp2
                                                 };
                                                 portfoliofundlist.push(singlefund);
-                                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                                let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                                 localData.push(format);
                                             }
                                         }

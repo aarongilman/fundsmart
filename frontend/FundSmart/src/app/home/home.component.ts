@@ -212,8 +212,8 @@ export class HomeComponent implements OnInit {
                 this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
                 this.portfolioservice.total$.subscribe(f => {
                     this.total$ = f;
-                    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                    this.portfolioservice.page = pageno;
+                    // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                    // this.portfolioservice.page = pageno;
                 });
             });
         this.interconn.reloadmethodcalled$.subscribe(
@@ -545,9 +545,9 @@ export class HomeComponent implements OnInit {
         });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
-            let pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-            this.portfolioservice.page = pageno;
         });
+        let pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+        this.portfolioservice.page = pageno;
     }
 
     removeRow(p1record, id) {
@@ -753,7 +753,7 @@ export class HomeComponent implements OnInit {
                                 portfoliofundlist[portfilio].comparision1 = comp1;
                                 portfoliofundlist[portfilio].comparision2 = comp2;
                                 portfoliofundlist[portfilio].p1record = localData.length;
-                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                 localData.push(format);
                             } catch {
                                 let singlefund: portfolio_fund = {
@@ -767,7 +767,7 @@ export class HomeComponent implements OnInit {
                                     comparision2: comp2
                                 };
                                 portfoliofundlist.push(singlefund);
-                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                 localData.push(format);
                             }
                         }
@@ -781,10 +781,10 @@ export class HomeComponent implements OnInit {
                         this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
                         this.portfolioservice.total$.subscribe(f => {
                             this.total$ = f;
-                            pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                            this.portfolioservice.page = pageno;
                         });
                         this.setdataindeshboard();
+                        pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                        this.portfolioservice.page = pageno;
                     }
                     this.modalService.dismissAll('Upload Done');
                 };
@@ -886,7 +886,7 @@ export class HomeComponent implements OnInit {
     }
 
     createportfoliofundmethod(quantity, item: portfolio_fund, recordid, i) {
-     
+
         let localData = JSON.parse(localStorage.getItem('securityData'));
         if (localData === null) {
             localStorage.setItem('securityData', JSON.stringify([]));
@@ -964,7 +964,7 @@ export class HomeComponent implements OnInit {
                                         portfoliofundlist[portfilio].comparision1 = comp1;
                                         portfoliofundlist[portfilio].comparision2 = comp2;
                                         portfoliofundlist[portfilio].p1record = localData.length;
-                                        let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                        let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                         localData.push(format);
                                     } catch {
                                         let singlefund: portfolio_fund = {
@@ -978,7 +978,7 @@ export class HomeComponent implements OnInit {
                                             comparision2: comp2
                                         };
                                         portfoliofundlist.push(singlefund);
-                                        let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                        let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                         localData.push(format);
                                     }
                                 }
@@ -991,9 +991,9 @@ export class HomeComponent implements OnInit {
                                 this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
                                 this.portfolioservice.total$.subscribe(f => {
                                     this.total$ = f;
-                                    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                                    this.portfolioservice.page = pageno;
                                 });
+                                const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                                this.portfolioservice.page = pageno;
                                 this.setdataindeshboard();
                             }
                             this.modalService.dismissAll('File upload');
@@ -1083,7 +1083,7 @@ export class HomeComponent implements OnInit {
                                                 portfoliofundlist[portfilio].comparision1 = comp1;
                                                 portfoliofundlist[portfilio].comparision2 = comp2;
                                                 portfoliofundlist[portfilio].p1record = localData.length;
-                                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                                let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                                 localData.push(format);
                                             } catch {
                                                 let singlefund: portfolio_fund = {
@@ -1098,7 +1098,7 @@ export class HomeComponent implements OnInit {
                                                 };
                                                 portfoliofundlist.push(singlefund);
 
-                                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                                let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
 
                                                 localData.push(format);
                                             }
@@ -1112,10 +1112,9 @@ export class HomeComponent implements OnInit {
                                         this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
                                         this.portfolioservice.total$.subscribe(f => {
                                             this.total$ = f;
-                                            const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-
-                                            this.portfolioservice.page = pageno;
                                         });
+                                        const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                                        this.portfolioservice.page = pageno;
                                         this.setdataindeshboard();
                                     }
 

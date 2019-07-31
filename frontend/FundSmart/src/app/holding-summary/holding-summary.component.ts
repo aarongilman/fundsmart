@@ -77,6 +77,13 @@ export class HoldingSummaryComponent implements OnInit {
         enableInteractivity: true,
     };
 
+    country_data = [];
+    country_type = 'GeoChart';
+    country_columnNames = [];
+    country_options = {
+        legend:  'none'
+    };
+
     constructor(
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
@@ -88,7 +95,7 @@ export class HoldingSummaryComponent implements OnInit {
                 if (portfolioidSelect.length > 0) {
                     this.getHistoricalPerformance();
                     this.getFund();
-                    this.getCountry();
+                    // this.getCountry();
                     this.getLineGraph();
                 } else {
                     this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
@@ -106,7 +113,7 @@ export class HoldingSummaryComponent implements OnInit {
             if (portfolioidSelect.length > 0) {
                 this.getHistoricalPerformance();
                 this.getFund();
-                this.getCountry();
+                // this.getCountry();
                 this.getLineGraph();
             } else {
                 this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
@@ -177,12 +184,14 @@ export class HoldingSummaryComponent implements OnInit {
                         value: country[names[0]]
                     }
                     if (names[0] !== 'Total') {
-                        this.country.push(CountryObj);
+                        this.country_data.push([names[0], country[names[0]]]);
+
                     } else {
                         this.total2 = CountryObj;
                     }
                 });
             });
+            this.country_columnNames = ['Country', 'data'];
         }
     }
 
