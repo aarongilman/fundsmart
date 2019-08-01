@@ -19,6 +19,7 @@ import { securitylist } from '../securitylist';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 declare var Dropbox: Dropbox;
 
@@ -196,7 +197,8 @@ export class HomeComponent implements OnInit {
         private authService: AuthService,
         private formBuilder: FormBuilder,
         private toastrService: ToastrService,
-        public portfolioservice: PortfoliofundhelperService
+        public portfolioservice: PortfoliofundhelperService,
+        private spinner: NgxSpinnerService
     ) {
         this.portfolioservice.funds$.subscribe(f => {
             this.funds$ = JSON.parse(JSON.stringify(f))
@@ -208,12 +210,15 @@ export class HomeComponent implements OnInit {
             () => {
                 this.setdataindeshboard();
                 this.portfolioservice.resetfunds();
-                this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
+                this.portfolioservice.funds$.subscribe(f => {
+                    this.funds$ = JSON.parse(JSON.stringify(f))
+                });
                 this.portfolioservice.total$.subscribe(f => {
                     this.total$ = f;
-                    // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                    // this.portfolioservice.page = pageno;
                 });
+                const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                this.portfolioservice.page = pageno;
+                this.spinner.hide();
             });
         this.interconn.reloadmethodcalled$.subscribe(
             () => { }
@@ -924,7 +929,7 @@ export class HomeComponent implements OnInit {
         let url: any;
         var options: DropboxChooseOptions = {
             success: (files) => {
-                let that = this;
+                this.spinner.show();
                 for (const file of files) {
                     const name = file.name;
                     url = file.link;
@@ -996,7 +1001,8 @@ export class HomeComponent implements OnInit {
                                 this.portfolioservice.page = pageno;
                                 this.setdataindeshboard();
                             }
-                            this.modalService.dismissAll('File upload');
+                            this.modalService.dismissAll('File uploaded');
+                            this.spinner.hide();
                         };
                         fr.readAsArrayBuffer(myfile);
                     });
@@ -1032,7 +1038,6 @@ export class HomeComponent implements OnInit {
                 cancel: () => { resolve(null); },
                 error: (e) => { reject(e); }
             };
-
             OneDrive.open(odOptions);
         });
     }
@@ -1040,6 +1045,7 @@ export class HomeComponent implements OnInit {
     onedrivefileupload() {
         this.openOneDrivePicker().then(
             (result) => {
+                this.spinner.show();
                 if (result) {
                     for (const file of result.value) {
                         const name = file.name;
@@ -1051,7 +1057,6 @@ export class HomeComponent implements OnInit {
                                 const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
                                 let fr = new FileReader;
                                 fr.onload = (e) => {
-
                                     this.arrayBuffer = fr.result;
                                     let data = new Uint8Array(this.arrayBuffer);
                                     let arr = new Array();
@@ -1085,6 +1090,7 @@ export class HomeComponent implements OnInit {
                                                 portfoliofundlist[portfilio].p1record = localData.length;
                                                 let format = { 'recordId': localData.length, 'portfolio': port1.toString(), 'recid': null, 'COMPARISON1': comp1.toString(), 'COMPARISON2': comp2.toString(), 'securityId': security.id };
                                                 localData.push(format);
+
                                             } catch {
                                                 let singlefund: portfolio_fund = {
                                                     security: security.name,
@@ -1118,7 +1124,8 @@ export class HomeComponent implements OnInit {
                                         this.setdataindeshboard();
                                     }
 
-                                    this.modalService.dismissAll('File upload');
+                                    this.modalService.dismissAll('File uploaded');
+                                    this.spinner.hide();
                                 };
                                 fr.readAsArrayBuffer(myfile);
                             });
@@ -1129,7 +1136,7 @@ export class HomeComponent implements OnInit {
 
     drive_fileupload() {
         this.fileupload.onApiLoad("Dashboard");
-        this.modalService.dismissAll('File upload');
+        this.modalService.dismissAll('File uploaded');
     }
 
     onSort({ column, direction }: SortEvent) {
