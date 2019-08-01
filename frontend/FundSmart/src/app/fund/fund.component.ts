@@ -10,6 +10,7 @@ import { SortableDirective, SortEvent } from '../sortable.directive';
 import { FundService } from './fund.service';
 import { portfolioList } from './portfolioList';
 import { portfolioidSelect } from './portfolioid_select';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-fund',
@@ -48,10 +49,11 @@ export class FundComponent implements OnInit {
         private confirmationService: ConfirmationService,
         private router: Router,
         public sortlist: FundService,
-
+        private spinner: NgxSpinnerService
     ) {
         this.interconn.componentMethodCalled$.subscribe(
             () => {
+                this.spinner.show();
                 this.getFunds();
             });
         this.interconn.logoutcomponentMethodCalled$.subscribe(
@@ -65,10 +67,11 @@ export class FundComponent implements OnInit {
     ngOnInit() {
         this.interconn.titleSettermethod("Funds");
         if (this.userService.currentuser) {
+            this.spinner.show();
             this.getFunds();
         }
     }
-
+    
     onContextMenu(event: MouseEvent, item: Item) {
         event.preventDefault();
         this.contextMenuPosition.x = event.clientX + 'px';
@@ -76,7 +79,7 @@ export class FundComponent implements OnInit {
         this.contextMenu.menuData = { 'item': item };
         this.contextMenu.openMenu();
     }
-
+    
     getFunds() {
         this.userService.getUserPortfolio().toPromise().then(
             fundlist => {
@@ -94,7 +97,8 @@ export class FundComponent implements OnInit {
                 });
                 this.sortlist.resetHoldingDetails();
                 this.sortlist.hlist$.subscribe(f => {
-                    this.portfolioDetailList = f;
+                    this.portfolioDetailList = JSON.parse(JSON.stringify(f));
+                    this.spinner.hide();
                 });
             });
     }

@@ -5,6 +5,7 @@ import { ServercommunicationService } from '../servercommunication.service';
 import { AllocationData } from '../historicaldata';
 import { ToastrService } from 'ngx-toastr';
 import { portfolioidSelect } from '../fund/portfolioid_select';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-allocation-fund-analysis',
@@ -70,11 +71,13 @@ export class AllocationFundAnalysisComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         private userservice: ServercommunicationService,
         private router: Router,
-        private tostr: ToastrService
+        private tostr: ToastrService,
+        private spinner: NgxSpinnerService
     ) {
         this.interconn.componentMethodCalled$.toPromise().then(
             () => {
                 if (portfolioidSelect.length > 0) {
+                    this.spinner.show();
                     this.getCurrentAllocation();
                     this.getHistoricalPerformance();
                     this.getLinegraph();
@@ -92,6 +95,7 @@ export class AllocationFundAnalysisComponent implements OnInit {
             this.tostr.info('Please select portfolio id/ids from Fund page', 'Information');
         } else {
             if (this.userservice.currentuser) {
+                this.spinner.show();
                 this.getCurrentAllocation();
                 this.getHistoricalPerformance();
                 this.getLinegraph();
@@ -110,7 +114,10 @@ export class AllocationFundAnalysisComponent implements OnInit {
                             this.currentAllocationData.push([names[i], resultlist[names[i]]]);
                         }
                     });
+                    this.spinner.hide();
                 });
+        } else {
+            this.spinner.hide();
         }
     }
 
@@ -188,8 +195,12 @@ export class AllocationFundAnalysisComponent implements OnInit {
                         }
                     }
 
+
                 });
+        } else {
+            this.spinner.hide();
         }
+
     }
 
 }

@@ -38,6 +38,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { GoogleApiModule, NgGapiClientConfig, NG_GAPI_CONFIG } from 'ng-gapi';
 import { ToastrModule } from 'ngx-toastr';
 import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
+import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
@@ -114,6 +115,7 @@ export function provideConfig() {
         TooltipModule,
         NgSelectModule,
         ReactiveFormsModule,
+        NgxSpinnerModule,
         MatMenuModule,
         NgcCookieConsentModule.forRoot(cookieConfig),
         ToastrModule.forRoot(),

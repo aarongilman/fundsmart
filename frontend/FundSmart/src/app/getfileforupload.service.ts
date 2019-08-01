@@ -7,6 +7,7 @@ import { securitylist } from './securitylist';
 import { portfoliofundlist } from './portfolio_fundlist';
 import { portfolio_fund } from './portfolio_fund';
 import Swal from 'sweetalert2';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 declare const google: any;
 
@@ -30,6 +31,7 @@ export class GetfileforuploadService {
         private http: HttpClient,
         private interconn: IntercomponentCommunicationService,
         private userservice: ServercommunicationService,
+        private spinner: NgxSpinnerService
     ) { }
 
     onApiLoad(page: string) {
@@ -81,6 +83,7 @@ export class GetfileforuploadService {
         let self = this;
         if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
             var doc = data[google.picker.Response.DOCUMENTS][0];
+            this.spinner.show();
             self.downloadGDriveFile(doc.id).toPromise().then(
                 filedata => {
                     const blob = new Blob([filedata], { type: doc.mimeType });
@@ -157,6 +160,7 @@ export class GetfileforuploadService {
                     }
                 },
                 error => {
+                    this.spinner.show();
                     self.exportGDrivefile(doc.id).toPromise().then(
                         filedata => {
                             const blob = new Blob([filedata], { type: doc.mimeType });
@@ -231,9 +235,13 @@ export class GetfileforuploadService {
                                         this.interconn.afterfileupload();
                                     });
                             }
+
                         },
-                        error => { });
+                        error => {
+                            this.spinner.hide();
+                        });
                 });
+
         }
     }
 
