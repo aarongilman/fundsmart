@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import 'rxjs/add/operator/filter';
 import { ToastrService } from 'ngx-toastr';
 import { portfolioidSelect } from '../fund/portfolioid_select';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-holding-details',
@@ -75,11 +76,13 @@ export class HoldingDetailsComponent implements OnInit {
         private toastr: ToastrService,
         private interconn: IntercomponentCommunicationService,
         private calendar: NgbCalendar,
+        private spinner: NgxSpinnerService
     ) {
         holdingList.length = 0;
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 holdingList.length = 0;
+                this.spinner.show();
                 this.getHoldingdetail();
                 this.userservice.getUserPortfolio().toPromise().then(
                     data => {
@@ -105,6 +108,7 @@ export class HoldingDetailsComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.spinner.show();
         this.fundForm = this.formBuilder.group({
             selectedPortfolio: new FormControl('', Validators.required),
             selectedSecurity: new FormControl('', Validators.required),
@@ -150,6 +154,7 @@ export class HoldingDetailsComponent implements OnInit {
     getHoldingdetail() {
         if (portfolioidSelect.length === 0) {
             this.toastr.info('Please select portfolio id/ids from Fund page', 'Information˝');
+            this.spinner.hide();
         } else {
             this.userservice.get(`api/holding_detail/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
                 mtdata => {
@@ -164,6 +169,7 @@ export class HoldingDetailsComponent implements OnInit {
                     });
                     this.sortlist.total$.subscribe(total => {
                         this.total = total;
+                        this.spinner.hide();
                     });
                 });
         };

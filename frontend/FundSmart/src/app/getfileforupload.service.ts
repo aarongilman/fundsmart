@@ -235,13 +235,11 @@ export class GetfileforuploadService {
                                         this.interconn.afterfileupload();
                                     });
                             }
-
                         },
                         error => {
                             this.spinner.hide();
                         });
                 });
-
         }
     }
 

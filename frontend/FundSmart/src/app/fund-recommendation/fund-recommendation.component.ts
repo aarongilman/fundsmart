@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { ToastrService } from 'ngx-toastr';
 import { portfolioidSelect } from '../fund/portfolioid_select';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-fund-recommendation',
@@ -55,7 +56,8 @@ export class FundRecommendationComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
         private route: Router,
-        private toastr: ToastrService
+        private toastr: ToastrService,
+        private spinner: NgxSpinnerService
     ) {
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
@@ -66,6 +68,7 @@ export class FundRecommendationComponent implements OnInit {
     ngOnInit() {
         if (portfolioidSelect.length > 0) {
             this.interconn.titleSettermethod('Fund Recommendation');
+            this.spinner.show();
             this.getHistoricalPerformance();
             this.getLinePlotChart();
             this.getPortfolioPerformance();
@@ -81,7 +84,6 @@ export class FundRecommendationComponent implements OnInit {
             historicalData.forEach(historical => {
                 const names = Object.keys(historical);
                 names.forEach((key, value) => {
-
                     const historicalObj = {
                         name: names[value],
                         value: historical[names[value]]
@@ -142,6 +144,7 @@ export class FundRecommendationComponent implements OnInit {
                             valuesCollection.push(parseFloat(iterator));
                         }
                         this.linedata.push(valuesCollection);
+                        this.spinner.hide();
                     }
                 }
             });

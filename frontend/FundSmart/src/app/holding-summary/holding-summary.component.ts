@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { ToastrService } from 'ngx-toastr';
 import { portfolioidSelect } from '../fund/portfolioid_select';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-holding-summary',
@@ -80,27 +81,27 @@ export class HoldingSummaryComponent implements OnInit {
     country_data = [];
     country_type = 'GeoChart';
     country_columnNames = [];
-
     country_options = {
         legend: 'none',
-        // datalessRegionColor: '#898989',
         colorAxis: { colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'] },
-
     };
+
     constructor(
         private interconn: IntercomponentCommunicationService,
         private service: ServercommunicationService,
         private route: Router,
-        private toastr: ToastrService
+        private toastr: ToastrService,
+        private spinner: NgxSpinnerService
     ) {
         this.interconn.componentMethodCalled$.toPromise().then(
             () => {
                 if (portfolioidSelect.length > 0) {
+                    this.spinner.show();
                     this.getHistoricalPerformance();
                     this.getFund();
-                    // this.getCountry();
                     this.getLineGraph();
                 } else {
+                    this.spinner.hide();
                     this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
                 }
             });
@@ -114,13 +115,16 @@ export class HoldingSummaryComponent implements OnInit {
         this.interconn.titleSettermethod("Holding Summary");
         if (this.service.currentuser && this.bardata_fund.length === 0) {
             if (portfolioidSelect.length > 0) {
+                this.spinner.show();
                 this.getHistoricalPerformance();
                 this.getFund();
-                // this.getCountry();
                 this.getLineGraph();
             } else {
                 this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
             }
+        }
+        else {
+            this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
         }
     }
 
@@ -145,6 +149,7 @@ export class HoldingSummaryComponent implements OnInit {
                         }
                     });
                     this.barcolumnname = ['Fund', 'value', { role: 'style' }];
+                    this.spinner.hide();
                 });
             }
         }
@@ -152,8 +157,8 @@ export class HoldingSummaryComponent implements OnInit {
 
     getAssets() {
         if (portfolioidSelect.length > 0) {
-
             if (this.assets_bardata_fund.length === 0) {
+                this.spinner.show();
                 this.service.holding_summary_asset(portfolioidSelect).toPromise().then((resultData: any) => {
                     let i = 0;
                     resultData.forEach(result => {
@@ -170,8 +175,9 @@ export class HoldingSummaryComponent implements OnInit {
                             this.total1 = ResultObj;
                         }
                     });
+                    this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
+                    this.spinner.hide();
                 });
-                this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
             }
         }
     }
@@ -179,6 +185,7 @@ export class HoldingSummaryComponent implements OnInit {
     getCountry() {
         if (portfolioidSelect.length > 0) {
             if (this.country_data.length === 0) {
+                this.spinner.show();
                 this.service.holding_summary_country(portfolioidSelect).toPromise().then((countryData: any) => {
                     countryData.forEach(country => {
                         const names = Object.keys(country);
@@ -192,16 +199,17 @@ export class HoldingSummaryComponent implements OnInit {
                             this.total2 = CountryObj;
                         }
                     });
+                    this.country_columnNames = ['Country', 'Market Value'];
+                    this.spinner.hide();
                 });
-                this.country_columnNames = ['Country', 'Market Value'];
             }
         }
     }
 
     getIndustry() {
         if (portfolioidSelect.length > 0) {
-
             if (this.industry_bardata_fund.length === 0) {
+                this.spinner.show();
                 this.service.holding_summary_industry(portfolioidSelect).toPromise().then((industryData: any) => {
                     let i = 0;
                     industryData.forEach(industry => {
@@ -219,6 +227,7 @@ export class HoldingSummaryComponent implements OnInit {
                         }
                     });
                     this.industryColumns = ['Type', 'Total', { role: 'style' }];
+                    this.spinner.hide();
                 });
             }
         }
@@ -282,6 +291,7 @@ export class HoldingSummaryComponent implements OnInit {
                             valuesCollection.push(parseFloat(iterator));
                         }
                         this.linedata.push(valuesCollection);
+                        this.spinner.hide();
                     }
                 }
             });
