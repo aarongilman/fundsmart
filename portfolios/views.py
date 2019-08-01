@@ -798,6 +798,7 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
                     id_value__in=list(existing_fund_ids) +
                                  list(recommended_fund_ids))
                 existing_funds_market_values = []
+                temp_list = []
                 for fund in existing_funds:
                     fund_detail = fund_details.filter(fund_id=fund.security.id_value)
                     fx_rate_obj = fx_rate.filter(date=date.today(),
@@ -818,25 +819,36 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
                         market_value = float(quantity) * float(price_value)
                     else:
                         market_value = None
+                    temp_list.append({'market_value': market_value,
+                                      'annual_expense': fund_detail[
+                                          0].fund_exp_ratio,
+                                      '1-year': fund_detail[0].return_1_year,
+                                      '3-year': fund_detail[0].return_3_year,
+                                      '5-year': fund_detail[0].return_5_year})
                     existing_funds_market_values.append(market_value)
-
-                portfolio_annual_expense = 0
-                for value in filter(None, existing_funds_market_values):
-                    portfolio_annual_expense +=\
-                        (value/sum(filter(None, existing_funds_market_values))) * value
-                existing_fund_details = fund_details.filter(fund_id__in=
-                                                            existing_fund_ids)
-                portfolio_1_year = [float(x) for x in existing_fund_details.
-                                    values_list('return_1_year', flat=True)]
-                portfolio_avg_1_year = sum(portfolio_1_year) / len(portfolio_1_year)
-
-                portfolio_3_year = [float(x) for x in existing_fund_details.
-                                    values_list('return_3_year', flat=True)]
-                portfolio_avg_3_year = sum(portfolio_3_year) / len(portfolio_3_year)
-
-                portfolio_5_year = [float(x) for x in existing_fund_details.
-                                    values_list('return_5_year', flat=True)]
-                portfolio_avg_5_year = sum(portfolio_5_year) / len(portfolio_5_year)
+                total_mkt_value = sum(filter(None, existing_funds_market_values))
+                existing_annual_expense = 0
+                existing_return_1_year = 0
+                existing_return_3_year = 0
+                existing_return_5_year = 0
+                for item in temp_list:
+                    if item.get('market_value'):
+                        annual_expense = (item.get('market_value') /
+                                          total_mkt_value
+                                          )*float(item.get('annual_expense'))
+                        existing_annual_expense = existing_annual_expense + annual_expense
+                        return_1_year = (item.get('market_value') /
+                                         total_mkt_value
+                                         )*float(item.get('1-year'))
+                        existing_return_1_year = existing_return_1_year + return_1_year
+                        return_3_year = (item.get('market_value') /
+                                         total_mkt_value
+                                         )*float(item.get('3-year'))
+                        existing_return_3_year = existing_return_3_year + return_3_year
+                        return_5_year = (item.get('market_value') /
+                                         total_mkt_value
+                                         )*float(item.get('5-year'))
+                        existing_return_5_year = existing_return_5_year + return_5_year
                 recommended_annual_exp = [float(x) for x in recommended_funds.
                                           values_list('fund_exp_ratio', flat=True)]
                 recommended_avg_annual_exp = \
@@ -854,24 +866,24 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
                 recommended_avg_5_year = sum(recommended_5_year) / len(recommended_5_year)
                 data.append(
                     {"existing":
-                         {'annual_expense': round(portfolio_annual_expense, 2),
-                          '1-year': round(portfolio_avg_1_year, 2),
-                          '3-year': round(portfolio_avg_3_year, 2),
-                          '5-year': round(portfolio_avg_5_year, 2)},
+                         {'annual_expense': round(existing_annual_expense, 2),
+                          '1-year': round(existing_return_1_year, 2),
+                          '3-year': round(existing_return_3_year, 2),
+                          '5-year': round(existing_return_5_year, 2)},
                      "recommended":
                          {'annual_expense': round(recommended_avg_annual_exp, 2),
                           '1-year': round(recommended_avg_1_year, 2),
                           '3-year': round(recommended_avg_3_year, 2),
                           '5-year': round(recommended_avg_5_year, 2)},
                      "difference":
-                         {'annual_expense': round(portfolio_annual_expense -
-                                                  recommended_avg_annual_exp, 2),
+                         {'annual_expense': round(existing_annual_expense, 2) -
+                                            round(recommended_avg_annual_exp, 2),
                           '1-year':
-                              round(portfolio_avg_1_year - recommended_avg_1_year, 2),
+                              round(existing_return_1_year - recommended_avg_1_year, 2),
                           '3-year':
-                              round(portfolio_avg_3_year - recommended_avg_3_year, 2),
+                              round(existing_return_3_year - recommended_avg_3_year, 2),
                           '5-year':
-                              round(portfolio_avg_5_year - recommended_avg_5_year, 2)
+                              round(existing_return_5_year - recommended_avg_5_year, 2)
                          }
                     })
         return Response(data, status=200)
