@@ -198,9 +198,8 @@ export class HomeComponent implements OnInit {
         private toastrService: ToastrService,
         public portfolioservice: PortfoliofundhelperService
     ) {
-
         this.portfolioservice.funds$.subscribe(f => {
-            this.funds$ = f;
+            this.funds$ = JSON.parse(JSON.stringify(f))
         });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
@@ -209,7 +208,7 @@ export class HomeComponent implements OnInit {
             () => {
                 this.setdataindeshboard();
                 this.portfolioservice.resetfunds();
-                this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+                this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
                 this.portfolioservice.total$.subscribe(f => {
                     this.total$ = f;
                     // const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
@@ -538,9 +537,9 @@ export class HomeComponent implements OnInit {
             comparision1: '',
             comparision2: ''
         };
-        portfoliofundlist.push(singlefund);
+        portfoliofundlist.push(singlefund)
         this.portfolioservice.resetfunds();
-        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+        this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
         });
@@ -564,21 +563,21 @@ export class HomeComponent implements OnInit {
                     }
                     let pid = portfoliofundlist.findIndex(fund => fund.p1record === p1record);
                     portfoliofundlist.splice(pid, 1);
-                    // if (portfoliofundlist.length === 0) {
-                    //     let singlefund: portfolio_fund = {
-                    //         security: '',
-                    //         security_id: -1,
-                    //         p1record: null,
-                    //         p2record: null,
-                    //         p3record: null,
-                    //         yourPortfolio: '',
-                    //         comparision1: '',
-                    //         comparision2: ''
-                    //     };
-                    // portfoliofundlist.push(singlefund);
-                    // }
+                    if (portfoliofundlist.length === 0) {
+                        let singlefund: portfolio_fund = {
+                            security: '',
+                            security_id: -1,
+                            p1record: null,
+                            p2record: null,
+                            p3record: null,
+                            yourPortfolio: '',
+                            comparision1: '',
+                            comparision2: ''
+                        };
+                        portfoliofundlist.push(singlefund);
+                    }
                     this.portfolioservice.resetfunds();
-                    this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+                    this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
                     this.portfolioservice.total$.subscribe(total => {
                         this.total$ = total;
                     });
@@ -648,7 +647,7 @@ export class HomeComponent implements OnInit {
         });
         this.portfolioservice.resetfunds();
         this.portfolioservice.funds$.subscribe(f => {
-            this.funds$ = f;
+            this.funds$ = JSON.parse(JSON.stringify(f))
         });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
@@ -779,7 +778,7 @@ export class HomeComponent implements OnInit {
                         localStorage.setItem('securityData', JSON.stringify(localData));
                         let pageno;
                         this.portfolioservice.resetfunds();
-                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
                         this.portfolioservice.total$.subscribe(f => {
                             this.total$ = f;
                         });
@@ -989,7 +988,7 @@ export class HomeComponent implements OnInit {
                             } else {
                                 localStorage.setItem('securityData', JSON.stringify(localData));
                                 this.portfolioservice.resetfunds();
-                                this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+                                this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
                                 this.portfolioservice.total$.subscribe(f => {
                                     this.total$ = f;
                                 });
@@ -1110,7 +1109,7 @@ export class HomeComponent implements OnInit {
                                     } else {
                                         localStorage.setItem('securityData', JSON.stringify(localData));
                                         this.portfolioservice.resetfunds();
-                                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+                                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
                                         this.portfolioservice.total$.subscribe(f => {
                                             this.total$ = f;
                                         });
