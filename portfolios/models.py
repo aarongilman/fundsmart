@@ -10,7 +10,7 @@ class Price(models.Model):
     """Price model class"""
     date = models.DateField()
     id_value = models.CharField(max_length=50)
-    price = models.DecimalField(max_digits=7, decimal_places=3)
+    price = models.DecimalField(max_digits=21, decimal_places=10)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -92,7 +92,7 @@ class Portfolio(models.Model):
     owner_1 = models.CharField(max_length=100, null=True, blank=True)
     owner_2 = models.CharField(max_length=100, null=True, blank=True)
     type = models.CharField(max_length=100, null=True, blank=True)
-    marginal_tax_range = models.DecimalField(max_digits=7, decimal_places=3,
+    marginal_tax_range = models.DecimalField(max_digits=10, decimal_places=3,
                                              null=True, blank=True)
     location = models.CharField(max_length=80, null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE,

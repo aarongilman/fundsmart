@@ -57,6 +57,13 @@ class SecurityAdmin(admin.ModelAdmin):
         return render(request, "portfolios/csv_form.html", {'form': form})
 
 
+def chunks(l, n):
+    # For item i in a range that is a length of l,
+    for i in range(0, len(l), n):
+        # Create an index range for l of n items:
+        yield l[i:i+n]
+
+
 @admin.register(Price)
 class PriceAdmin(admin.ModelAdmin):
 
@@ -79,11 +86,13 @@ class PriceAdmin(admin.ModelAdmin):
                     objects.append(
                         Price(date=row[0].value, id_value=row[1].value,
                               price=row[2].value, created_by=user))
-                Price.objects.bulk_create(objects, ignore_conflicts=True)
+                objects = list(chunks(objects, 50000))
+                for obj in objects:
+                    Price.objects.bulk_create(obj, ignore_conflicts=True)
                 self.message_user(request, _("Your file has been imported"))
             except Exception as e:
                 logger.error(
-                    'Error {} occurred while uploading securities'.format(e))
+                    'Error {} occurred while uploading Price data'.format(e))
                 self.message_user(request, _("Failed to import file"))
 
             return redirect(reverse('admin:portfolios_price_changelist'))
@@ -118,7 +127,7 @@ class FXRateAdmin(admin.ModelAdmin):
                 self.message_user(request, _("Your file has been imported"))
             except Exception as e:
                 logger.error(
-                    'Error {} occurred while uploading securities'.format(e))
+                    'Error {} occurred while uploading FXrate'.format(e))
                 self.message_user(request, _("Failed to import file"))
 
             return redirect(reverse('admin:portfolios_fxrate_changelist'))
@@ -157,7 +166,7 @@ class FundHoldingAdmin(admin.ModelAdmin):
                 self.message_user(request, _("Your file has been imported"))
             except Exception as e:
                 logger.error(
-                    'Error {} occurred while uploading securities'.format(e))
+                    'Error {} occurred while uploading fund holding'.format(e))
                 self.message_user(request, _("Failed to import file"))
 
             return redirect(reverse('admin:portfolios_fundholding_changelist'))
@@ -209,7 +218,7 @@ class FundDetailAdmin(admin.ModelAdmin):
                 self.message_user(request, _("Your file has been imported"))
             except Exception as e:
                 logger.error(
-                    'Error {} occurred while uploading securities'.format(e))
+                    'Error {} occurred while uploading fund details'.format(e))
                 self.message_user(request, _("Failed to import file"))
 
             return redirect(reverse('admin:portfolios_funddetail_changelist'))
