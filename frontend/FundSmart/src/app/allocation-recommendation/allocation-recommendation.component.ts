@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ServercommunicationService } from '../servercommunication.service';
 import { ToastrService } from 'ngx-toastr';
 import { portfolioidSelect } from '../fund/portfolioid_select';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
     selector: 'app-allocation-recommendation',
@@ -33,7 +34,8 @@ export class AllocationRecommendationComponent implements OnInit {
         private interconn: IntercomponentCommunicationService,
         private router: Router,
         private userservice: ServercommunicationService,
-        private toastr: ToastrService
+        private toastr: ToastrService,
+        private spinner: NgxSpinnerService
     ) {
         this.interconn.logoutcomponentMethodCalled$.toPromise().then(
             () => {
@@ -43,6 +45,7 @@ export class AllocationRecommendationComponent implements OnInit {
 
     ngOnInit() {
         this.interconn.titleSettermethod('Allocation Recomendation');
+        this.spinner.show();
         this.getCurrentAllocation();
     }
 
@@ -56,10 +59,11 @@ export class AllocationRecommendationComponent implements OnInit {
                             this.currentAllocationData.push([names[i], resultlist[names[i]]]);
                         }
                     });
+                    this.spinner.hide();
                 });
         } else {
             this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
-
+            this.spinner.hide();            
         }
     }
 

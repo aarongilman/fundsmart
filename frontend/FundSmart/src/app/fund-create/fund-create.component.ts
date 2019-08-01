@@ -15,6 +15,7 @@ import { ToastrService } from 'ngx-toastr';
 import Swal from 'sweetalert2';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { portfolioidSelect } from '../fund/portfolioid_select';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 declare var Dropbox: Dropbox;
 
@@ -68,7 +69,6 @@ interface OneDriveOpenOptions {
     success(files: OneDriveResult): void;
     cancel(): void;
     error(e: any): void;
-
 }
 
 interface OneDrive {
@@ -133,19 +133,22 @@ export class FundCreateComponent implements OnInit {
         private modalService: NgbModal,
         private userService: ServercommunicationService,
         private interconn: IntercomponentCommunicationService,
-        public fundservice: FundcreatesortService,
-        public route: Router,
+        private fundservice: FundcreatesortService,
+        private route: Router,
         private calendar: NgbCalendar,
-        private toastr: ToastrService
+        private toastr: ToastrService,
+        private spinner: NgxSpinnerService
     ) {
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.setcurrent_user();
                 this.getUserPortfolios();
                 if (portfolioidSelect.length > 0) {
+                    this.spinner.show();
                     this.getSelectedPortfolio();
                 } else {
                     this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+                    this.spinner.hide();
                 }
             });
         this.interconn.logoutcomponentMethodCalled$.subscribe(
@@ -186,9 +189,11 @@ export class FundCreateComponent implements OnInit {
             apiresultfundlist.length = 0;
             this.getUserPortfolios();
             if (portfolioidSelect.length > 0) {
+                this.spinner.show();
                 this.getSelectedPortfolio();
             } else {
                 this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+                this.spinner.hide();
             }
         }
     }
@@ -225,19 +230,13 @@ export class FundCreateComponent implements OnInit {
         this.fundservice.resetfunds();
         this.fundservice.funds$.subscribe(
             fundlist => {
-                this.fundlist = fundlist;
+                this.fundlist = JSON.parse(JSON.stringify(fundlist));
             });
         this.fundservice.total$.subscribe(
             total => {
                 this.total = total;
             });
-    }
-
-    getfunds() {
-        this.userService.get_portfolio_fund().toPromise().then(
-            data => {
-                this.setfunds(data);
-            });
+        this.spinner.hide();
     }
 
     onDateSelect($event) {
@@ -307,6 +306,7 @@ export class FundCreateComponent implements OnInit {
     }
 
     getUserPortfolios() {
+        this.spinner.show();
         this.userService.getUserPortfolio().toPromise().then(data => {
             this.portfoliolist.length = 0;
             portfolioidSelect.forEach(element => {
@@ -314,6 +314,7 @@ export class FundCreateComponent implements OnInit {
                 this.portfoliolist.push(portfolio);
             });
         });
+
     }
 
     updateprice(fund) {
@@ -347,12 +348,7 @@ export class FundCreateComponent implements OnInit {
         apiresultfundlist.unshift(singlefund);
         this.securityinput[0] = '';
         this.fundservice.resetfunds();
-        // this.fundservice.funds$.subscribe(list => {
-        //     this.fundlist = list;
-        // });
-        // this.fundservice.total$.subscribe(total => {
-        //     this.total = total;
-        // });
+        this.selectedp = undefined;
     }
 
     resetfunds() {
@@ -373,7 +369,7 @@ export class FundCreateComponent implements OnInit {
         this.fundservice.resetfunds();
         this.fundservice.funds$.subscribe(
             fundlist => {
-                this.fundlist = fundlist;
+                this.fundlist = JSON.parse(JSON.stringify(fundlist));
             });
         this.fundservice.total$.subscribe(
             total => {
@@ -500,6 +496,7 @@ export class FundCreateComponent implements OnInit {
         let url: any;
         var options: DropboxChooseOptions = {
             success: (files) => {
+                this.spinner.show();
                 let that = this;
                 for (const file of files) {
                     const name = file.name;
@@ -513,8 +510,8 @@ export class FundCreateComponent implements OnInit {
                             resp => {
                                 this.getSelectedPortfolio();
                                 this.modalService.dismissAll('File uploaded');
-                            }
-                        );
+                                this.spinner.hide();
+                            });
                     }).catch(reason => { });
                 }
             },
@@ -551,6 +548,7 @@ export class FundCreateComponent implements OnInit {
     onedrivefileupload() {
         this.launchOneDrivePicker().then(
             (result) => {
+                this.spinner.show();
                 if (result) {
                     for (const file of result.value) {
                         const name = file.name;
@@ -566,9 +564,10 @@ export class FundCreateComponent implements OnInit {
                                     resp => {
                                         this.getSelectedPortfolio();
                                         this.modalService.dismissAll('File uploaded');
-                                        this.toastr.success('File uploaded sucessfuly', 'Success');
+                                        this.spinner.hide();
                                     },
                                     error => {
+                                        this.spinner.hide();
                                         this.toastr.error('Improper file,Could not upload file', 'Error');
                                     });
                             });
@@ -607,9 +606,6 @@ export class FundCreateComponent implements OnInit {
                         const index = apiresultfundlist.findIndex(fund => fund.id === id.id);
                         apiresultfundlist.splice(index, 1);
                         this.fundservice.resetfunds();
-                        // this.fundservice.funds$.subscribe(
-                        //     f => this.fundlist = f
-                        // );
                     });
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     Swal.fire(
@@ -619,9 +615,11 @@ export class FundCreateComponent implements OnInit {
                     );
                 }
             });
+        } else {
+            apiresultfundlist.shift();
+            this.fundservice.resetfunds();
         }
     }
-
 
     onApiLoad() {
         gapi.load('auth', { callback: this.onAuthApiLoad.bind(this) });
@@ -689,6 +687,7 @@ export class FundCreateComponent implements OnInit {
     pickerCallback(data) {
         if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
             var doc = data[google.picker.Response.DOCUMENTS][0];
+            this.spinner.show();
             this.downloadGDriveFile(doc.id).toPromise().then(
                 filedata => {
                     const blob = new Blob([filedata], { type: doc.mimeType });
@@ -697,30 +696,27 @@ export class FundCreateComponent implements OnInit {
                     formData.append('data_file', file);
                     this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(res => {
                         this.getSelectedPortfolio();
-                        this.toastr.success('File has beed uploaded successfully', 'Success');
-                        // this.getSelectedPortfolio();
                     });
-                }).catch(
-                    error => {
-                        this.exportGDrivefile(doc.id).toPromise().then(
-                            filedata => {
-                                const blob = new Blob([filedata], { type: doc.mimeType });
-                                const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
-                                const formData = new FormData();
-                                formData.append('data_file', file);
-                                this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
-                                    res => {
-                                        this.getSelectedPortfolio();
-                                        this.toastr.success('File has beed uploaded successfully', 'Success');
-
-                                    }).catch(
-                                        error => {
-                                            this.toastr.error('Some error occured, Your File can not be uploaded', 'Error');
-                                        });
-                            });
-                    });
+                },
+                error => {
+                    this.spinner.show();
+                    this.exportGDrivefile(doc.id).toPromise().then(
+                        filedata => {
+                            const blob = new Blob([filedata], { type: doc.mimeType });
+                            const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
+                            const formData = new FormData();
+                            formData.append('data_file', file);
+                            this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
+                                res => {
+                                    this.getSelectedPortfolio();
+                                },
+                                error => {
+                                    this.spinner.hide();
+                                    this.toastr.error('Some error occured, Your File can not be uploaded', 'Error');
+                                });
+                        });
+                });
         }
-
     }
 
 }

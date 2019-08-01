@@ -197,11 +197,13 @@ export class HomeComponent implements OnInit {
         private authService: AuthService,
         private formBuilder: FormBuilder,
         private toastrService: ToastrService,
-        public portfolioservice: PortfoliofundhelperService,
+        private portfolioservice: PortfoliofundhelperService,
         private spinner: NgxSpinnerService
     ) {
+        spinner.show();
         this.portfolioservice.funds$.subscribe(f => {
-            this.funds$ = JSON.parse(JSON.stringify(f))
+            this.funds$ = JSON.parse(JSON.stringify(f));
+            spinner.hide();
         });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
@@ -220,9 +222,6 @@ export class HomeComponent implements OnInit {
                 this.portfolioservice.page = pageno;
                 this.spinner.hide();
             });
-        this.interconn.reloadmethodcalled$.subscribe(
-            () => { }
-        );
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.currentUser = undefined;
@@ -260,6 +259,7 @@ export class HomeComponent implements OnInit {
 
     ngOnInit() {
         this.interconn.titleSettermethod("Multi Portfolio Analyzer");
+        this.spinner.show();
         this.setdataindeshboard();
         this.DynamicDisable[0] = false;
         this.userservice.get_historical_perfomance().toPromise().then(
@@ -352,7 +352,6 @@ export class HomeComponent implements OnInit {
                 );
             }
         });
-
     }
 
     createFundlist() {
