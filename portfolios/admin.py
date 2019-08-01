@@ -159,8 +159,8 @@ class FundHoldingAdmin(admin.ModelAdmin):
                         FundHolding(date=row[0].value, fund=row[1].value,
                                     fund_id=row[2].value, id_value=row[3].value,
                                     quantity=row[4].value,
-                                    market_value=row[5].value,
-                                    net_asset_percentage=row[6].value,
+                                    market_value=float(row[5].value) if row[5].value else None,
+                                    net_asset_percentage=float(row[6].value) if row[6].value else None,
                                     created_by=user))
                 FundHolding.objects.bulk_create(objects, ignore_conflicts=True)
                 self.message_user(request, _("Your file has been imported"))

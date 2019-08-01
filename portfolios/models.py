@@ -32,8 +32,10 @@ class FundHolding(models.Model):
     fund_id = models.CharField(max_length=50)
     id_value = models.CharField(max_length=50)
     quantity = models.IntegerField()
-    market_value = models.DecimalField(max_digits=21, decimal_places=15)
-    net_asset_percentage = models.DecimalField(max_digits=21, decimal_places=15)
+    market_value = models.DecimalField(max_digits=21, decimal_places=10,
+                                       null=True, blank=True)
+    net_asset_percentage = models.DecimalField(max_digits=21, decimal_places=10,
+                                               null=True, blank=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
