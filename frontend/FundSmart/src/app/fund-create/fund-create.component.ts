@@ -225,7 +225,7 @@ export class FundCreateComponent implements OnInit {
         this.fundservice.resetfunds();
         this.fundservice.funds$.subscribe(
             fundlist => {
-                this.fundlist = fundlist;
+                this.fundlist =JSON.parse(JSON.stringify(fundlist));
             });
         this.fundservice.total$.subscribe(
             total => {
@@ -373,7 +373,7 @@ export class FundCreateComponent implements OnInit {
         this.fundservice.resetfunds();
         this.fundservice.funds$.subscribe(
             fundlist => {
-                this.fundlist = fundlist;
+                this.fundlist = JSON.parse(JSON.stringify(fundlist));
             });
         this.fundservice.total$.subscribe(
             total => {

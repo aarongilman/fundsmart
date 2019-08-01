@@ -100,7 +100,7 @@ export class HoldingDetailsComponent implements OnInit {
             () => {
                 this.router.navigate(['/home']);
                 holdingList.length = 0;
-                
+
             });
     }
 
@@ -160,7 +160,7 @@ export class HoldingDetailsComponent implements OnInit {
                     }
                     this.sortlist.resetHoldingDetails();
                     this.sortlist.hlist$.subscribe(f => {
-                        this.HoldingDetailList = f;
+                        this.HoldingDetailList = JSON.parse(JSON.stringify(f));
                     });
                     this.sortlist.total$.subscribe(total => {
                         this.total = total;
@@ -346,7 +346,7 @@ export class HoldingDetailsComponent implements OnInit {
                     }
                     this.sortlist.resetHoldingDetails();
                     this.sortlist.hlist$.subscribe(f => {
-                        this.HoldingDetailList = f;
+                        this.HoldingDetailList = JSON.parse(JSON.stringify(f));
                     });
                     this.sortlist.total$.subscribe(total => {
                         this.total = total;
