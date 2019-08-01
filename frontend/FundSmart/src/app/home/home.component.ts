@@ -540,6 +540,10 @@ export class HomeComponent implements OnInit {
         };
         portfoliofundlist.push(singlefund);
         this.portfolioservice.resetfunds();
+        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+        this.portfolioservice.total$.subscribe(total => {
+            this.total$ = total;
+        });
         let pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
         this.portfolioservice.page = pageno;
     }
@@ -558,21 +562,21 @@ export class HomeComponent implements OnInit {
                     if (portfoliofundlist[id].security !== '') {
                         this.userservice.removedata(p1record);
                     }
-                    let pid = portfoliofundlist.findIndex(fund => fund.p1record === p1record); 
+                    let pid = portfoliofundlist.findIndex(fund => fund.p1record === p1record);
                     portfoliofundlist.splice(pid, 1);
-                    if (portfoliofundlist.length === 0) {
-                        let singlefund: portfolio_fund = {
-                            security: '',
-                            security_id: -1,
-                            p1record: null,
-                            p2record: null,
-                            p3record: null,
-                            yourPortfolio: '',
-                            comparision1: '',
-                            comparision2: ''
-                        };
-                        portfoliofundlist.push(singlefund);
-                    }
+                    // if (portfoliofundlist.length === 0) {
+                    //     let singlefund: portfolio_fund = {
+                    //         security: '',
+                    //         security_id: -1,
+                    //         p1record: null,
+                    //         p2record: null,
+                    //         p3record: null,
+                    //         yourPortfolio: '',
+                    //         comparision1: '',
+                    //         comparision2: ''
+                    //     };
+                    // portfoliofundlist.push(singlefund);
+                    // }
                     this.portfolioservice.resetfunds();
                     this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
                     this.portfolioservice.total$.subscribe(total => {

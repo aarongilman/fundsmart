@@ -3,15 +3,16 @@ import { HttpClient, HttpHeaders, } from '@angular/common/http';
 import { SocialUser } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
 import { holdindDetail } from './holding-details/holdingDetail';
+import { portfolioidSelect } from './fund/portfolioid_select';
 
 @Injectable({
     providedIn: 'root'
 })
 
 export class ServercommunicationService {
-    api_link = 'http://3.16.111.80/';
+    // api_link = 'http://3.16.111.80/';
     // api_link = 'http://localhost:8000/';
-    // api_link = 'http://192.168.100.111:8000/';
+    api_link = 'http://192.168.100.111:8000/';
     // api_link = 'http://127.0.0.1:8000/';
     socialuser: SocialUser;
     currentuser: any;
@@ -198,6 +199,7 @@ export class ServercommunicationService {
                 data => {
                     this.userkey = null;
                     this.currentuser = undefined;
+                    portfolioidSelect.length = 0;
                     this.interconn.afterlogout();
                 });
     }

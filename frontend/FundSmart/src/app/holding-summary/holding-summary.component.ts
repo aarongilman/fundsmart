@@ -178,24 +178,23 @@ export class HoldingSummaryComponent implements OnInit {
 
     getCountry() {
         if (portfolioidSelect.length > 0) {
-
-            this.service.holding_summary_country(portfolioidSelect).toPromise().then((countryData: any) => {
-                countryData.forEach(country => {
-                    const names = Object.keys(country);
-                    const CountryObj = {
-                        name: names[0],
-                        value: country[names[0]]
-                    }
-                    if (names[0] !== 'Total') {
-                        this.country_data.push([names[0], country[names[0]]]);
-                            // , ['US', 55795.100000000006], ['RU', 700], ['Brazil', 4]);
-
-                    } else {
-                        this.total2 = CountryObj;
-                    }
+            if (this.country_data.length === 0) {
+                this.service.holding_summary_country(portfolioidSelect).toPromise().then((countryData: any) => {
+                    countryData.forEach(country => {
+                        const names = Object.keys(country);
+                        const CountryObj = {
+                            name: names[0],
+                            value: country[names[0]]
+                        }
+                        if (names[0] !== 'Total') {
+                            this.country_data.push([names[0], country[names[0]]]);
+                        } else {
+                            this.total2 = CountryObj;
+                        }
+                    });
                 });
-            });
-            this.country_columnNames = ['Country', 'Market Value'];
+                this.country_columnNames = ['Country', 'Market Value'];
+            }
         }
     }
 
