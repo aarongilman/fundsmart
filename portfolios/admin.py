@@ -78,7 +78,7 @@ class PriceAdmin(admin.ModelAdmin):
         if request.method == "POST":
             user = User.objects.get(username=request.user)
             data_file = request.FILES["data_file"]
-            wb = openpyxl.load_workbook(data_file, data_only=True)
+            wb = openpyxl.load_workbook(data_file, data_only=True, read_only=True)
             worksheet = wb.active
             objects = []
             try:
