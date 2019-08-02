@@ -39,6 +39,7 @@ import { GoogleApiModule, NgGapiClientConfig, NG_GAPI_CONFIG } from 'ng-gapi';
 import { ToastrModule } from 'ngx-toastr';
 import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
 import { NgxSpinnerModule } from 'ngx-spinner';
+import { DataTablesModule } from 'angular-datatables';
 
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
@@ -117,6 +118,7 @@ export function provideConfig() {
         ReactiveFormsModule,
         NgxSpinnerModule,
         MatMenuModule,
+        DataTablesModule,
         NgcCookieConsentModule.forRoot(cookieConfig),
         ToastrModule.forRoot(),
         SocialLoginModule,
