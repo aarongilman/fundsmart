@@ -247,7 +247,7 @@ export class HomeComponent implements OnInit {
                     securityobj.asset_type = datasecuritylist[obj]['asset_type'];
                     securitylist.push(securityobj);
                 }
-                if (this.tableData != null) {
+                if (this.tableData != null || this.tableData.length !== 0) {
                     this.setfunds(this.tableData);
                     this.setdataindeshboard();
                 } else {
@@ -617,7 +617,7 @@ export class HomeComponent implements OnInit {
                 return;
             }
             this.userservice.doRegistration(JSON.stringify(this.registeruserForm.value)).toPromise().then(data => {
-                localStorage.setItem('authkey', data['key']);;
+                localStorage.setItem('authkey', data['key']);
                 this.showdetail_flag = false;
                 Swal.fire('Registration', 'Please verify your email from your mail box', 'success');
                 this.modalService.dismissAll('Registration Done');
@@ -664,7 +664,7 @@ export class HomeComponent implements OnInit {
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
         });
-
+        this.spinner.hide();
     }
 
     userlogin() {
