@@ -28,6 +28,9 @@
               "src/assets/css/style.css",
               "src/assets/css/responsive.css",
               "node_modules/ngx-toastr/toastr.css",
+              "node_modules/datatables.net-dt/css/jquery.dataTables.css",
+              "node_modules/datatables.net-bs/css/dataTables.bootstrap.css",
+              "node_modules/datatables.net-select-bs/css/select.bootstrap.css",
               "node_modules/primeng/resources/themes/nova-dark/theme.css",
               "node_modules/primeng/resources/primeng.min.css",
               "node_modules/cookieconsent/build/cookieconsent.min.css"
@@ -36,7 +39,9 @@
               "src/assets/js/jquery.min.js",
               "src/assets/js/perfect-scrollbar.min.js",
               "src/assets/js/custom.js",
-              "node_modules/cookieconsent/build/cookieconsent.min.js"
+              "node_modules/datatables.net/js/jquery.dataTables.js",
+              "node_modules/cookieconsent/build/cookieconsent.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.js"
             ],
             "es5BrowserSupport": true
           },

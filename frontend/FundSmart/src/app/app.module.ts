@@ -6,6 +6,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { CommonModule } from '@angular/common';
 import { AppComponent } from './app.component';
 import { NgModule } from '@angular/core';
+import { DataTablesModule } from 'angular-datatables';
 
 import { AllocationRecommendationComponent } from './allocation-recommendation/allocation-recommendation.component';
 import { AllocationFundAnalysisComponent } from './allocation-fund-analysis/allocation-fund-analysis.component';
@@ -116,6 +117,7 @@ export function provideConfig() {
         NgSelectModule,
         ReactiveFormsModule,
         NgxSpinnerModule,
+        DataTablesModule,
         MatMenuModule,
         NgcCookieConsentModule.forRoot(cookieConfig),
         ToastrModule.forRoot(),
