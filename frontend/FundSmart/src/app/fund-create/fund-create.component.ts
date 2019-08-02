@@ -133,7 +133,7 @@ export class FundCreateComponent implements OnInit {
         private modalService: NgbModal,
         private userService: ServercommunicationService,
         private interconn: IntercomponentCommunicationService,
-        private fundservice: FundcreatesortService,
+        public fundservice: FundcreatesortService,
         private route: Router,
         private calendar: NgbCalendar,
         private toastr: ToastrService,
@@ -488,6 +488,8 @@ export class FundCreateComponent implements OnInit {
         } else {
             if (this.userService.currentuser !== undefined) {
                 this.toastr.error('Please select Portfolio id/ids from Fund Page.', 'No portfolio ids detected');
+            } else {
+                this.toastr.info('Please Login first');
             }
         }
     }

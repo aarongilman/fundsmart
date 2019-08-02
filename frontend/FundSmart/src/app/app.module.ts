@@ -47,7 +47,7 @@ import { TooltipModule } from 'primeng/tooltip';
 const cookieConfig: NgcCookieConsentConfig = {
     cookie: {
         // domain: 'localhost'
-        domain: 'http://ec2-3-16-111-80.us-east-2.compute.amazonaws.com'
+        domain: 'ec2-3-130-87-74.us-east-2.compute.amazonaws.com'
         // it is mandatory to set a domain, for cookies to work properly (see https://goo.gl/S2Hy2A)
     },
     palette: {

@@ -197,13 +197,12 @@ export class HomeComponent implements OnInit {
         private authService: AuthService,
         private formBuilder: FormBuilder,
         private toastrService: ToastrService,
-        private portfolioservice: PortfoliofundhelperService,
+        public portfolioservice: PortfoliofundhelperService,
         private spinner: NgxSpinnerService
     ) {
         spinner.show();
         this.portfolioservice.funds$.subscribe(f => {
             this.funds$ = JSON.parse(JSON.stringify(f));
-            spinner.hide();
         });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
@@ -213,7 +212,7 @@ export class HomeComponent implements OnInit {
                 this.setdataindeshboard();
                 this.portfolioservice.resetfunds();
                 this.portfolioservice.funds$.subscribe(f => {
-                    this.funds$ = JSON.parse(JSON.stringify(f))
+                    this.funds$ = JSON.parse(JSON.stringify(f));
                 });
                 this.portfolioservice.total$.subscribe(f => {
                     this.total$ = f;
@@ -227,6 +226,8 @@ export class HomeComponent implements OnInit {
                 this.currentUser = undefined;
             });
         this.tableData = JSON.parse(localStorage.getItem('securityData'));
+        console.log('table data', this.tableData);
+
         this.userservice.get_security().toPromise().then(
             datasecuritylist => {
                 securitylist.length = 0;
@@ -246,9 +247,11 @@ export class HomeComponent implements OnInit {
                     securityobj.asset_type = datasecuritylist[obj]['asset_type'];
                     securitylist.push(securityobj);
                 }
-                if (this.tableData) {
+                if (this.tableData != null) {
                     this.setfunds(this.tableData);
                     this.setdataindeshboard();
+                } else {
+                    this.spinner.hide();
                 }
             });
         this.interconn.componentMethodCalled$.subscribe(
@@ -317,6 +320,7 @@ export class HomeComponent implements OnInit {
             {
                 validator: MustMatch('password1', 'password2')
             });
+        this.spinner.hide();
     }
 
     resetfundlist() {
@@ -541,9 +545,9 @@ export class HomeComponent implements OnInit {
             comparision1: '',
             comparision2: ''
         };
-        portfoliofundlist.push(singlefund)
+        portfoliofundlist.push(singlefund);
         this.portfolioservice.resetfunds();
-        this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
+        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
         });
@@ -561,6 +565,7 @@ export class HomeComponent implements OnInit {
                 confirmButtonText: 'Yes, delete it!',
                 cancelButtonText: 'No, keep it'
             }).then((result) => {
+                this.spinner.show();
                 if (result.value) {
                     if (portfoliofundlist[id].security !== '') {
                         this.userservice.removedata(p1record);
@@ -581,7 +586,10 @@ export class HomeComponent implements OnInit {
                         portfoliofundlist.push(singlefund);
                     }
                     this.portfolioservice.resetfunds();
-                    this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
+                    this.portfolioservice.funds$.subscribe(f => {
+                        this.funds$ = JSON.parse(JSON.stringify(f));
+                        this.spinner.hide();
+                    });
                     this.portfolioservice.total$.subscribe(total => {
                         this.total$ = total;
                     });
@@ -651,11 +659,12 @@ export class HomeComponent implements OnInit {
         });
         this.portfolioservice.resetfunds();
         this.portfolioservice.funds$.subscribe(f => {
-            this.funds$ = JSON.parse(JSON.stringify(f))
+            this.funds$ = JSON.parse(JSON.stringify(f));
         });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
         });
+
     }
 
     userlogin() {
@@ -859,7 +868,9 @@ export class HomeComponent implements OnInit {
             return false;
         } else {
             var quantity;
-            const Tempportfoliofundlist = JSON.parse(JSON.stringify(portfoliofundlist));
+            const Tempportfoliofundlist = JSON.parse(JSON.stringify(this.funds$));
+            console.log(Tempportfoliofundlist);
+
             if (string1.match('portfolio')) {
                 if (item.yourPortfolio) {
                     quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
@@ -1114,7 +1125,7 @@ export class HomeComponent implements OnInit {
                                     } else {
                                         localStorage.setItem('securityData', JSON.stringify(localData));
                                         this.portfolioservice.resetfunds();
-                                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)) });
+                                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
                                         this.portfolioservice.total$.subscribe(f => {
                                             this.total$ = f;
                                         });

@@ -10,7 +10,7 @@ import { portfolioidSelect } from './fund/portfolioid_select';
 })
 
 export class ServercommunicationService {
-    // api_link = 'http://3.16.111.80/';
+    // api_link = 'http://3.130.87.74/';
     // api_link = 'http://localhost:8000/';
     api_link = 'http://192.168.100.111:8000/';
     // api_link = 'http://127.0.0.1:8000/';
@@ -343,16 +343,17 @@ export class ServercommunicationService {
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    addPortfolioFund(name, description, owner_1, owner_2, type, marginal_tax_range, location) {
+    addPortfolioFund(user: any) {
         const body = {
-            name: name,
-            description: description,
-            owner_1: owner_1,
-            owner_2: owner_2,
-            type: type,
-            marginal_tax_range: marginal_tax_range,
-            location: location,
+            name: user.name,
+            description: user.description,
+            owner_1: user.owner_1,
+            owner_2: user.owner_2,
+            type: user.type,
+            marginal_tax_range: user.marginal_tax_range,
+            location: user.location,
             created_by: this.currentuser.id,
+            updated_by: this.currentuser.id
         };
         return this.http.post(this.api_link + 'api/portfolio/',
             body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });

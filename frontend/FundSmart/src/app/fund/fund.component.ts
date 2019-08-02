@@ -11,6 +11,7 @@ import { FundService } from './fund.service';
 import { portfolioList } from './portfolioList';
 import { portfolioidSelect } from './portfolioid_select';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-fund',
@@ -25,21 +26,14 @@ export class FundComponent implements OnInit {
     contextMenuPosition = { x: '0px', y: '0px' };
     closeResult: string;
     fund: any;
-    _id: any;
     result: any = [];
     selectedIDs: any = [];
     searchText: string;
-    name: any;
-    description: any;
-    owner_1: any;
-    owner_2: any;
-    type: any;
-    marginal_tax_range: any;
-    location: any;
-    created_by: any;
     portfolioDetailList = portfolioList;
-
-    updated_by: any;
+    submitted = false;
+    portfolioFormGroup: FormGroup;
+    update: boolean;
+    updatefund_id: number;
 
     constructor(
         private userService: ServercommunicationService,
@@ -49,8 +43,19 @@ export class FundComponent implements OnInit {
         private confirmationService: ConfirmationService,
         private router: Router,
         public sortlist: FundService,
+        private formBuilder: FormBuilder,
         private spinner: NgxSpinnerService
     ) {
+        this.portfolioFormGroup = this.formBuilder.group(
+            {
+                name: new FormControl('', Validators.required),
+                description: new FormControl(''),
+                owner_1: new FormControl(''),
+                owner_2: new FormControl(''),
+                type: new FormControl(''),
+                marginal_tax_range: new FormControl(null),
+                location: new FormControl(''),
+            });
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.spinner.show();
@@ -71,7 +76,7 @@ export class FundComponent implements OnInit {
             this.getFunds();
         }
     }
-    
+
     onContextMenu(event: MouseEvent, item: Item) {
         event.preventDefault();
         this.contextMenuPosition.x = event.clientX + 'px';
@@ -79,7 +84,7 @@ export class FundComponent implements OnInit {
         this.contextMenu.menuData = { 'item': item };
         this.contextMenu.openMenu();
     }
-    
+
     getFunds() {
         this.userService.getUserPortfolio().toPromise().then(
             fundlist => {
@@ -103,55 +108,40 @@ export class FundComponent implements OnInit {
             });
     }
 
-    addPortfolioData() {
-        this.userService.addPortfolioFund(
-            this.name,
-            this.description,
-            this.owner_1,
-            this.owner_2,
-            this.type,
-            this.marginal_tax_range,
-            this.location).toPromise().then(result => {
-                this.getFunds();
-            });
-        this.name = '';
-        this.description = '';
-        this.owner_1 = '';
-        this.owner_2 = '';
-        this.type = '';
-        this.marginal_tax_range = null;
-        this.location = '';
-    }
-
     header_modals(modalid, fund?) {
-        if (fund) {
-            this.fund = fund;
-            this.name = fund.name;
-            this.description = fund.description;
-            this.type = fund.type;
-            this.marginal_tax_range = fund.marginal_tax_range;
-            this.owner_1 = fund.owner_1;
-            this.owner_2 = fund.owner_2;
-            this.location = fund.location;
+        if (this.userService.currentuser === undefined) {
+            this.toastr.info('Please Log in first');
+        } else {
+            if (fund) {
+                console.log('update fund id', fund.id);
+                console.log('checking for fund');
+                this.updatefund_id = fund.id;
+                this.update = true;
+                this.portfolioFormGroup.setValue({
+                    name: fund.name,
+                    description: fund.description,
+                    owner_1: fund.owner_1,
+                    owner_2: fund.owner_2,
+                    type: fund.type,
+                    marginal_tax_range: fund.marginal_tax_range,
+                    location: fund.location
+                });
+            } else {
+                this.update = false;
+            }
+            this.modalService.open(modalid, {
+                windowClass: 'long-pop sign-pop', centered: true
+            }).result.then((result) => {
+                this.closeResult = `Closed with: ${result}`;
+            }, (reason) => {
+                this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
+            });
         }
-        this.modalService.open(modalid, {
-            ariaLabelledBy: 'app-fund',
-            windowClass: 'long-pop sign-pop', centered: true
-        }).result.then((result) => {
-            this.closeResult = `Closed with: ${result}`;
-        }, (reason) => {
-            this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
-        });
     }
 
     private getDismissReason(reason: any): string {
-        this.name = '';
-        this.description = '';
-        this.owner_1 = '';
-        this.owner_2 = '';
-        this.type = '';
-        this.marginal_tax_range = null;
-        this.location = '';
+        this.portfolioFormGroup.reset();
+        this.submitted = false;
         if (reason === ModalDismissReasons.ESC) {
             return 'by pressing ESC';
         } else if (reason === ModalDismissReasons.BACKDROP_CLICK) {
@@ -161,23 +151,33 @@ export class FundComponent implements OnInit {
         }
     }
 
-    updatePortfolioData(_id) {
-        let fundupdate = {
-            name: this.name,
-            description: this.description,
-            owner_1: this.owner_1,
-            owner_2: this.owner_2,
-            type: this.type,
-            marginal_tax_range: this.marginal_tax_range,
-            location: this.location,
-        };
-        this.userService.update_One_Object(fundupdate, _id).toPromise().then(
-            data => {
-                let index = this.portfolioDetailList.findIndex(fund => fund['id'] === _id);
-                this.portfolioDetailList[index].name = data['name'];
-                this.portfolioDetailList[index].description = data['description'];
-                this.toastr.success('Portfolio Updated!', 'Portfolio Updated!');
+    get f() { return this.portfolioFormGroup.controls; }
+
+    updatePortfolioData() {
+        this.submitted = true;
+        if (this.portfolioFormGroup.invalid) {
+            return;
+        }
+        if (this.updatefund_id === undefined || this.updatefund_id === null) {
+            console.log('create', this.portfolioFormGroup.value);
+            this.userService.addPortfolioFund(JSON.parse(JSON.stringify(this.portfolioFormGroup.value))).toPromise().then(result => {
+                this.getFunds();
+                this.modalService.dismissAll('Added Portfolio');
+                this.submitted = false;
             });
+        } else {
+            this.userService.update_One_Object(JSON.parse(JSON.stringify(this.portfolioFormGroup.value)), this.updatefund_id).toPromise().then(
+                data => {
+                    let index = this.portfolioDetailList.findIndex(fund => fund['id'] === this.updatefund_id);
+                    this.portfolioDetailList[index].name = data['name'];
+                    this.portfolioDetailList[index].description = data['description'];
+                    this.modalService.dismissAll('Portfolio Updated!');
+                    this.toastr.success('Portfolio Updated!', 'Portfolio Updated!');
+                    this.updatefund_id = undefined;
+                    this.submitted = false;
+                    this.update = false;
+                });
+        }
     }
 
     delete_Portfolio(id) {
