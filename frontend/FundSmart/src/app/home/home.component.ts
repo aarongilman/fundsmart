@@ -768,6 +768,8 @@ export class HomeComponent implements OnInit, OnDestroy {
                         Swal.fire('File Upload', 'Your data is not in proper format', 'error');
                     } else {
                         localStorage.setItem('securityData', JSON.stringify(localData));
+                        this.setfunds(localData,true);
+                        this.setdataindeshboard();
                     }
                     this.modalService.dismissAll('Upload Done');
                 };
@@ -969,6 +971,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                                 Swal.fire('File Upload', 'Your data is not in proper format', 'error');
                             } else {
                                 localStorage.setItem('securityData', JSON.stringify(localData));
+                                this.setfunds(localData,true);
                                 this.setdataindeshboard();
                             }
                             this.modalService.dismissAll('File uploaded');
@@ -1082,6 +1085,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                                         Swal.fire('File Upload', 'Your data is not in proper format', 'error');
                                     } else {
                                         localStorage.setItem('securityData', JSON.stringify(localData));
+                                        this.setfunds(localData,true);
                                         this.setdataindeshboard();
                                     }
                                     this.modalService.dismissAll('File uploaded');
