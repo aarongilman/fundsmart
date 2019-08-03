@@ -4,6 +4,7 @@
 @import "~primeng/resources/themes/nova-dark/theme.css";
 @import "~primeng/resources/primeng";
 @import "~primeicons/primeicons.css";
+@import "~datatables.net-dt/css/jquery.dataTables.css";
 /*Common Css*/
 
 html {

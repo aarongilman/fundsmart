@@ -108,7 +108,7 @@ export class HoldingDetailsComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.spinner.show();
+        // this.spinner.show();
         this.fundForm = this.formBuilder.group({
             selectedPortfolio: new FormControl('', Validators.required),
             selectedSecurity: new FormControl('', Validators.required),
@@ -139,6 +139,7 @@ export class HoldingDetailsComponent implements OnInit {
         }
 
         if (this.userservice.currentuser) {
+            this.spinner.show();
             this.userservice.getUserPortfolio().toPromise().then(
                 data => {
                     this.portfoliolist.length = 0;

@@ -125,7 +125,16 @@ export class HomeComponent implements OnInit, OnDestroy {
     comparision2Form: FormGroup;
     fundrowForm: FormGroup;
 
-    funds$: portfolio_fund[] = [];
+    funds$: portfolio_fund[] = [{
+        security: '',
+        security_id: -1,
+        p1record: null,
+        p2record: null,
+        p3record: null,
+        yourPortfolio: '',
+        comparision1: '',
+        comparision2: ''
+    }];
     total$;
     model: any = {};
 
@@ -203,99 +212,19 @@ export class HomeComponent implements OnInit, OnDestroy {
         private toastrService: ToastrService,
         private spinner: NgxSpinnerService
     ) {
-        this.interconn.googledriveuploadcalled$.subscribe(
-            () => {
-                this.setdataindeshboard();
-                this.setfunds(JSON.parse(localStorage.getItem('securityData')), true);
-            });
-        this.interconn.logoutcomponentMethodCalled$.subscribe(
-            () => {
-                this.currentUser = undefined;
-            });
         this.tableData = JSON.parse(localStorage.getItem('securityData'));
-        this.userservice.get_security().toPromise().then(
-            datasecuritylist => {
-                securitylist.length = 0;
-                // tslint:disable-next-line: forin
-                for (var obj in datasecuritylist) {
-                    var securityobj: security = {
-                        id: -1,
-                        isin: '',
-                        name: '',
-                        ticker: '',
-                        asset_type: ''
-                    };
-                    securityobj.id = datasecuritylist[obj]['id'];
-                    securityobj.isin = datasecuritylist[obj]['isin'];
-                    securityobj.name = datasecuritylist[obj]['name'];
-                    securityobj.ticker = datasecuritylist[obj]['ticker'];
-                    securityobj.asset_type = datasecuritylist[obj]['asset_type'];
-                    securitylist.push(securityobj);
-                }
-                //  if (this.tableData != null) {
-                this.setfunds(JSON.parse(localStorage.getItem('securityData')));
-                this.setdataindeshboard();
-                //  } else {
-                this.spinner.hide();
-                //  }
-            });
-        this.interconn.componentMethodCalled$.subscribe(
-            () => {
-                this.setcurrent_user();
-            });
-    }
+        this.interconn.googledriveuploadcalled$.subscribe(() => {
+            this.setdataindeshboard();
+            this.setfunds(JSON.parse(localStorage.getItem('securityData')), true);
+        });
+        this.interconn.logoutcomponentMethodCalled$.subscribe(() => {
+            this.currentUser = undefined;
+        });
 
-    ngOnInit() {
-        this.dtOptions = {
-            processing: true,
-            pagingType: 'full_numbers',
-            destroy: true,
-            pageLength: 10,
-            order: [5, 'desc']
-        };
-        this.interconn.titleSettermethod("Multi Portfolio Analyzer");
-        this.setdataindeshboard();
-        this.DynamicDisable[0] = false;
-        this.userservice.get_historical_perfomance().toPromise().then(
-            result => {
-                this.existing = {
-                    annualexpense: 0,
-                    oneyear: 0,
-                    threeyear: 0,
-                    fiveyear: 0
-                };
-                this.recommended = {
-                    annualexpense: 0,
-                    oneyear: 0,
-                    threeyear: 0,
-                    fiveyear: 0
-                };
-                this.diffrence = {
-                    annualexpense: 0,
-                    oneyear: 0,
-                    threeyear: 0,
-                    fiveyear: 0
-                };
-                if (result[0]) {
-                    this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
-                    this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
-                    this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
-                    this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
-
-                    this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
-                    this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
-                    this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
-                    this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['5-year']).toFixed(2));
-
-                    this.diffrence.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['difference']['annual_expense']).toFixed(2));
-                    this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['1-year']).toFixed(2));
-                    this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['3-year']).toFixed(2));
-                    this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['difference']['5-year']).toFixed(2));
-                }
-            });
-        if (this.userservice.currentuser) {
+        this.interconn.componentMethodCalled$.subscribe(() => {
             this.setcurrent_user();
-        }
+        });
+
         this.registeruserForm = this.formBuilder.group(
             {
                 username: new FormControl('', Validators.required),
@@ -311,12 +240,65 @@ export class HomeComponent implements OnInit, OnDestroy {
             {
                 validator: MustMatch('password1', 'password2')
             });
-        // this.spinner.hide();
     }
 
-    ngOnDestroy(): void {
-        // Do not forget to unsubscribe the event
-        this.dtTrigger.unsubscribe();
+    ngOnInit() {
+        this.interconn.titleSettermethod("Multi Portfolio Analyzer");
+        this.setdataindeshboard();
+        this.dtOptions = {
+            pagingType: 'full_numbers',
+            destroy: true,
+            pageLength: 10,
+            order: [0, 'asc'],
+            // columns: [{
+            //     title: 'Security',
+            //     data: this.funds$['security'],
+            // },
+            // {
+            //     title: 'Your Portfolio',
+            //     data: this.funds$['security'],
+            // },
+            // {
+            //     title: 'Comparision 1',
+            //     data: this.funds$['security'],
+            // },
+            // {
+            //     title: 'Comparision 2',
+            //     data: this.funds$['security'],
+            // },
+            // ]
+        };
+        this.userservice.get_security().toPromise().then(datasecuritylist => {
+            securitylist.length = 0;
+            // tslint:disable-next-line: forin
+            for (var obj in datasecuritylist) {
+                var securityobj: security = {
+                    id: -1,
+                    isin: '',
+                    name: '',
+                    ticker: '',
+                    asset_type: ''
+                };
+                securityobj.id = datasecuritylist[obj]['id'];
+                securityobj.isin = datasecuritylist[obj]['isin'];
+                securityobj.name = datasecuritylist[obj]['name'];
+                securityobj.ticker = datasecuritylist[obj]['ticker'];
+                securityobj.asset_type = datasecuritylist[obj]['asset_type'];
+                securitylist.push(securityobj);
+            }
+            if (this.tableData != null) {
+                this.setfunds(JSON.parse(localStorage.getItem('securityData')));
+            }
+            //  else {
+            //  this.spinner.hide();
+            //  }
+        });
+        this.DynamicDisable[0] = false;
+        if (this.userservice.currentuser) {
+            this.setcurrent_user();
+        }
+
+        // this.spinner.hide();
     }
 
     resetfundlist() {
@@ -553,7 +535,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                     }
                     let pid = this.funds$.findIndex(fund => fund.p1record === p1record);
                     this.funds$.splice(pid, 1);
-                    this.setfunds(JSON.parse(localStorage.getItem('securityData')), true)
+                    // this.setfunds(JSON.parse(localStorage.getItem('securityData')), true)
                     if (this.funds$.length === 0) {
                         let singlefund: portfolio_fund = {
                             security: '',
@@ -768,8 +750,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                         Swal.fire('File Upload', 'Your data is not in proper format', 'error');
                     } else {
                         localStorage.setItem('securityData', JSON.stringify(localData));
-                        this.setfunds(localData,true);
-                        this.setdataindeshboard();
                     }
                     this.modalService.dismissAll('Upload Done');
                 };
@@ -895,6 +875,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                 'recordId': item.p1record, "key": recordid,
                 "quantity": quantity, "recid": recid, "securityId": item.security_id
             });
+            // this.setfunds(JSON.parse(localStorage.getItem('securityData')), true)
             let undefsec = this.funds$.filter(fund => fund.security_id === -1);
             if (undefsec.length === 0) {
                 this.setdataindeshboard();
@@ -971,7 +952,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                                 Swal.fire('File Upload', 'Your data is not in proper format', 'error');
                             } else {
                                 localStorage.setItem('securityData', JSON.stringify(localData));
-                                this.setfunds(localData,true);
                                 this.setdataindeshboard();
                             }
                             this.modalService.dismissAll('File uploaded');
@@ -1085,7 +1065,6 @@ export class HomeComponent implements OnInit, OnDestroy {
                                         Swal.fire('File Upload', 'Your data is not in proper format', 'error');
                                     } else {
                                         localStorage.setItem('securityData', JSON.stringify(localData));
-                                        this.setfunds(localData,true);
                                         this.setdataindeshboard();
                                     }
                                     this.modalService.dismissAll('File uploaded');
@@ -1101,6 +1080,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     drive_fileupload() {
         this.fileupload.onApiLoad("Dashboard");
         this.modalService.dismissAll('File uploaded');
+    }
+
+    ngOnDestroy(): void {
+        // Do not forget to unsubscribe the event
+        this.dtTrigger.unsubscribe();
     }
 
 }
