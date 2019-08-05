@@ -113,8 +113,6 @@ export class FundComponent implements OnInit {
             this.toastr.info('Please Log in first');
         } else {
             if (fund) {
-                console.log('update fund id', fund.id);
-                console.log('checking for fund');
                 this.updatefund_id = fund.id;
                 this.update = true;
                 this.portfolioFormGroup.setValue({
@@ -159,7 +157,6 @@ export class FundComponent implements OnInit {
             return;
         }
         if (this.updatefund_id === undefined || this.updatefund_id === null) {
-            console.log('create', this.portfolioFormGroup.value);
             this.userService.addPortfolioFund(JSON.parse(JSON.stringify(this.portfolioFormGroup.value))).toPromise().then(result => {
                 this.getFunds();
                 this.modalService.dismissAll('Added Portfolio');

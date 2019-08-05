@@ -74,24 +74,27 @@ export class FundRecommendationComponent implements OnInit {
             this.getPortfolioPerformance();
             this.getRecommendedPerformance();
             this.getPlotFundRecommendation();
+            this.spinner.hide();
         } else {
             this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+            this.spinner.hide();
         }
     }
 
     getHistoricalPerformance() {
-        this.service.get(`api/historical_performance_fund_recommendation/?portfolio_ids=${portfolioidSelect}`).toPromise().then((historicalData: any) => {
-            historicalData.forEach(historical => {
-                const names = Object.keys(historical);
-                names.forEach((key, value) => {
-                    const historicalObj = {
-                        name: names[value],
-                        value: historical[names[value]]
-                    }
-                    this.historical.push(historicalObj);
+        this.service.get(`api/historical_performance_fund_recommendation/?portfolio_ids=${portfolioidSelect}`)
+            .toPromise().then((historicalData: any) => {
+                historicalData.forEach(historical => {
+                    const names = Object.keys(historical);
+                    names.forEach((key, value) => {
+                        const historicalObj = {
+                            name: names[value],
+                            value: historical[names[value]]
+                        };
+                        this.historical.push(historicalObj);
+                    });
                 });
             });
-        });
     }
 
     getPortfolioPerformance() {

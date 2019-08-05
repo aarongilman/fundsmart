@@ -258,31 +258,42 @@ export class HoldingSummaryComponent implements OnInit {
     getLineGraph() {
         this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then(
             (jsondata: any) => {
+                // console.log('came here');
+
                 this.linedata = [];
                 this.linecolumnNames = ['label'];
                 const tempArray = [];
                 const mainObj = {};
-                if (this.linedata == []) {
-                    this.linedata.push(['No data copy', 0, 0]);
-                } else {
-                    for (let i = 0; i < jsondata.length; i++) {
-                        const element = jsondata[i];
-                        if (this.linedata !== null) {
-                            this.linecolumnNames.push(element.portfolio);
+                for (let i = 0; i < jsondata.length; i++) {
+                    const element = jsondata[i];
+                    // console.log('infirst for loop');
+                    if (this.linedata !== null) {
+                        this.linecolumnNames.push(element.portfolio);
+                    }
+                    for (let k = 0; k < element['label'].length; k++) {
+                        const label = element['label'][k];
+                        if (tempArray.filter(x => x === label).length === 0) {
+                            tempArray.push(label);
                         }
-                        for (let k = 0; k < element['label'].length; k++) {
-                            const label = element['label'][k];
-                            if (tempArray.filter(x => x === label).length === 0) {
-                                tempArray.push(label);
-                            }
-                            if (mainObj[label] || mainObj[label] === 0) {
-                                mainObj[label] = mainObj[label] + ',' + ((element.series[k]) ? element.series[k] : 0);
-                            } else {
-                                mainObj[label] = (element.series[k]) ? element.series[k] : 0;
-                            }
+                        if (mainObj[label]) {
+                            mainObj[label] = mainObj[label] + ',' + element.series[k];
+                        } else {
+                            mainObj[label] = element.series[k];
                         }
                     }
+                }
+                if (portfolioidSelect.length === 1) {
+                    // console.log('one portfolio');
+                    // console.log("temp array", tempArray);
                     for (let i = 0; i < tempArray.length; i++) {
+                        const element = tempArray[i];
+                        // console.log('element', element);
+                        const values = (mainObj[element].split(',')).filter(Boolean);
+                        // console.log(values);
+                    }
+                } else {
+                    for (let i = 0; i < tempArray.length; i++) {
+                        console.log('in second for loop');
                         const element = tempArray[i];
                         const values = (mainObj[element].split(',')).filter(Boolean);
                         const valuesCollection = [];
@@ -290,6 +301,7 @@ export class HoldingSummaryComponent implements OnInit {
                         for (const iterator of values) {
                             valuesCollection.push(parseFloat(iterator));
                         }
+                        console.log('push data');
                         this.linedata.push(valuesCollection);
                         this.spinner.hide();
                     }

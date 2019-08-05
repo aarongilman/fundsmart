@@ -28,11 +28,21 @@ function sort(fundlist: portfolio_fund[], column: string, direction: string): po
         return fundlist;
     } else {
         return [...fundlist].sort((a, b) => {
-            const res = compare(a[column], b[column]);
-            return direction === 'asc' ? res : -res;
+            let value = Number.parseInt(a[column]);
+            // console.log('value', value);
+            if (value.toString() === 'NaN') {
+                // console.log('came in if');
+                const res = compare(a[column], b[column]);
+                return direction === 'asc' ? res : -res;
+            } else {
+                // console.log('in else');
+                const res = compare(Number.parseInt(a[column]), Number.parseInt(b[column]));
+                return direction === 'asc' ? res : -res;
+            }
         });
     }
 }
+
 
 function matches(fund: portfolio_fund, term: string, pipe: PipeTransform) {
     return fund.security.toLowerCase().includes(term);
@@ -104,9 +114,11 @@ export class PortfoliofundhelperService {
 
     private _search(): Observable<SearchResult> {
         const { sortColumn, sortDirection, pageSize, page, searchTerm } = this._state;
-
+        let fundlist;
         // 1. sort
-        let fundlist = sort(portfoliofundlist, sortColumn, sortDirection);
+        fundlist = sort(portfoliofundlist, sortColumn, sortDirection);
+        // //2. sortsecurity
+        // fundlist = sortsecurity(portfoliofundlist, sortColumn, sortDirection);
         // 2. filter
         fundlist = fundlist.filter(fund => matches(fund, searchTerm, this.pipe));
         const total = fundlist.length;

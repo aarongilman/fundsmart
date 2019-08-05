@@ -194,13 +194,10 @@ export class AllocationFundAnalysisComponent implements OnInit {
                             this.linedata.push(valuesCollection);
                         }
                     }
-
-
                 });
         } else {
             this.spinner.hide();
         }
-
     }
 
 }

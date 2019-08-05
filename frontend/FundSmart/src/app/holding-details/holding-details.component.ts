@@ -108,7 +108,6 @@ export class HoldingDetailsComponent implements OnInit {
     }
 
     ngOnInit() {
-        // this.spinner.show();
         this.fundForm = this.formBuilder.group({
             selectedPortfolio: new FormControl('', Validators.required),
             selectedSecurity: new FormControl('', Validators.required),
@@ -154,7 +153,7 @@ export class HoldingDetailsComponent implements OnInit {
 
     getHoldingdetail() {
         if (portfolioidSelect.length === 0) {
-            this.toastr.info('Please select portfolio id/ids from Fund page', 'Information˝');
+            this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
             this.spinner.hide();
         } else {
             this.userservice.get(`api/holding_detail/?portfolio_ids=${portfolioidSelect}`).toPromise().then(

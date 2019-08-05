@@ -63,7 +63,7 @@ export class AllocationRecommendationComponent implements OnInit {
                 });
         } else {
             this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
-            this.spinner.hide();            
+            this.spinner.hide();
         }
     }
 

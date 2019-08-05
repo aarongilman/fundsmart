@@ -12,7 +12,7 @@ import { ServercommunicationService } from '../servercommunication.service';
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.css']
 })
-export class TestComponent implements OnInit, OnDestroy {
+export class TestComponent implements OnInit {
   @ViewChild(DataTableDirective) dtElement: DataTableDirective;
   dtOptions: DataTables.Settings = {};
   dtTrigger = new Subject();
@@ -32,10 +32,6 @@ export class TestComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.dtOptions = {
-      pagingType: 'full_numbers',
-      pageLength: 2
-    };
     this.setfunds(JSON.parse(localStorage.getItem('securityData')));
   }
 
@@ -59,53 +55,54 @@ export class TestComponent implements OnInit, OnDestroy {
           securityobj.asset_type = datasecuritylist[obj]['asset_type'];
           securitylist.push(securityobj);
         }
+
+        if (fundlist.length > 0) {
+          this.funds$.length = 0;
+        }
+        fundlist.forEach(element => {
+          let security = securitylist.find(s => s['id'] === element.securityId);
+          console.log(security);
+          let singlefund: portfolio_fund = {
+            security: security.name,
+            security_id: element['securityId'],
+            p1record: element['recordId'],
+            p2record: element['portfolio_id_2'],
+            p3record: element['portfolio_id_3'],
+            yourPortfolio: element['portfolio'],
+            comparision1: element['COMPARISON1'],
+            comparision2: element['COMPARISON2']
+
+          };
+          if (element['quantity1'] === null) {
+            singlefund.yourPortfolio = '';
+          }
+          if (element['quantity2'] === null) {
+            singlefund.comparision1 = '';
+          }
+          if (element['quantity3'] === null) {
+            singlefund.comparision2 = '';
+          }
+
+          this.funds$.push(singlefund);
+          // if (rerender) {
+          //   this.rerender();
+          // } else {
+          //   this.dtTrigger.next();
+          // }
+        });
       });
-    if (fundlist.length > 0) {
-      this.funds$.length = 0;
-    }
-    fundlist.forEach(element => {
-      let security = securitylist.find(s => s['id'] === element.securityId);
-      console.log(security);
-      let singlefund: portfolio_fund = {
-        security: security.name,
-        security_id: element['securityId'],
-        p1record: element['recordId'],
-        p2record: element['portfolio_id_2'],
-        p3record: element['portfolio_id_3'],
-        yourPortfolio: element['portfolio'],
-        comparision1: element['COMPARISON1'],
-        comparision2: element['COMPARISON2']
-        
-      };
-      if (element['quantity1'] === null) {
-        singlefund.yourPortfolio = '';
-      }
-      if (element['quantity2'] === null) {
-        singlefund.comparision1 = '';
-      }
-      if (element['quantity3'] === null) {
-        singlefund.comparision2 = '';
-      }
-
-      this.funds$.push(singlefund);
-      if (rerender) {
-        this.rerender();
-      } else {
-        this.dtTrigger.next();
-      }
-    });
   }
 
-  rerender(): void {
-    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
-      dtInstance.destroy();
-      this.dtTrigger.next();
-    });
-  }
+  // rerender(): void {
+  //   this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+  //     dtInstance.destroy();
+  //     this.dtTrigger.next();
+  //   });
+  // }
 
-  ngOnDestroy(): void {
-    // Do not forget to unsubscribe the event
-    this.dtTrigger.unsubscribe();
-  }
+  // ngOnDestroy(): void {
+  //   // Do not forget to unsubscribe the event
+  //   this.dtTrigger.unsubscribe();
+  // }
 
 }

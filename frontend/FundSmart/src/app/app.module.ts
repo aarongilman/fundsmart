@@ -45,6 +45,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TestComponent } from './test/test.component';
+import { DataTableModule } from "angular-6-datatable";
 
 const cookieConfig: NgcCookieConsentConfig = {
     cookie: {
@@ -119,6 +120,7 @@ export function provideConfig() {
         NgSelectModule,
         ReactiveFormsModule,
         NgxSpinnerModule,
+        DataTableModule,
         MatMenuModule,
         DataTablesModule,
         NgcCookieConsentModule.forRoot(cookieConfig),
