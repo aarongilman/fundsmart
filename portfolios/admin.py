@@ -86,7 +86,10 @@ class PriceAdmin(admin.ModelAdmin):
                     objects.append(
                         Price(date=row[0].value, id_value=row[1].value,
                               price=row[2].value, created_by=user))
-                objects = list(chunks(objects, 50000))
+                if len(50000) > 50000:
+                    objects = list(chunks(objects, 50000))
+                else:
+                    objects = list(objects)
                 for obj in objects:
                     Price.objects.bulk_create(obj, ignore_conflicts=True)
                 self.message_user(request, _("Your file has been imported"))

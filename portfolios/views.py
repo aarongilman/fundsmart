@@ -956,6 +956,7 @@ def get_market_values(request, funds):
 class LineGraphFundRecommendation(APIView):
     """APIView to display Line graph in fund recommendation page"""
     def get(self, request):
+        data = []
         if request.GET.get('portfolio_ids'):
             portfolio_ids = request.GET.get('portfolio_ids').split(",")
             portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
@@ -971,18 +972,18 @@ class LineGraphFundRecommendation(APIView):
                     count=Min('date')) \
                     .distinct()
                 common_date = max([x[1] for x in date_list])
-            data = get_line_graph_data(funds, common_date)
-            # benchmark fund's price
-            benchmark_price = Price.objects.\
-                filter(id_value='ISIN_US78390M1053', date__gte=common_date,
-                       date__lte=date.today()).values_list('date')\
-                .annotate(price=F('price')).order_by('date').distinct()
-            di = dict(list(benchmark_price))
-            for k, v in di.items():
-                di[k] = round(v, 2)
-            data.append(
-                {'portfolio': "Benchmark", 'label': di.keys(),
-                 'series': di.values()})
+                data = get_line_graph_data(funds, common_date)
+                # benchmark fund's price
+                benchmark_price = Price.objects.\
+                    filter(id_value='ISIN_US78390M1053', date__gte=common_date,
+                           date__lte=date.today()).values_list('date')\
+                    .annotate(price=F('price')).order_by('date').distinct()
+                di = dict(list(benchmark_price))
+                for k, v in di.items():
+                    di[k] = round(v, 2)
+                data.append(
+                    {'portfolio': "Benchmark", 'label': di.keys(),
+                     'series': di.values()})
         return Response(data, status=200)
 
 
