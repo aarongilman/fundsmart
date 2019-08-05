@@ -86,7 +86,7 @@ class PriceAdmin(admin.ModelAdmin):
                     objects.append(
                         Price(date=row[0].value, id_value=row[1].value,
                               price=row[2].value, created_by=user))
-                if len(50000) > 50000:
+                if len(objects) > 50000:
                     objects = list(chunks(objects, 50000))
                 else:
                     objects = list(objects)
