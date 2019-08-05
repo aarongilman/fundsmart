@@ -78,7 +78,7 @@ class PriceAdmin(admin.ModelAdmin):
         if request.method == "POST":
             user = User.objects.get(username=request.user)
             data_file = request.FILES["data_file"]
-            wb = openpyxl.load_workbook(data_file, data_only=True, read_only=True)
+            wb = openpyxl.load_workbook(data_file, data_only=True)
             worksheet = wb.active
             objects = []
             try:
@@ -89,7 +89,7 @@ class PriceAdmin(admin.ModelAdmin):
                 if len(objects) > 50000:
                     objects = list(chunks(objects, 50000))
                 else:
-                    objects = list(objects)
+                    objects = [objects]
                 for obj in objects:
                     Price.objects.bulk_create(obj, ignore_conflicts=True)
                 self.message_user(request, _("Your file has been imported"))
