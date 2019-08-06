@@ -124,7 +124,7 @@
             </a>
         </li>
         <li routerLinkActive="active">
-            <a routerLink="create_fund" (click)='!currentuser ? openmodal(login,"login") : null'>
+            <a routerLink="create_fund" (click)='!islogin ? openmodal(login,"login") : null'>
                 <div class="svg-wrap">
                     <svg viewBox="-10 0 472 472.00998" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -137,7 +137,7 @@
             </a>
         </li>
         <li routerLinkActive="active">
-            <a routerLink="holding_summary" (click)='!currentuser ? openmodal(login,"login") : null'>
+            <a routerLink="holding_summary" (click)='!islogin ? openmodal(login,"login") : null'>
                 <div class="svg-wrap">
                     <svg viewBox="-11 0 496 496.00008" xmlns="http://www.w3.org/2000/svg">
                         <path
@@ -156,7 +156,7 @@
             </a>
         </li>
         <li routerLinkActive="active">
-            <a routerLink="holding_details" (click)='!currentuser ? openmodal(login,"login") : null'>
+            <a routerLink="holding_details" (click)='!islogin ? openmodal(login,"login") : null'>
                 <div class="svg-wrap">
                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
@@ -260,7 +260,7 @@
             </a>
         </li>
         <li routerLinkActive="active">
-            <a routerLink="fund_recommendation" (click)='!currentuser ? openmodal(login,"login") : null'>
+            <a routerLink="fund_recommendation" (click)='!islogin ? openmodal(login,"login") : null'>
                 <div class="svg-wrap">
                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
@@ -322,7 +322,7 @@
             </a>
         </li>
         <li routerLinkActive="active">
-            <a routerLink="allocation_recommendation" (click)='!currentuser ? openmodal(login,"login") : null'>
+            <a routerLink="allocation_recommendation" (click)='!islogin ? openmodal(login,"login") : null'>
                 <div class="svg-wrap">
                     <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"
@@ -437,7 +437,7 @@
             </a>
         </li>
         <li routerLinkActive="active">
-            <a routerLink="allocation_fund_analysis" (click)='!currentuser ? openmodal(login,"login") : null'>
+            <a routerLink="allocation_fund_analysis" (click)='!islogin ? openmodal(login,"login") : null'>
                 <div class="svg-wrap">
                     <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                         xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 512 512"

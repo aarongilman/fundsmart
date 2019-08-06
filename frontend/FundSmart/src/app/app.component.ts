@@ -50,29 +50,19 @@ export class AppComponent implements OnInit, OnDestroy {
         private formBuilder: FormBuilder,
         private authService: AuthService,
         private toastrService: ToastrService) {
-        if (sessionStorage.getItem('authkey')) {
-            console.log('Has authkey');
+        if (localStorage.getItem('authkey')) {
             this.islogin = true;
         } else {
-            console.log('no authkey');
             this.islogin = false;
         }
-        this.interconn.componentMethodCalled$.subscribe(
-            () => {
+        this.interconn.componentMethodCalled$.subscribe(() => {
                 this.currentuser = this.userservice.currentuser;
                 this.islogin = true;
-                console.log('is login', this.islogin);
-
-            }
-        );
-        this.interconn.logoutcomponentMethodCalled$.subscribe(
-            () => {
+            });
+        this.interconn.logoutcomponentMethodCalled$.subscribe(() => {
                 this.currentuser = undefined;
                 this.islogin = false;
-                console.log('is login', this.islogin);
-
-            }
-        );
+            });
     }
 
     ngOnInit() {

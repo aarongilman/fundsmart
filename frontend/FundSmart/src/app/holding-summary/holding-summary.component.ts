@@ -101,6 +101,7 @@ export class HoldingSummaryComponent implements OnInit {
                     this.getHistoricalPerformance();
                     this.getFund();
                     this.getLineGraph();
+                    // this.linegraph();
                 } else {
                     this.spinner.hide();
                     this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
@@ -120,6 +121,7 @@ export class HoldingSummaryComponent implements OnInit {
                 this.getHistoricalPerformance();
                 this.getFund();
                 this.getLineGraph();
+                // this.linegraph();
             } else {
                 this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
             }
@@ -234,21 +236,6 @@ export class HoldingSummaryComponent implements OnInit {
         }
     }
 
-    linegraph() {
-        this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then(
-            (jsondata: any) => {
-                jsondata.forEach(element => {
-                    this.linecolumnNames.push(element['portfolio']);
-                    console.log('length', element['lable'].length);
-
-
-                });
-
-            });
-
-    }
-
-
     getHistoricalPerformance() {
         this.service.holding_summary_historicalPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
@@ -274,74 +261,72 @@ export class HoldingSummaryComponent implements OnInit {
     getLineGraph() {
         this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then(
             (jsondata: any) => {
-                console.log('came here');
-
-                this.linedata = [];
-                this.linecolumnNames = ['label'];
-                const tempArray = [];
-                const mainObj = [];
-                for (let i = 0; i < jsondata.length; i++) {
-                    const element = jsondata[i];
-                    console.log('infirst for loop');
-                    if (this.linedata !== null) {
-                        this.linecolumnNames.push(element.portfolio);
-                    }
-                    for (let k = 0; k < element['label'].length; k++) {
-                        const label = element['label'][k];
-                        if (tempArray.filter(x => x === label).length === 0) {
-                            tempArray.push(label);
-                        }
-                        if (mainObj[label]) {
-                            if (portfolioidSelect.length === 1) {
-                                this.linedata.push([mainObj[label], element.series[k]]);
-
-                            }
-                            else {
-                                mainObj[label] = mainObj[label] + ',' + element.series[k];
-                            }
-                        } else {
-                            mainObj[label] = element.series[k];
-                            // console.log(mainObj[label]);
-
-                            // this.linedata.push(element.series[k]);
-
-                        }
-                    }
-                }
                 if (portfolioidSelect.length === 1) {
-
-                    // console.log('one portfolio');
-                    // console.log("temp array", tempArray);
-                    // mainObj.forEach(element => {
-                    // console.log('element', element);
-                    // });
-                    console.log('main obj', mainObj);
-                    this.linedata = mainObj;
-
+                    this.linecolumnNames = ['label'];
+                    this.linecolumnNames.push(jsondata[0]['portfolio']);
+                    for (let i = 0; i < jsondata[0]['label'].length; i++) {
+                        this.linedata.push([jsondata[0]['label'][i], jsondata[0]['series'][i]]);
+                    }
+                } else {
+                    this.linedata = [];
+                    // this.linecolumnNames = ['label'];
+                    const tempArray = [];
+                    const mainObj = {};
+                    for (let i = 0; i < jsondata.length; i++) {
+                        const element = jsondata[i];
+                        // if (this.linedata !== null) {
+                        this.linecolumnNames.push(element.portfolio);
+                        // }
+                        for (let k = 0; k < element['label'].length; k++) {
+                            const label = element['label'][k];
+                            if (tempArray.filter(x => x === label).length === 0) {
+                                tempArray.push(label);
+                            }
+                            if (mainObj[label]) {
+                                mainObj[label] = mainObj[label] + ',' + element.series[k];
+                            } else {
+                                mainObj[label] = element.series[k];
+                            }
+                        }
+                    }
+                    // let count = 0;
                     // for (let i = 0; i < tempArray.length; i++) {
                     //     const element = tempArray[i];
-                    //     console.log('element', element);
-                    //     console.log('mainobj[element]', element);
-                    //     const values = (mainObj[element].split(',')).filter();
-                    //     // const values = (mainObj[element].split(',')).filter(Boolean);
-                    //     console.log(values);
-                }
-                // } else {
-                // for (let i = 0; i < tempArray.length; i++) {
-                //     // console.log('in second for loop');
-                //     const element = tempArray[i];
-                //     const values = (mainObj[element].split(',')).filter(Boolean);
-                //     const valuesCollection = [];
-                //     valuesCollection.push(element);
-                //     for (const iterator of values) {
-                //         valuesCollection.push(parseFloat(iterator));
-                //     }
+                    //     count++;
+                    //     console.log(count);
+                    //     try {
+                    //         const values = (mainObj[element].split(',')).filter(Boolean);
+                    //         const valuesCollection = [];
+                    //         valuesCollection.push(element);
+                    //         for (const iterator of values) {
+                    //             valuesCollection.push(parseFloat(iterator));
+                    //         }
+                    //         this.linedata.push(valuesCollection);
+                    //     } catch {
+                    //         console.log(mainObj[element]);
+                    //     }
+                    //     this.spinner.hide();
+                    // }
 
-                //     this.linedata.push(valuesCollection);
-                //     this.spinner.hide();
-                // }
-                // }
-                console.log(this.linedata);
+                    for (let i = 0; i < tempArray.length; i++) {
+                        const element = tempArray[i];
+                        let values;
+                        const valuesCollection = [];
+                        valuesCollection.push(element.toString());
+                        if (typeof mainObj[element] === 'number') {
+                            values = mainObj[element]
+                            valuesCollection.push(parseFloat(values));
+                        } else {
+                            values = (mainObj[element].split(',')).filter(Boolean);
+                            for (const iterator of values) {
+                                valuesCollection.push(parseFloat(iterator));
+                            }
+                        }
+                        this.linedata.push(valuesCollection);
+                    }
+                    this.spinner.hide();
+                    console.log(this.linedata);
+                }
 
             });
     }

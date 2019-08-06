@@ -523,25 +523,26 @@ export class HomeComponent implements OnInit {
                     if (portfoliofundlist[id].security !== '') {
                         this.userservice.removedata(p1record);
                     }
-                    portfoliofundlist.splice(id, 1);
-                    if (portfoliofundlist.length === 0) {
-                        let singlefund: portfolio_fund = {
-                            security: '',
-                            security_id: -1,
-                            p1record: null,
-                            p2record: null,
-                            p3record: null,
-                            yourPortfolio: '',
-                            comparision1: '',
-                            comparision2: ''
-                        };
-                        portfoliofundlist.push(singlefund);
+                    if (portfoliofundlist.length === 1) {
+
+                        portfoliofundlist[0].security = '';
+                        portfoliofundlist[0].security_id = -1;
+                        portfoliofundlist[0].p1record = null;
+                        portfoliofundlist[0].p2record = null;
+                        portfoliofundlist[0].p3record = null;
+                        portfoliofundlist[0].yourPortfolio = '';
+                        portfoliofundlist[0].comparision1 = '';
+                        portfoliofundlist[0].comparision2 = '';
+                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
+
+                    } else {
+                        portfoliofundlist.splice(id, 1);
+                        this.portfolioservice.resetfunds();
+                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
+                        this.portfolioservice.total$.subscribe(total => {
+                            this.total$ = total;
+                        });
                     }
-                    this.portfolioservice.resetfunds();
-                    this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
-                    this.portfolioservice.total$.subscribe(total => {
-                        this.total$ = total;
-                    });
                     this.setdataindeshboard();
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     Swal.fire(
@@ -580,9 +581,7 @@ export class HomeComponent implements OnInit {
     }
 
     setfunds(fundlist) {
-        console.log('came in set funds');
         if (fundlist.length > 0) {
-            console.log('came in set zero part');
             portfoliofundlist.length = 0;
         }
         fundlist.forEach(element => {

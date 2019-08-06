@@ -42,8 +42,7 @@ export class ServercommunicationService {
         this.socialuser = user;
         const body = { access_token: user.authToken };
         this.http.post(this.api_link + 'rest-auth/google/', body, { headers: this.httpHeaders }).toPromise().then(data => {
-            sessionStorage.setItem('authkey', data['key']);
-            // localStorage.setItem('authkey', data['key']);
+            localStorage.setItem('authkey', data['key']);
             this.getUser(data['key']);
         });
     }
@@ -187,14 +186,14 @@ export class ServercommunicationService {
 
     checklogin() {
         var userkey = null;
-        userkey = sessionStorage.getItem('authkey');
+        userkey = localStorage.getItem('authkey');
         if (userkey != null) {
             this.getUser(userkey);
         }
     }
 
     logout() {
-        sessionStorage.removeItem('authkey');
+        localStorage.removeItem('authkey');
         this.http.post(this.api_link + 'rest-auth/logout/',
             { headers: this.httpHeaders }).toPromise().then(
                 data => {

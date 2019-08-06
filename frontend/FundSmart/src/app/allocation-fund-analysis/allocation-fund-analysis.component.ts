@@ -159,13 +159,18 @@ export class AllocationFundAnalysisComponent implements OnInit {
         if (portfolioidSelect.length > 0) {
             this.userservice.get(`api/allocation_line_graph/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
                 (jsondata: any) => {
-                    this.linedata = [];
-                    this.linecolumnNames = ['label'];
-                    const tempArray = [];
-                    const mainObj = {};
-                    if (this.linedata == []) {
-                        this.linedata.push(['No data copy', 0, 0]);
+                    if (portfolioidSelect.length === 1) {
+                        this.linecolumnNames = ['label'];
+                        this.linecolumnNames.push(jsondata[0]['portfolio']);
+
+                        for (let i = 0; i < jsondata[0]['label'].length; i++) {
+                            this.linedata.push([jsondata[0]['label'][i], jsondata[0]['series'][i]]);
+                        }
                     } else {
+                        this.linedata = [];
+                        this.linecolumnNames = ['label'];
+                        const tempArray = [];
+                        const mainObj = [];
                         for (let i = 0; i < jsondata.length; i++) {
                             const element = jsondata[i];
                             if (this.linedata !== null) {
@@ -185,13 +190,14 @@ export class AllocationFundAnalysisComponent implements OnInit {
                         }
                         for (let i = 0; i < tempArray.length; i++) {
                             const element = tempArray[i];
-                            const values = (mainObj[element].split(',')).filter(Boolean);
+                            const values = mainObj[element].split(',');
                             const valuesCollection = [];
-                            valuesCollection.push(element.toString());
+                            valuesCollection.push(element);
                             for (const iterator of values) {
                                 valuesCollection.push(parseFloat(iterator));
                             }
                             this.linedata.push(valuesCollection);
+                            this.spinner.hide();
                         }
                     }
                 });

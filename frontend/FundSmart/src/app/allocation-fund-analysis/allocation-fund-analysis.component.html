@@ -83,22 +83,16 @@
                 <div class="block-container chart-wrapper semi-block">
                     <div class="graph-labels display-contents">
                     </div>
-                    <div class="col-lg-6 col-md-12">
-                        <div class="block-container chart-wrapper semi-block">
-                            <div class="graph-labels display-contents">
-                            </div>
-                            <div class="hpd-table heading">
-                                <h3>Line Chart</h3>
-                            </div>
-                            <div *ngIf="linedata?.length > 0">
-                                <google-chart [title]="linetitle" [type]="linetype" [data]="linedata" [options]="lineoptions"
-                                    [width]="linewidth" [height]="lineheight" [columnNames]="linecolumnNames">
-                                </google-chart>
-                            </div>
-                            <div *ngIf="linedata?.length <= 0" style="text-align:center ; color: red">
-                                Data not found
-                            </div>
-                        </div>
+                    <div class="hpd-table heading">
+                        <h3>Line Chart</h3>
+                    </div>
+                    <div *ngIf="linedata?.length > 0">
+                        <google-chart [title]="linetitle" [type]="linetype" [data]="linedata" [options]="lineoptions"
+                            [width]="linewidth" [height]="lineheight" [columnNames]="linecolumnNames">
+                        </google-chart>
+                    </div>
+                    <div *ngIf="linedata?.length <= 0" style="text-align:center ; color: red">
+                        Data not found
                     </div>
                 </div>
             </div>

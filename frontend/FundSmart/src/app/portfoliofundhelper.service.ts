@@ -29,20 +29,16 @@ function sort(fundlist: portfolio_fund[], column: string, direction: string): po
     } else {
         return [...fundlist].sort((a, b) => {
             let value = Number.parseInt(a[column]);
-            // console.log('value', value);
             if (value.toString() === 'NaN') {
-                // console.log('came in if');
                 const res = compare(a[column], b[column]);
                 return direction === 'asc' ? res : -res;
             } else {
-                // console.log('in else');
                 const res = compare(Number.parseInt(a[column]), Number.parseInt(b[column]));
                 return direction === 'asc' ? res : -res;
             }
         });
     }
 }
-
 
 function matches(fund: portfolio_fund, term: string, pipe: PipeTransform) {
     return fund.security.toLowerCase().includes(term);
