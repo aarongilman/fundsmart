@@ -101,7 +101,6 @@ export class HoldingSummaryComponent implements OnInit {
                     this.getHistoricalPerformance();
                     this.getFund();
                     this.getLineGraph();
-                    // this.linegraph();
                 } else {
                     this.spinner.hide();
                     this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
@@ -121,7 +120,6 @@ export class HoldingSummaryComponent implements OnInit {
                 this.getHistoricalPerformance();
                 this.getFund();
                 this.getLineGraph();
-                // this.linegraph();
             } else {
                 this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
             }
@@ -258,36 +256,10 @@ export class HoldingSummaryComponent implements OnInit {
         });
     }
 
-    linegraph() {
-        this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then(
-            (jsondata: any) => {
-                if (portfolioidSelect.length === 1) {
-                    this.linecolumnNames = ['label'];
-                    this.linecolumnNames.push(jsondata[0]['portfolio']);
-                    for (let i = 0; i < jsondata[0]['label'].length; i++) {
-                        this.linedata.push([jsondata[0]['label'][i], jsondata[0]['series'][i]]);
-                    }
-                } else {
-                    this.linedata = [];
-                    let templabel = [];
-                    jsondata.forEach(element => {
-                        for (let e = 0; e < element.length; e++) {
-                            console.log(jsondata.element[e]);
-                            if (!templabel.includes(jsondata.element.label)) {
-                                templabel.push(jsondata.element.label);
-                            }
-                        }
-                    });
-                    console.log('temp lable', templabel);
-                }
-            });
-    }
-
     getLineGraph() {
         this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then(
             (jsondata: any) => {
                 let totalportfolios = jsondata.length + 1;
-                console.log(totalportfolios);
                 if (portfolioidSelect.length === 1) {
                     this.linecolumnNames = ['label'];
                     this.linecolumnNames.push(jsondata[0]['portfolio']);
@@ -301,8 +273,6 @@ export class HoldingSummaryComponent implements OnInit {
                     const mainObj = {};
                     for (let i = 0; i < jsondata.length; i++) {
                         const element = jsondata[i];
-                        console.log('la',element['label']);
-                        
                         if (element['label'].length > 0) {
                             this.linecolumnNames.push(element.portfolio);
                             for (let k = 0; k < element['label'].length; k++) {
@@ -316,50 +286,8 @@ export class HoldingSummaryComponent implements OnInit {
                                     mainObj[label] = element.series[k];
                                 }
                             }
-
                         }
-                      //  let count = 0;
-                      //  for (let i = 0; i < tempArray.length; i++) {
-                       //     const element = tempArray[i];
-                       //     if (element === mainObj[element]['label']) {
-                       //         console.log(mainObj[element]);
-                        //    }
-                            // try {
-                            //     const values = (mainObj[element].split(',')).filter(Boolean);
-                            //     const valuesCollection = [];
-                            //     valuesCollection.push(element);
-                            //     count++;
-                            //     for (const iterator of values) {
-                            //         console.log('iterators', iterator);
-                            //         console.log('count', count);
-                            //         valuesCollection.push(parseFloat(iterator));
-                            //         this.linedata.push(valuesCollection);
-                            //     }
-                            // } catch {
-                            //     console.log('element is ', element);
-
-                            // }
-                       // }
                     }
-                    // let count = 0;
-                    // for (let i = 0; i < tempArray.length; i++) {
-                    //     const element = tempArray[i];
-                    //     count++;
-                    //     console.log(count);
-                    //     try {
-                    //         const values = (mainObj[element].split(',')).filter(Boolean);
-                    //         const valuesCollection = [];
-                    //         valuesCollection.push(element);
-                    //         for (const iterator of values) {
-                    //             valuesCollection.push(parseFloat(iterator));
-                    //         }
-                    //         this.linedata.push(valuesCollection);
-                    //     } catch {
-                    //         console.log(mainObj[element]);
-                    //     }
-                    //     this.spinner.hide();
-                    // }
-
                     for (let i = 0; i < tempArray.length; i++) {
                         const element = tempArray[i];
                         let values;
@@ -377,12 +305,11 @@ export class HoldingSummaryComponent implements OnInit {
                         if (valuesCollection.length === totalportfolios) {
                             this.linedata.push(valuesCollection);
                         }
-                    }
+                    }   
                     this.spinner.hide();
-                    console.log(this.linedata);
                 }
-
             });
     }
+    
 
 }
