@@ -524,17 +524,23 @@ export class HomeComponent implements OnInit {
                         this.userservice.removedata(p1record);
                     }
                     if (portfoliofundlist.length === 1) {
-
-                        portfoliofundlist[0].security = '';
-                        portfoliofundlist[0].security_id = -1;
-                        portfoliofundlist[0].p1record = null;
-                        portfoliofundlist[0].p2record = null;
-                        portfoliofundlist[0].p3record = null;
-                        portfoliofundlist[0].yourPortfolio = '';
-                        portfoliofundlist[0].comparision1 = '';
-                        portfoliofundlist[0].comparision2 = '';
-                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
-
+                        localStorage.setItem('securityData', JSON.stringify([]));
+                        portfoliofundlist.length = 0;
+                        let singlefund: portfolio_fund = {
+                            security: '',
+                            security_id: -1,
+                            p1record: null,
+                            p2record: null,
+                            p3record: null,
+                            yourPortfolio: '',
+                            comparision1: '',
+                            comparision2: ''
+                        };
+                        portfoliofundlist.push(singlefund);
+                        this.portfolioservice.resetfunds();
+                        this.portfolioservice.funds$.subscribe(fund => {
+                            this.funds$ = fund;
+                        });
                     } else {
                         portfoliofundlist.splice(id, 1);
                         this.portfolioservice.resetfunds();
