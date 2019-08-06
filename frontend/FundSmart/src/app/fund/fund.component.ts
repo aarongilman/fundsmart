@@ -63,8 +63,8 @@ export class FundComponent implements OnInit {
             });
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
-                this.router.navigate(['/home']);
                 portfolioList.length = 0;
+                this.router.navigate(['/home']);
 
             });
     }

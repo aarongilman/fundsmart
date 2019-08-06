@@ -10,9 +10,9 @@ import { portfolioidSelect } from './fund/portfolioid_select';
 })
 
 export class ServercommunicationService {
-    api_link = 'http://3.130.87.74/';
+    // api_link = 'http://3.130.87.74/';
     // api_link = 'http://localhost:8000/';
-    // api_link = 'http://192.168.100.111:8000/';
+    api_link = 'http://192.168.100.111:8000/';
     // api_link = 'http://127.0.0.1:8000/';
     socialuser: SocialUser;
     currentuser: any;
@@ -42,7 +42,8 @@ export class ServercommunicationService {
         this.socialuser = user;
         const body = { access_token: user.authToken };
         this.http.post(this.api_link + 'rest-auth/google/', body, { headers: this.httpHeaders }).toPromise().then(data => {
-            localStorage.setItem('authkey', data['key']);
+            sessionStorage.setItem('authkey', data['key']);
+            // localStorage.setItem('authkey', data['key']);
             this.getUser(data['key']);
         });
     }
@@ -186,14 +187,14 @@ export class ServercommunicationService {
 
     checklogin() {
         var userkey = null;
-        userkey = localStorage.getItem('authkey');
+        userkey = sessionStorage.getItem('authkey');
         if (userkey != null) {
             this.getUser(userkey);
         }
     }
 
     logout() {
-        localStorage.removeItem('authkey');
+        sessionStorage.removeItem('authkey');
         this.http.post(this.api_link + 'rest-auth/logout/',
             { headers: this.httpHeaders }).toPromise().then(
                 data => {

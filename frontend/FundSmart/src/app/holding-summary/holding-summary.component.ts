@@ -5,6 +5,7 @@ import { IntercomponentCommunicationService } from '../intercomponent-communicat
 import { ToastrService } from 'ngx-toastr';
 import { portfolioidSelect } from '../fund/portfolioid_select';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { element } from '@angular/core/src/render3';
 
 @Component({
     selector: 'app-holding-summary',
@@ -233,6 +234,21 @@ export class HoldingSummaryComponent implements OnInit {
         }
     }
 
+    linegraph() {
+        this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then(
+            (jsondata: any) => {
+                jsondata.forEach(element => {
+                    this.linecolumnNames.push(element['portfolio']);
+                    console.log('length', element['lable'].length);
+
+
+                });
+
+            });
+
+    }
+
+
     getHistoricalPerformance() {
         this.service.holding_summary_historicalPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
@@ -258,15 +274,15 @@ export class HoldingSummaryComponent implements OnInit {
     getLineGraph() {
         this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then(
             (jsondata: any) => {
-                // console.log('came here');
+                console.log('came here');
 
                 this.linedata = [];
                 this.linecolumnNames = ['label'];
                 const tempArray = [];
-                const mainObj = {};
+                const mainObj = [];
                 for (let i = 0; i < jsondata.length; i++) {
                     const element = jsondata[i];
-                    // console.log('infirst for loop');
+                    console.log('infirst for loop');
                     if (this.linedata !== null) {
                         this.linecolumnNames.push(element.portfolio);
                     }
@@ -276,36 +292,57 @@ export class HoldingSummaryComponent implements OnInit {
                             tempArray.push(label);
                         }
                         if (mainObj[label]) {
-                            mainObj[label] = mainObj[label] + ',' + element.series[k];
+                            if (portfolioidSelect.length === 1) {
+                                this.linedata.push([mainObj[label], element.series[k]]);
+
+                            }
+                            else {
+                                mainObj[label] = mainObj[label] + ',' + element.series[k];
+                            }
                         } else {
                             mainObj[label] = element.series[k];
+                            // console.log(mainObj[label]);
+
+                            // this.linedata.push(element.series[k]);
+
                         }
                     }
                 }
                 if (portfolioidSelect.length === 1) {
+
                     // console.log('one portfolio');
                     // console.log("temp array", tempArray);
-                    for (let i = 0; i < tempArray.length; i++) {
-                        const element = tempArray[i];
-                        // console.log('element', element);
-                        const values = (mainObj[element].split(',')).filter(Boolean);
-                        // console.log(values);
-                    }
-                } else {
-                    for (let i = 0; i < tempArray.length; i++) {
-                        console.log('in second for loop');
-                        const element = tempArray[i];
-                        const values = (mainObj[element].split(',')).filter(Boolean);
-                        const valuesCollection = [];
-                        valuesCollection.push(element);
-                        for (const iterator of values) {
-                            valuesCollection.push(parseFloat(iterator));
-                        }
-                        console.log('push data');
-                        this.linedata.push(valuesCollection);
-                        this.spinner.hide();
-                    }
+                    // mainObj.forEach(element => {
+                    // console.log('element', element);
+                    // });
+                    console.log('main obj', mainObj);
+                    this.linedata = mainObj;
+
+                    // for (let i = 0; i < tempArray.length; i++) {
+                    //     const element = tempArray[i];
+                    //     console.log('element', element);
+                    //     console.log('mainobj[element]', element);
+                    //     const values = (mainObj[element].split(',')).filter();
+                    //     // const values = (mainObj[element].split(',')).filter(Boolean);
+                    //     console.log(values);
                 }
+                // } else {
+                // for (let i = 0; i < tempArray.length; i++) {
+                //     // console.log('in second for loop');
+                //     const element = tempArray[i];
+                //     const values = (mainObj[element].split(',')).filter(Boolean);
+                //     const valuesCollection = [];
+                //     valuesCollection.push(element);
+                //     for (const iterator of values) {
+                //         valuesCollection.push(parseFloat(iterator));
+                //     }
+
+                //     this.linedata.push(valuesCollection);
+                //     this.spinner.hide();
+                // }
+                // }
+                console.log(this.linedata);
+
             });
     }
 

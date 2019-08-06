@@ -41,23 +41,36 @@ export class AppComponent implements OnInit, OnDestroy {
     closeResult: string;
     showdetail_flag = false;
     currentuser;
-
+    islogin: boolean;
     constructor(
-        private modalService: NgbModal, 
+        private modalService: NgbModal,
         private userservice: ServercommunicationService,
         private interconn: IntercomponentCommunicationService,
         private ccService: NgcCookieConsentService,
         private formBuilder: FormBuilder,
         private authService: AuthService,
         private toastrService: ToastrService) {
+        if (sessionStorage.getItem('authkey')) {
+            console.log('Has authkey');
+            this.islogin = true;
+        } else {
+            console.log('no authkey');
+            this.islogin = false;
+        }
         this.interconn.componentMethodCalled$.subscribe(
             () => {
                 this.currentuser = this.userservice.currentuser;
+                this.islogin = true;
+                console.log('is login', this.islogin);
+
             }
         );
         this.interconn.logoutcomponentMethodCalled$.subscribe(
             () => {
                 this.currentuser = undefined;
+                this.islogin = false;
+                console.log('is login', this.islogin);
+
             }
         );
     }
