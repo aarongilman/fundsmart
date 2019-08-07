@@ -125,6 +125,8 @@ export class HomeComponent implements OnInit {
     total$;
     model: any = {};
 
+    loginpers = 0;
+    logindollars = 0;
     tableData: any = [];
 
     existing: HistoricalData = {
@@ -360,6 +362,8 @@ export class HomeComponent implements OnInit {
                 fiveyear: 0
             };
             if (result[0]) {
+                this.logindollars = Number.parseFloat(Number.parseFloat(result[0]['dollar_improvement_num']).toFixed(2));
+                this.loginpers = Number.parseFloat(Number.parseFloat(result[0]['perc_improvement_num']).toFixed(2));
                 this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
                 this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
                 this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
