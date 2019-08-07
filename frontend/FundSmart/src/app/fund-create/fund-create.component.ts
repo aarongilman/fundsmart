@@ -289,7 +289,11 @@ export class FundCreateComponent implements OnInit {
                 item.quantity,
                 item.portfolio,
                 item.security,
-                this.currentUser['id']).toPromise().then();
+                this.currentUser['id']).toPromise().then().catch(
+                    error => {
+                        this.toastr.error('There was error updating quantity. Please delete recored and create new one'
+                            , 'Error');
+                    });
         }
     }
 

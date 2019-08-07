@@ -19,6 +19,7 @@ import { securitylist } from '../securitylist';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
+import { forEach } from '@angular/router/src/utils/collection';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 declare var Dropbox: Dropbox;
@@ -113,6 +114,13 @@ export class HomeComponent implements OnInit {
     registeruserForm: FormGroup;
     submitted = false;
 
+    loginForm: FormGroup;
+    loginformSubmitted = false;
+
+    comparision1Form: FormGroup;
+    comparision2Form: FormGroup;
+    fundrowForm: FormGroup;
+
     funds$: portfolio_fund[];
     total$;
     model: any = {};
@@ -148,6 +156,11 @@ export class HomeComponent implements OnInit {
     showdetail_flag = false;
     email2: string;
 
+    portfolioinput: string[] = [];
+    comp1input: string[] = [];
+    comp2input: string[] = [];
+    lastkeydown1: number = 0;
+
     portfolio1: any;
     comparision1: any;
     comparision2: any;
@@ -165,6 +178,7 @@ export class HomeComponent implements OnInit {
     donuttype = 'PieChart';
     donutoptions;
 
+    linetitle = '';
     linedata = [];
     lineoptions;
     linewidth = 700;
@@ -174,7 +188,6 @@ export class HomeComponent implements OnInit {
     securitylist = securitylist;
     arrayBuffer: any;
     DynamicDisable = [];
-
     constructor(
         private modalService: NgbModal,
         private interconn: IntercomponentCommunicationService,
@@ -192,18 +205,19 @@ export class HomeComponent implements OnInit {
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
         });
-        this.interconn.googledriveuploadcalled$.subscribe(() => {
-            this.spinner.show();
-            this.setdataindeshboard();
-            this.portfolioservice.resetfunds();
-            this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
-            this.portfolioservice.total$.subscribe(f => {
-                this.total$ = f;
-                const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                this.portfolioservice.page = pageno;
+        this.interconn.googledriveuploadcalled$.subscribe(
+            () => {
+                this.spinner.show();
+                this.setdataindeshboard();
+                this.portfolioservice.resetfunds();
+                this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
+                this.portfolioservice.total$.subscribe(f => {
+                    this.total$ = f;
+                    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                    this.portfolioservice.page = pageno;
+                });
+                this.spinner.hide();
             });
-            this.spinner.hide();
-        });
         this.interconn.logoutcomponentMethodCalled$.subscribe(() => {
             this.currentUser = undefined;
         });
@@ -211,29 +225,30 @@ export class HomeComponent implements OnInit {
             this.setcurrent_user();
         });
         this.tableData = JSON.parse(localStorage.getItem('securityData'));
-        this.userservice.getSecurity().subscribe(datasecuritylist => {
-            securitylist.length = 0;
-            // tslint:disable-next-line: forin
-            for (var obj in datasecuritylist) {
-                var securityobj: security = {
-                    id: -1,
-                    isin: '',
-                    name: '',
-                    ticker: '',
-                    asset_type: ''
-                };
-                securityobj.id = datasecuritylist[obj]['id'];
-                securityobj.isin = datasecuritylist[obj]['isin'];
-                securityobj.name = datasecuritylist[obj]['name'];
-                securityobj.ticker = datasecuritylist[obj]['ticker'];
-                securityobj.asset_type = datasecuritylist[obj]['asset_type'];
-                securitylist.push(securityobj);
-            }
-            if (this.tableData.length > 0 || this.tableData !== null) {
-                this.setfunds(this.tableData);
-                this.setdataindeshboard();
-            }
-        });
+        this.userservice.getSecurity().subscribe(
+            datasecuritylist => {
+                securitylist.length = 0;
+                // tslint:disable-next-line: forin
+                for (var obj in datasecuritylist) {
+                    var securityobj: security = {
+                        id: -1,
+                        isin: '',
+                        name: '',
+                        ticker: '',
+                        asset_type: ''
+                    };
+                    securityobj.id = datasecuritylist[obj]['id'];
+                    securityobj.isin = datasecuritylist[obj]['isin'];
+                    securityobj.name = datasecuritylist[obj]['name'];
+                    securityobj.ticker = datasecuritylist[obj]['ticker'];
+                    securityobj.asset_type = datasecuritylist[obj]['asset_type'];
+                    securitylist.push(securityobj);
+                }
+                if (this.tableData.length > 0 || this.tableData !== null) {
+                    this.setfunds(this.tableData);
+                    this.setdataindeshboard();
+                }
+            });
     }
 
     ngOnInit() {
@@ -306,6 +321,10 @@ export class HomeComponent implements OnInit {
         }
         try {
             item.security = securitylist.find(s => s.id === item.security_id).name;
+
+            portfoliofundlist[i].security_id = securitylist.find(s => s.id === item.security_id).id;
+            portfoliofundlist[i].security = securitylist.find(s => s.id === item.security_id).name;
+            console.log('change', portfoliofundlist[i]);
             let localData = JSON.parse(localStorage.getItem('securityData'));
             let index = localData.findIndex(data => data.recordId === item.p1record);
             localData[index].securityId = item.security_id;
@@ -378,14 +397,7 @@ export class HomeComponent implements OnInit {
                 },
                 pieSliceText: 'label',
                 legend: 'none',
-                colors: [
-                    '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
-                    '#cc0000', '#e65c00', '#ecaa39', '#eac843',
-                    '#a2b86d', '#922b21', '#e74c3c', '#633974',
-                    '#8e44ad', '#1a5276', '#3498db', '#0e6655',
-                    '#52be80', '#f4d03f', '#dc7633', '#717d7e',
-                    '#212f3c'
-                ],
+                colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
             };
         });
 
@@ -405,16 +417,11 @@ export class HomeComponent implements OnInit {
                 pieHole: 0.8,
                 legend: { position: 'top', alignment: 'start', maxLines: 10 },
                 pieSliceText: 'none',
-                colors: [
-                    '#1395b9', '#0e3c54', '#cc0000', '#e65c00',
-                    '#ecaa39', '#eac843', '#a2b86d', '#5ace9f',
-                    '#fca622', '#5ace9f', '#fca622', '#1395b9',
-                    '#0e3c54', '#cc0000', '#e65c00', '#ecaa39',
-                    '#eac843', '#a2b86d', '#922b21', '#e74c3c',
+                colors: ['#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+                    '#a2b86d', '#5ace9f', '#fca622', '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+                    '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', '#922b21', '#e74c3c',
                     '#633974', '#8e44ad', '#1a5276', '#3498db',
-                    '#0e6655', '#52be80', '#f4d03f', '#dc7633',
-                    '#717d7e', '#212f3c'
-                ],
+                    '#0e6655', '#52be80', '#f4d03f', '#dc7633', '#717d7e', '#212f3c'],
             };
         });
 
@@ -423,32 +430,36 @@ export class HomeComponent implements OnInit {
             this.linecolumnNames = ['label'];
             const tempArray = [];
             const mainObj = {};
-            for (let i = 0; i < jsondata.length; i++) {
-                const element = jsondata[i];
-                if (this.linedata !== null) {
-                    this.linecolumnNames.push(element.portfolio);
-                }
-                for (let k = 0; k < element['label'].length; k++) {
-                    const label = element['label'][k];
-                    if (tempArray.filter(x => x === label).length === 0) {
-                        tempArray.push(label);
+            if (this.linedata == []) {
+                this.linedata.push(['No data copy', 0, 0]);
+            } else {
+                for (let i = 0; i < jsondata.length; i++) {
+                    const element = jsondata[i];
+                    if (this.linedata !== null) {
+                        this.linecolumnNames.push(element.portfolio);
                     }
-                    if (mainObj[label]) {
-                        mainObj[label] = mainObj[label] + ',' + element.series[k];
-                    } else {
-                        mainObj[label] = element.series[k];
+                    for (let k = 0; k < element['label'].length; k++) {
+                        const label = element['label'][k];
+                        if (tempArray.filter(x => x === label).length === 0) {
+                            tempArray.push(label);
+                        }
+                        if (mainObj[label]) {
+                            mainObj[label] = mainObj[label] + ',' + element.series[k];
+                        } else {
+                            mainObj[label] = element.series[k];
+                        }
                     }
                 }
-            }
-            for (let i = 0; i < tempArray.length; i++) {
-                const element = tempArray[i];
-                const values = (mainObj[element].split(',')).filter(Boolean);
-                const valuesCollection = [];
-                valuesCollection.push(element.toString());
-                for (const iterator of values) {
-                    valuesCollection.push(parseFloat(iterator));
+                for (let i = 0; i < tempArray.length; i++) {
+                    const element = tempArray[i];
+                    const values = (mainObj[element].split(',')).filter(Boolean);
+                    const valuesCollection = [];
+                    valuesCollection.push(element.toString());
+                    for (const iterator of values) {
+                        valuesCollection.push(parseFloat(iterator));
+                    }
+                    this.linedata.push(valuesCollection);
                 }
-                this.linedata.push(valuesCollection);
             }
 
             this.lineoptions = {
@@ -457,14 +468,7 @@ export class HomeComponent implements OnInit {
                 tooltips: {
                     mode: 'index'
                 },
-                colors: [
-                    '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
-                    '#cc0000', '#e65c00', '#ecaa39', '#eac843',
-                    '#a2b86d', '#922b21', '#e74c3c', '#633974',
-                    '#8e44ad', '#1a5276', '#3498db', '#0e6655',
-                    '#52be80', '#f4d03f', '#dc7633', '#717d7e',
-                    '#212f3c'
-                ],
+                colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
             };
         });
     }
@@ -497,10 +501,9 @@ export class HomeComponent implements OnInit {
             comparision2: ''
         };
         portfoliofundlist.push(singlefund);
-        console.log(singlefund, portfoliofundlist); // please test again
         this.portfolioservice.resetfunds();
         this.portfolioservice.funds$.subscribe(f => {
-            this.funds$ = JSON.parse(JSON.stringify(f));
+            this.funds$ = f;
         });
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
@@ -522,26 +525,27 @@ export class HomeComponent implements OnInit {
                 if (result.value) {
                     if (portfoliofundlist[id].security !== '') {
                         this.userservice.removedata(p1record);
-                        //       this.setfunds(JSON.parse(JSON.stringify('securityData')))
                     }
                     if (portfoliofundlist.length === 1) {
-
-                        portfoliofundlist[0].security = '';
-                        portfoliofundlist[0].security_id = -1;
-                        portfoliofundlist[0].p1record = null;
-                        portfoliofundlist[0].p2record = null;
-                        portfoliofundlist[0].p3record = null;
-                        portfoliofundlist[0].yourPortfolio = '';
-                        portfoliofundlist[0].comparision1 = '';
-                        portfoliofundlist[0].comparision2 = '';
-                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = f; });
-
+                        localStorage.setItem('securityData', JSON.stringify([]));
+                        portfoliofundlist.length = 0;
+                        let singlefund: portfolio_fund = {
+                            security: '',
+                            security_id: -1,
+                            p1record: null,
+                            p2record: null,
+                            p3record: null,
+                            yourPortfolio: '',
+                            comparision1: '',
+                            comparision2: ''
+                        };
+                        portfoliofundlist.push(singlefund);
+                        this.portfolioservice.resetfunds();
+                        this.portfolioservice.funds$.subscribe(fund => {
+                            this.funds$ = fund;
+                        });
                     } else {
-                        // test
-                        const index = portfoliofundlist.findIndex((x: any) => x.p1record === p1record);
-                        console.log(index);
-                        portfoliofundlist.splice(index, 1);
-                        console.log('removed', portfoliofundlist);
+                        portfoliofundlist.splice(id, 1);
                         this.portfolioservice.resetfunds();
                         this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
                         this.portfolioservice.total$.subscribe(total => {
@@ -622,7 +626,8 @@ export class HomeComponent implements OnInit {
     }
 
     userlogin() {
-        this.userservice.doLogin(this.model.username, this.model.password).subscribe(data => {
+        this.userservice.doLogin(this.model.username, this.model.password).subscribe(
+            data => {
                 localStorage.setItem('authkey', data['key']);
                 this.userservice.getUser(data['key']);
                 this.modalService.dismissAll('Login Done');
@@ -770,6 +775,10 @@ export class HomeComponent implements OnInit {
                 if (secinput !== newsec.name) {
                     item.security_id = -1;
                 } else {
+                    // let index = portfoliofundlist.findIndex(f => f.security_id === newsec.id);
+                    // portfoliofundlist[index].security_id = newsec.id;
+                    // portfoliofundlist[index].security = newsec.name;
+                    // console.log(portfoliofundlist[index]);
                     item.security_id = newsec.id;
                 }
             }
@@ -817,10 +826,14 @@ export class HomeComponent implements OnInit {
         if (item.security_id === -1) {
             return false;
         } else {
+            // console.log(portfoliofundlist);
+            portfoliofundlist[i].security_id = item.security_id;
+            portfoliofundlist[i].security = item.security;
             var quantity;
             const Tempportfoliofundlist = JSON.parse(JSON.stringify(portfoliofundlist));
             if (string1.match('portfolio')) {
                 if (item.yourPortfolio) {
+                    portfoliofundlist[i].yourPortfolio = item.yourPortfolio;
                     quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
                 } else {
                     item.yourPortfolio = null;
@@ -829,6 +842,7 @@ export class HomeComponent implements OnInit {
                 this.createportfoliofundmethod(quantity, item, 'p1', i);
             } else if (string1.match('comp1')) {
                 if (item.comparision1) {
+                    portfoliofundlist[i].comparision1 = item.comparision1;
                     quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
                     this.createportfoliofundmethod(quantity, item, 'p2', i);
                 } else {
@@ -838,6 +852,7 @@ export class HomeComponent implements OnInit {
                 }
             } else if (string1.match('comp2')) {
                 if (item.comparision2) {
+                    portfoliofundlist[i].comparision2 = item.comparision2;
                     quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
                 } else {
                     quantity = null;
