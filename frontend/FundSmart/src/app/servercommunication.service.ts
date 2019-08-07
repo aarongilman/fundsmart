@@ -334,7 +334,7 @@ export class ServercommunicationService {
     }
 
     holding_summary_asset(ids) {
-        return this.http.get(this.api_link + 'api/asset_class_holding_summary/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/asset_class_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
@@ -365,7 +365,7 @@ export class ServercommunicationService {
     }
 
     holding_summary_fund(ids) {
-        return this.http.get(this.api_link + 'api/fund_holding_summary/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/fund_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
