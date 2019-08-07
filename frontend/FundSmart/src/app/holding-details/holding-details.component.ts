@@ -171,7 +171,13 @@ export class HoldingDetailsComponent implements OnInit {
                         this.total = total;
                         this.spinner.hide();
                     });
-                });
+                }).catch(
+                    error => {
+                        this.spinner.hide();
+                        this.toastr.error('One or more funds contains alphabetic charecter,Please delete it form Fund Create page',
+                            'Error');
+                    }
+                );
         };
     }
 

@@ -207,7 +207,6 @@ export class HomeComponent implements OnInit {
         });
         this.interconn.googledriveuploadcalled$.subscribe(
             () => {
-                alert('came in interconn');
                 this.spinner.show();
                 this.setdataindeshboard();
                 this.portfolioservice.resetfunds();
@@ -322,6 +321,10 @@ export class HomeComponent implements OnInit {
         }
         try {
             item.security = securitylist.find(s => s.id === item.security_id).name;
+
+            portfoliofundlist[i].security_id = securitylist.find(s => s.id === item.security_id).id;
+            portfoliofundlist[i].security = securitylist.find(s => s.id === item.security_id).name;
+            console.log('change', portfoliofundlist[i]);
             let localData = JSON.parse(localStorage.getItem('securityData'));
             let index = localData.findIndex(data => data.recordId === item.p1record);
             localData[index].securityId = item.security_id;
@@ -772,6 +775,10 @@ export class HomeComponent implements OnInit {
                 if (secinput !== newsec.name) {
                     item.security_id = -1;
                 } else {
+                    // let index = portfoliofundlist.findIndex(f => f.security_id === newsec.id);
+                    // portfoliofundlist[index].security_id = newsec.id;
+                    // portfoliofundlist[index].security = newsec.name;
+                    // console.log(portfoliofundlist[index]);
                     item.security_id = newsec.id;
                 }
             }
@@ -819,10 +826,14 @@ export class HomeComponent implements OnInit {
         if (item.security_id === -1) {
             return false;
         } else {
+            // console.log(portfoliofundlist);
+            portfoliofundlist[i].security_id = item.security_id;
+            portfoliofundlist[i].security = item.security;
             var quantity;
             const Tempportfoliofundlist = JSON.parse(JSON.stringify(portfoliofundlist));
             if (string1.match('portfolio')) {
                 if (item.yourPortfolio) {
+                    portfoliofundlist[i].yourPortfolio = item.yourPortfolio;
                     quantity = Tempportfoliofundlist.find(x => x.yourPortfolio = item.yourPortfolio).yourPortfolio;
                 } else {
                     item.yourPortfolio = null;
@@ -831,6 +842,7 @@ export class HomeComponent implements OnInit {
                 this.createportfoliofundmethod(quantity, item, 'p1', i);
             } else if (string1.match('comp1')) {
                 if (item.comparision1) {
+                    portfoliofundlist[i].comparision1 = item.comparision1;
                     quantity = Tempportfoliofundlist.find(x => x.comparision1 = item.comparision1).comparision1;
                     this.createportfoliofundmethod(quantity, item, 'p2', i);
                 } else {
@@ -840,6 +852,7 @@ export class HomeComponent implements OnInit {
                 }
             } else if (string1.match('comp2')) {
                 if (item.comparision2) {
+                    portfoliofundlist[i].comparision2 = item.comparision2;
                     quantity = Tempportfoliofundlist.find(x => x.comparision2 = item.comparision2).comparision2;
                 } else {
                     quantity = null;
