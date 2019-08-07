@@ -116,39 +116,54 @@ export class FundRecommendationComponent implements OnInit {
 
     getLinePlotChart() {
         this.service.fundRecommendationLineChart(portfolioidSelect).toPromise().then((jsondata: any) => {
-            this.linedata = [];
-            this.linecolumnNames = ['label'];
-            const tempArray = [];
-            const mainObj = {};
-            for (let i = 0; i < jsondata.length; i++) {
-                const element = jsondata[i];
-                if (this.linedata !== null) {
-                    this.linecolumnNames.push(element.portfolio);
+            let totalportfolios = jsondata.length + 1;
+            if (portfolioidSelect.length === 1) {
+                this.linecolumnNames = ['label'];
+                this.linecolumnNames.push(jsondata[0]['portfolio']);
+                for (let i = 0; i < jsondata[0]['label'].length; i++) {
+                    this.linedata.push([jsondata[0]['label'][i], jsondata[0]['series'][i]]);
                 }
-                for (let k = 0; k < element['label'].length; k++) {
-                    const label = element['label'][k];
-                    if (tempArray.filter(x => x === label).length === 0) {
-                        tempArray.push(label);
-                    }
-                    if (mainObj[label]) {
-                        mainObj[label] = mainObj[label] + ',' + element.series[k];
-                    } else {
-                        mainObj[label] = element.series[k];
+            } else {
+                this.linedata = [];
+                this.linecolumnNames = ['label'];
+                const tempArray = [];
+                const mainObj = {};
+                for (let i = 0; i < jsondata.length; i++) {
+                    const element = jsondata[i];
+                    if (element['label'].length > 0) {
+                        this.linecolumnNames.push(element.portfolio);
+                        for (let k = 0; k < element['label'].length; k++) {
+                            const label = element['label'][k];
+                            if (tempArray.filter(x => x === label).length === 0) {
+                                tempArray.push(label);
+                            }
+                            if (mainObj[label]) {
+                                mainObj[label] = mainObj[label] + ',' + element.series[k];
+                            } else {
+                                mainObj[label] = element.series[k];
+                            }
+                        }
                     }
                 }
-            }
-            for (let i = 0; i < tempArray.length; i++) {
-                const element = tempArray[i];
-                const values = (mainObj[element].split(',')).filter(Boolean);
-                if (values.length === 3) {
+                for (let i = 0; i < tempArray.length; i++) {
+                    const element = tempArray[i];
+                    let values;
                     const valuesCollection = [];
-                    valuesCollection.push(element);
-                    for (const iterator of values) {
-                        valuesCollection.push(parseFloat(iterator));
+                    valuesCollection.push(element.toString());
+                    if (typeof mainObj[element] === 'number') {
+                        values = mainObj[element];
+                        valuesCollection.push(parseFloat(values));
+                    } else {
+                        values = (mainObj[element].split(',')).filter(Boolean);
+                        for (const iterator of values) {
+                            valuesCollection.push(parseFloat(iterator));
+                        }
                     }
-                    this.linedata.push(valuesCollection);
-                    this.spinner.hide();
+                    if (valuesCollection.length === totalportfolios) {
+                        this.linedata.push(valuesCollection);
+                    }
                 }
+                this.spinner.hide();
             }
         });
     }

@@ -83,25 +83,33 @@ export class FundComponent implements OnInit {
     }
 
     getFunds() {
-        this.userService.getUserPortfolio().toPromise().then(fundlist => {
-            portfolioList.length = 0;
-            fundlist['results'].forEach(element => {
-                element['ischecked'] = false;
-                if (portfolioidSelect.length > 0) {
-                    portfolioidSelect.forEach(id => {
-                        if (element['id'] === Number.parseInt(id)) {
-                            element['ischecked'] = true;
-                        }
-                    });
-                }
-                portfolioList.push(element);
+        if (portfolioList.length === 0) {
+            this.userService.getUserPortfolio().toPromise().then(fundlist => {
+                portfolioList.length = 0;
+                fundlist['results'].forEach(element => {
+                    element['ischecked'] = false;
+                    if (portfolioidSelect.length > 0) {
+                        portfolioidSelect.forEach(id => {
+                            if (element['id'] === Number.parseInt(id)) {
+                                element['ischecked'] = true;
+                            }
+                        });
+                    }
+                    portfolioList.push(element);
+                });
+                this.sortlist.resetHoldingDetails();
+                this.sortlist.hlist$.subscribe(f => {
+                    this.portfolioDetailList = JSON.parse(JSON.stringify(f));
+                    this.spinner.hide();
+                });
             });
+        } else {
             this.sortlist.resetHoldingDetails();
             this.sortlist.hlist$.subscribe(f => {
                 this.portfolioDetailList = JSON.parse(JSON.stringify(f));
                 this.spinner.hide();
             });
-        });
+        }
     }
 
     header_modals(modalid, fund?) {
