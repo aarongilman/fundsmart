@@ -13,13 +13,16 @@ import { NgxSpinnerService } from 'ngx-spinner';
 })
 export class AllocationRecommendationComponent implements OnInit {
 
-    currentAllocationTitle = '';
     currentAllocationData = [];
     currentAllocationWidth = 400;
     currentAllocationHeight = 400;
     currentAllocationType = 'PieChart';
     currentAllocationOption = {
-        legend: { position: "top", alignment: 'start', maxLines: 10 },
+        legend: {
+            position: "top",
+            alignment: 'start',
+            maxLines: 10
+        },
         pieHole: 0.8,
         pieSliceText: 'none',
         colors: ['#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', '#5ace9f', '#fca622'],
@@ -37,10 +40,9 @@ export class AllocationRecommendationComponent implements OnInit {
         private toastr: ToastrService,
         private spinner: NgxSpinnerService
     ) {
-        this.interconn.logoutcomponentMethodCalled$.toPromise().then(
-            () => {
-                this.router.navigate(['/home']);
-            });
+        this.interconn.logoutcomponentMethodCalled$.toPromise().then(() => {
+            this.router.navigate(['/home']);
+        });
     }
 
     ngOnInit() {
@@ -51,16 +53,15 @@ export class AllocationRecommendationComponent implements OnInit {
 
     getCurrentAllocation() {
         if (portfolioidSelect.length > 0) {
-            this.userservice.get(`api/current_allocation/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
-                (result: any) => {
-                    result.forEach((resultlist: any) => {
-                        const names = Object.keys(resultlist);
-                        for (const i in names) {
-                            this.currentAllocationData.push([names[i], resultlist[names[i]]]);
-                        }
-                    });
-                    this.spinner.hide();
+            this.userservice.getCurrentAllocation(portfolioidSelect).toPromise().then((result: any) => {
+                result.forEach((resultlist: any) => {
+                    const names = Object.keys(resultlist);
+                    for (const i in names) {
+                        this.currentAllocationData.push([names[i], resultlist[names[i]]]);
+                    }
                 });
+                this.spinner.hide();
+            });
         } else {
             this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
             this.spinner.hide();

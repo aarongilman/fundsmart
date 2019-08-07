@@ -5,7 +5,6 @@ import { IntercomponentCommunicationService } from '../intercomponent-communicat
 import { ToastrService } from 'ngx-toastr';
 import { portfolioidSelect } from '../fund/portfolioid_select';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { element } from '@angular/core/src/render3';
 
 @Component({
     selector: 'app-holding-summary',
@@ -30,16 +29,29 @@ export class HoldingSummaryComponent implements OnInit {
     lineoptions = {
         pointSize: 5,
         curveType: 'function',
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+        colors: [
+            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+            '#a2b86d', '#922b21', '#e74c3c', '#633974',
+            '#8e44ad', '#1a5276', '#3498db', '#0e6655',
+            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+            '#212f3c'
+        ],
     };
     total = {};
     total1 = {};
     total2 = {};
     total3 = {};
     total4 = [];
-    colors = ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'];
+    colors: [
+        '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+        '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+        '#a2b86d', '#922b21', '#e74c3c', '#633974',
+        '#8e44ad', '#1a5276', '#3498db', '#0e6655',
+        '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+        '#212f3c'
+    ]
 
-    bartitle_fund = 'Bar Chart';
     bardata_fund = [];
     barwidth_fund = 600;
     barheight_fund = 400;
@@ -47,7 +59,14 @@ export class HoldingSummaryComponent implements OnInit {
     baroptions_fund = {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+        colors: [
+            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+            '#a2b86d', '#922b21', '#e74c3c', '#633974',
+            '#8e44ad', '#1a5276', '#3498db', '#0e6655',
+            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+            '#212f3c'
+        ],
         enableInteractivity: true,
     };
     barcolumnname = [];
@@ -60,12 +79,18 @@ export class HoldingSummaryComponent implements OnInit {
     industry_baroptions_fund = {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+        colors: [
+            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+            '#a2b86d', '#922b21', '#e74c3c', '#633974',
+            '#8e44ad', '#1a5276', '#3498db', '#0e6655',
+            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+            '#212f3c'
+        ],
         enableInteractivity: true,
     };
     industryColumns = [];
 
-    assets_bartitle_fund = 'Bar Chart';
     assets_bardata_fund = [];
     assets_barwidth_fund = 600;
     assets_barheight_fund = 400;
@@ -74,7 +99,14 @@ export class HoldingSummaryComponent implements OnInit {
     assets_baroptions_fund = {
         legend: { position: "none" },
         bar: { groupWidth: '25%' },
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+        colors: [
+            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+            '#a2b86d', '#922b21', '#e74c3c', '#633974',
+            '#8e44ad', '#1a5276', '#3498db', '#0e6655',
+            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+            '#212f3c'
+        ],
         interpolateNulls: true,
         enableInteractivity: true,
     };
@@ -84,7 +116,16 @@ export class HoldingSummaryComponent implements OnInit {
     country_columnNames = [];
     country_options = {
         legend: 'none',
-        colorAxis: { colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'] },
+        colorAxis: {
+            colors: [
+                '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+                '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+                '#a2b86d', '#922b21', '#e74c3c', '#633974',
+                '#8e44ad', '#1a5276', '#3498db', '#0e6655',
+                '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+                '#212f3c'
+            ]
+        }
     };
 
     constructor(
@@ -94,22 +135,20 @@ export class HoldingSummaryComponent implements OnInit {
         private toastr: ToastrService,
         private spinner: NgxSpinnerService
     ) {
-        this.interconn.componentMethodCalled$.toPromise().then(
-            () => {
-                if (portfolioidSelect.length > 0) {
-                    this.spinner.show();
-                    this.getHistoricalPerformance();
-                    this.getFund();
-                    this.getLineGraph();
-                } else {
-                    this.spinner.hide();
-                    this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
-                }
-            });
-        this.interconn.logoutcomponentMethodCalled$.toPromise().then(
-            () => {
-                this.route.navigate(['/home']);
-            });
+        this.interconn.componentMethodCalled$.toPromise().then(() => {
+            if (portfolioidSelect.length > 0) {
+                this.spinner.show();
+                this.getHistoricalPerformance();
+                this.getFund();
+                this.getLineGraph();
+            } else {
+                this.spinner.hide();
+                this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+            }
+        });
+        this.interconn.logoutcomponentMethodCalled$.toPromise().then(() => {
+            this.route.navigate(['/home']);
+        });
     }
 
     ngOnInit() {
@@ -257,59 +296,57 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     getLineGraph() {
-        this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then(
-            (jsondata: any) => {
-                let totalportfolios = jsondata.length + 1;
-                if (portfolioidSelect.length === 1) {
-                    this.linecolumnNames = ['label'];
-                    this.linecolumnNames.push(jsondata[0]['portfolio']);
-                    for (let i = 0; i < jsondata[0]['label'].length; i++) {
-                        this.linedata.push([jsondata[0]['label'][i], jsondata[0]['series'][i]]);
-                    }
-                } else {
-                    this.linedata = [];
-                    this.linecolumnNames = ['label'];
-                    const tempArray = [];
-                    const mainObj = {};
-                    for (let i = 0; i < jsondata.length; i++) {
-                        const element = jsondata[i];
-                        if (element['label'].length > 0) {
-                            this.linecolumnNames.push(element.portfolio);
-                            for (let k = 0; k < element['label'].length; k++) {
-                                const label = element['label'][k];
-                                if (tempArray.filter(x => x === label).length === 0) {
-                                    tempArray.push(label);
-                                }
-                                if (mainObj[label]) {
-                                    mainObj[label] = mainObj[label] + ',' + element.series[k];
-                                } else {
-                                    mainObj[label] = element.series[k];
-                                }
-                            }
-                        }
-                    }
-                    for (let i = 0; i < tempArray.length; i++) {
-                        const element = tempArray[i];
-                        let values;
-                        const valuesCollection = [];
-                        valuesCollection.push(element.toString());
-                        if (typeof mainObj[element] === 'number') {
-                            values = mainObj[element];
-                            valuesCollection.push(parseFloat(values));
-                        } else {
-                            values = (mainObj[element].split(',')).filter(Boolean);
-                            for (const iterator of values) {
-                                valuesCollection.push(parseFloat(iterator));
-                            }
-                        }
-                        if (valuesCollection.length === totalportfolios) {
-                            this.linedata.push(valuesCollection);
-                        }
-                    }   
-                    this.spinner.hide();
+        this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then((jsondata: any) => {
+            let totalportfolios = jsondata.length + 1;
+            if (portfolioidSelect.length === 1) {
+                this.linecolumnNames = ['label'];
+                this.linecolumnNames.push(jsondata[0]['portfolio']);
+                for (let i = 0; i < jsondata[0]['label'].length; i++) {
+                    this.linedata.push([jsondata[0]['label'][i], jsondata[0]['series'][i]]);
                 }
-            });
+            } else {
+                this.linedata = [];
+                this.linecolumnNames = ['label'];
+                const tempArray = [];
+                const mainObj = {};
+                for (let i = 0; i < jsondata.length; i++) {
+                    const element = jsondata[i];
+                    if (element['label'].length > 0) {
+                        this.linecolumnNames.push(element.portfolio);
+                        for (let k = 0; k < element['label'].length; k++) {
+                            const label = element['label'][k];
+                            if (tempArray.filter(x => x === label).length === 0) {
+                                tempArray.push(label);
+                            }
+                            if (mainObj[label]) {
+                                mainObj[label] = mainObj[label] + ',' + element.series[k];
+                            } else {
+                                mainObj[label] = element.series[k];
+                            }
+                        }
+                    }
+                }
+                for (let i = 0; i < tempArray.length; i++) {
+                    const element = tempArray[i];
+                    let values;
+                    const valuesCollection = [];
+                    valuesCollection.push(element.toString());
+                    if (typeof mainObj[element] === 'number') {
+                        values = mainObj[element];
+                        valuesCollection.push(parseFloat(values));
+                    } else {
+                        values = (mainObj[element].split(',')).filter(Boolean);
+                        for (const iterator of values) {
+                            valuesCollection.push(parseFloat(iterator));
+                        }
+                    }
+                    if (valuesCollection.length === totalportfolios) {
+                        this.linedata.push(valuesCollection);
+                    }
+                }
+                this.spinner.hide();
+            }
+        });
     }
-    
 
 }

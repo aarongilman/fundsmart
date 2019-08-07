@@ -10,7 +10,7 @@ import { portfolioidSelect } from './fund/portfolioid_select';
 })
 
 export class ServercommunicationService {
-    // api_link = 'http://3.130.87.74/';
+    //api_link = 'http://3.130.87.74/';
     // api_link = 'http://localhost:8000/';
     api_link = 'http://192.168.100.111:8000/';
     // api_link = 'http://127.0.0.1:8000/';
@@ -131,7 +131,7 @@ export class ServercommunicationService {
         }
     }
 
-    get_security() {
+    getSecurity() {
         return this.http.get(this.api_link + 'api/security/', { headers: this.httpHeaders });
     }
 
@@ -333,11 +333,6 @@ export class ServercommunicationService {
         // }
     }
 
-    getHoldingDetails() {
-        return this.http.get(this.api_link + 'api/holding_detail/',
-            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-    }
-
     holding_summary_asset(ids) {
         return this.http.get(this.api_link + 'api/asset_class_holding_summary/?portfolio_ids=' + ids,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
@@ -501,6 +496,46 @@ export class ServercommunicationService {
 
     delete_PortfolioFund(id, portfolioIds) {
         return this.http.delete(this.api_link + 'api/portfolio_fund/' + id + '/?portfolio_ids=' + portfolioIds,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    getCurrentAllocation(ids) {
+        return this.http.get(this.api_link + 'api/current_allocation/?portfolio_ids=' + ids,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    getLineGraph(ids) {
+        return this.http.get(this.api_link + 'api/allocation_line_graph/?portfolio_ids=' + ids,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    getSelectedPortfolios(ids) {
+        return this.http.get(this.api_link + 'api/portfolio_fund/?portfolio_ids=' + ids,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    getHoldingSummaryFundRec(ids) {
+        return this.http.get(this.api_link + 'api/historical_performance_fund_recommendation/?portfolio_ids=' + ids,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    getPortfolioPerformance(ids) {
+        return this.http.get(this.api_link + 'api/portfolio_performance/?portfolio_ids=' + ids,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    getRecommendedPerformance(ids) {
+        return this.http.get(this.api_link + 'api/recommended_performance/?portfolio_ids=' + ids,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    getBarPlotPerformance(ids) {
+        return this.http.get(this.api_link + 'api/bar_plot_fund_recommendation/?portfolio_ids=' + ids,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    getHoldingDetails(ids) {
+        return this.http.get(this.api_link + 'api/holding_detail/?portfolio_ids' + ids,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 

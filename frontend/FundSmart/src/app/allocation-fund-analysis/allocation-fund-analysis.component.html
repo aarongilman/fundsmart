@@ -1,6 +1,7 @@
 <div class="right-panel-wrap no-padding-right">
     <div class="dashboard-content">
         <div class="row">
+
             <div class="col-lg-6 col-md-12">
                 <div
                     class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap p-b-0">
@@ -10,10 +11,9 @@
                     <div class="graph-labels label-left">
                     </div>
                     <div *ngIf="currentAllocationData && currentAllocationData?.length > 0">
-                        <google-chart #chart [title]="currentAllocationTitle" [type]="currentAllocationType"
-                            [data]="currentAllocationData" [columnNames]="columnNames"
-                            [options]="currentAllocationOption" [width]="currentAllocationWidth"
-                            [height]="currentAllocationHeight">
+                        <google-chart #chart [type]="currentAllocationType" [data]="currentAllocationData"
+                            [columnNames]="columnNames" [options]="currentAllocationOption"
+                            [width]="currentAllocationWidth" [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
                     <div *ngIf="currentAllocationData?.length <= 0" style="text-align: center;color:red ;width: 100%;">
@@ -21,6 +21,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-6 col-md-12">
                 <div
                     class="block-container chart-wrapper donut-chart-wrap semi-block d-flex align-items-center justify-content-center flex-wrap p-b-0">
@@ -40,6 +41,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-6">
                 <div class="block-container no-bdrs-top-right no-bdrs-botton-right semi-block">
                     <div class="hpd-table">
@@ -79,6 +81,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col-lg-6 col-md-12">
                 <div class="block-container chart-wrapper semi-block">
                     <div class="graph-labels display-contents">
@@ -87,8 +90,8 @@
                         <h3>Line Chart</h3>
                     </div>
                     <div *ngIf="linedata?.length > 0">
-                        <google-chart [title]="linetitle" [type]="linetype" [data]="linedata" [options]="lineoptions"
-                            [width]="linewidth" [height]="lineheight" [columnNames]="linecolumnNames">
+                        <google-chart [type]="linetype" [data]="linedata" [options]="lineoptions" [width]="linewidth"
+                            [height]="lineheight" [columnNames]="linecolumnNames">
                         </google-chart>
                     </div>
                     <div *ngIf="linedata?.length <= 0" style="text-align:center ; color: red">
@@ -96,6 +99,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

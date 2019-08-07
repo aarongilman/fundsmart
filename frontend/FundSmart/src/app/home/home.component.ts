@@ -225,7 +225,7 @@ export class HomeComponent implements OnInit {
             this.setcurrent_user();
         });
         this.tableData = JSON.parse(localStorage.getItem('securityData'));
-        this.userservice.get_security().subscribe(
+        this.userservice.getSecurity().subscribe(
             datasecuritylist => {
                 securitylist.length = 0;
                 // tslint:disable-next-line: forin

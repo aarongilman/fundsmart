@@ -26,16 +26,15 @@ export class HeaderComponent implements OnInit {
         private modalService: NgbModal,
         private service: ServercommunicationService,
         private intercon: IntercomponentCommunicationService,
-        private toastr: ToastrService) {
+        private toastr: ToastrService
+    ) {
         this.intercon.titlesettercalled$.subscribe(msg => this.title = msg);
-        this.intercon.componentMethodCalled$.subscribe(
-            () => {
-                this.setcurrent_user();
-            });
-        this.intercon.logoutcomponentMethodCalled$.subscribe(
-            () => {
-                this.currentuser = undefined;
-            });
+        this.intercon.componentMethodCalled$.subscribe(() => {
+            this.setcurrent_user();
+        });
+        this.intercon.logoutcomponentMethodCalled$.subscribe(() => {
+            this.currentuser = undefined;
+        });
     }
 
     ngOnInit() {
@@ -102,12 +101,11 @@ export class HeaderComponent implements OnInit {
     }
 
     updateuserprofile() {
-        this.service.update_User(this.currentuser).toPromise().then(
-            data => {
-                this.setcurrent_user();
-                this.modalService.dismissAll();
-                alert('Data Updated');
-            }, error => { });
+        this.service.update_User(this.currentuser).toPromise().then(data => {
+            this.setcurrent_user();
+            this.modalService.dismissAll();
+            alert('Data Updated');
+        }, error => { });
     }
 
 }

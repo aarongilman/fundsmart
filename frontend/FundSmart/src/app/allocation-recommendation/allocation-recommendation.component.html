@@ -80,10 +80,9 @@
                     <div class="graph-labels label-left">
                     </div>
                     <div *ngIf="currentAllocationData && currentAllocationData?.length > 0">
-                        <google-chart #chart [title]="currentAllocationTitle" [type]="currentAllocationType"
-                            [data]="currentAllocationData" [columnNames]="columnNames"
-                            [options]="currentAllocationOption" [width]="currentAllocationWidth"
-                            [height]="currentAllocationHeight">
+                        <google-chart #chart [type]="currentAllocationType" [data]="currentAllocationData"
+                            [columnNames]="columnNames" [options]="currentAllocationOption"
+                            [width]="currentAllocationWidth" [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
                     <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center; color:red; display: block;
@@ -100,10 +99,9 @@
                     </div>
                     <div *ngIf="currentAllocationData && currentAllocationData?.length > 0"
                         class="ct-chart do-nut-chart-allocation">
-                        <google-chart #chart [title]="currentAllocationTitle" [type]="currentAllocationType"
-                            [data]="currentAllocationData" [columnNames]="columnNames"
-                            [options]="currentAllocationOption" [width]="currentAllocationWidth"
-                            [height]="currentAllocationHeight">
+                        <google-chart #chart [type]="currentAllocationType" [data]="currentAllocationData"
+                            [columnNames]="columnNames" [options]="currentAllocationOption"
+                            [width]="currentAllocationWidth" [height]="currentAllocationHeight">
                         </google-chart>
                     </div>
                     <div *ngIf="currentAllocationData?.length <= 0" style="text-align:center; color:red">
