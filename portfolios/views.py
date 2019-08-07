@@ -130,8 +130,14 @@ class HistoricalPerformanceDifference(APIView):
                                     values_list('return_3_year', flat=True)])
             rec_5_year_return = sum([float(exp) for exp in recommended_funds.
                                     values_list('return_5_year', flat=True)])
+            perc_improvement_num = existing_annual_expense +\
+                                   existing_return_1_year
+            dollar_improvement_num = perc_improvement_num *\
+                                     sum(filter(None, existing_mkt_values))
             return_data = [
-                {"existing": {'annual_expense': existing_annual_expense,
+                {"perc_improvement_num": perc_improvement_num,
+                 "dollar_improvement_num": dollar_improvement_num,
+                 "existing": {'annual_expense': existing_annual_expense,
                               '1-year': existing_return_1_year,
                               '3-year': existing_return_3_year,
                               '5-year': existing_return_5_year},
