@@ -184,9 +184,10 @@
                 </div>
 
                 <div class="block-container login-block" *ngIf="!currentUser">
-                    <p>With the same risk profile, we can improve performance by <span>5.43%</span> based on 1-year
+                    <p>With the same risk profile, we can improve performance by <span>{{loginpers}}%</span> based on
+                        1-year
                         returns or
-                        $13,424 in dollar terms.</p>
+                        ${{logindollars}} in dollar terms.</p>
                     <p>Please login or register to analyze in full details</p>
                     <div class="btn-wrap">
                         <form action="post" class="d-flex align-items-center justify-content-center">
@@ -269,6 +270,12 @@
                         <div class="heading">
                             <h3>Historical Performance Difference</h3>
                         </div>
+                        Currency
+                        <select class="form-control" style="width: 60px;margin: 0 10px">
+                            <option>INR</option>
+                            <option>USD</option>
+                            <option>EUR</option>
+                        </select>
                         <div class="responsive-table">
                             <table class="trade-table">
                                 <thead>
