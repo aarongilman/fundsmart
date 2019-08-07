@@ -271,10 +271,11 @@
                             <h3>Historical Performance Difference</h3>
                         </div>
                         Currency
-                        <select class="form-control" style="width: 60px;margin: 0 10px">
-                            <option>INR</option>
-                            <option>USD</option>
-                            <option>EUR</option>
+                        <select (change)="test()" [(ngModel)]="currency" class="form-control"
+                            style="width: 60px;margin: 0 10px">
+                            <option value="INR">INR</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
                         </select>
                         <div class="responsive-table">
                             <table class="trade-table">
@@ -320,7 +321,7 @@
                             <h3>Donut Chart</h3>
                         </div>
                         <div *ngIf="donutdata && donutdata?.length > 0">
-                            <google-chart [type]="donuttype" [data]="donutdata" [columnNames]="columnNames"
+                            <google-chart [type]="donuttype" [data]="donutdata" [columnNames]="donutColumnNames"
                                 [options]="donutoptions" [height]="donutheight" [width]="donutwidth">
                             </google-chart>
                         </div>

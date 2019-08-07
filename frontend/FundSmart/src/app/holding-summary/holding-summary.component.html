@@ -9,7 +9,7 @@
                     <article class="holding-smmary-wrap">
                         <nav class="fund-tabs">
                             <ul class="d-flex align-items-center justify-content-start">
-                                <li class="active" routerLinkActive="active" (click)='getFund()'>
+                                <li class="active" routerLinkActive="active" (click)='getFund()' id="newfund">
                                     <svg viewBox="0 -48 464 464" xmlns="http://www.w3.org/2000/svg">
                                         <path d="m440 103.199219h16v32h-16zm0 0" />
                                         <path d="m256 351.199219h208v16h-208zm0 0" />
@@ -24,7 +24,7 @@
                                         Holding Type
                                     </a>
                                 </li>
-                                <li routerLinkActive="active">
+                                <li routerLinkActive="active" id="newassets">
                                     <a href="javascript:void(0);" data-tab="assestClass" (click)="getAssets()">
                                         <svg viewBox="0 0 496 496" xmlns="http://www.w3.org/2000/svg">
                                             <path
@@ -44,7 +44,7 @@
                                         Assest Class
                                     </a>
                                 </li>
-                                <li routerLinkActive="active">
+                                <li routerLinkActive="active" id="newcountry">
                                     <a href="javascript:void(0);" data-tab="country" (click)='getCountry()'>
                                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -79,7 +79,7 @@
                                         Country
                                     </a>
                                 </li>
-                                <li routerLinkActive="active">
+                                <li routerLinkActive="active" id="newindustry">
                                     <a href="javascript:void(0);" data-tab="industry" (click)='getIndustry()'>
                                         <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
                                             xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -119,7 +119,7 @@
                             </ul>
                         </nav>
                         <div class="fund-tab-content">
-                            <div id="holdingType" class="item active" data-title="Tab 1">
+                            <div id="holdingType" class="item active"  data-title="Tab 1">
                                 <div class="summary-tab-content">
                                     <div class="heading">
                                         <h3 style="color: #5ace9f">Holding Type</h3>
@@ -245,12 +245,15 @@
                         <div class="heading">
                             <h3 class="heading">Historical Performance Difference</h3>
                         </div>
-                        Currency
-                        <select class="form-control" style="width: 60px;margin: 0 10px">
-                            <option>INR</option>
-                            <option>USD</option>
-                            <option>EUR</option>
-                        </select>
+                        <div *ngIf="selectedIds">
+                            Currency
+                            <select (change)="test()" [(ngModel)]="currency" class="form-control"
+                                style="width: 60px;margin: 0 10px">
+                                <option selected value="INR">INR</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+                        </div>
                         <div class="responsive-table">
                             <table class="trade-table">
                                 <thead>
@@ -288,9 +291,8 @@
                                 <h3>Line Chart</h3>
                             </div>
                             <div *ngIf="linedata?.length > 0">
-                                <google-chart [title]="linetitle" [type]="linetype" [data]="linedata"
-                                    [options]="lineoptions" [width]="linewidth" [height]="lineheight"
-                                    [columnNames]="linecolumnNames">
+                                <google-chart [type]="linetype" [data]="linedata" [options]="lineoptions"
+                                    [width]="linewidth" [height]="lineheight" [columnNames]="linecolumnNames">
                                 </google-chart>
                             </div>
                             <div *ngIf="linedata?.length <= 0" style="text-align:center ; color: red">

@@ -29,7 +29,15 @@ export class AllocationFundAnalysisComponent implements OnInit {
         },
         pieHole: 0.8,
         pieSliceText: 'none',
-        colors: ['#5F9EA0', '#A52A2A', '#DC143C', '#556B2F', '#2F4F4F'],
+        colors: [
+            '#1395b9', '#0e3c54', '#cc0000', '#e65c00',
+            '#ecaa39', '#eac843', '#04202c', '#a2b86d',
+            '#5ace9f', '#fca622', '#32384d', '#304040',
+            '#922b21', '#e74c3c', '#211f30', '#128277',
+            '#633974', '#8e44ad', '#1a5276', '#3498db',
+            '#0e6655', '#52be80', '#f4d03f', '#dc7633',
+            '#717d7e', '#212f3c', '#7d5642', '#5a4e4d',
+        ],
         animation: {
             duration: 10000,
             easing: 'out'
@@ -60,7 +68,14 @@ export class AllocationFundAnalysisComponent implements OnInit {
         tooltips: {
             mode: 'index'
         },
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        colors: [
+            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+            '#a2b86d', '#922b21', '#e74c3c', '#633974',
+            '#8e44ad', '#1a5276', '#3498db', '#0e6655',
+            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+            '#212f3c'
+        ],
     };
     linewidth = 600;
     lineheight = 280;

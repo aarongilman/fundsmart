@@ -5,6 +5,7 @@ import { IntercomponentCommunicationService } from '../intercomponent-communicat
 import { ToastrService } from 'ngx-toastr';
 import { portfolioidSelect } from '../fund/portfolioid_select';
 import { NgxSpinnerService } from 'ngx-spinner';
+import * as $ from 'jquery';
 
 @Component({
     selector: 'app-holding-summary',
@@ -14,7 +15,8 @@ import { NgxSpinnerService } from 'ngx-spinner';
 export class HoldingSummaryComponent implements OnInit {
 
     id = [];
-    currency: any;
+    currency = "INR";
+    selectedIds = portfolioidSelect;
     result: any = [];
     historical: any = [];
     fund: any = [];
@@ -23,7 +25,6 @@ export class HoldingSummaryComponent implements OnInit {
     graph = [];
     linedata = [];
     linetype = 'LineChart';
-    linetitle = '';
     linewidth = 450;
     lineheight = 300;
     linecolumnNames = [];
@@ -37,7 +38,7 @@ export class HoldingSummaryComponent implements OnInit {
             '#8e44ad', '#1a5276', '#3498db', '#0e6655',
             '#52be80', '#f4d03f', '#dc7633', '#717d7e',
             '#212f3c'
-        ],
+        ]
     };
     total = {};
     total1 = {};
@@ -58,16 +59,12 @@ export class HoldingSummaryComponent implements OnInit {
     barheight_fund = 400;
     bartype_fund = 'BarChart';
     baroptions_fund = {
-        legend: { position: "none" },
-        bar: { groupWidth: '25%' },
-        colors: [
-            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
-            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
-            '#a2b86d', '#922b21', '#e74c3c', '#633974',
-            '#8e44ad', '#1a5276', '#3498db', '#0e6655',
-            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
-            '#212f3c'
-        ],
+        legend: {
+            position: "none"
+        },
+        bar: {
+            groupWidth: '25%'
+        },
         enableInteractivity: true,
     };
     barcolumnname = [];
@@ -78,16 +75,12 @@ export class HoldingSummaryComponent implements OnInit {
     industry_barheight_fund = 400;
     industry_bartype_fund = 'BarChart';
     industry_baroptions_fund = {
-        legend: { position: "none" },
-        bar: { groupWidth: '25%' },
-        colors: [
-            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
-            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
-            '#a2b86d', '#922b21', '#e74c3c', '#633974',
-            '#8e44ad', '#1a5276', '#3498db', '#0e6655',
-            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
-            '#212f3c'
-        ],
+        legend: {
+            position: "none"
+        },
+        bar: {
+            groupWidth: '25%'
+        },
         enableInteractivity: true,
     };
     industryColumns = [];
@@ -98,16 +91,12 @@ export class HoldingSummaryComponent implements OnInit {
     assets_bartype_fund = 'BarChart';
     assets_columnNames = [];
     assets_baroptions_fund = {
-        legend: { position: "none" },
-        bar: { groupWidth: '25%' },
-        colors: [
-            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
-            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
-            '#a2b86d', '#922b21', '#e74c3c', '#633974',
-            '#8e44ad', '#1a5276', '#3498db', '#0e6655',
-            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
-            '#212f3c'
-        ],
+        legend: {
+            position: "none"
+        },
+        bar: {
+            groupWidth: '25%'
+        },
         interpolateNulls: true,
         enableInteractivity: true,
     };
@@ -116,17 +105,7 @@ export class HoldingSummaryComponent implements OnInit {
     country_type = 'GeoChart';
     country_columnNames = [];
     country_options = {
-        legend: 'none',
-        colorAxis: {
-            colors: [
-                '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
-                '#cc0000', '#e65c00', '#ecaa39', '#eac843',
-                '#a2b86d', '#922b21', '#e74c3c', '#633974',
-                '#8e44ad', '#1a5276', '#3498db', '#0e6655',
-                '#52be80', '#f4d03f', '#dc7633', '#717d7e',
-                '#212f3c'
-            ]
-        }
+        legend: 'none'
     };
 
     constructor(
@@ -172,9 +151,7 @@ export class HoldingSummaryComponent implements OnInit {
     getFund() {
         if (portfolioidSelect.length > 0) {
             if (this.bardata_fund.length === 0) {
-                this.service.holding_summary_fund(portfolioidSelect).toPromise().then((fundData: any) => {
-                    console.log(fundData);
-
+                this.service.holding_summary_fund(portfolioidSelect, this.currency).toPromise().then((fundData: any) => {
                     let i = 0;
                     let names: any;
                     fundData.forEach(fund => {
@@ -202,7 +179,7 @@ export class HoldingSummaryComponent implements OnInit {
         if (portfolioidSelect.length > 0) {
             if (this.assets_bardata_fund.length === 0) {
                 this.spinner.show();
-                this.service.holding_summary_asset(portfolioidSelect).toPromise().then((resultData: any) => {
+                this.service.holding_summary_asset(portfolioidSelect, this.currency).toPromise().then((resultData: any) => {
                     let i = 0;
                     resultData.forEach(result => {
                         const names = Object.keys(result);
@@ -229,7 +206,7 @@ export class HoldingSummaryComponent implements OnInit {
         if (portfolioidSelect.length > 0) {
             if (this.country_data.length === 0) {
                 this.spinner.show();
-                this.service.holding_summary_country(portfolioidSelect).toPromise().then((countryData: any) => {
+                this.service.holding_summary_country(portfolioidSelect, this.currency).toPromise().then((countryData: any) => {
                     countryData.forEach(country => {
                         const names = Object.keys(country);
                         const CountryObj = {
@@ -253,7 +230,7 @@ export class HoldingSummaryComponent implements OnInit {
         if (portfolioidSelect.length > 0) {
             if (this.industry_bardata_fund.length === 0) {
                 this.spinner.show();
-                this.service.holding_summary_industry(portfolioidSelect).toPromise().then((industryData: any) => {
+                this.service.holding_summary_industry(portfolioidSelect, this.currency).toPromise().then((industryData: any) => {
                     let i = 0;
                     industryData.forEach(industry => {
                         const names = Object.keys(industry);
@@ -277,7 +254,7 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     getHistoricalPerformance() {
-        this.service.holding_summary_historicalPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
+        this.service.holding_summary_historicalPerformance(portfolioidSelect, this.currency).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 const names = Object.keys(historical);
                 for (let a in historical[names[0]]) {
@@ -299,7 +276,7 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     getLineGraph() {
-        this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then((jsondata: any) => {
+        this.service.holding_summary_lineGraph(portfolioidSelect, this.currency).toPromise().then((jsondata: any) => {
             let totalportfolios = jsondata.length + 1;
             if (portfolioidSelect.length === 1) {
                 this.linecolumnNames = ['label'];
@@ -350,6 +327,36 @@ export class HoldingSummaryComponent implements OnInit {
                 this.spinner.hide();
             }
         });
+    }
+
+    test() {
+        this.barcolumnname = [];
+        this.bardata_fund = [];
+        this.linedata = [];
+        this.linecolumnNames = [];
+        this.historical = [];
+        this.assets_bardata_fund = [];
+        this.assets_columnNames = [];
+        this.country_columnNames = [];
+        this.country_data = [];
+        this.industryColumns = [];
+        this.industry_bardata_fund = [];
+        this.total = {};
+        this.total1 = {};
+        this.total2 = {};
+        this.total3 = {};
+        this.total4 = [];
+        $('#holdingType').addClass('active');
+        $('#newfund').addClass('active');
+        $('#assestClass').removeClass('active');
+        $('#country').removeClass('active');
+        $('#industry').removeClass('active');
+        $('#newassets').removeClass('active');
+        $('#newcountry').removeClass('active');
+        $('#newindustry').removeClass('active');
+        this.getFund();
+        this.getLineGraph();
+        this.getHistoricalPerformance();
     }
 
 }

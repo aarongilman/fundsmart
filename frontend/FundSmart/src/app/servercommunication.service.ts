@@ -135,37 +135,19 @@ export class ServercommunicationService {
         return this.http.get(this.api_link + 'api/security/', { headers: this.httpHeaders });
     }
 
-    get_home_pie_chart() {
+    get_home_pie_chart(currency) {
         let body = JSON.parse(localStorage.getItem('securityData'));
-        // if (this.userkey) {
-        //     return this.http.post(this.api_link + 'api/dashboard_pie_chart/', { data: body }, {
-        //         headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-        //     });
-        // } else {
-        return this.http.post(this.api_link + 'api/dashboard_pie_chart/', { data: body , currency: 'INR'});
-        // }
+        return this.http.post(this.api_link + 'api/dashboard_pie_chart/', { data: body, currency: currency });
     }
 
-    get_deshboard_doughnut_chart() {
+    get_deshboard_doughnut_chart(currency) {
         let body = JSON.parse(localStorage.getItem('securityData'));
-        // if (this.userkey) {
-        //     return this.http.post(this.api_link + 'api/dashboard_doughnut_chart/', { data: body }, {
-        //         headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-        //     });
-        // } else {
-        return this.http.post(this.api_link + 'api/dashboard_doughnut_chart/', { data: body , currency: 'INR'});
-        // }
+        return this.http.post(this.api_link + 'api/dashboard_doughnut_chart/', { data: body, currency: currency });
     }
 
-    get_historical_perfomance() {
+    get_historical_perfomance(currency) {
         let body = JSON.parse(localStorage.getItem('securityData'));
-        // if (this.userkey) {
-        //     return this.http.post(this.api_link + 'api/historical_performance_difference/', { data: body }, {
-        //         headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-        //     });
-        // } else {
-        return this.http.post(this.api_link + 'api/historical_performance_difference/', { data: body , currency: 'INR'});
-        // }
+        return this.http.post(this.api_link + 'api/historical_performance_difference/', { data: body, currency: currency });
     }
 
     add_portfolio_fund(fquantity, userportfolio, selectedsecurity, createdby, date) {
@@ -322,21 +304,11 @@ export class ServercommunicationService {
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    get_lineplot_chart() {
+    get_lineplot_chart(currency) {
         let body = JSON.parse(localStorage.getItem('securityData'));
-        // if (this.userkey) {
-        //     return this.http.post(this.api_link + 'api/dashboard_line_graph/?currency=INR', { data: body }, {
-        //         headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-        //     });
-        // } else {
-        return this.http.post(this.api_link + 'api/dashboard_line_graph/', { data: body, currency: 'INR' });
-        // }
+        return this.http.post(this.api_link + 'api/dashboard_line_graph/', { data: body, currency: currency });
     }
 
-    holding_summary_asset(ids) {
-        return this.http.get(this.api_link + 'api/asset_class_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
-            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-    }
 
     addPortfolioFund(user: any) {
         const body = {
@@ -354,33 +326,38 @@ export class ServercommunicationService {
             body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_industry(ids) {
-        return this.http.get(this.api_link + 'api/industry_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
+    holding_summary_asset(ids, currency) {
+        return this.http.get(this.api_link + 'api/asset_class_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_country(ids) {
-        return this.http.get(this.api_link + 'api/country_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
+    holding_summary_industry(ids, currency) {
+        return this.http.get(this.api_link + 'api/industry_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_fund(ids) {
-        return this.http.get(this.api_link + 'api/fund_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
+    holding_summary_country(ids, currency) {
+        return this.http.get(this.api_link + 'api/country_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_historicalPerformance(ids) {
-        return this.http.get(this.api_link + 'api/historical_performance_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
+    holding_summary_fund(ids, currency) {
+        return this.http.get(this.api_link + 'api/fund_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    holding_summary_historicalPerformance(ids, currency) {
+        return this.http.get(this.api_link + 'api/historical_performance_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
+            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
+    }
+
+    holding_summary_lineGraph(ids, currency) {
+        return this.http.get(this.api_link + 'api/line_graph_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
     allocationRecommendationHistorical(ids) {
         return this.http.get(this.api_link + 'api/allocation_historical_performance/?portfolio_ids=' + ids,
-            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-    }
-
-    holding_summary_lineGraph(ids) {
-        return this.http.get(this.api_link + 'api/line_graph_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 

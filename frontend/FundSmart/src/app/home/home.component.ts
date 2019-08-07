@@ -124,9 +124,7 @@ export class HomeComponent implements OnInit {
     funds$: portfolio_fund[];
     total$;
     model: any = {};
-
-    loginpers = 0;
-    logindollars = 0;
+    currency = "INR";
     tableData: any = [];
 
     existing: HistoricalData = {
@@ -179,6 +177,7 @@ export class HomeComponent implements OnInit {
     donutheight = 350;
     donuttype = 'PieChart';
     donutoptions;
+    donutColumnNames = ['Name','Data'];
 
     linetitle = '';
     linedata = [];
@@ -190,6 +189,7 @@ export class HomeComponent implements OnInit {
     securitylist = securitylist;
     arrayBuffer: any;
     DynamicDisable = [];
+
     constructor(
         private modalService: NgbModal,
         private interconn: IntercomponentCommunicationService,
@@ -342,7 +342,7 @@ export class HomeComponent implements OnInit {
     }
 
     setdataindeshboard() {
-        this.userservice.get_historical_perfomance().subscribe(result => {
+        this.userservice.get_historical_perfomance(this.currency).subscribe(result => {
             this.existing = {
                 annualexpense: 0,
                 oneyear: 0,
@@ -362,8 +362,6 @@ export class HomeComponent implements OnInit {
                 fiveyear: 0
             };
             if (result[0]) {
-                this.logindollars = Number.parseFloat(Number.parseFloat(result[0]['dollar_improvement_num']).toFixed(2));
-                this.loginpers = Number.parseFloat(Number.parseFloat(result[0]['perc_improvement_num']).toFixed(2));
                 this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
                 this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
                 this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
@@ -381,7 +379,7 @@ export class HomeComponent implements OnInit {
             }
         });
 
-        this.userservice.get_home_pie_chart().subscribe(jsondata => {
+        this.userservice.get_home_pie_chart(this.currency).subscribe(jsondata => {
             this.piedata = [];
             let arrData = [];
             let arrvalue = [];
@@ -401,11 +399,19 @@ export class HomeComponent implements OnInit {
                 },
                 pieSliceText: 'label',
                 legend: 'none',
-                colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+                colors: [
+                    '#003f5c', '#58508d', '#bc5090', '#5ace9f',
+                    '#fca622', '#ffa600', '#1395b9', '#ff6361',
+                    '#0e3c54', '#cc0000', '#e65c00', '#ecaa39',
+                    '#eac843', '#a2b86d', '#922b21', '#e74c3c',
+                    '#633974', '#8e44ad', '#1a5276', '#3498db',
+                    '#0e6655', '#52be80', '#f4d03f', '#dc7633',
+                    '#717d7e', '#212f3c'
+                ],
             };
         });
 
-        this.userservice.get_deshboard_doughnut_chart().subscribe(jsondata => {
+        this.userservice.get_deshboard_doughnut_chart(this.currency).subscribe(jsondata => {
             this.donutdata = [];
             let arrData = [];
             let arrvalue = [];
@@ -421,15 +427,19 @@ export class HomeComponent implements OnInit {
                 pieHole: 0.8,
                 legend: { position: 'top', alignment: 'start', maxLines: 10 },
                 pieSliceText: 'none',
-                colors: ['#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843',
-                    '#a2b86d', '#5ace9f', '#fca622', '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
-                    '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', '#922b21', '#e74c3c',
+                colors: [
+                    '#1395b9', '#0e3c54', '#cc0000', '#e65c00',
+                    '#ecaa39', '#eac843', '#04202c', '#a2b86d',
+                    '#5ace9f', '#fca622', '#32384d', '#304040',
+                    '#922b21', '#e74c3c', '#211f30', '#128277',
                     '#633974', '#8e44ad', '#1a5276', '#3498db',
-                    '#0e6655', '#52be80', '#f4d03f', '#dc7633', '#717d7e', '#212f3c'],
+                    '#0e6655', '#52be80', '#f4d03f', '#dc7633',
+                    '#717d7e', '#212f3c', '#7d5642', '#5a4e4d',
+                ],
             };
         });
 
-        this.userservice.get_lineplot_chart().subscribe((jsondata: any) => {
+        this.userservice.get_lineplot_chart(this.currency).subscribe((jsondata: any) => {
             this.linedata = [];
             this.linecolumnNames = ['label'];
             const tempArray = [];
@@ -472,7 +482,14 @@ export class HomeComponent implements OnInit {
                 tooltips: {
                     mode: 'index'
                 },
-                colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', ' #922b21', ' #e74c3c', ' #633974', ' #8e44ad', ' #1a5276', ' #3498db', ' #0e6655', ' #52be80', ' #f4d03f', ' #dc7633', ' #717d7e', ' #212f3c'],
+                colors: [
+                    '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+                    '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+                    '#a2b86d', '#922b21', '#e74c3c', '#633974',
+                    '#8e44ad', '#1a5276', '#3498db', '#0e6655',
+                    '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+                    '#212f3c'
+                ],
             };
         });
     }
@@ -1132,5 +1149,10 @@ export class HomeComponent implements OnInit {
         this.portfolioservice.sortColumn = column;
         this.portfolioservice.sortDirection = direction;
     }
+
+    test() {
+        this.setdataindeshboard();
+    }
+
 }
 
