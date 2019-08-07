@@ -44,7 +44,7 @@ export class HoldingSummaryComponent implements OnInit {
     total2 = {};
     total3 = {};
     total4 = [];
-    colors: [
+    colors = [
         '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
         '#cc0000', '#e65c00', '#ecaa39', '#eac843',
         '#a2b86d', '#922b21', '#e74c3c', '#633974',
@@ -192,7 +192,7 @@ export class HoldingSummaryComponent implements OnInit {
                         }
                     });
                     this.barcolumnname = ['Fund', 'value', { role: 'style' }];
-                    //  this.spinner.hide();
+                    this.spinner.hide();
                 });
             }
         }
@@ -201,30 +201,22 @@ export class HoldingSummaryComponent implements OnInit {
     getAssets() {
         if (portfolioidSelect.length > 0) {
             if (this.assets_bardata_fund.length === 0) {
-                // this.spinner.show();
+                this.spinner.show();
                 this.service.holding_summary_asset(portfolioidSelect).toPromise().then((resultData: any) => {
-                    console.log(resultData);
-
                     let i = 0;
                     resultData.forEach(result => {
-                        console.log('result', result);
-
                         const names = Object.keys(result);
-                        console.log('Nmaes', names);
-
                         const ResultObj = {
                             name: names[0],
                             value: result[names[0]]
                         };
-                        console.log('resukltobj', ResultObj);
-                        this.result.push(ResultObj);
-                        this.assets_bardata_fund.push([names[0], result[names[0]], `color:${this.colors[i]}`]);
-                        i++;
-
-                        //  if (names[0] !== 'Total') {
-                        //    } else {
-                        //         this.total1 = ResultObj;
-                        //    }
+                        if (names[0] !== 'Total') {
+                            this.assets_bardata_fund.push([names[0], result[names[0]], `color:${this.colors[i]}`]);
+                            this.result.push(ResultObj);
+                            i++;
+                        } else {
+                            this.total1 = ResultObj;
+                        }
                     });
                     this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
                     this.spinner.hide();

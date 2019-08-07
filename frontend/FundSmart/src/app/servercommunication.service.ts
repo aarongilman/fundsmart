@@ -355,12 +355,12 @@ export class ServercommunicationService {
     }
 
     holding_summary_industry(ids) {
-        return this.http.get(this.api_link + 'api/industry_holding_summary/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/industry_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
     holding_summary_country(ids) {
-        return this.http.get(this.api_link + 'api/country_holding_summary/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/country_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
@@ -370,7 +370,7 @@ export class ServercommunicationService {
     }
 
     holding_summary_historicalPerformance(ids) {
-        return this.http.get(this.api_link + 'api/historical_performance_holding_summary/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/historical_performance_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
@@ -380,7 +380,7 @@ export class ServercommunicationService {
     }
 
     holding_summary_lineGraph(ids) {
-        return this.http.get(this.api_link + 'api/line_graph_holding_summary/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/line_graph_holding_summary/?portfolio_ids=' + ids + '&currency=INR',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
