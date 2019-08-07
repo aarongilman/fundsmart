@@ -59,7 +59,7 @@ class HistoricalPerformanceDifference(APIView):
     permission_classes = []
 
     def post(self, request):
-        base_currency = 'INR'
+        base_currency = request.data.get('currency')
         fund_details = FundDetail.objects.all()
         fx_rate = FXRate.objects.all()
         data = request.data.get('data')
@@ -158,7 +158,7 @@ class DashboardLinePlotApi(APIView):
     def post(self, request):
         final_data = []
         try:
-            base_currency = 'INR'
+            base_currency = request.data.get('currency')
             data = request.data.get('data')
             securities = Security.objects.filter(id__in=map(
                 lambda d: d.get('securityId', 0), data))
@@ -306,7 +306,7 @@ class DashboardDoughnutChart(APIView):
     permission_classes = []
 
     def post(self, request):
-        base_currency = 'INR'
+        base_currency = request.data.get('currency')
         return_data = []
         data = request.data.get('data')
         try:
@@ -339,7 +339,7 @@ class DashboardPieChart(APIView):
     permission_classes = []
 
     def post(self, request):
-        base_currency = 'INR'
+        base_currency = request.data.get('currency')
         return_data = []
         data = request.data.get('data')
         try:
@@ -499,6 +499,7 @@ def get_summary_data(request, type):
     fund_details = FundDetail.objects.all()
     fx_rate = FXRate.objects.all()
     price = Price.objects.all()
+    base_currency = request.GET.get('currency')
     for fund in funds:
         price_value = None
         try:
@@ -510,7 +511,7 @@ def get_summary_data(request, type):
             if price_obj:
                 price_value = price_obj.latest('date').price
         fund_detail = fund_details.filter(fund_id=fund.security.id_value)
-        fx_rate_obj = fx_rate.filter(date=date.today(),
+        fx_rate_obj = fx_rate.filter(date=date.today(), base=base_currency,
                                      currency=fund.security.currency)
         if price_value and fund_detail and fx_rate_obj:
             if '%' in str(fund.quantity):
@@ -545,6 +546,7 @@ class HoldingSummaryByHoldingType(APIView):
     def get(self, request):
         data = []
         temp_dict = {}
+        base_currency = request.GET.get('currency')
         if request.GET.get('portfolio_ids'):
             portfolio_ids = request.GET.get('portfolio_ids').split(",")
             portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
@@ -567,6 +569,7 @@ class HoldingSummaryByHoldingType(APIView):
                     price_value = price_obj.latest('date').price
             fund_detail = fund_details.filter(fund_id=fund.security.id_value)
             fx_rate_obj = fx_rate.filter(date=date.today(),
+                                         base=base_currency,
                                          currency=fund.security.currency)
             if price_value and fund_detail and fx_rate_obj:
                 if '%' in str(fund.quantity):
@@ -710,10 +713,10 @@ class HoldingSummaryHistoricalPerformanceDifference(APIView):
 
 class HoldingSummaryLineGraph(APIView):
     def get(self, request):
-        base_currency = 'INR'
         data = []
         fund_details = FundDetail.objects.all()
         fx_rate = FXRate.objects.all()
+        base_currency = request.GET.get('currency')
         if request.GET.get('portfolio_ids'):
             portfolio_ids = request.GET.get('portfolio_ids').split(",")
             portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
