@@ -236,6 +236,9 @@ class DashboardLinePlotApi(APIView):
                                     comp2_mkt_values.get(price_date).append(quantity*price_value)
                                 else:
                                     comp2_mkt_values.update({price_date: [quantity*price_value]})
+            port_mkt_values = collections.OrderedDict(sorted(port_mkt_values.items()))
+            comp1_mkt_values = collections.OrderedDict(sorted(comp1_mkt_values.items()))
+            comp2_mkt_values = collections.OrderedDict(sorted(comp2_mkt_values.items()))
             for k, v in port_mkt_values.items():
                 port_mkt_values[k] = sum(v) / len(v)
             for k, v in comp1_mkt_values.items():
