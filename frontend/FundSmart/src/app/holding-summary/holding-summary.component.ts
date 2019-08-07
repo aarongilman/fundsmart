@@ -14,6 +14,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 export class HoldingSummaryComponent implements OnInit {
 
     id = [];
+    currency: any;
     result: any = [];
     historical: any = [];
     fund: any = [];
@@ -172,6 +173,8 @@ export class HoldingSummaryComponent implements OnInit {
         if (portfolioidSelect.length > 0) {
             if (this.bardata_fund.length === 0) {
                 this.service.holding_summary_fund(portfolioidSelect).toPromise().then((fundData: any) => {
+                    console.log(fundData);
+
                     let i = 0;
                     let names: any;
                     fundData.forEach(fund => {
@@ -189,7 +192,7 @@ export class HoldingSummaryComponent implements OnInit {
                         }
                     });
                     this.barcolumnname = ['Fund', 'value', { role: 'style' }];
-                    this.spinner.hide();
+                    //  this.spinner.hide();
                 });
             }
         }
@@ -198,22 +201,30 @@ export class HoldingSummaryComponent implements OnInit {
     getAssets() {
         if (portfolioidSelect.length > 0) {
             if (this.assets_bardata_fund.length === 0) {
-                this.spinner.show();
+                // this.spinner.show();
                 this.service.holding_summary_asset(portfolioidSelect).toPromise().then((resultData: any) => {
+                    console.log(resultData);
+
                     let i = 0;
                     resultData.forEach(result => {
+                        console.log('result', result);
+
                         const names = Object.keys(result);
+                        console.log('Nmaes', names);
+
                         const ResultObj = {
                             name: names[0],
                             value: result[names[0]]
                         };
-                        if (names[0] !== 'Total') {
-                            this.assets_bardata_fund.push([names[0], result[names[0]], `color:${this.colors[i]}`]);
-                            this.result.push(ResultObj);
-                            i++;
-                        } else {
-                            this.total1 = ResultObj;
-                        }
+                        console.log('resukltobj', ResultObj);
+                        this.result.push(ResultObj);
+                        this.assets_bardata_fund.push([names[0], result[names[0]], `color:${this.colors[i]}`]);
+                        i++;
+
+                        //  if (names[0] !== 'Total') {
+                        //    } else {
+                        //         this.total1 = ResultObj;
+                        //    }
                     });
                     this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
                     this.spinner.hide();
