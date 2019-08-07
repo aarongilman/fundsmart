@@ -359,6 +359,8 @@ export class HomeComponent implements OnInit {
                 threeyear: 0,
                 fiveyear: 0
             };
+            console.log(result);
+
             if (result[0]) {
                 this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
                 this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
