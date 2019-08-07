@@ -56,17 +56,14 @@ export class FundComponent implements OnInit {
                 marginal_tax_range: new FormControl(null),
                 location: new FormControl(''),
             });
-        this.interconn.componentMethodCalled$.subscribe(
-            () => {
-                this.spinner.show();
-                this.getFunds();
-            });
-        this.interconn.logoutcomponentMethodCalled$.subscribe(
-            () => {
-                portfolioList.length = 0;
-                this.router.navigate(['/home']);
-
-            });
+        this.interconn.componentMethodCalled$.subscribe(() => {
+            this.spinner.show();
+            this.getFunds();
+        });
+        this.interconn.logoutcomponentMethodCalled$.subscribe(() => {
+            portfolioList.length = 0;
+            this.router.navigate(['/home']);
+        });
     }
 
     ngOnInit() {
@@ -86,26 +83,25 @@ export class FundComponent implements OnInit {
     }
 
     getFunds() {
-        this.userService.getUserPortfolio().toPromise().then(
-            fundlist => {
-                portfolioList.length = 0;
-                fundlist['results'].forEach(element => {
-                    element['ischecked'] = false;
-                    if (portfolioidSelect.length > 0) {
-                        portfolioidSelect.forEach(id => {
-                            if (element['id'] === Number.parseInt(id)) {
-                                element['ischecked'] = true;
-                            }
-                        });
-                    }
-                    portfolioList.push(element);
-                });
-                this.sortlist.resetHoldingDetails();
-                this.sortlist.hlist$.subscribe(f => {
-                    this.portfolioDetailList = JSON.parse(JSON.stringify(f));
-                    this.spinner.hide();
-                });
+        this.userService.getUserPortfolio().toPromise().then(fundlist => {
+            portfolioList.length = 0;
+            fundlist['results'].forEach(element => {
+                element['ischecked'] = false;
+                if (portfolioidSelect.length > 0) {
+                    portfolioidSelect.forEach(id => {
+                        if (element['id'] === Number.parseInt(id)) {
+                            element['ischecked'] = true;
+                        }
+                    });
+                }
+                portfolioList.push(element);
             });
+            this.sortlist.resetHoldingDetails();
+            this.sortlist.hlist$.subscribe(f => {
+                this.portfolioDetailList = JSON.parse(JSON.stringify(f));
+                this.spinner.hide();
+            });
+        });
     }
 
     header_modals(modalid, fund?) {

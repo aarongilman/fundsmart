@@ -44,7 +44,6 @@ import { DataTablesModule } from 'angular-datatables';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
-import { TestComponent } from './test/test.component';
 import { DataTableModule } from "angular-6-datatable";
 
 const cookieConfig: NgcCookieConsentConfig = {
@@ -105,7 +104,6 @@ export function provideConfig() {
         DragAndDropDirective,
         SortableDirective,
         FilterPipe,
-        TestComponent,
     ],
     imports: [
         BrowserModule,

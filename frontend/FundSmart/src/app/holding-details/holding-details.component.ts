@@ -26,17 +26,15 @@ import { NgxSpinnerService } from 'ngx-spinner';
 })
 
 export class HoldingDetailsComponent implements OnInit {
+
     @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
     securitylist = securitylist;
     HoldingDetailList = holdingList;
     total;
     portfolio1: any;
-    comparision1: any;
-    comparision2: any;
     inputBasicPrice: number;
     inputCurrentPrice: number;
     portfoliolist = [];
-    order: any;
     option = {
         fieldSeparator: ' ',
         quoteStrings: '"',
@@ -46,20 +44,20 @@ export class HoldingDetailsComponent implements OnInit {
         title: 'Holding Summery',
         useBom: true,
         noDownload: false,
-        headers: ["Fund", "Security", "ISIN", "Ticker", "Quantity", "Price", "Mkt Value",
-            "Basic Price", "Basis", "Country", "Currency", "Asset Class", "Industry", "Rating"],
+        headers: [
+            "Fund", "Security", "ISIN", "Ticker",
+            "Quantity", "Price", "Mkt Value",
+            "Basic Price", "Basis", "Country", "Currency",
+            "Asset Class", "Industry", "Rating"
+        ],
         nullToEmptyString: true,
     };
     closeResult: string;
     showdetail_flag = false;
-    securityinput: string;
-    lastkeydown1: number = 0;
     selectboxsecurityid: number;
     fundForm: FormGroup;
-    HoldingDetailForm: FormGroup;
     submitted = false;
 
-    testdata = 152.39856456454;
     currentprice = [];
     basicprice = [];
     currency = [];
@@ -68,7 +66,8 @@ export class HoldingDetailsComponent implements OnInit {
     rating = [];
     serchportfolio: any;
 
-    constructor(private userservice: ServercommunicationService,
+    constructor(
+        private userservice: ServercommunicationService,
         public sortlist: HoldingdetailsSortService,
         private formBuilder: FormBuilder,
         private modalService: NgbModal,
@@ -79,32 +78,28 @@ export class HoldingDetailsComponent implements OnInit {
         private spinner: NgxSpinnerService
     ) {
         holdingList.length = 0;
-        this.interconn.componentMethodCalled$.subscribe(
-            () => {
-                holdingList.length = 0;
-                this.spinner.show();
-                this.getHoldingdetail();
-                this.userservice.getUserPortfolio().toPromise().then(
-                    data => {
-                        this.portfoliolist.length = 0;
-                        portfolioidSelect.forEach(element => {
-                            let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
-                            this.portfoliolist.push(portfolio);
-                        });
-                    });
+        this.interconn.componentMethodCalled$.subscribe(() => {
+            holdingList.length = 0;
+            this.spinner.show();
+            this.getHoldingdetail();
+            this.userservice.getUserPortfolio().toPromise().then(data => {
+                this.portfoliolist.length = 0;
+                portfolioidSelect.forEach(element => {
+                    let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
+                    this.portfoliolist.push(portfolio);
+                });
             });
+        });
         this.fundForm = this.formBuilder.group({
             selectedPortfolio: new FormControl('', Validators.required),
             selectedSecurity: new FormControl('', Validators.required),
             quantity: new FormControl('', Validators.compose([Validators.required, Validators.pattern('^[0-9]+$')]))
         });
 
-        this.interconn.logoutcomponentMethodCalled$.toPromise().then(
-            () => {
-                this.router.navigate(['/home']);
-                holdingList.length = 0;
-
-            });
+        this.interconn.logoutcomponentMethodCalled$.toPromise().then(() => {
+            this.router.navigate(['/home']);
+            holdingList.length = 0;
+        });
     }
 
     ngOnInit() {
@@ -115,38 +110,36 @@ export class HoldingDetailsComponent implements OnInit {
         });
         this.interconn.titleSettermethod('Holding Details');
         if (securitylist.length === 0) {
-            this.userservice.get_security().toPromise().then(
-                datasecuritylist => {
-                    // tslint:disable-next-line: forin
-                    for (var obj in datasecuritylist) {
-                        var securityobj: security = {
-                            id: -1,
-                            isin: '',
-                            name: '',
-                            ticker: '',
-                            asset_type: ''
-                        };
-                        securityobj.id = datasecuritylist[obj]['id'];
-                        securityobj.isin = datasecuritylist[obj]['isin'];
-                        securityobj.name = datasecuritylist[obj]['name'];
-                        securityobj.ticker = datasecuritylist[obj]['ticker'];
-                        securityobj.asset_type = datasecuritylist[obj]['asset_type'];
-                        securitylist.push(securityobj);
-                    }
-                    this.securitylist = securitylist;
-                });
+            this.userservice.getSecurity().toPromise().then(datasecuritylist => {
+                // tslint:disable-next-line: forin
+                for (var obj in datasecuritylist) {
+                    var securityobj: security = {
+                        id: -1,
+                        isin: '',
+                        name: '',
+                        ticker: '',
+                        asset_type: ''
+                    };
+                    securityobj.id = datasecuritylist[obj]['id'];
+                    securityobj.isin = datasecuritylist[obj]['isin'];
+                    securityobj.name = datasecuritylist[obj]['name'];
+                    securityobj.ticker = datasecuritylist[obj]['ticker'];
+                    securityobj.asset_type = datasecuritylist[obj]['asset_type'];
+                    securitylist.push(securityobj);
+                }
+                this.securitylist = securitylist;
+            });
         }
 
         if (this.userservice.currentuser) {
             this.spinner.show();
-            this.userservice.getUserPortfolio().toPromise().then(
-                data => {
-                    this.portfoliolist.length = 0;
-                    portfolioidSelect.forEach(element => {
-                        let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
-                        this.portfoliolist.push(portfolio);
-                    });
+            this.userservice.getUserPortfolio().toPromise().then(data => {
+                this.portfoliolist.length = 0;
+                portfolioidSelect.forEach(element => {
+                    let portfolio = data['results'].find(portfolio => portfolio.id === Number.parseInt(element));
+                    this.portfoliolist.push(portfolio);
                 });
+            });
             this.getHoldingdetail();
         }
     }
@@ -156,22 +149,21 @@ export class HoldingDetailsComponent implements OnInit {
             this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
             this.spinner.hide();
         } else {
-            this.userservice.get(`api/holding_detail/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
-                mtdata => {
-                    holdingList.length = 0;
-                    // tslint:disable-next-line: forin
-                    for (var obj in mtdata) {
-                        holdingList.push(mtdata[obj]);
-                    }
-                    this.sortlist.resetHoldingDetails();
-                    this.sortlist.hlist$.subscribe(f => {
-                        this.HoldingDetailList = JSON.parse(JSON.stringify(f));
-                    });
-                    this.sortlist.total$.subscribe(total => {
-                        this.total = total;
-                        this.spinner.hide();
-                    });
+            this.userservice.getHoldingDetails(portfolioidSelect).toPromise().then(mtdata => {
+                holdingList.length = 0;
+                // tslint:disable-next-line: forin
+                for (var obj in mtdata) {
+                    holdingList.push(mtdata[obj]);
+                }
+                this.sortlist.resetHoldingDetails();
+                this.sortlist.hlist$.subscribe(f => {
+                    this.HoldingDetailList = JSON.parse(JSON.stringify(f));
                 });
+                this.sortlist.total$.subscribe(total => {
+                    this.total = total;
+                    this.spinner.hide();
+                });
+            });
         };
     }
 
@@ -228,57 +220,55 @@ export class HoldingDetailsComponent implements OnInit {
                         rating: null
                     };
                     this.selectboxsecurityid = undefined;
-                    this.userservice.UpdateHoldingDetails(holding).toPromise().then(
-                        sucess => {
-                            var successdata: holdindDetail = {
-                                fund_id: sucess['fund_id'],
-                                portfolio: sucess['portfolio'],
-                                security: sucess['security'],
-                                isin: sucess['isin'],
-                                quantity: sucess['quantity'],
-                                ticker: sucess['ticker'],
-                                basic_price: sucess['basic_price'],
-                                basis: sucess['basis'],
-                                current_price: sucess['current_price'],
-                                market_value: sucess['market_value'],
-                                asset_class: sucess['asset_class'],
-                                currency: sucess['currency'],
-                                country: sucess['country'],
-                                industry: sucess['industry'],
-                                rating: sucess['rating']
-                            };
+                    this.userservice.UpdateHoldingDetails(holding).toPromise().then(sucess => {
+                        var successdata: holdindDetail = {
+                            fund_id: sucess['fund_id'],
+                            portfolio: sucess['portfolio'],
+                            security: sucess['security'],
+                            isin: sucess['isin'],
+                            quantity: sucess['quantity'],
+                            ticker: sucess['ticker'],
+                            basic_price: sucess['basic_price'],
+                            basis: sucess['basis'],
+                            current_price: sucess['current_price'],
+                            market_value: sucess['market_value'],
+                            asset_class: sucess['asset_class'],
+                            currency: sucess['currency'],
+                            country: sucess['country'],
+                            industry: sucess['industry'],
+                            rating: sucess['rating']
+                        };
 
-                            holdingList.unshift(successdata);
-                            this.sortlist.resetHoldingDetails();
-                            this.modalService.dismissAll('Record Inserted');
-                            this.fundForm.reset();
-                            this.submitted = false;
-                            this.inputBasicPrice = null;
-                            this.inputCurrentPrice = null;
-                        },
+                        holdingList.unshift(successdata);
+                        this.sortlist.resetHoldingDetails();
+                        this.modalService.dismissAll('Record Inserted');
+                        this.fundForm.reset();
+                        this.submitted = false;
+                        this.inputBasicPrice = null;
+                        this.inputCurrentPrice = null;
+                    },
                         error => { });
                 });
     }
 
     UpdateHoldingDetails(item, i) {
-        this.userservice.UpdateHoldingDetails(item).toPromise().then(
-            res => {
-                this.currentprice[i] = null;
-                this.basicprice[i] = null;
-                this.currency[i] = null;
-                this.country[i] = null;
-                this.industry[i] = null;
-                this.rating[i] = null;
-                let toUpdate = this.HoldingDetailList.find(x => x.fund_id === res['fund_id']);
-                let index = this.HoldingDetailList.indexOf(toUpdate);
-                this.HoldingDetailList[index].currency = res['currency'];
-                this.HoldingDetailList[index].basic_price = res['basic_price'];
-                this.HoldingDetailList[index].basis = res['basis'];
-                this.HoldingDetailList[index].current_price = res['current_price'];
-                this.HoldingDetailList[index].market_value = res['market_value'];
-                this.HoldingDetailList[index].rating = res['rating'];
-                this.HoldingDetailList[index].industry = res['industry'];
-            },
+        this.userservice.UpdateHoldingDetails(item).toPromise().then(res => {
+            this.currentprice[i] = null;
+            this.basicprice[i] = null;
+            this.currency[i] = null;
+            this.country[i] = null;
+            this.industry[i] = null;
+            this.rating[i] = null;
+            let toUpdate = this.HoldingDetailList.find(x => x.fund_id === res['fund_id']);
+            let index = this.HoldingDetailList.indexOf(toUpdate);
+            this.HoldingDetailList[index].currency = res['currency'];
+            this.HoldingDetailList[index].basic_price = res['basic_price'];
+            this.HoldingDetailList[index].basis = res['basis'];
+            this.HoldingDetailList[index].current_price = res['current_price'];
+            this.HoldingDetailList[index].market_value = res['market_value'];
+            this.HoldingDetailList[index].rating = res['rating'];
+            this.HoldingDetailList[index].industry = res['industry'];
+        },
             error => { });
     }
 
@@ -339,25 +329,24 @@ export class HoldingDetailsComponent implements OnInit {
         return matches;
     }
 
-    getportfoliobyportfolio() {
+    getPortfolioByPortfolio() {
         if (this.serchportfolio === 'All') {
             this.getHoldingdetail();
         } else {
-            this.userservice.get(`api/holding_detail/?portfolio_ids=${this.serchportfolio}`).toPromise().then(
-                mtdata => {
-                    holdingList.length = 0;
-                    // tslint:disable-next-line: forin
-                    for (var obj in mtdata) {
-                        holdingList.push(mtdata[obj]);
-                    }
-                    this.sortlist.resetHoldingDetails();
-                    this.sortlist.hlist$.subscribe(f => {
-                        this.HoldingDetailList = JSON.parse(JSON.stringify(f));
-                    });
-                    this.sortlist.total$.subscribe(total => {
-                        this.total = total;
-                    });
+            this.userservice.getHoldingDetails(this.serchportfolio).toPromise().then(mtdata => {
+                holdingList.length = 0;
+                // tslint:disable-next-line: forin
+                for (var obj in mtdata) {
+                    holdingList.push(mtdata[obj]);
+                }
+                this.sortlist.resetHoldingDetails();
+                this.sortlist.hlist$.subscribe(f => {
+                    this.HoldingDetailList = JSON.parse(JSON.stringify(f));
                 });
+                this.sortlist.total$.subscribe(total => {
+                    this.total = total;
+                });
+            });
         }
     }
 

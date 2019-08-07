@@ -15,26 +15,25 @@ import { NgxSpinnerService } from 'ngx-spinner';
 export class FundRecommendationComponent implements OnInit {
 
     id: any;
-    result: any = [];
     historical: any = [];
     PortfolioPerformance: any = [];
     RecommendedPerformance: any = [];
     PlotFundRecommendation: any = [];
     fund: any = [];
-    country: any = [];
-    industry: any = [];
 
     total4 = [];
-    graph = [];
     linedata = [];
     linetype = 'LineChart';
-    linetitle = '';
     linewidth = 650;
     lineheight = 300;
     linecolumnNames = [];
     lineoptions = {
         pointSize: 1,
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        colors: [
+            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+            '#a2b86d'
+        ],
         curveType: 'function',
         tooltips: {
             mode: 'index'
@@ -48,7 +47,11 @@ export class FundRecommendationComponent implements OnInit {
     bartype = 'ColumnChart';
     baroptions = {
         isStacked: true,
-        colors: ['#5ace9f', '#fca622', '#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d'],
+        colors: [
+            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+            '#a2b86d'
+        ],
     };
     barcolumnNames = [];
 
@@ -59,10 +62,9 @@ export class FundRecommendationComponent implements OnInit {
         private toastr: ToastrService,
         private spinner: NgxSpinnerService
     ) {
-        this.interconn.logoutcomponentMethodCalled$.subscribe(
-            () => {
-                this.route.navigate(['/home']);
-            });
+        this.interconn.logoutcomponentMethodCalled$.subscribe(() => {
+            this.route.navigate(['/home']);
+        });
     }
 
     ngOnInit() {
@@ -82,23 +84,22 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getHistoricalPerformance() {
-        this.service.get(`api/historical_performance_fund_recommendation/?portfolio_ids=${portfolioidSelect}`)
-            .toPromise().then((historicalData: any) => {
-                historicalData.forEach(historical => {
-                    const names = Object.keys(historical);
-                    names.forEach((key, value) => {
-                        const historicalObj = {
-                            name: names[value],
-                            value: historical[names[value]]
-                        };
-                        this.historical.push(historicalObj);
-                    });
+        this.service.getHoldingSummaryFundRec(portfolioidSelect).toPromise().then((historicalData: any) => {
+            historicalData.forEach(historical => {
+                const names = Object.keys(historical);
+                names.forEach((key, value) => {
+                    const historicalObj = {
+                        name: names[value],
+                        value: historical[names[value]]
+                    };
+                    this.historical.push(historicalObj);
                 });
             });
+        });
     }
 
     getPortfolioPerformance() {
-        this.service.get(`api/portfolio_performance/?portfolio_ids=${portfolioidSelect}`).toPromise().then((historicalData: any) => {
+        this.service.getPortfolioPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 this.PortfolioPerformance.push(historical);
             });
@@ -106,7 +107,7 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getRecommendedPerformance() {
-        this.service.get(`api/recommended_performance/?portfolio_ids=${portfolioidSelect}`).toPromise().then((historicalData: any) => {
+        this.service.getRecommendedPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 this.RecommendedPerformance.push(historical);
             });
@@ -114,47 +115,46 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     getLinePlotChart() {
-        this.service.fundRecommendationLineChart(portfolioidSelect).toPromise().then(
-            (jsondata: any) => {
-                this.linedata = [];
-                this.linecolumnNames = ['label'];
-                const tempArray = [];
-                const mainObj = {};
-                for (let i = 0; i < jsondata.length; i++) {
-                    const element = jsondata[i];
-                    if (this.linedata !== null) {
-                        this.linecolumnNames.push(element.portfolio);
+        this.service.fundRecommendationLineChart(portfolioidSelect).toPromise().then((jsondata: any) => {
+            this.linedata = [];
+            this.linecolumnNames = ['label'];
+            const tempArray = [];
+            const mainObj = {};
+            for (let i = 0; i < jsondata.length; i++) {
+                const element = jsondata[i];
+                if (this.linedata !== null) {
+                    this.linecolumnNames.push(element.portfolio);
+                }
+                for (let k = 0; k < element['label'].length; k++) {
+                    const label = element['label'][k];
+                    if (tempArray.filter(x => x === label).length === 0) {
+                        tempArray.push(label);
                     }
-                    for (let k = 0; k < element['label'].length; k++) {
-                        const label = element['label'][k];
-                        if (tempArray.filter(x => x === label).length === 0) {
-                            tempArray.push(label);
-                        }
-                        if (mainObj[label]) {
-                            mainObj[label] = mainObj[label] + ',' + element.series[k];
-                        } else {
-                            mainObj[label] = element.series[k];
-                        }
+                    if (mainObj[label]) {
+                        mainObj[label] = mainObj[label] + ',' + element.series[k];
+                    } else {
+                        mainObj[label] = element.series[k];
                     }
                 }
-                for (let i = 0; i < tempArray.length; i++) {
-                    const element = tempArray[i];
-                    const values = (mainObj[element].split(',')).filter(Boolean);
-                    if (values.length === 3) {
-                        const valuesCollection = [];
-                        valuesCollection.push(element);
-                        for (const iterator of values) {
-                            valuesCollection.push(parseFloat(iterator));
-                        }
-                        this.linedata.push(valuesCollection);
-                        this.spinner.hide();
+            }
+            for (let i = 0; i < tempArray.length; i++) {
+                const element = tempArray[i];
+                const values = (mainObj[element].split(',')).filter(Boolean);
+                if (values.length === 3) {
+                    const valuesCollection = [];
+                    valuesCollection.push(element);
+                    for (const iterator of values) {
+                        valuesCollection.push(parseFloat(iterator));
                     }
+                    this.linedata.push(valuesCollection);
+                    this.spinner.hide();
                 }
-            });
+            }
+        });
     }
 
     getPlotFundRecommendation() {
-        this.service.get(`api/bar_plot_fund_recommendation/?portfolio_ids=${portfolioidSelect}`).toPromise().then((historicalData: any) => {
+        this.service.getBarPlotPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 const name = Object.keys(historical);
                 const obj = Object.values(historical);

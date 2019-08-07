@@ -105,12 +105,9 @@ export class FundCreateComponent implements OnInit {
     closeResult: string;
     showdetail_flag = false;
     files: any = [];
-    newFile: File;
     maxdate: any;
     portfoliolist = [];
     portfolio1: any;
-    comparision1: any;
-    comparision2: any;
     selectedp: any;
     selectedDate: any;
     id: any;
@@ -120,9 +117,6 @@ export class FundCreateComponent implements OnInit {
     pickerApiLoaded = false;
     oauthToken: any;
     page: string;
-    accessToken: any;
-    folderHistory: any = [];
-    arrayBuffer: any;
 
     @ViewChildren(SortableDirective) headers: QueryList<SortableDirective>;
 
@@ -139,51 +133,47 @@ export class FundCreateComponent implements OnInit {
         private toastr: ToastrService,
         private spinner: NgxSpinnerService
     ) {
-        this.interconn.componentMethodCalled$.subscribe(
-            () => {
-                this.setcurrent_user();
-                this.getUserPortfolios();
-                if (portfolioidSelect.length > 0) {
-                    this.spinner.show();
-                    this.getSelectedPortfolio();
-                } else {
-                    this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
-                    this.spinner.hide();
-                }
-            });
-        this.interconn.logoutcomponentMethodCalled$.subscribe(
-            () => {
-                this.route.navigate(['/home']);
-                this.resetfunds();
-                this.portfoliolist.length = 0;
-            });
+        this.interconn.componentMethodCalled$.subscribe(() => {
+            this.setcurrent_user();
+            this.getUserPortfolios();
+            if (portfolioidSelect.length > 0) {
+                this.spinner.show();
+                this.getSelectedPortfolio();
+            } else {
+                this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
+                this.spinner.hide();
+            }
+        });
+        this.interconn.logoutcomponentMethodCalled$.subscribe(() => {
+            this.route.navigate(['/home']);
+            this.resetfunds();
+            this.portfoliolist.length = 0;
+        });
         this.selectedDate = calendar.getToday();
         this.maxdate = calendar.getToday();
     }
 
     ngOnInit() {
         this.interconn.titleSettermethod("Create Fund");
-        this.userService.get_security().toPromise().then(
-            datasecuritylist => {
-                securitylist.length = 0;
-                // tslint:disable-next-line: forin
-                for (var obj in datasecuritylist) {
-                    var securityobj: security = {
-                        id: -1,
-                        isin: '',
-                        name: '',
-                        ticker: '',
-                        asset_type: ''
-                    };
-                    securityobj.id = datasecuritylist[obj]['id'];
-                    securityobj.isin = datasecuritylist[obj]['isin'];
-                    securityobj.name = datasecuritylist[obj]['name'];
-                    securityobj.ticker = datasecuritylist[obj]['ticker'];
-                    securityobj.asset_type = datasecuritylist[obj]['asset_type'];
-                    securitylist.push(securityobj);
-                }
+        this.userService.getSecurity().toPromise().then(datasecuritylist => {
+            securitylist.length = 0;
+            // tslint:disable-next-line: forin
+            for (var obj in datasecuritylist) {
+                var securityobj: security = {
+                    id: -1,
+                    isin: '',
+                    name: '',
+                    ticker: '',
+                    asset_type: ''
+                };
+                securityobj.id = datasecuritylist[obj]['id'];
+                securityobj.isin = datasecuritylist[obj]['isin'];
+                securityobj.name = datasecuritylist[obj]['name'];
+                securityobj.ticker = datasecuritylist[obj]['ticker'];
+                securityobj.asset_type = datasecuritylist[obj]['asset_type'];
+                securitylist.push(securityobj);
             }
-        );
+        });
         this.setcurrent_user();
         if (this.userService.currentuser) {
             apiresultfundlist.length = 0;
@@ -228,14 +218,12 @@ export class FundCreateComponent implements OnInit {
             apiresultfundlist.push(fund);
         }
         this.fundservice.resetfunds();
-        this.fundservice.funds$.subscribe(
-            fundlist => {
-                this.fundlist = JSON.parse(JSON.stringify(fundlist));
-            });
-        this.fundservice.total$.subscribe(
-            total => {
-                this.total = total;
-            });
+        this.fundservice.funds$.subscribe(fundlist => {
+            this.fundlist = JSON.parse(JSON.stringify(fundlist));
+        });
+        this.fundservice.total$.subscribe(total => {
+            this.total = total;
+        });
         this.spinner.hide();
     }
 
@@ -314,7 +302,6 @@ export class FundCreateComponent implements OnInit {
                 this.portfoliolist.push(portfolio);
             });
         });
-
     }
 
     updateprice(fund) {
@@ -380,7 +367,6 @@ export class FundCreateComponent implements OnInit {
     numberOnly(event) {
         const charCode = (event.which) ? event.which : event.keyCode;
         if (charCode > 47 && charCode < 58) {
-
             return true;
         } else {
             return false;
@@ -443,10 +429,9 @@ export class FundCreateComponent implements OnInit {
     }
 
     getSelectedPortfolio() {
-        this.userService.get(`api/portfolio_fund/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
-            data => {
-                this.setfunds(data);
-            });
+        this.userService.getSelectedPortfolios(portfolioidSelect).toPromise().then(data => {
+            this.setfunds(data);
+        });
     }
 
     resetpass_modal() {
@@ -460,10 +445,9 @@ export class FundCreateComponent implements OnInit {
             this.files.push(element.name);
             const formData = new FormData();
             formData.append('data_file', element);
-            this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
-                res => {
-                    this.getSelectedPortfolio();
-                },
+            this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(res => {
+                this.getSelectedPortfolio();
+            },
                 error => { }
             );
             this.modalService.dismissAll('Log in Done');
@@ -548,34 +532,33 @@ export class FundCreateComponent implements OnInit {
     }
 
     onedrivefileupload() {
-        this.launchOneDrivePicker().then(
-            (result) => {
-                this.spinner.show();
-                if (result) {
-                    for (const file of result.value) {
-                        const name = file.name;
-                        const url = file["@microsoft.graph.downloadUrl"];
-                        fetch(url)
-                            .then(response => response.blob())
-                            .then(blob => {
-                                const formData = new FormData();
-                                const myblob = new Blob([blob], { type: blob.type });
-                                const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
-                                formData.append('data_file', myfile);
-                                this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
-                                    resp => {
-                                        this.getSelectedPortfolio();
-                                        this.modalService.dismissAll('File uploaded');
-                                        this.spinner.hide();
-                                    },
-                                    error => {
-                                        this.spinner.hide();
-                                        this.toastr.error('Improper file,Could not upload file', 'Error');
-                                    });
-                            });
-                    }
+        this.launchOneDrivePicker().then((result) => {
+            this.spinner.show();
+            if (result) {
+                for (const file of result.value) {
+                    const name = file.name;
+                    const url = file["@microsoft.graph.downloadUrl"];
+                    fetch(url)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const formData = new FormData();
+                            const myblob = new Blob([blob], { type: blob.type });
+                            const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
+                            formData.append('data_file', myfile);
+                            this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
+                                resp => {
+                                    this.getSelectedPortfolio();
+                                    this.modalService.dismissAll('File uploaded');
+                                    this.spinner.hide();
+                                },
+                                error => {
+                                    this.spinner.hide();
+                                    this.toastr.error('Improper file,Could not upload file', 'Error');
+                                });
+                        });
                 }
-            }).catch(reason => { });
+            }
+        }).catch(reason => { });
     }
 
     drive_fileupload() {
@@ -690,33 +673,31 @@ export class FundCreateComponent implements OnInit {
         if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
             var doc = data[google.picker.Response.DOCUMENTS][0];
             this.spinner.show();
-            this.downloadGDriveFile(doc.id).toPromise().then(
-                filedata => {
-                    const blob = new Blob([filedata], { type: doc.mimeType });
-                    const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
-                    const formData = new FormData();
-                    formData.append('data_file', file);
-                    this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(res => {
-                        this.getSelectedPortfolio();
-                    });
-                },
+            this.downloadGDriveFile(doc.id).toPromise().then(filedata => {
+                const blob = new Blob([filedata], { type: doc.mimeType });
+                const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
+                const formData = new FormData();
+                formData.append('data_file', file);
+                this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(res => {
+                    this.getSelectedPortfolio();
+                });
+            },
                 error => {
                     this.spinner.show();
-                    this.exportGDrivefile(doc.id).toPromise().then(
-                        filedata => {
-                            const blob = new Blob([filedata], { type: doc.mimeType });
-                            const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
-                            const formData = new FormData();
-                            formData.append('data_file', file);
-                            this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
-                                res => {
-                                    this.getSelectedPortfolio();
-                                },
-                                error => {
-                                    this.spinner.hide();
-                                    this.toastr.error('Some error occured, Your File can not be uploaded', 'Error');
-                                });
-                        });
+                    this.exportGDrivefile(doc.id).toPromise().then(filedata => {
+                        const blob = new Blob([filedata], { type: doc.mimeType });
+                        const file = new File([blob], doc.name, { type: doc.mimeType, lastModified: Date.now() });
+                        const formData = new FormData();
+                        formData.append('data_file', file);
+                        this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
+                            res => {
+                                this.getSelectedPortfolio();
+                            },
+                            error => {
+                                this.spinner.hide();
+                                this.toastr.error('Some error occured, Your File can not be uploaded', 'Error');
+                            });
+                    });
                 });
         }
     }

@@ -12,7 +12,7 @@
                                 <div *ngIf="portfoliolist.length > 1">
                                     <div class='input-group align-items-center' style="color: #000034">
                                         Select Portfolio:<select class='form-control ml-2' [(ngModel)]="serchportfolio"
-                                            (change)='getportfoliobyportfolio()'>
+                                            (change)='getPortfolioByPortfolio()'>
                                             <option selected=true [value]="">All</option>
                                             <option *ngFor="let pitem of portfoliolist" title="portfolio1"
                                                 [value]="pitem.id" name='p1'>

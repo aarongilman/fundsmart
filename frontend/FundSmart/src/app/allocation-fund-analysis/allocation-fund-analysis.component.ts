@@ -16,17 +16,17 @@ import { NgxSpinnerService } from 'ngx-spinner';
 export class AllocationFundAnalysisComponent implements OnInit {
 
     historical: any = [];
-    total4 = [];
 
-    order = [];
-
-    currentAllocationTitle = '';
     currentAllocationData = [];
     currentAllocationWidth = 400;
     currentAllocationHeight = 400;
     currentAllocationType = 'PieChart';
     currentAllocationOption = {
-        legend: { position: "top", alignment: 'start', maxLines: 10 },
+        legend: {
+            position: "top",
+            alignment: 'start',
+            maxLines: 10
+        },
         pieHole: 0.8,
         pieSliceText: 'none',
         colors: ['#5F9EA0', '#A52A2A', '#DC143C', '#556B2F', '#2F4F4F'],
@@ -36,6 +36,7 @@ export class AllocationFundAnalysisComponent implements OnInit {
         },
         enableInteractivity: true,
     };
+
     existing: AllocationData = {
         oneyear: 0,
         threeyear: 0,
@@ -52,7 +53,6 @@ export class AllocationFundAnalysisComponent implements OnInit {
         fiveyear: 0
     };
 
-    linetitle = '';
     linedata = [];
     lineoptions = {
         pointSize: 1,
@@ -74,19 +74,17 @@ export class AllocationFundAnalysisComponent implements OnInit {
         private tostr: ToastrService,
         private spinner: NgxSpinnerService
     ) {
-        this.interconn.componentMethodCalled$.toPromise().then(
-            () => {
-                if (portfolioidSelect.length > 0) {
-                    this.spinner.show();
-                    this.getCurrentAllocation();
-                    this.getHistoricalPerformance();
-                    this.getLinegraph();
-                }
-            });
-        this.interconn.logoutcomponentMethodCalled$.toPromise().then(
-            () => {
-                this.router.navigate(['/home']);
-            });
+        this.interconn.componentMethodCalled$.toPromise().then(() => {
+            if (portfolioidSelect.length > 0) {
+                this.spinner.show();
+                this.getCurrentAllocation();
+                this.getHistoricalPerformance();
+                this.getLinegraph();
+            }
+        });
+        this.interconn.logoutcomponentMethodCalled$.toPromise().then(() => {
+            this.router.navigate(['/home']);
+        });
     }
 
     ngOnInit() {
@@ -105,112 +103,106 @@ export class AllocationFundAnalysisComponent implements OnInit {
 
     getCurrentAllocation() {
         if (portfolioidSelect.length > 0) {
-            this.userservice.get(`api/current_allocation/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
-                (result: any) => {
-                    result.forEach((resultlist: any) => {
-                        const names = Object.keys(resultlist);
-                        // tslint:disable-next-line: forin
-                        for (const i in names) {
-                            this.currentAllocationData.push([names[i], resultlist[names[i]]]);
-                        }
-                    });
-                    this.spinner.hide();
+            this.userservice.getCurrentAllocation(portfolioidSelect).toPromise().then((result: any) => {
+                result.forEach((resultlist: any) => {
+                    const names = Object.keys(resultlist);
+                    // tslint:disable-next-line: forin
+                    for (const i in names) {
+                        this.currentAllocationData.push([names[i], resultlist[names[i]]]);
+                    }
                 });
+                this.spinner.hide();
+            });
         } else {
             this.spinner.hide();
         }
     }
 
     getHistoricalPerformance() {
-        this.userservice.allocationRecommendationHistorical(portfolioidSelect).toPromise().then(
-            result => {
-                this.existing = {
-                    oneyear: 0,
-                    threeyear: 0,
-                    fiveyear: 0
-                };
-                this.recommended = {
-                    oneyear: 0,
-                    threeyear: 0,
-                    fiveyear: 0
-                };
-                this.diffrence = {
-                    oneyear: 0,
-                    threeyear: 0,
-                    fiveyear: 0
-                };
-                if (result[0]) {
-                    this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['Current Allocation']['1-year']).toFixed(2));
-                    this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['Current Allocation']['3-year']).toFixed(2));
-                    this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['Current Allocation']['5-year']).toFixed(2));
+        this.userservice.allocationRecommendationHistorical(portfolioidSelect).toPromise().then(result => {
+            this.existing = {
+                oneyear: 0,
+                threeyear: 0,
+                fiveyear: 0
+            };
+            this.recommended = {
+                oneyear: 0,
+                threeyear: 0,
+                fiveyear: 0
+            };
+            this.diffrence = {
+                oneyear: 0,
+                threeyear: 0,
+                fiveyear: 0
+            };
+            if (result[0]) {
+                this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['Current Allocation']['1-year']).toFixed(2));
+                this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['Current Allocation']['3-year']).toFixed(2));
+                this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['Current Allocation']['5-year']).toFixed(2));
 
-                    this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['Recommended Allocation']['1-year']).toFixed(2));
-                    this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['Recommended Allocation']['3-year']).toFixed(2));
-                    this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['Recommended Allocation']['5-year']).toFixed(2));
+                this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['Recommended Allocation']['1-year']).toFixed(2));
+                this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['Recommended Allocation']['3-year']).toFixed(2));
+                this.recommended.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['Recommended Allocation']['5-year']).toFixed(2));
 
-                    this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['Difference']['1-year']).toFixed(2));
-                    this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['Difference']['3-year']).toFixed(2));
-                    this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['Difference']['5-year']).toFixed(2));
-                }
-            });
+                this.diffrence.oneyear = Number.parseFloat(Number.parseFloat(result[0]['Difference']['1-year']).toFixed(2));
+                this.diffrence.threeyear = Number.parseFloat(Number.parseFloat(result[0]['Difference']['3-year']).toFixed(2));
+                this.diffrence.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['Difference']['5-year']).toFixed(2));
+            }
+        });
     }
 
     getLinegraph() {
-        if (portfolioidSelect.length > 0) {
-            this.userservice.get(`api/allocation_line_graph/?portfolio_ids=${portfolioidSelect}`).toPromise().then(
-                (jsondata: any) => {
-                    let totalportfolios = jsondata.length + 1;
-                    if (portfolioidSelect.length === 1) {
-                        this.linecolumnNames = ['label'];
-                        this.linecolumnNames.push(jsondata[0]['portfolio']);
-                        for (let i = 0; i < jsondata[0]['label'].length; i++) {
-                            this.linedata.push([jsondata[0]['label'][i], jsondata[0]['series'][i]]);
-                        }
-                    } else {
-                        this.linedata = [];
-                        this.linecolumnNames = ['label'];
-                        const tempArray = [];
-                        const mainObj = {};
-                        for (let i = 0; i < jsondata.length; i++) {
-                            const element = jsondata[i];
-                            if (element['label'].length > 0) {
-                                this.linecolumnNames.push(element.portfolio);
-                                for (let k = 0; k < element['label'].length; k++) {
-                                    const label = element['label'][k];
-                                    if (tempArray.filter(x => x === label).length === 0) {
-                                        tempArray.push(label);
-                                    }
-                                    if (mainObj[label]) {
-                                        mainObj[label] = mainObj[label] + ',' + element.series[k];
-                                    } else {
-                                        mainObj[label] = element.series[k];
-                                    }
-                                }
+        this.userservice.getLineGraph(portfolioidSelect).toPromise().then((jsondata: any) => {
+            let totalportfolios = jsondata.length + 1;
+            if (portfolioidSelect.length === 1) {
+                this.linecolumnNames = ['label'];
+                this.linecolumnNames.push(jsondata[0]['portfolio']);
+                for (let i = 0; i < jsondata[0]['label'].length; i++) {
+                    this.linedata.push([jsondata[0]['label'][i], jsondata[0]['series'][i]]);
+                }
+            } else {
+                this.linedata = [];
+                this.linecolumnNames = ['label'];
+                const tempArray = [];
+                const mainObj = {};
+                for (let i = 0; i < jsondata.length; i++) {
+                    const element = jsondata[i];
+                    if (element['label'].length > 0) {
+                        this.linecolumnNames.push(element.portfolio);
+                        for (let k = 0; k < element['label'].length; k++) {
+                            const label = element['label'][k];
+                            if (tempArray.filter(x => x === label).length === 0) {
+                                tempArray.push(label);
                             }
-                        }
-                        for (let i = 0; i < tempArray.length; i++) {
-                            const element = tempArray[i];
-                            let values;
-                            const valuesCollection = [];
-                            valuesCollection.push(element.toString());
-                            if (typeof mainObj[element] === 'number') {
-                                values = mainObj[element];
-                                valuesCollection.push(parseFloat(values));
+                            if (mainObj[label]) {
+                                mainObj[label] = mainObj[label] + ',' + element.series[k];
                             } else {
-                                values = (mainObj[element].split(',')).filter(Boolean);
-                                for (const iterator of values) {
-                                    valuesCollection.push(parseFloat(iterator));
-                                }
+                                mainObj[label] = element.series[k];
                             }
-                            if (valuesCollection.length === totalportfolios) {
-                                this.linedata.push(valuesCollection);
-                            }
-                        }   
-                        this.spinner.hide();
+                        }
                     }
-                });
-        }
-        
+                }
+                for (let i = 0; i < tempArray.length; i++) {
+                    const element = tempArray[i];
+                    let values;
+                    const valuesCollection = [];
+                    valuesCollection.push(element.toString());
+                    if (typeof mainObj[element] === 'number') {
+                        values = mainObj[element];
+                        valuesCollection.push(parseFloat(values));
+                    } else {
+                        values = (mainObj[element].split(',')).filter(Boolean);
+                        for (const iterator of values) {
+                            valuesCollection.push(parseFloat(iterator));
+                        }
+                    }
+                    if (valuesCollection.length === totalportfolios) {
+                        this.linedata.push(valuesCollection);
+                    }
+                }
+                this.spinner.hide();
+            }
+        });
     }
 
 }
