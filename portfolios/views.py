@@ -904,30 +904,88 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
 class BarPlotFundRecommendation(APIView):
     """APIView to display bar plot graph"""
     def get(self, request):
-        data = [{'existing': {}, 'recommended': {}}]
+        data = []
         if request.GET.get('portfolio_ids'):
             portfolio_ids = request.GET.get('portfolio_ids').split(',')
+            fx_rate = FXRate.objects.all()
             existing_funds = PortfolioFund.objects.filter(
                 portfolio__in=portfolio_ids, security__asset_type='Mutual Fund',
-                created_by=request.user).values_list('security__id_value',
-                                                     flat=True)
+                created_by=request.user)
+            fund_holdings = FundHolding.objects.filter(
+                fund_id__in=existing_funds.values_list('security__id_value',
+                                                       flat=True))
+            prices = Price.objects.all()
+            fund_details = FundDetail.objects.all()
+            securities = Security.objects.all()
+            existing_dict = {}
+            for fund in existing_funds:
+                fx_rate_obj = fx_rate.filter(date=date.today(),
+                                             currency=fund.security.currency)
+                fund_detail = fund_details.filter(fund_id=fund.security.id_value)
+                if fx_rate_obj and fund_detail:
+                    quantity = fund.quantity
+                    if '%' in quantity:
+                        a = float(quantity.replace("%", "")) * 1000000
+                        b = float(fund_detail[0].aum * 1000000 *
+                                  (1 / fx_rate_obj[0].rate))
+                        aum = a / b
+                        holdings = list(
+                            fund_holdings.values_list('id_value')
+                            .filter(fund_id=fund.security.id_value)
+                            .annotate(quantity=F('quantity')))
+                        for holding in holdings:
+                            holding[1] = aum * holding[1]
+                            if holding[0]:
+                                security_obj = securities.filter(id_value=holding[0])
+                                price_obj = prices.filter(id_value=holding[0])
+                                if security_obj and price_obj:
+                                    asset_type = security_obj[0].asset_type
+                                    market_value = holding[1] * float(
+                                        price_obj.latest('date').price)
+                                    if existing_dict.get(asset_type):
+                                        market_value = existing_dict.get(
+                                            asset_type) + market_value
+                                    existing_dict.update(
+                                        {asset_type: market_value})
+                    else:
+                        holdings = list(
+                            fund_holdings.values_list('id_value')
+                            .filter(fund_id=fund.security.id_value)
+                            .annotate(quantity=F('quantity')))
+                        for holding in holdings:
+                            if holding[0]:
+                                security_obj = securities.filter(
+                                    id_value=holding[0])
+                                price_obj = prices.filter(id_value=holding[0])
+                                if security_obj and price_obj:
+                                    asset_type = security_obj[0].asset_type
+                                    market_value = float(quantity) * float(
+                                        price_obj.latest('date').price)
+                                    if existing_dict.get(asset_type):
+                                        market_value = existing_dict.get(
+                                            asset_type) + market_value
+                                    existing_dict.update(
+                                        {asset_type: market_value})
+            if existing_dict.get(None):
+                existing_dict['Other'] = existing_dict.pop(None)
+
             recommended_fund_ids = list(FundDetail.objects.values_list('fund_id',
                                                                   flat=True)[:4])
-            fund_inclued = FundHolding.objects.values_list('id_value', flat=True)\
-                .filter(fund_id__in=existing_funds)
-            existing_quantity = Security.objects.values_list('asset_type').\
-                filter(id_value__in=fund_inclued).annotate(
-                count=Count('asset_type'))
-
             fund_in_recommended = FundHolding.objects.values_list('id_value', flat=True)\
                 .filter(fund_id__in=recommended_fund_ids)
-            recommended_quantity = Security.objects.values_list('asset_type'). \
-                filter(id_value__in=fund_in_recommended).annotate(
-                count=Count('asset_type'))
-            for item in existing_quantity:
-                data[0].get('existing').update({item[0]: item[1]})
-            for item in recommended_quantity:
-                data[0].get('recommended').update({item[0]: item[1]})
+            recommended_securites = securities.filter(id_value__in=fund_in_recommended)
+            total_market_value = sum(list(existing_dict.values()))
+            recommended_dict = {}
+            for fund in recommended_securites:
+                price_obj = prices.filter(id_value=fund.id_value)
+                asset_type = fund.asset_type
+                if price_obj:
+                    quantity = (total_market_value / 4) / float(price_obj.latest('date').price)
+                    market_value = quantity * float(price_obj.latest('date').price)
+                    if recommended_dict.get(asset_type):
+                        market_value = recommended_dict.get(asset_type) + market_value
+                    recommended_dict.update({asset_type: market_value})
+            data.append({'existing': existing_dict, 'recommended': recommended_dict})
             for key in data[0].get('existing').keys():
                 if key not in data[0].get('recommended'):
                     data[0].get('recommended').update({key: 0})
