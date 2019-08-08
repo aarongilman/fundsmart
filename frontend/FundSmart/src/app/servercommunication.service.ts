@@ -94,27 +94,11 @@ export class ServercommunicationService {
             body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    uploadfile(file) {
-        return this.http.post(this.api_link + 'api/import_portfolio_fund/', file, {
-            headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-        });
-    }
-
     uploadfile_Createfund(file, pids) {
         return this.http.post(this.api_link + 'api/import_portfolio_fund/?portfolio_ids=' + pids, file, {
             headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
         });
     }
-
-
-    get_portfolio_fund() {
-        if (this.userkey) {
-            return this.http.get(this.api_link + 'api/portfolio_fund/', {
-                headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-            });
-        }
-    }
-
 
     get_portfolio_fund_by_date(date: any, portfolioid: any, portfolio_ids: any) {
         if (this.userkey) {
@@ -199,7 +183,6 @@ export class ServercommunicationService {
         };
         return this.http.post(this.api_link + 'api/portfolio/', body,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-
     }
 
     updateportfoliofund(recid, fquantity, userportfolio, selectedsecurity, updatedby) {
@@ -242,14 +225,6 @@ export class ServercommunicationService {
             body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    get_Fund() {
-        if (this.userkey) {
-            return this.http.get(this.api_link + 'api/portfolio/', {
-                headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey })
-            });
-        }
-    }
-
     get_One_Object(id) {
         if (this.userkey) {
             return this.http.get(this.api_link + 'api/portfolio/?id=' + id, {
@@ -258,21 +233,8 @@ export class ServercommunicationService {
         }
     }
 
-    post_create_fund() {
-        const body = {
-            created_by: this.currentuser.id
-        };
-        return this.http.post(this.api_link + 'api/portfolio/', body,
-            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-    }
-
     delete_Portfolio(id) {
         return this.http.delete(this.api_link + 'api/portfolio/' + id + '/',
-            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-    }
-
-    getHoldings() {
-        return this.http.get(this.api_link + 'api/holding_detail/',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
@@ -296,11 +258,6 @@ export class ServercommunicationService {
             rating: obj.rating
         };
         return this.http.post(this.api_link + 'api/holding_detail/', body,
-            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
-    }
-
-    dashboardDataTable() {
-        return this.http.get(this.api_link + 'api/portfolio_fund_data/',
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
@@ -458,12 +415,6 @@ export class ServercommunicationService {
 
     getDimensionsByFind(arrayValue, recordId) {
         return arrayValue.find(x => x.recordId === recordId);
-    }
-
-    get(apiUrl) {
-        const url = `${this.api_link}${apiUrl}`;
-        return this.http.get(url,
-            { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
     fundRecommendationLineChart(ids) {
