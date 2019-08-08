@@ -512,7 +512,7 @@ export class ServercommunicationService {
     }
 
     getHoldingDetails(ids) {
-        return this.http.get(this.api_link + 'api/holding_detail/?portfolio_ids' + ids,
+        return this.http.get(this.api_link + 'api/holding_detail/?portfolio_ids=' + ids,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 

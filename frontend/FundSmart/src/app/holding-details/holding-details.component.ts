@@ -64,7 +64,7 @@ export class HoldingDetailsComponent implements OnInit {
     country = [];
     industry = [];
     rating = [];
-    serchportfolio: any;
+    serchportfolio = "All";
 
     constructor(
         private userservice: ServercommunicationService,
@@ -337,6 +337,7 @@ export class HoldingDetailsComponent implements OnInit {
                 holdingList.length = 0;
                 // tslint:disable-next-line: forin
                 for (var obj in mtdata) {
+
                     holdingList.push(mtdata[obj]);
                 }
                 this.sortlist.resetHoldingDetails();

@@ -188,10 +188,9 @@ export class FundComponent implements OnInit {
             icon: 'pi pi-info-circle',
             accept: () => {
                 this.userService.delete_Portfolio(id).toPromise().then(result => {
-                    if (portfolioidSelect.find(xid => xid === id)) {
-                        portfolioidSelect.splice(portfolioidSelect.indexOf(id), 1);
-                    }
-                    this.getFunds();
+                    portfolioList.splice(portfolioList.indexOf(portfolioList.find(xid => xid['id'] === id)), 1);
+                    this.sortlist.resetHoldingDetails();
+                    this.sortlist.hlist$.subscribe(f => this.portfolioDetailList = JSON.parse(JSON.stringify(f)));
                     this.toastr.success('Portfolio Deleted Successfully', 'Success');
                 });
             },
