@@ -19,7 +19,6 @@ import { securitylist } from '../securitylist';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 import { ToastrService } from 'ngx-toastr';
-import { forEach } from '@angular/router/src/utils/collection';
 import { NgxSpinnerService } from 'ngx-spinner';
 
 declare var Dropbox: Dropbox;
@@ -177,7 +176,7 @@ export class HomeComponent implements OnInit {
     donutheight = 350;
     donuttype = 'PieChart';
     donutoptions;
-    donutColumnNames = ['Name','Data'];
+    donutColumnNames = ['Name', 'Data'];
 
     linetitle = '';
     linedata = [];
@@ -207,19 +206,18 @@ export class HomeComponent implements OnInit {
         this.portfolioservice.total$.subscribe(total => {
             this.total$ = total;
         });
-        this.interconn.googledriveuploadcalled$.subscribe(
-            () => {
-                this.spinner.show();
-                this.setdataindeshboard();
-                this.portfolioservice.resetfunds();
-                this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
-                this.portfolioservice.total$.subscribe(f => {
-                    this.total$ = f;
-                    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                    this.portfolioservice.page = pageno;
-                });
-                this.spinner.hide();
+        this.interconn.googledriveuploadcalled$.subscribe(() => {
+            this.spinner.show();
+            this.setdataindeshboard();
+            this.portfolioservice.resetfunds();
+            this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
+            this.portfolioservice.total$.subscribe(f => {
+                this.total$ = f;
+                const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                this.portfolioservice.page = pageno;
             });
+            this.spinner.hide();
+        });
         this.interconn.logoutcomponentMethodCalled$.subscribe(() => {
             this.currentUser = undefined;
         });
@@ -227,30 +225,29 @@ export class HomeComponent implements OnInit {
             this.setcurrent_user();
         });
         this.tableData = JSON.parse(localStorage.getItem('securityData'));
-        this.userservice.getSecurity().subscribe(
-            datasecuritylist => {
-                securitylist.length = 0;
-                // tslint:disable-next-line: forin
-                for (var obj in datasecuritylist) {
-                    var securityobj: security = {
-                        id: -1,
-                        isin: '',
-                        name: '',
-                        ticker: '',
-                        asset_type: ''
-                    };
-                    securityobj.id = datasecuritylist[obj]['id'];
-                    securityobj.isin = datasecuritylist[obj]['isin'];
-                    securityobj.name = datasecuritylist[obj]['name'];
-                    securityobj.ticker = datasecuritylist[obj]['ticker'];
-                    securityobj.asset_type = datasecuritylist[obj]['asset_type'];
-                    securitylist.push(securityobj);
-                }
-                if (this.tableData.length > 0 || this.tableData !== null) {
-                    this.setfunds(this.tableData);
-                    this.setdataindeshboard();
-                }
-            });
+        this.userservice.getSecurity().toPromise().then(datasecuritylist => {
+            securitylist.length = 0;
+            // tslint:disable-next-line: forin
+            for (var obj in datasecuritylist) {
+                var securityobj: security = {
+                    id: -1,
+                    isin: '',
+                    name: '',
+                    ticker: '',
+                    asset_type: ''
+                };
+                securityobj.id = datasecuritylist[obj]['id'];
+                securityobj.isin = datasecuritylist[obj]['isin'];
+                securityobj.name = datasecuritylist[obj]['name'];
+                securityobj.ticker = datasecuritylist[obj]['ticker'];
+                securityobj.asset_type = datasecuritylist[obj]['asset_type'];
+                securitylist.push(securityobj);
+            }
+            if (this.tableData.length > 0 || this.tableData !== null) {
+                this.setfunds(this.tableData);
+                this.setdataindeshboard();
+            }
+        });
     }
 
     ngOnInit() {
@@ -301,9 +298,7 @@ export class HomeComponent implements OnInit {
                 };
                 portfoliofundlist.push(singlefund);
                 this.portfolioservice.resetfunds();
-                this.portfolioservice.funds$.subscribe(fund => {
-                    this.funds$ = fund;
-                });
+                this.portfolioservice.funds$.subscribe(fund => { this.funds$ = fund; });
                 this.setdataindeshboard();
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 Swal.fire(
@@ -323,7 +318,6 @@ export class HomeComponent implements OnInit {
         }
         try {
             item.security = securitylist.find(s => s.id === item.security_id).name;
-
             portfoliofundlist[i].security_id = securitylist.find(s => s.id === item.security_id).id;
             portfoliofundlist[i].security = securitylist.find(s => s.id === item.security_id).name;
             console.log('change', portfoliofundlist[i]);
@@ -342,7 +336,7 @@ export class HomeComponent implements OnInit {
     }
 
     setdataindeshboard() {
-        this.userservice.get_historical_perfomance(this.currency).subscribe(result => {
+        this.userservice.get_historical_perfomance(this.currency).toPromise().then(result => {
             this.existing = {
                 annualexpense: 0,
                 oneyear: 0,
@@ -379,7 +373,7 @@ export class HomeComponent implements OnInit {
             }
         });
 
-        this.userservice.get_home_pie_chart(this.currency).subscribe(jsondata => {
+        this.userservice.get_home_pie_chart(this.currency).toPromise().then(jsondata => {
             this.piedata = [];
             let arrData = [];
             let arrvalue = [];
@@ -411,7 +405,7 @@ export class HomeComponent implements OnInit {
             };
         });
 
-        this.userservice.get_deshboard_doughnut_chart(this.currency).subscribe(jsondata => {
+        this.userservice.get_deshboard_doughnut_chart(this.currency).toPromise().then(jsondata => {
             this.donutdata = [];
             let arrData = [];
             let arrvalue = [];
@@ -439,7 +433,7 @@ export class HomeComponent implements OnInit {
             };
         });
 
-        this.userservice.get_lineplot_chart(this.currency).subscribe((jsondata: any) => {
+        this.userservice.get_lineplot_chart(this.currency).toPromise().then((jsondata: any) => {
             this.linedata = [];
             this.linecolumnNames = ['label'];
             const tempArray = [];
@@ -596,7 +590,7 @@ export class HomeComponent implements OnInit {
             if (this.registeruserForm.invalid) {
                 return;
             }
-            this.userservice.doRegistration(JSON.stringify(this.registeruserForm.value)).subscribe(data => {
+            this.userservice.doRegistration(JSON.stringify(this.registeruserForm.value)).toPromise().then(data => {
                 localStorage.setItem('authkey', data['key']);;
                 this.showdetail_flag = false;
                 Swal.fire('Registration', 'Please verify your email from your mail box', 'success');
@@ -647,12 +641,11 @@ export class HomeComponent implements OnInit {
     }
 
     userlogin() {
-        this.userservice.doLogin(this.model.username, this.model.password).subscribe(
-            data => {
-                localStorage.setItem('authkey', data['key']);
-                this.userservice.getUser(data['key']);
-                this.modalService.dismissAll('Login Done');
-            },
+        this.userservice.doLogin(this.model.username, this.model.password).toPromise().then(data => {
+            localStorage.setItem('authkey', data['key']);
+            this.userservice.getUser(data['key']);
+            this.modalService.dismissAll('Login Done');
+        },
             error => {
                 this.toastrService.error('Invalid Credentials', 'Error');
             });
@@ -671,7 +664,7 @@ export class HomeComponent implements OnInit {
     }
 
     resetpassword() {
-        this.userservice.reset_pwd_sendemail(this.email2).subscribe(data => {
+        this.userservice.reset_pwd_sendemail(this.email2).toPromise().then(data => {
             this.email2 = undefined;
             this.modalService.dismissAll('Email sent.');
             Swal.fire({
@@ -796,10 +789,6 @@ export class HomeComponent implements OnInit {
                 if (secinput !== newsec.name) {
                     item.security_id = -1;
                 } else {
-                    // let index = portfoliofundlist.findIndex(f => f.security_id === newsec.id);
-                    // portfoliofundlist[index].security_id = newsec.id;
-                    // portfoliofundlist[index].security = newsec.name;
-                    // console.log(portfoliofundlist[index]);
                     item.security_id = newsec.id;
                 }
             }
