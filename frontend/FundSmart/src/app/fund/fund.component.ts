@@ -161,8 +161,8 @@ export class FundComponent implements OnInit {
             return;
         }
         if (this.updatefund_id === undefined || this.updatefund_id === null) {
-            this.userService.addPortfolioFund(JSON.parse(JSON.stringify(this.portfolioFormGroup.value))).toPromise().then(result => {
-                portfolioList.push(this.portfolioFormGroup.value);
+            this.userService.addPortfolioFund(JSON.parse(JSON.stringify(this.portfolioFormGroup.value))).toPromise().then((result: any) => {
+                portfolioList.length = 0;
                 this.getFunds();
                 this.modalService.dismissAll('Added Portfolio');
                 this.submitted = false;
