@@ -161,9 +161,10 @@ export class FundComponent implements OnInit {
             return;
         }
         if (this.updatefund_id === undefined || this.updatefund_id === null) {
-            this.userService.addPortfolioFund(JSON.parse(JSON.stringify(this.portfolioFormGroup.value))).toPromise().then(result => {
-                portfolioList.push(this.portfolioFormGroup.value);
-                this.getFunds();
+            this.userService.addPortfolioFund(JSON.parse(JSON.stringify(this.portfolioFormGroup.value))).toPromise().then((result: any) => {
+                portfolioList.push(result);
+                this.sortlist.resetHoldingDetails();
+                this.sortlist.hlist$.subscribe(f => this.portfolioDetailList = JSON.parse(JSON.stringify(f)));
                 this.modalService.dismissAll('Added Portfolio');
                 this.submitted = false;
             });
