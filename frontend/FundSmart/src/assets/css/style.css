@@ -1564,6 +1564,11 @@ a.close-menu svg path {
     max-width: 400px;
     height: 100%;
     background: #000034;
+    border-radius: 50px !important;
+}
+
+.ins {
+    display: inline-block !important;
 }
 
 .long-pop .modal-header {

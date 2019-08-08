@@ -114,7 +114,6 @@ export class FundCreateComponent implements OnInit {
     serchportfolio: any;
     client_id = "883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com";
     developerKey = 'AIzaSyA_1Y6HBXXhTvDVN0vM4OCYhCZzj1j6OA4';
-    pickerApiLoaded = false;
     oauthToken: any;
     page: string;
 
@@ -358,14 +357,12 @@ export class FundCreateComponent implements OnInit {
             });
         }
         this.fundservice.resetfunds();
-        this.fundservice.funds$.subscribe(
-            fundlist => {
-                this.fundlist = JSON.parse(JSON.stringify(fundlist));
-            });
-        this.fundservice.total$.subscribe(
-            total => {
-                this.total = total;
-            });
+        this.fundservice.funds$.subscribe(fundlist => {
+            this.fundlist = JSON.parse(JSON.stringify(fundlist));
+        });
+        this.fundservice.total$.subscribe(total => {
+            this.total = total;
+        });
     }
 
     numberOnly(event) {

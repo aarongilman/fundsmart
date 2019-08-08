@@ -42,6 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
     showdetail_flag = false;
     currentuser;
     islogin: boolean;
+    
     constructor(
         private modalService: NgbModal,
         private userservice: ServercommunicationService,
@@ -49,20 +50,21 @@ export class AppComponent implements OnInit, OnDestroy {
         private ccService: NgcCookieConsentService,
         private formBuilder: FormBuilder,
         private authService: AuthService,
-        private toastrService: ToastrService) {
+        private toastrService: ToastrService
+    ) {
         if (localStorage.getItem('authkey')) {
             this.islogin = true;
         } else {
             this.islogin = false;
         }
         this.interconn.componentMethodCalled$.subscribe(() => {
-                this.currentuser = this.userservice.currentuser;
-                this.islogin = true;
-            });
+            this.currentuser = this.userservice.currentuser;
+            this.islogin = true;
+        });
         this.interconn.logoutcomponentMethodCalled$.subscribe(() => {
-                this.currentuser = undefined;
-                this.islogin = false;
-            });
+            this.currentuser = undefined;
+            this.islogin = false;
+        });
     }
 
     ngOnInit() {
@@ -81,20 +83,11 @@ export class AppComponent implements OnInit, OnDestroy {
             {
                 validator: MustMatch('password1', 'password2')
             });
-        this.popupOpenSubscription = this.ccService.popupOpen$.subscribe(
-            () => {
-            });
-        this.popupCloseSubscription = this.ccService.popupClose$.subscribe(
-            () => {
-            });
-        this.initializeSubscription = this.ccService.initialize$.subscribe(
-            (event: NgcInitializeEvent) => {
-            });
-        this.statusChangeSubscription = this.ccService.statusChange$.subscribe(
-            (event: NgcStatusChangeEvent) => {
-            });
-        this.revokeChoiceSubscription = this.ccService.revokeChoice$.subscribe(
-            () => { });
+        this.popupOpenSubscription = this.ccService.popupOpen$.subscribe(() => { });
+        this.popupCloseSubscription = this.ccService.popupClose$.subscribe(() => { });
+        this.initializeSubscription = this.ccService.initialize$.subscribe((event: NgcInitializeEvent) => { });
+        this.statusChangeSubscription = this.ccService.statusChange$.subscribe((event: NgcStatusChangeEvent) => { });
+        this.revokeChoiceSubscription = this.ccService.revokeChoice$.subscribe(() => { });
         this.currentuser = this.userservice.currentuser;
     }
 
