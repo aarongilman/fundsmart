@@ -1,36 +1,29 @@
-<!-- Plotly.js -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-<h3> Using plotly</h3>
-
 <div class="right-panel-wrap no-padding-right">
     <div class="dashboard-content">
         <div class="row">
-            <div class="col-lg-12">
-                <div>
-                    <!-- Plotly chart will be drawn inside this DIV -->
-                    <plotly-plot [data]="graph.data" [layout]="graph.layout"></plotly-plot>
+            <div class="block-container">
+                <h3> Using plotly</h3>
+                <div class="col-lg-12">
+                    <div>
+                        <plotly-plot [data]="graph.data" [layout]="graph.layout"></plotly-plot>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
-<h3> Using highchart</h3>
 <div class="right-panel-wrap no-padding-right">
     <div class="dashboard-content">
         <div class="row">
             <div class="col-lg-12">
+                <h3> Using highchart</h3>
                 <div
                     class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
-                    <div class="boxChart__container">
-                        <div>
-                            <highcharts-chart id="container" [Highcharts]="Highcharts"
-                                [constructorType]="chartConstructor" [options]="chartoptions"
-                                [callbackFunction]="chartCallback" [(update)]="updateFlag" [oneToOne]="true"
-                                style="width: 1200; height: 400px; display: block;">
-                            </highcharts-chart>
-                        </div>
+                    <div>
+                        <highcharts-chart id="container" [Highcharts]="Highcharts" [constructorType]="chartConstructor"
+                            [options]="chartoptions" [callbackFunction]="chartCallback" [(update)]="updateFlag"
+                            [oneToOne]="true" style="width: 1200; height: 400px; display: block;">
+                        </highcharts-chart>
                     </div>
                 </div>
             </div>
