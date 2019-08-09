@@ -48,6 +48,8 @@ import { DataTableModule } from "angular-6-datatable";
 import { TestComponent } from './test/test.component';
 import { PlotlyModule } from 'angular-plotly.js'
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import { HighchartsChartModule } from 'highcharts-angular';
+
 
 PlotlyModule.plotlyjs = PlotlyJS;
 const cookieConfig: NgcCookieConsentConfig = {
@@ -126,6 +128,7 @@ export function provideConfig() {
         NgxSpinnerModule,
         DataTableModule,
         MatMenuModule,
+        HighchartsChartModule,
         DataTablesModule,
         NgcCookieConsentModule.forRoot(cookieConfig),
         ToastrModule.forRoot(),

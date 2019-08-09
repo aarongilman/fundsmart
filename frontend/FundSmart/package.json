@@ -45,6 +45,8 @@
     "dropbox": "^4.0.28",
     "exceljs": "^1.13.0",
     "file-saver": "^2.0.2",
+    "highcharts": "^7.1.2",
+    "highcharts-angular": "^2.4.0",
     "jquery": "^3.4.1",
     "ng-gapi": "0.0.73",
     "ng-sidebar": "^8.0.0",
