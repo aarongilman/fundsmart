@@ -111,7 +111,7 @@ export class HeaderComponent implements OnInit {
         this.service.update_User(this.currentuser).toPromise().then(data => {
             this.setcurrent_user();
             this.modalService.dismissAll();
-            alert('Data Updated');
+            this.toastr.success('Success!','Profile Updated Successfully!')
         }, error => { });
     }
 

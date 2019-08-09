@@ -1024,92 +1024,91 @@ export class HomeComponent implements OnInit {
     }
 
     onedrivefileupload() {
-        this.openOneDrivePicker().then(
-            (result) => {
-                this.spinner.show();
-                if (result) {
-                    for (const file of result.value) {
-                        const name = file.name;
-                        const url = file["@microsoft.graph.downloadUrl"];
-                        fetch(url)
-                            .then(response => response.blob())
-                            .then(blob => {
-                                const myblob = new Blob([blob], { type: blob.type });
-                                const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
-                                let fr = new FileReader;
-                                fr.onload = (e) => {
-                                    this.arrayBuffer = fr.result;
-                                    let data = new Uint8Array(this.arrayBuffer);
-                                    let arr = new Array();
-                                    for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
-                                    let bstr = arr.join("");
-                                    let workbook = XLSX.read(bstr, { type: "binary" });
-                                    let first_sheet_name = workbook.SheetNames[0];
-                                    let worksheet = workbook.Sheets[first_sheet_name];
-                                    let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
-                                    let localData = JSON.parse(localStorage.getItem('securityData'));
-                                    if (localData === null) {
-                                        localStorage.setItem('securityData', JSON.stringify([]));
-                                        localData = JSON.parse(localStorage.getItem('securityData'));
-                                    }
-                                    let count = localData.length;
-                                    // tslint:disable-next-line: forin
-                                    for (let record in sheetdata) {
-                                        let port1, comp1, comp2;
-                                        port1 = Number.parseInt(sheetdata[record]['portfolio1']);
-                                        comp1 = Number.parseInt(sheetdata[record]['comparison1']);
-                                        comp2 = Number.parseInt(sheetdata[record]['comparison2']);
-                                        let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
-                                        if (security) {
-                                            try {
-                                                let portfilio = portfoliofundlist.findIndex(s => s.security === '');
-                                                portfoliofundlist[portfilio].security_id = security.id;
-                                                portfoliofundlist[portfilio].security = security.name;
-                                                portfoliofundlist[portfilio].yourPortfolio = port1;
-                                                portfoliofundlist[portfilio].comparision1 = comp1;
-                                                portfoliofundlist[portfilio].comparision2 = comp2;
-                                                portfoliofundlist[portfilio].p1record = localData.length;
-                                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-                                                localData.push(format);
-                                            } catch {
-                                                let singlefund: portfolio_fund = {
-                                                    security: security.name,
-                                                    security_id: security.id,
-                                                    p1record: localData.length,
-                                                    p2record: null,
-                                                    p3record: null,
-                                                    yourPortfolio: port1,
-                                                    comparision1: comp1,
-                                                    comparision2: comp2
-                                                };
-                                                portfoliofundlist.push(singlefund);
-                                                let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
-                                                localData.push(format);
-                                            }
+        this.openOneDrivePicker().then((result) => {
+            this.spinner.show();
+            if (result) {
+                for (const file of result.value) {
+                    const name = file.name;
+                    const url = file["@microsoft.graph.downloadUrl"];
+                    fetch(url)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const myblob = new Blob([blob], { type: blob.type });
+                            const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
+                            let fr = new FileReader;
+                            fr.onload = (e) => {
+                                this.arrayBuffer = fr.result;
+                                let data = new Uint8Array(this.arrayBuffer);
+                                let arr = new Array();
+                                for (var i = 0; i != data.length; ++i) arr[i] = String.fromCharCode(data[i]);
+                                let bstr = arr.join("");
+                                let workbook = XLSX.read(bstr, { type: "binary" });
+                                let first_sheet_name = workbook.SheetNames[0];
+                                let worksheet = workbook.Sheets[first_sheet_name];
+                                let sheetdata = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+                                let localData = JSON.parse(localStorage.getItem('securityData'));
+                                if (localData === null) {
+                                    localStorage.setItem('securityData', JSON.stringify([]));
+                                    localData = JSON.parse(localStorage.getItem('securityData'));
+                                }
+                                let count = localData.length;
+                                // tslint:disable-next-line: forin
+                                for (let record in sheetdata) {
+                                    let port1, comp1, comp2;
+                                    port1 = Number.parseInt(sheetdata[record]['portfolio1']);
+                                    comp1 = Number.parseInt(sheetdata[record]['comparison1']);
+                                    comp2 = Number.parseInt(sheetdata[record]['comparison2']);
+                                    let security = securitylist.find(s => s.isin === sheetdata[record]['Security ISIN']);
+                                    if (security) {
+                                        try {
+                                            let portfilio = portfoliofundlist.findIndex(s => s.security === '');
+                                            portfoliofundlist[portfilio].security_id = security.id;
+                                            portfoliofundlist[portfilio].security = security.name;
+                                            portfoliofundlist[portfilio].yourPortfolio = port1;
+                                            portfoliofundlist[portfilio].comparision1 = comp1;
+                                            portfoliofundlist[portfilio].comparision2 = comp2;
+                                            portfoliofundlist[portfilio].p1record = localData.length;
+                                            let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                            localData.push(format);
+                                        } catch {
+                                            let singlefund: portfolio_fund = {
+                                                security: security.name,
+                                                security_id: security.id,
+                                                p1record: localData.length,
+                                                p2record: null,
+                                                p3record: null,
+                                                yourPortfolio: port1,
+                                                comparision1: comp1,
+                                                comparision2: comp2
+                                            };
+                                            portfoliofundlist.push(singlefund);
+                                            let format = { 'recordId': localData.length, 'portfolio': port1, 'recid': null, 'COMPARISON1': comp1, 'COMPARISON2': comp2, 'securityId': security.id };
+                                            localData.push(format);
                                         }
                                     }
-                                    if (count === localData.length) {
-                                        this.spinner.hide();
-                                        Swal.fire('File Upload', 'Your data is not in proper format', 'error');
-                                    } else {
-                                        localStorage.setItem('securityData', JSON.stringify(localData));
-                                        this.portfolioservice.resetfunds();
-                                        this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
-                                        this.portfolioservice.total$.subscribe(f => {
-                                            this.total$ = f;
-                                        });
-                                        const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                                        this.portfolioservice.page = pageno;
-                                        this.setdataindeshboard();
-                                    }
-                                    this.modalService.dismissAll('File upload');
+                                }
+                                if (count === localData.length) {
                                     this.spinner.hide();
-                                };
-                                fr.readAsArrayBuffer(myfile);
-                            });
-                    }
+                                    Swal.fire('File Upload', 'Your data is not in proper format', 'error');
+                                } else {
+                                    localStorage.setItem('securityData', JSON.stringify(localData));
+                                    this.portfolioservice.resetfunds();
+                                    this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
+                                    this.portfolioservice.total$.subscribe(f => {
+                                        this.total$ = f;
+                                    });
+                                    const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+                                    this.portfolioservice.page = pageno;
+                                    this.setdataindeshboard();
+                                }
+                                this.modalService.dismissAll('File upload');
+                                this.spinner.hide();
+                            };
+                            fr.readAsArrayBuffer(myfile);
+                        });
                 }
-            }).catch(reason => { });
+            }
+        }).catch(reason => { });
     }
 
     drive_fileupload() {
