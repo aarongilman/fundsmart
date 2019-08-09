@@ -61,7 +61,7 @@ class HistoricalPerformanceDifference(APIView):
     def post(self, request):
         base_currency = request.data.get('currency')
         fund_details = FundDetail.objects.all()
-        fx_rate = FXRate.objects.all()
+        fx_rate_objects = FXRate.objects.all()
         data = request.data.get('data')
         temp_list = []
         try:
@@ -69,56 +69,71 @@ class HistoricalPerformanceDifference(APIView):
                 lambda d: d.get('securityId', 0), data),
                 asset_type="Mutual FUnd")
             prices = Price.objects.all()
-            existing_mkt_values = []
+            existing_total_mkt_value = 0
+            fx_rate_list = []
             for security in securities:
                 quantity_data = [item for item in data if str(item.get('securityId'))
                                  == str(security.id)]
                 fund_detail = fund_details.filter(fund_id=security.id_value)
-
-                fx_rate_obj = fx_rate.filter(base=base_currency,
-                                             date=date.today(),
-                                             currency=security.currency)
-                price_obj = prices.filter(id_value=security.id_value,
-                                          date=date.today())
-                if price_obj and fx_rate_obj:
-                    price = float(price_obj[0].price)
-                    total_quantity = 0
-                    for item in quantity_data:
-                        quantity = item.get('portfolio')
-                        if quantity:
-                            if '%' in str(quantity):
-                                quantity = get_quantity(quantity, security,
-                                                        fund_detail[0].aum,
-                                                        fx_rate_obj[0].rate, price)
-                            else:
-                                quantity = float(quantity)
-                        total_quantity = total_quantity + quantity
-                    existing_mkt_values.append(total_quantity * price)
-                    temp_list.append({'market_value': total_quantity * price,
-                                      'annual_expense': fund_detail[0].fund_exp_ratio,
-                                      '1-year': fund_detail[0].return_1_year,
-                                      '3-year': fund_detail[0].return_3_year,
-                                      '5-year': fund_detail[0].return_5_year})
+                price_objs = prices.filter(id_value=security.id_value)
+                if price_objs and fund_detail:
+                    price_obj = price_objs.latest('date')
+                    fx_rate_obj = fx_rate_objects.filter(
+                        base=base_currency, date=price_obj.date,
+                        currency=security.currency)
+                    if fx_rate_obj:
+                        fx_rate = fx_rate_obj[0].rate
+                    else:
+                        fx_list = fx_rate_objects.filter(
+                            base=base_currency, date__lt=price_obj.date,
+                            currency=security.currency)
+                        if fx_list:
+                            fx_rate = fx_list.latest('date').rate
+                            fx_rate_list.append(FXRate(
+                                base=base_currency, date=price_obj.date,
+                                currency=security.currency, rate=fx_rate,
+                                created_by=request.user))
+                        else:
+                            fx_rate = None
+                    if fx_rate:
+                        price = float(price_obj.price)
+                        total_quantity = 0
+                        for item in quantity_data:
+                            quantity = item.get('portfolio')
+                            if quantity:
+                                if '%' in str(quantity):
+                                    quantity = get_quantity(
+                                        quantity, security, fund_detail[0].aum,
+                                        fx_rate, price)
+                                else:
+                                    quantity = float(quantity)
+                            total_quantity = total_quantity + quantity
+                        existing_total_mkt_value = existing_total_mkt_value + (total_quantity * price)
+                        temp_list.append({'market_value': total_quantity * price,
+                                          'annual_expense': fund_detail[0].fund_exp_ratio,
+                                          '1-year': fund_detail[0].return_1_year,
+                                          '3-year': fund_detail[0].return_3_year,
+                                          '5-year': fund_detail[0].return_5_year})
             existing_annual_expense = 0
             existing_return_1_year = 0
             existing_return_3_year = 0
             existing_return_5_year = 0
             for item in temp_list:
                 if item.get('market_value'):
-                    annual_expense = (item.get('market_value')/
-                                      sum(filter(None, existing_mkt_values))
+                    annual_expense = (item.get('market_value') /
+                                      existing_total_mkt_value
                                       )*float(item.get('annual_expense'))
                     existing_annual_expense = existing_annual_expense + annual_expense
                     return_1_year = (item.get('market_value') /
-                                     sum(filter(None, existing_mkt_values))
+                                     existing_total_mkt_value
                                      )*float(item.get('1-year'))
                     existing_return_1_year = existing_return_1_year + return_1_year
                     return_3_year = (item.get('market_value') /
-                                     sum(filter(None, existing_mkt_values))
+                                     existing_total_mkt_value
                                      )*float(item.get('3-year'))
                     existing_return_3_year = existing_return_3_year + return_3_year
                     return_5_year = (item.get('market_value') /
-                                     sum(filter(None, existing_mkt_values))
+                                     existing_total_mkt_value
                                      )*float(item.get('5-year'))
                     existing_return_5_year = existing_return_5_year + return_5_year
             recommended_funds = fund_details.filter(for_recommendation=True)[:4]
@@ -130,11 +145,11 @@ class HistoricalPerformanceDifference(APIView):
                                     values_list('return_3_year', flat=True)])
             rec_5_year_return = sum([float(exp) for exp in recommended_funds.
                                     values_list('return_5_year', flat=True)])
-            perc_improvement_num = existing_annual_expense +\
-                                   existing_return_1_year
-            dollar_improvement_num = perc_improvement_num *\
-                                     sum(filter(None, existing_mkt_values))
-            return_data = [
+            perc_improvement_num = existing_annual_expense + existing_return_1_year
+            dollar_improvement_num = perc_improvement_num * existing_total_mkt_value
+            if fx_rate_list:
+                FXRate.objects.bulk_create(fx_rate_list, ignore_conflicts=True)
+            data = [
                 {"perc_improvement_num": perc_improvement_num,
                  "dollar_improvement_num": dollar_improvement_num,
                  "existing": {'annual_expense': existing_annual_expense,
@@ -152,9 +167,9 @@ class HistoricalPerformanceDifference(APIView):
                      '3-year': rec_3_year_return-existing_return_3_year,
                      '5-year': rec_5_year_return-existing_return_5_year}}]
         except Exception as e:
-            return_data = []
+            data = []
             LOGGER.error("Error {} occurred: historical performance".format(e))
-        return Response(return_data, status=200)
+        return Response(data, status=200)
 
 
 class DashboardLinePlotApi(APIView):
@@ -171,7 +186,7 @@ class DashboardLinePlotApi(APIView):
             price = Price.objects.filter(
                 id_value__in=securities.values_list('id_value'))
             fund_details = FundDetail.objects.all()
-            fx_rate = FXRate.objects.all()
+            fx_rate_objects = FXRate.objects.all()
             if price:
                 date_list = price.values_list('id_value').annotate(
                     count=Min('date')) \
@@ -181,29 +196,43 @@ class DashboardLinePlotApi(APIView):
             port_mkt_values = {}
             comp1_mkt_values = {}
             comp2_mkt_values = {}
-
+            fx_rate_list = []
             for security in securities:
                 quantity_data = [item for item in data if str(item.get('securityId'))
                                  == str(security.id)]
                 fund_detail = fund_details.filter(fund_id=security.id_value)
 
-                fx_rate_obj = fx_rate.filter(base=base_currency,
-                                             date=date.today(),
-                                             currency=security.currency)
                 price_obj = prices.filter(id_value=security.id_value,
                                           date__gte=common_date, date__lte=date.today())\
                     .order_by('date').distinct()
                 for price in price_obj:
                     price_value = float(price.price)
                     price_date = str(price.date)
+                    fx_rate_obj = fx_rate_objects.filter(
+                        base=base_currency, date=price_date,
+                        currency=security.currency)
                     if fx_rate_obj:
+                        fx_rate = fx_rate_obj[0].rate
+                    else:
+                        fx_list = fx_rate_objects.filter(
+                            base=base_currency, date__lt=price_date,
+                            currency=security.currency)
+                        if fx_list:
+                            fx_rate = fx_list.latest('date').rate
+                            fx_rate_list.append(FXRate(
+                                base=base_currency, date=price_date,
+                                currency=security.currency, rate=fx_rate,
+                                created_by=request.user))
+                        else:
+                            fx_rate = None
+                    if fx_rate:
                         for item in quantity_data:
                             port_quantity = item.get('portfolio')
                             if port_quantity:
                                 if '%' in str(port_quantity):
                                     quantity = get_quantity(port_quantity, security,
                                                             fund_detail[0].aum,
-                                                            fx_rate_obj[0].rate, price_value)
+                                                            fx_rate, price_value)
                                 else:
                                     quantity = float(port_quantity)
                                 if port_mkt_values.get(price_date):
@@ -217,7 +246,7 @@ class DashboardLinePlotApi(APIView):
                                 if '%' in str(comp1_quantity):
                                     quantity = get_quantity(comp1_quantity, security,
                                                             fund_detail[0].aum,
-                                                            fx_rate_obj[0].rate, price_value)
+                                                            fx_rate, price_value)
                                 else:
                                     quantity = float(comp1_quantity)
                                 if comp1_mkt_values.get(price_date):
@@ -229,7 +258,7 @@ class DashboardLinePlotApi(APIView):
                                 if '%' in str(comp2_quantity):
                                     quantity = get_quantity(comp2_quantity, security,
                                                             fund_detail[0].aum,
-                                                            fx_rate_obj[0].rate, price_value)
+                                                            fx_rate, price_value)
                                 else:
                                     quantity = float(comp2_quantity)
                                 if comp2_mkt_values.get(price_date):
@@ -245,6 +274,8 @@ class DashboardLinePlotApi(APIView):
                 comp1_mkt_values[k] = sum(v) / len(v)
             for k, v in comp2_mkt_values.items():
                 comp2_mkt_values[k] = sum(v) / len(v)
+            if fx_rate_list:
+                FXRate.objects.bulk_create(fx_rate_list, ignore_conflicts=True)
             final_data.append(
                 {'portfolio': "Your Portfolio", 'label': port_mkt_values.keys(),
                  'series': port_mkt_values.values()})
@@ -259,53 +290,69 @@ class DashboardLinePlotApi(APIView):
         return Response(final_data, status=200)
 
 
-def get_holding_list(data, base_currency):
-    fx_rate = FXRate.objects.all()
+def get_holding_list(request, data, base_currency):
+    fx_rate_objects = FXRate.objects.all()
     fund_holdings = FundHolding.objects.all()
     fund_details = FundDetail.objects.all()
     prices = Price.objects.all()
     securities = Security.objects.filter(id__in=map(
         lambda d: d.get('securityId', 0), data))
     holding_list = []
+    fx_rate_list = []
     for security in securities:
         quantity_data = [item for item in data if str(item.get('securityId'))
                          == str(security.id)]
-        fx_rate_obj = fx_rate.filter(base=base_currency,
-                                     date=date.today(),
-                                     currency=security.currency)
-        price_obj = prices.filter(id_value=security.id_value,
-                                  date=date.today())
+        price_obj = prices.filter(id_value=security.id_value)
         fund_detail = fund_details.filter(fund_id=security.id_value)
-        if fx_rate_obj and price_obj:
-            for item in quantity_data:
-                quantity = str(item.get('portfolio'))
-                if '%' in quantity:
-                    a = float(quantity.replace("%", "")) * 1000000
-                    if security.asset_type == 'Mutual Fund':
-                        b = float(fund_detail[0].aum * 1000000 *
-                                  (1 / fx_rate_obj[0].rate))
-                        aum = a / b
-                        holdings = list(fund_holdings.values_list('id_value')
-                                        .filter(fund_id=security.id_value)
-                                        .annotate(quantity=F('quantity')))
-                        for holding in holdings:
-                            holding = list(holding)
-                            holding[1] = aum * holding[1]
-                            holding_list.append(holding)
-                    else:
-                        quantity = a / float(price_obj[0].price)
-                        holding_list.append([security.id_value, quantity])
+        if price_obj and fund_detail:
+            price = price_obj.latest('date')
+            fx_rate_obj = fx_rate_objects.filter(
+                base=base_currency, date=price.date,
+                currency=security.currency)
+            if fx_rate_obj:
+                fx_rate = fx_rate_obj[0].rate
+            else:
+                fx_list = fx_rate_objects.filter(
+                    base=base_currency, date__lt=price.date,
+                    currency=security.currency)
+                if fx_list:
+                    fx_rate = fx_list.latest('date').rate
+                    fx_rate_list.append(FXRate(
+                        base=base_currency, date=price.date,
+                        currency=security.currency, rate=fx_rate,
+                        created_by=request.user))
                 else:
-                    if security.asset_type == 'Mutual Fund':
-                        holdings = list(fund_holdings.values_list('id_value')
-                                        .filter(fund_id=security.id_value)
-                                        .annotate(quantity=F('quantity')))
-                        for holding in holdings:
-                            holding = list(holding)
-                            holding[1] = quantity
-                            holding_list.append(holding)
+                    fx_rate = None
+            if fx_rate:
+                for item in quantity_data:
+                    quantity = str(item.get('portfolio'))
+                    if '%' in quantity:
+                        a = float(quantity.replace("%", "")) * 1000000
+                        if security.asset_type == 'Mutual Fund':
+                            b = float(fund_detail[0].aum * 1000000 *
+                                      (1 / fx_rate))
+                            aum = a / b
+                            holdings = list(fund_holdings.values_list('id_value')
+                                            .filter(fund_id=security.id_value)
+                                            .annotate(quantity=F('quantity')))
+                            for holding in holdings:
+                                holding = list(holding)
+                                holding[1] = aum * holding[1]
+                                holding_list.append(holding)
+                        else:
+                            quantity = a / float(price_obj[0].price)
+                            holding_list.append([security.id_value, quantity])
                     else:
-                        holding_list.append([security.id_value, quantity])
+                        if security.asset_type == 'Mutual Fund':
+                            holdings = list(fund_holdings.values_list('id_value')
+                                            .filter(fund_id=security.id_value)
+                                            .annotate(quantity=F('quantity')))
+                            for holding in holdings:
+                                holding = list(holding)
+                                holding[1] = quantity
+                                holding_list.append(holding)
+                        else:
+                            holding_list.append([security.id_value, quantity])
     return holding_list
 
 
@@ -320,17 +367,16 @@ class DashboardDoughnutChart(APIView):
         data = request.data.get('data')
         try:
             prices = Price.objects.all()
-            holding_list = get_holding_list(data, base_currency)
+            holding_list = get_holding_list(request, data, base_currency)
             securities = Security.objects.filter(id_value__in=[item[0] for item in holding_list])
             return_dict = {}
             for item in holding_list:
                 if item[0]:
                     security_obj = securities.filter(id_value=item[0])
-                    price_obj = prices.filter(id_value=item[0],
-                                              date=date.today())
+                    price_obj = prices.filter(id_value=item[0])
                     if security_obj and price_obj:
                         industry = security_obj[0].industry
-                        market_value = float(item[1]) * float(price_obj[0].price)
+                        market_value = float(item[1]) * float(price_obj.latest('date').price)
                         if return_dict.get(industry):
                             market_value = return_dict.get(industry) + market_value
                         return_dict.update({industry: market_value})
@@ -353,17 +399,16 @@ class DashboardPieChart(APIView):
         data = request.data.get('data')
         try:
             prices = Price.objects.all()
-            holding_list = get_holding_list(data, base_currency)
+            holding_list = get_holding_list(request, data, base_currency)
             securities = Security.objects.filter(id_value__in=[item[0] for item in holding_list])
             return_dict = {}
             for item in holding_list:
                 if item[0]:
                     security_obj = securities.filter(id_value=item[0])
-                    price_obj = prices.filter(id_value=item[0],
-                                              date=date.today())
+                    price_obj = prices.filter(id_value=item[0])
                     if security_obj and price_obj:
                         asset_type = security_obj[0].asset_type
-                        market_value = float(item[1]) * float(price_obj[0].price)
+                        market_value = float(item[1]) * float(price_obj.latest('price').price)
                         if return_dict.get(asset_type):
                             market_value = return_dict.get(asset_type) + market_value
                         return_dict.update({asset_type: market_value})
