@@ -27,17 +27,23 @@ export class TestComponent implements OnInit {
     chartCallback;
     public graph = {
         data: [],
-        layout: { width: 1200, height: 400 },
-        xaxis: {
-            //  autorange: true,
-            //    rangeslider: { range: ['2016-02-17', '2019-08-09'] },
-            type: 'date',
+        layout: {
+            width: 1200,
+            height: 400,
+            xaxis: {
+                autorange: true,
+                // range: ['2016-02-17', '2019-08-09'],
+                //  autorange: true,
+                rangeslider: { range: [] },
+                type: 'date',
 
+            },
+            yaxis: {
+                autorange: true,
+                type: 'linear'
+            }
         },
-        yaxis: {
-            // autorange: true,
-            type: 'linear'
-        }
+
     };
     constructor(private userservice: ServercommunicationService) {
         const self = this;
@@ -62,6 +68,7 @@ export class TestComponent implements OnInit {
     linegraph(json) {
         // const self = this, chart = this.chart;
         // chart.showLoading();
+        let firstdate = json[0]['label'][0];
         let tempArray = [];
         let i = 0;
         let myseries = [];
@@ -71,6 +78,7 @@ export class TestComponent implements OnInit {
             // let name = data1['portfolio'];
             // let data = data1['series'];
             // let mtype = 'line';
+
 
             let row = { x: element['label'], y: element['series'], type: 'scatter', mode: 'lines+points', name: element['portfolio'] }
             myseries.push(row);
@@ -85,6 +93,7 @@ export class TestComponent implements OnInit {
             // }
         });
         this.graph.data = myseries;
+        this.graph.layout.xaxis.rangeslider.range = [firstdate, new Date().toString()];
     }
 
 
