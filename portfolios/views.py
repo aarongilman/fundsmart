@@ -78,23 +78,25 @@ class HistoricalPerformanceDifference(APIView):
                 price_objs = prices.filter(id_value=security.id_value)
                 if price_objs and fund_detail:
                     price_obj = price_objs.latest('date')
-                    fx_rate_obj = fx_rate_objects.filter(
-                        base=base_currency, date=price_obj.date,
-                        currency=security.currency)
-                    if fx_rate_obj:
-                        fx_rate = fx_rate_obj[0].rate
-                    else:
-                        fx_list = fx_rate_objects.filter(
-                            base=base_currency, date__lt=price_obj.date,
+                    if not base_currency == security.currency:
+                        fx_rate_obj = fx_rate_objects.filter(
+                            base=base_currency, date=price_obj.date,
                             currency=security.currency)
-                        if fx_list:
-                            fx_rate = fx_list.latest('date').rate
-                            fx_rate_list.append(FXRate(
-                                base=base_currency, date=price_obj.date,
-                                currency=security.currency, rate=fx_rate,
-                                created_by=request.user))
+                        if fx_rate_obj:
+                            fx_rate = fx_rate_obj[0].rate
                         else:
-                            fx_rate = None
+                            fx_list = fx_rate_objects.filter(
+                                base=base_currency, date__lt=price_obj.date,
+                                currency=security.currency)
+                            if fx_list:
+                                fx_rate = fx_list.latest('date').rate
+                                fx_rate_list.append(FXRate(
+                                    base=base_currency, date=price_obj.date,
+                                    currency=security.currency, rate=fx_rate))
+                            else:
+                                fx_rate = None
+                    else:
+                        fx_rate = 1
                     if fx_rate:
                         price = float(price_obj.price)
                         total_quantity = 0
@@ -306,23 +308,25 @@ def get_holding_list(request, data, base_currency):
         fund_detail = fund_details.filter(fund_id=security.id_value)
         if price_obj and fund_detail:
             price = price_obj.latest('date')
-            fx_rate_obj = fx_rate_objects.filter(
-                base=base_currency, date=price.date,
-                currency=security.currency)
-            if fx_rate_obj:
-                fx_rate = fx_rate_obj[0].rate
-            else:
-                fx_list = fx_rate_objects.filter(
-                    base=base_currency, date__lt=price.date,
+            if not base_currency == security.currency:
+                fx_rate_obj = fx_rate_objects.filter(
+                    base=base_currency, date=price.date,
                     currency=security.currency)
-                if fx_list:
-                    fx_rate = fx_list.latest('date').rate
-                    fx_rate_list.append(FXRate(
-                        base=base_currency, date=price.date,
-                        currency=security.currency, rate=fx_rate,
-                        created_by=request.user))
+                if fx_rate_obj:
+                    fx_rate = fx_rate_obj[0].rate
                 else:
-                    fx_rate = None
+                    fx_list = fx_rate_objects.filter(
+                        base=base_currency, date__lt=price.date,
+                        currency=security.currency)
+                    if fx_list:
+                        fx_rate = fx_list.latest('date').rate
+                        fx_rate_list.append(FXRate(
+                            base=base_currency, date=price.date,
+                            currency=security.currency, rate=fx_rate))
+                    else:
+                        fx_rate = None
+            else:
+                fx_rate = 1
             if fx_rate:
                 for item in quantity_data:
                     quantity = str(item.get('portfolio'))
