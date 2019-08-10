@@ -1,6 +1,6 @@
 # Common functions used in portfolios app
 import collections
-from datetime import date
+from datetime import date, timedelta
 
 from .models import FundHolding, FXRate, FundDetail, Price
 
@@ -124,3 +124,7 @@ def get_line_graph_data(funds, common_date):
          'label': recommended_fund_mkt_value.keys(),
          'series': recommended_fund_mkt_value.values()})
     return data
+
+def walk_days(common_date, today_date):
+    for n in range(int ((today_date - common_date).days)+1):
+        yield common_date + timedelta(n)

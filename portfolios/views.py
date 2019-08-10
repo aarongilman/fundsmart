@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, status
 
-from .common import get_quantity, get_line_graph_data
+from .common import get_quantity, get_line_graph_data, walk_days
 from .serializers import ImportPortfolioFundSerializer
 from .models import Security, Portfolio, PortfolioFund, FundDetail, Price,\
     HoldingDetail, FundHolding, FXRate, PortfolioFundPrice
@@ -199,35 +199,44 @@ class DashboardLinePlotApi(APIView):
             comp1_mkt_values = {}
             comp2_mkt_values = {}
             fx_rate_list = []
+            date_range = list(walk_days(common_date, date.today()))
+            price_obj_list = []
             for security in securities:
                 quantity_data = [item for item in data if str(item.get('securityId'))
                                  == str(security.id)]
                 fund_detail = fund_details.filter(fund_id=security.id_value)
-
-                price_obj = prices.filter(id_value=security.id_value,
-                                          date__gte=common_date, date__lte=date.today())\
-                    .order_by('date').distinct()
-                for price in price_obj:
-                    price_value = float(price.price)
-                    price_date = str(price.date)
-                    fx_rate_obj = fx_rate_objects.filter(
-                        base=base_currency, date=price_date,
-                        currency=security.currency)
-                    if fx_rate_obj:
-                        fx_rate = fx_rate_obj[0].rate
-                    else:
-                        fx_list = fx_rate_objects.filter(
-                            base=base_currency, date__lt=price_date,
+                for temp_date in date_range:
+                    try:
+                        price = prices.filter(id_value=security.id_value,
+                                              date=temp_date).latest('date')
+                        price_value = float(price.price)
+                    except:
+                        price_value = float(
+                            prices.filter(id_value=security.id_value,
+                                         date__lte=temp_date).latest('date').price)
+                        price_obj_list.append(Price(
+                            id_value=security.id_value, date=temp_date, price=price_value))
+                    price_date = str(temp_date)
+                    if not base_currency == security.currency:
+                        fx_rate_obj = fx_rate_objects.filter(
+                            base=base_currency, date=price_date,
                             currency=security.currency)
-                        if fx_list:
-                            fx_rate = fx_list.latest('date').rate
-                            fx_rate_list.append(FXRate(
-                                base=base_currency, date=price_date,
-                                currency=security.currency, rate=fx_rate,
-                                created_by=request.user))
+                        if fx_rate_obj:
+                            fx_rate = fx_rate_obj[0].rate
                         else:
-                            fx_rate = None
-                    if fx_rate:
+                            fx_list = fx_rate_objects.filter(
+                                base=base_currency, date__lt=price_date,
+                                currency=security.currency)
+                            if fx_list:
+                                fx_rate = fx_list.latest('date').rate
+                                fx_rate_list.append(FXRate(
+                                    base=base_currency, date=price_date,
+                                    currency=security.currency, rate=fx_rate))
+                            else:
+                                fx_rate = None
+                    else:
+                        fx_rate = 1
+                    if fx_rate and price_value:
                         for item in quantity_data:
                             port_quantity = item.get('portfolio')
                             if port_quantity:
@@ -276,6 +285,8 @@ class DashboardLinePlotApi(APIView):
                 comp1_mkt_values[k] = sum(v) / len(v)
             for k, v in comp2_mkt_values.items():
                 comp2_mkt_values[k] = sum(v) / len(v)
+            if price_obj_list:
+                Price.objects.bulk_create(price_obj_list, ignore_conflicts=True)
             if fx_rate_list:
                 FXRate.objects.bulk_create(fx_rate_list, ignore_conflicts=True)
             final_data.append(

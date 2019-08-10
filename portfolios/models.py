@@ -11,7 +11,8 @@ class Price(models.Model):
     date = models.DateField()
     id_value = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=21, decimal_places=10)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
+                                   blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -21,7 +22,8 @@ class FXRate(models.Model):
     currency = models.CharField(max_length=50)
     base = models.CharField(max_length=50)
     rate = models.DecimalField(max_digits=7, decimal_places=3)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,
+                                   blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
