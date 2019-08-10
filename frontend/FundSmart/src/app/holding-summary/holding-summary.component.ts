@@ -151,7 +151,7 @@ export class HoldingSummaryComponent implements OnInit {
     getFund() {
         if (portfolioidSelect.length > 0) {
             if (this.bardata_fund.length === 0) {
-                this.service.holding_summary_fund(portfolioidSelect, this.currency).toPromise().then((fundData: any) => {
+                this.service.holding_summary_fund(portfolioidSelect).toPromise().then((fundData: any) => {
                     let i = 0;
                     let names: any;
                     fundData.forEach(fund => {
@@ -179,7 +179,7 @@ export class HoldingSummaryComponent implements OnInit {
         if (portfolioidSelect.length > 0) {
             if (this.assets_bardata_fund.length === 0) {
                 this.spinner.show();
-                this.service.holding_summary_asset(portfolioidSelect, this.currency).toPromise().then((resultData: any) => {
+                this.service.holding_summary_asset(portfolioidSelect).toPromise().then((resultData: any) => {
                     let i = 0;
                     resultData.forEach(result => {
                         const names = Object.keys(result);
@@ -206,7 +206,7 @@ export class HoldingSummaryComponent implements OnInit {
         if (portfolioidSelect.length > 0) {
             if (this.country_data.length === 0) {
                 this.spinner.show();
-                this.service.holding_summary_country(portfolioidSelect, this.currency).toPromise().then((countryData: any) => {
+                this.service.holding_summary_country(portfolioidSelect).toPromise().then((countryData: any) => {
                     countryData.forEach(country => {
                         const names = Object.keys(country);
                         const CountryObj = {
@@ -230,7 +230,7 @@ export class HoldingSummaryComponent implements OnInit {
         if (portfolioidSelect.length > 0) {
             if (this.industry_bardata_fund.length === 0) {
                 this.spinner.show();
-                this.service.holding_summary_industry(portfolioidSelect, this.currency).toPromise().then((industryData: any) => {
+                this.service.holding_summary_industry(portfolioidSelect).toPromise().then((industryData: any) => {
                     let i = 0;
                     industryData.forEach(industry => {
                         const names = Object.keys(industry);
@@ -254,7 +254,7 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     getHistoricalPerformance() {
-        this.service.holding_summary_historicalPerformance(portfolioidSelect, this.currency).toPromise().then((historicalData: any) => {
+        this.service.holding_summary_historicalPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 const names = Object.keys(historical);
                 for (let a in historical[names[0]]) {
@@ -276,7 +276,7 @@ export class HoldingSummaryComponent implements OnInit {
     }
 
     getLineGraph() {
-        this.service.holding_summary_lineGraph(portfolioidSelect, this.currency).toPromise().then((jsondata: any) => {
+        this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then((jsondata: any) => {
             let totalportfolios = jsondata.length + 1;
             if (portfolioidSelect.length === 1) {
                 this.linecolumnNames = ['label'];

@@ -4,6 +4,7 @@ import { SocialUser } from "angularx-social-login";
 import { IntercomponentCommunicationService } from './intercomponent-communication.service';
 import { holdindDetail } from './holding-details/holdingDetail';
 import { portfolioidSelect } from './fund/portfolioid_select';
+import { GlobalCurrency } from './fund/global';
 
 @Injectable({
     providedIn: 'root'
@@ -22,7 +23,8 @@ export class ServercommunicationService {
 
     constructor(
         private http: HttpClient,
-        private interconn: IntercomponentCommunicationService
+        private interconn: IntercomponentCommunicationService,
+        private global: GlobalCurrency
     ) { }
     userkey: string;
 
@@ -283,38 +285,39 @@ export class ServercommunicationService {
             body, { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_asset(ids, currency) {
-        return this.http.get(this.api_link + 'api/asset_class_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
+    holding_summary_asset(ids) {
+        return this.http.get(this.api_link + 'api/asset_class_holding_summary/?portfolio_ids=' + ids + '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_industry(ids, currency) {
-        return this.http.get(this.api_link + 'api/industry_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
+    holding_summary_industry(ids) {
+        return this.http.get(this.api_link + 'api/industry_holding_summary/?portfolio_ids=' + ids + '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_country(ids, currency) {
-        return this.http.get(this.api_link + 'api/country_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
+    holding_summary_country(ids) {
+        return this.http.get(this.api_link + 'api/country_holding_summary/?portfolio_ids=' + ids + '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_fund(ids, currency) {
-        return this.http.get(this.api_link + 'api/fund_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
+    holding_summary_fund(ids) {
+        return this.http.get(this.api_link + 'api/fund_holding_summary/?portfolio_ids=' + ids + '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_historicalPerformance(ids, currency) {
-        return this.http.get(this.api_link + 'api/historical_performance_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
+    holding_summary_historicalPerformance(ids) {
+        return this.http.get(this.api_link + 'api/historical_performance_holding_summary/?portfolio_ids=' + ids + '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
-    holding_summary_lineGraph(ids, currency) {
-        return this.http.get(this.api_link + 'api/line_graph_holding_summary/?portfolio_ids=' + ids + '&currency=' + currency,
+    holding_summary_lineGraph(ids) {
+        return this.http.get(this.api_link + 'api/line_graph_holding_summary/?portfolio_ids=' + ids + '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
     allocationRecommendationHistorical(ids) {
-        return this.http.get(this.api_link + 'api/allocation_historical_performance/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/allocation_historical_performance/?portfolio_ids=' + ids +
+            '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
@@ -418,7 +421,8 @@ export class ServercommunicationService {
     }
 
     fundRecommendationLineChart(ids) {
-        return this.http.get(this.api_link + 'api/line_graph_fund_recommendation/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/line_graph_fund_recommendation/?portfolio_ids=' + ids +
+            '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
@@ -428,12 +432,14 @@ export class ServercommunicationService {
     }
 
     getCurrentAllocation(ids) {
-        return this.http.get(this.api_link + 'api/current_allocation/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/current_allocation/?portfolio_ids=' + ids +
+            '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
     getLineGraph(ids) {
-        return this.http.get(this.api_link + 'api/allocation_line_graph/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/allocation_line_graph/?portfolio_ids=' + ids +
+            '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
@@ -458,12 +464,14 @@ export class ServercommunicationService {
     }
 
     getBarPlotPerformance(ids) {
-        return this.http.get(this.api_link + 'api/bar_plot_fund_recommendation/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/bar_plot_fund_recommendation/?portfolio_ids=' + ids +
+            '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 
     getHoldingDetails(ids) {
-        return this.http.get(this.api_link + 'api/holding_detail/?portfolio_ids=' + ids,
+        return this.http.get(this.api_link + 'api/holding_detail/?portfolio_ids=' + ids +
+            '&currency=' + this.global.currency,
             { headers: new HttpHeaders({ Authorization: 'Token ' + this.userkey }) });
     }
 

@@ -44,11 +44,11 @@ import { DataTablesModule } from 'angular-datatables';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
-import { DataTableModule } from "angular-6-datatable";
 import { TestComponent } from './test/test.component';
 import { PlotlyModule } from 'angular-plotly.js'
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { GlobalCurrency } from './fund/global';
 
 
 PlotlyModule.plotlyjs = PlotlyJS;
@@ -126,7 +126,6 @@ export function provideConfig() {
         NgSelectModule,
         ReactiveFormsModule,
         NgxSpinnerModule,
-        DataTableModule,
         MatMenuModule,
         HighchartsChartModule,
         DataTablesModule,
@@ -144,6 +143,7 @@ export function provideConfig() {
         SocialloginService,
         GetfileforuploadService,
         ConfirmationService,
+        GlobalCurrency,
         IntercomponentCommunicationService, {
             provide: AuthServiceConfig,
             useFactory: provideConfig

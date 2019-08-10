@@ -12,6 +12,7 @@ import { portfolioList } from './portfolioList';
 import { portfolioidSelect } from './portfolioid_select';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
+import { GlobalCurrency } from './global';
 
 @Component({
     selector: 'app-fund',
@@ -44,7 +45,8 @@ export class FundComponent implements OnInit {
         private router: Router,
         public sortlist: FundService,
         private formBuilder: FormBuilder,
-        private spinner: NgxSpinnerService
+        private spinner: NgxSpinnerService,
+        public global: GlobalCurrency
     ) {
         this.portfolioFormGroup = this.formBuilder.group(
             {
@@ -64,6 +66,7 @@ export class FundComponent implements OnInit {
             portfolioList.length = 0;
             this.router.navigate(['/home']);
         });
+        this.global.currency = "INR";
     }
 
     ngOnInit() {

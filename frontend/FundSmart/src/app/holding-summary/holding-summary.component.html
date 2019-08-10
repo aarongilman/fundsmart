@@ -208,15 +208,6 @@
                         <div class="heading">
                             <h3 class="heading">Historical Performance Difference</h3>
                         </div>
-                        <div *ngIf="selectedIds">
-                            Currency
-                            <select (change)="test()" [(ngModel)]="currency" class="form-control ins"
-                                style="width: 60px;margin: 0 10px">
-                                <option selected value="INR">INR</option>
-                                <option value="USD">USD</option>
-                                <option value="EUR">EUR</option>
-                            </select>
-                        </div>
                         <div class="responsive-table">
                             <table class="trade-table">
                                 <thead>
