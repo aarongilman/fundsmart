@@ -86,7 +86,14 @@ export class HeaderComponent implements OnInit {
                 this.oldpass = '';
                 this.newpass = '';
                 this.confirmpass = '';
-            });
+            }).catch(
+                (error: any) => {
+                    let errormsg = '';
+                    for (let i = 0; i < error['error']['new_password2'].length; i++) {
+                        errormsg += error['error']['new_password2'][i] + ' \n';
+                    }
+                    this.toastr.error(errormsg, 'Error');
+                });
         }
         else {
             this.toastr.error('Error!', 'New password and Confirm password does not match!');
@@ -104,7 +111,7 @@ export class HeaderComponent implements OnInit {
         this.service.update_User(this.currentuser).toPromise().then(data => {
             this.setcurrent_user();
             this.modalService.dismissAll();
-            alert('Data Updated');
+            this.toastr.success('Success!','Profile Updated Successfully!')
         }, error => { });
     }
 

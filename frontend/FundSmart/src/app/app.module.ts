@@ -45,7 +45,13 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { DataTableModule } from "angular-6-datatable";
+import { TestComponent } from './test/test.component';
+import { PlotlyModule } from 'angular-plotly.js'
+import * as PlotlyJS from 'plotly.js/dist/plotly.js';
+import { HighchartsChartModule } from 'highcharts-angular';
 
+
+PlotlyModule.plotlyjs = PlotlyJS;
 const cookieConfig: NgcCookieConsentConfig = {
     cookie: {
         // domain: 'localhost'
@@ -104,6 +110,7 @@ export function provideConfig() {
         DragAndDropDirective,
         SortableDirective,
         FilterPipe,
+        TestComponent,
     ],
     imports: [
         BrowserModule,
@@ -115,11 +122,13 @@ export function provideConfig() {
         FormsModule,
         ConfirmDialogModule,
         TooltipModule,
+        PlotlyModule,
         NgSelectModule,
         ReactiveFormsModule,
         NgxSpinnerModule,
         DataTableModule,
         MatMenuModule,
+        HighchartsChartModule,
         DataTablesModule,
         NgcCookieConsentModule.forRoot(cookieConfig),
         ToastrModule.forRoot(),

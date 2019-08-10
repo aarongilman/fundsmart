@@ -2140,3 +2140,10 @@ google-chart {
     position: absolute;
     width: 10px;
 }
+
+.page-item.active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: #000034;
+    border-color: #000034
+}

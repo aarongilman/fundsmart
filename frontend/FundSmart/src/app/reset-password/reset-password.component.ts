@@ -35,10 +35,14 @@ export class ResetPasswordComponent implements OnInit {
             this.userservice.resetpassword_req(this.uid, this.token, this.password1, this.password2).toPromise().then(
                 data => {
                     this.toastr.success('success', 'Password has been succesfully reset!')
-                },
-                error => {
-                    this.toastr.error('error', 'Password has not been reset successfully!')
-                });
+                }).catch(
+                    (error: any) => {
+                        let errormsg = '';
+                        for (let i = 0; i < error['error']['new_password2'].length; i++) {
+                            errormsg += error['error']['new_password2'][i] + ' \n';
+                        }
+                        this.toastr.error(errormsg, 'Error');
+                    });
         }
         else {
             this.toastr.error('error', 'Password and confirmation password does not match each other!')
