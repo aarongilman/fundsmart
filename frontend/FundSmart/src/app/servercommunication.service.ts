@@ -10,9 +10,9 @@ import { portfolioidSelect } from './fund/portfolioid_select';
 })
 
 export class ServercommunicationService {
-    api_link = 'http://3.130.87.74/';
+    // api_link = 'http://3.130.87.74/';
     // api_link = 'http://localhost:8000/';
-    // api_link = 'http://192.168.100.111:8000/';
+    api_link = 'http://192.168.100.111:8000/';
     // api_link = 'http://127.0.0.1:8000/';
     socialuser: SocialUser;
     currentuser: any;
