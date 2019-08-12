@@ -467,26 +467,28 @@ def get_holding_detail_data(request, fund):
             price_date = current_price_obj.latest('date').date
     market_value = None
     basis = None
-    base_currency = request.GET.get('currency')
-    if not base_currency == fund.security.currency:
-        fx_rate_obj = fx_rate_objects.filter(base=base_currency, date=price_date)
-        if fx_rate_obj:
-            fx_rate = fx_rate_obj[0].rate
-            new_fx_obj = None
-        else:
-            fx_list = fx_rate_objects.filter(
-                base=base_currency, date__lt=price_date,
-                currency=fund.security.currency)
-            if fx_list:
-                fx_rate = fx_list.latest('date').rate
-                new_fx_obj = FXRate(base=base_currency, date=price_date,
-                                    currency=fund.security.currency, rate=fx_rate)
-            else:
+    new_fx_obj = None
+    if current_price:
+        base_currency = request.GET.get('currency')
+        if not base_currency == fund.security.currency:
+            fx_rate_obj = fx_rate_objects.filter(base=base_currency, date=price_date)
+            if fx_rate_obj:
+                fx_rate = fx_rate_obj[0].rate
                 new_fx_obj = None
-                fx_rate = None
-    else:
-        new_fx_obj = None
-        fx_rate = 1
+            else:
+                fx_list = fx_rate_objects.filter(
+                    base=base_currency, date__lt=price_date,
+                    currency=fund.security.currency)
+                if fx_list:
+                    fx_rate = fx_list.latest('date').rate
+                    new_fx_obj = FXRate(base=base_currency, date=price_date,
+                                        currency=fund.security.currency, rate=fx_rate)
+                else:
+                    new_fx_obj = None
+                    fx_rate = None
+        else:
+            new_fx_obj = None
+            fx_rate = 1
     if '%' in fund.quantity:
         if current_price and fund_detail and fx_rate:
             quantity = get_quantity(fund.quantity, fund.security,
