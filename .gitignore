@@ -3,6 +3,7 @@
 /accounts/migrations/
 .idea/
 /frontend/FundSmart/node_modules
+/frontend/FundSmart/dist/
 /frontend/FundSmart/.editorconfig
 /portfolios/migrations/
 .idea/

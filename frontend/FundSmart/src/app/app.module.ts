@@ -23,8 +23,12 @@ import { ServercommunicationService } from './servercommunication.service';
 import { GetfileforuploadService } from './getfileforupload.service';
 import { SocialloginService } from './sociallogin.service';
 
-import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-login";
-import { SocialLoginModule, AuthServiceConfig } from "angularx-social-login";
+import {
+    GoogleLoginProvider,
+    FacebookLoginProvider,
+    SocialLoginModule,
+    AuthServiceConfig
+} from 'angularx-social-login';
 import { GoogleChartsModule } from 'angular-google-charts';
 import { MatMenuModule } from '@angular/material';
 
@@ -45,7 +49,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { TooltipModule } from 'primeng/tooltip';
 import { TestComponent } from './test/test.component';
-import { PlotlyModule } from 'angular-plotly.js'
+import { PlotlyModule } from 'angular-plotly.js';
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { GlobalCurrency } from './fund/global';
@@ -70,16 +74,16 @@ const cookieConfig: NgcCookieConsentConfig = {
     type: 'info'
 };
 
-let gapiClientConfig: NgGapiClientConfig = {
+const gapiClientConfig: NgGapiClientConfig = {
     client_id: '883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com',
     discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
     scope: [
         'https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/drive',
-    ].join(" ")
+    ].join(' ')
 };
 
-let config = new AuthServiceConfig([
+const config = new AuthServiceConfig([
     {
         id: GoogleLoginProvider.PROVIDER_ID,
         provider: new GoogleLoginProvider('883505734730-7culcu4hmm1m13ocq1uhbkr3fc31gpnf.apps.googleusercontent.com')

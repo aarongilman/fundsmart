@@ -42,7 +42,7 @@ export class AppComponent implements OnInit, OnDestroy {
     showdetail_flag = false;
     currentuser;
     islogin: boolean;
-    
+
     constructor(
         private modalService: NgbModal,
         private userservice: ServercommunicationService,
