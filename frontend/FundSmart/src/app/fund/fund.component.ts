@@ -105,6 +105,9 @@ export class FundComponent implements OnInit {
                     this.portfolioDetailList = JSON.parse(JSON.stringify(f));
                     this.spinner.hide();
                 });
+            }).catch(error => {
+                this.toastr.error('Please try after sometime', 'Error');
+                this.spinner.hide();
             });
         } else {
             this.sortlist.resetHoldingDetails();

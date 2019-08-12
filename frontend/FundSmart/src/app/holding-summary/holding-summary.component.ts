@@ -15,7 +15,7 @@ import * as $ from 'jquery';
 export class HoldingSummaryComponent implements OnInit {
 
     id = [];
-    currency = "INR";
+    currency = 'INR';
     selectedIds = portfolioidSelect;
     result: any = [];
     historical: any = [];
@@ -52,7 +52,7 @@ export class HoldingSummaryComponent implements OnInit {
         '#8e44ad', '#1a5276', '#3498db', '#0e6655',
         '#52be80', '#f4d03f', '#dc7633', '#717d7e',
         '#212f3c'
-    ]
+    ];
 
     bardata_fund = [];
     barwidth_fund = 600;
@@ -170,6 +170,9 @@ export class HoldingSummaryComponent implements OnInit {
                     });
                     this.barcolumnname = ['Fund', 'value', { role: 'style' }];
                     this.spinner.hide();
+                }).catch(error => {
+                    this.toastr.error('Please try again after sometime', 'Error');
+                    this.spinner.hide();
                 });
             }
         }
@@ -197,6 +200,9 @@ export class HoldingSummaryComponent implements OnInit {
                     });
                     this.assets_columnNames = ['Fund', 'value', { role: 'style' }];
                     this.spinner.hide();
+                }).catch(error => {
+                    this.toastr.error('Please try again after sometime', 'Error');
+                    this.spinner.hide();
                 });
             }
         }
@@ -220,6 +226,9 @@ export class HoldingSummaryComponent implements OnInit {
                         }
                     });
                     this.country_columnNames = ['Country', 'Market Value'];
+                    this.spinner.hide();
+                }).catch(error => {
+                    this.toastr.error('Please try again after sometime', 'Error');
                     this.spinner.hide();
                 });
             }
@@ -248,6 +257,9 @@ export class HoldingSummaryComponent implements OnInit {
                     });
                     this.industryColumns = ['Type', 'Total', { role: 'style' }];
                     this.spinner.hide();
+                }).catch(error => {
+                    this.toastr.error('Please try again after sometime', 'Error');
+                    this.spinner.hide();
                 });
             }
         }
@@ -257,7 +269,7 @@ export class HoldingSummaryComponent implements OnInit {
         this.service.holding_summary_historicalPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 const names = Object.keys(historical);
-                for (let a in historical[names[0]]) {
+                for (const a in historical[names[0]]) {
                     if (historical[names[0]][a] !== null) {
                         historical[names[0]][a] = Number.parseFloat(historical[names[0]][a]).toFixed(4) + '%';
                     }
@@ -277,7 +289,7 @@ export class HoldingSummaryComponent implements OnInit {
 
     getLineGraph() {
         this.service.holding_summary_lineGraph(portfolioidSelect).toPromise().then((jsondata: any) => {
-            let totalportfolios = jsondata.length + 1;
+            const totalportfolios = jsondata.length + 1;
             if (portfolioidSelect.length === 1) {
                 this.linecolumnNames = ['label'];
                 this.linecolumnNames.push(jsondata[0]['portfolio']);

@@ -45,10 +45,10 @@ export class HoldingDetailsComponent implements OnInit {
         useBom: true,
         noDownload: false,
         headers: [
-            "Fund", "Security", "ISIN", "Ticker",
-            "Quantity", "Price", "Mkt Value",
-            "Basic Price", "Basis", "Country", "Currency",
-            "Asset Class", "Industry", "Rating"
+            'Fund', 'Portfolio', 'Security', 'ISIN', 'Quantity',
+            'Ticker', 'Price', 'Market_Value',
+            'Basic_Price', 'Basis', 'Country', 'Currency',
+            'Asset_Class', 'Industry', 'Rating'
         ],
         nullToEmptyString: true,
     };
@@ -64,7 +64,7 @@ export class HoldingDetailsComponent implements OnInit {
     country = [];
     industry = [];
     rating = [];
-    serchportfolio = "All";
+    serchportfolio = 'All';
 
     constructor(
         private userservice: ServercommunicationService,
