@@ -125,6 +125,7 @@ def get_line_graph_data(funds, common_date):
          'series': recommended_fund_mkt_value.values()})
     return data
 
-def walk_days(common_date, today_date):
+
+def get_date_list(common_date, today_date):
     for n in range(int ((today_date - common_date).days)+1):
         yield common_date + timedelta(n)
