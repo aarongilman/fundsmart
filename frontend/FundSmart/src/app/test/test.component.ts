@@ -64,18 +64,23 @@ export class TestComponent implements OnInit {
     }
 
     linegraph(json) {
+       
+        if (json.length > 0) {
+            let firstdate = json[0]['label'][0];
+          
+            let myseries = [];
+            json.forEach(data1 => {
+              
+                let element = data1;
+             
 
-        let firstdate = json[0]['label'][0];
-        let tempArray = [];
-        let i = 0;
-        let myseries = [];
-        json.forEach(data1 => {
-            let element = data1;
-            let row = { x: element['label'], y: element['series'], type: 'scatter', mode: 'lines+points', name: element['portfolio'] }
-            myseries.push(row);
-        });
-        this.graph.data = myseries;
-        this.graph.layout.xaxis.rangeslider.range = [firstdate, new Date().toString()];
+                let row = { x: element['label'], y: element['series'], type: 'scatter', mode: 'lines+points', name: element['portfolio'] }
+                myseries.push(row);
+        
+            });
+            this.graph.data = myseries;
+            this.graph.layout.xaxis.rangeslider.range = [firstdate, new Date().toString()];
+        }
     }
 
 

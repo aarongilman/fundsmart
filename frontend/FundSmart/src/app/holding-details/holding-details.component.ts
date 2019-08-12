@@ -163,6 +163,10 @@ export class HoldingDetailsComponent implements OnInit {
                     this.total = total;
                     this.spinner.hide();
                 });
+            }).catch(error => {
+                console.log(error);
+                this.toastr.error('There was an error fetching data, Try after some time', 'Error');
+                this.spinner.hide();
             });
         };
     }

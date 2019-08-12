@@ -50,7 +50,6 @@
                                 </form>
                             </div>
                         </div>
-                        <br />
                         <div class='row align-items-center ml-2 mr-2' style="color: #000034">
                             Show
                             <select class="custom-select" style="width: auto;margin: 0 10px;" name="pageSize"
@@ -61,7 +60,6 @@
                                 <option [ngValue]="100">100</option>
                             </select>
                             Entries
-
                             <span class="form-group d-flex align-items-center ml-auto mb-0 w-60" style="color: #000034">
                                 Search: <input class="form-control search ml-2 w-100" type="text" name="searchTerm"
                                     [(ngModel)]="sortlist.searchTerm" />
@@ -125,7 +123,6 @@
                                         <th scope="col" sortable="rating" (sort)="onSort($event)"><span>Rating
                                                 <i class="fa fa-chevron-up"></i><i class="fa fa-chevron-down"></i>
                                             </span></th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -187,7 +184,6 @@
                             </table>
                         </div>
                         <div>
-                            <br />
                             <div class="d-flex ">
                                 <ngb-pagination class="ml-auto" [collectionSize]="total" [(page)]="sortlist.page"
                                     [pageSize]="sortlist.pageSize">
@@ -203,6 +199,9 @@
 
 <ng-template #addHoldingDetais role="document">
     <div class="modal-header">
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+        </button>
         <div class="pop-logo">
             <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                 x="0px" y="0px" viewBox="0 0 486.742 486.742" style="enable-background:new 0 0 486.742 486.742;"
@@ -240,13 +239,11 @@
                             <div *ngIf="f.selectedPortfolio.errors.required">Select Portfolio</div>
                         </div>
                     </div>
-                    <br />
                     <div class="input-group">
                         <input placeholder="select security" class="form-control " (keyup)="searchsecurity($event)"
                             list="securityname" type="text" (change)="setSecurity()" id='secinput'
                             formControlName="selectedSecurity"
                             [ngClass]="{ 'is-invalid': submitted && f.selectedSecurity.errors }">
-
                         <datalist id="securityname">
                             <option *ngFor="let security of securitylist;let d = index" data-value={{security.name}}
                                 data-id={{security.id}}>
@@ -258,7 +255,6 @@
                             <div *ngIf="f.selectedSecurity.errors.required">Security is required</div>
                         </div>
                     </div>
-                    <br />
                     <div class="input-group">
                         <input oninput="validity.valid||(value='');" type="number" class="form-control"
                             formControlName="quantity" name='quantity' placeholder="Enter Quantity"
@@ -268,18 +264,15 @@
                             <div *ngIf="f.quantity.errors.pattern">Quantity in numbers only</div>
                         </div>
                     </div>
-                    <br />
                     <div class="input-group">
                         <input type="number" class="form-control" [ngModelOptions]="{standalone: true}"
                             name='inputBasicPrice' [(ngModel)]=" inputBasicPrice" placeholder="Enter Basic Price">
                     </div>
-                    <br />
                     <div class="input-group">
                         <input type="number" class="form-control" [ngModelOptions]="{standalone: true}"
                             name='inputCurrentPrice' [(ngModel)]="
                             inputCurrentPrice" placeholder="Enter Current Price">
                     </div>
-                    <br />
                     <p>Basic Price and Current Price are not mandatory. </p>
                     <button type="button" (click)='addDetail()' style="cursor: pointer"
                         class="trade-btn button green-btn d-flex align-items-center justify-content-center login-email">
