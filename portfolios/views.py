@@ -472,6 +472,7 @@ def get_holding_detail_data(request, fund):
         fx_rate_obj = fx_rate_objects.filter(base=base_currency, date=price_date)
         if fx_rate_obj:
             fx_rate = fx_rate_obj[0].rate
+            new_fx_obj = None
         else:
             fx_list = fx_rate_objects.filter(
                 base=base_currency, date__lt=price_date,
