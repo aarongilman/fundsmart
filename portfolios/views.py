@@ -455,7 +455,7 @@ def get_holding_detail_data(request, fund):
         if basic_price_obj:
             basic_price = basic_price_obj[0].price
     try:
-        current_price_obj = PortfolioFundPrice.objects.get(fund=fund)\
+        current_price_obj = PortfolioFundPrice.objects.filter(fund=fund)\
             .latest('created_at')
         current_price = current_price_obj.price
         price_date = current_price_obj.created_at
@@ -619,7 +619,7 @@ def get_summary_data(request, type):
                 price_value = price_obj.price
                 price_date = price_obj.date
         fund_detail = fund_details.filter(fund_id=fund.security.id_value)
-        if not base_currency == fund.security.currency:
+        if price_obj and not base_currency == fund.security.currency:
             fx_rate_obj = fx_rate_objects.filter(base=base_currency,
                              date=price_date, currency=fund.security.currency)
             if fx_rate_obj:
