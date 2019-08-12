@@ -48,16 +48,15 @@ export class FundComponent implements OnInit {
         private spinner: NgxSpinnerService,
         public global: GlobalCurrency
     ) {
-        this.portfolioFormGroup = this.formBuilder.group(
-            {
-                name: new FormControl('', Validators.required),
-                description: new FormControl(''),
-                owner_1: new FormControl(''),
-                owner_2: new FormControl(''),
-                type: new FormControl(''),
-                marginal_tax_range: new FormControl(null),
-                location: new FormControl(''),
-            });
+        this.portfolioFormGroup = this.formBuilder.group({
+            name: new FormControl('', Validators.required),
+            description: new FormControl(''),
+            owner_1: new FormControl(''),
+            owner_2: new FormControl(''),
+            type: new FormControl(''),
+            marginal_tax_range: new FormControl(null),
+            location: new FormControl(''),
+        });
         this.interconn.componentMethodCalled$.subscribe(() => {
             this.spinner.show();
             this.getFunds();
@@ -177,7 +176,7 @@ export class FundComponent implements OnInit {
                     this.portfolioDetailList[index].name = data['name'];
                     this.portfolioDetailList[index].description = data['description'];
                     this.modalService.dismissAll('Portfolio Updated!');
-                    this.toastr.success('Portfolio Updated!', 'Portfolio Updated!');
+                    this.toastr.success('Portfolio Updated!', 'Success');
                     this.updatefund_id = undefined;
                     this.submitted = false;
                     this.update = false;

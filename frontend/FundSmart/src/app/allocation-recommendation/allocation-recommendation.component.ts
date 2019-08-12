@@ -25,7 +25,13 @@ export class AllocationRecommendationComponent implements OnInit {
         },
         pieHole: 0.8,
         pieSliceText: 'none',
-        colors: ['#1395b9', '#0e3c54', '#cc0000', '#e65c00', '#ecaa39', '#eac843', '#a2b86d', '#5ace9f', '#fca622'],
+        colors: [
+            '#1395b9', '#0e3c54', '#cc0000', '#e65c00',
+            '#ecaa39', '#eac843', '#a2b86d', '#5ace9f',
+            '#fca622', '#1a5276', '#3498db', '#0e6655',
+            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+            '#212f3c', '#922b21', '#e74c3c', '#633974'
+        ],
         animation: {
             duration: 10000,
             easing: 'out'

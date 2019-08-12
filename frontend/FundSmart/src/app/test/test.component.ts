@@ -10,8 +10,8 @@ import * as Highcharts from 'highcharts';
 })
 export class TestComponent implements OnInit {
     chart;
-    Highcharts = Highcharts; // required
-    chartConstructor = 'chart'; // optional string, defaults to 'chart'
+    Highcharts = Highcharts;
+    chartConstructor = 'chart'; 
     chartoptions = {
         xAxis: {
             categories: []
@@ -21,8 +21,8 @@ export class TestComponent implements OnInit {
             enabled: true
         }
     };
-    updateFlag = false; // optional boolean
-    oneToOneFlag = true; // optional boolean, defaults to false
+    updateFlag = false; 
+    oneToOneFlag = true; 
     runOutsideAngular = false;
     chartCallback;
     public graph = {
@@ -32,8 +32,6 @@ export class TestComponent implements OnInit {
             height: 400,
             xaxis: {
                 autorange: true,
-                // range: ['2016-02-17', '2019-08-09'],
-                //  autorange: true,
                 rangeslider: { range: [] },
                 type: 'date',
 
@@ -45,9 +43,9 @@ export class TestComponent implements OnInit {
         },
 
     };
+
     constructor(private userservice: ServercommunicationService) {
         const self = this;
-
         this.chartCallback = chart => {
             self.chart = chart;
         };
@@ -66,31 +64,15 @@ export class TestComponent implements OnInit {
     }
 
     linegraph(json) {
-        // const self = this, chart = this.chart;
-        // chart.showLoading();
+
         let firstdate = json[0]['label'][0];
         let tempArray = [];
         let i = 0;
         let myseries = [];
         json.forEach(data1 => {
-            // console.log(data);
             let element = data1;
-            // let name = data1['portfolio'];
-            // let data = data1['series'];
-            // let mtype = 'line';
-
-
             let row = { x: element['label'], y: element['series'], type: 'scatter', mode: 'lines+points', name: element['portfolio'] }
             myseries.push(row);
-            console.log(row);
-
-            // for (let k = 0; k < element['label'].length; k++) {
-            //   const label = element['label'][k];
-            //   if (tempArray.filter(x => x === label).length === 0) {
-            //     // console.log('string datee',label.toDateString());
-            //     tempArray.push(label);
-            //   }
-            // }
         });
         this.graph.data = myseries;
         this.graph.layout.xaxis.rangeslider.range = [firstdate, new Date().toString()];
@@ -104,7 +86,6 @@ export class TestComponent implements OnInit {
         let i = 0;
         let myseries = [];
         json.forEach(data1 => {
-            // console.log(data);
             let element = data1;
             let name = data1['portfolio'];
             let data = data1['series'];
@@ -114,10 +95,6 @@ export class TestComponent implements OnInit {
             for (let k = 0; k < element['label'].length; k++) {
                 const label = element['label'][k];
                 if (tempArray.filter(x => x === label).length === 0) {
-                    // console.log('string datee',label.toDateString());
-
-                    console.log('date', new Date(label).getMonth())
-
                     tempArray.push(label);
                 }
             }
@@ -129,7 +106,6 @@ export class TestComponent implements OnInit {
             self.chartoptions.xAxis.categories = tempArray;
             self.updateFlag = true;
         }, 2000);
-
     }
 
 }

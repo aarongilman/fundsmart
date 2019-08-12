@@ -49,6 +49,7 @@ import { PlotlyModule } from 'angular-plotly.js'
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { GlobalCurrency } from './fund/global';
+import { PietestComponent } from './pietest/pietest.component';
 
 
 PlotlyModule.plotlyjs = PlotlyJS;
@@ -111,6 +112,7 @@ export function provideConfig() {
         SortableDirective,
         FilterPipe,
         TestComponent,
+        PietestComponent,
     ],
     imports: [
         BrowserModule,
