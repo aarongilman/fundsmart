@@ -215,7 +215,7 @@ class DashboardLinePlotApi(APIView):
                         price_temp_obj = prices.filter(id_value=security.id_value,
                                                     date__lte=temp_date)
                         if price_temp_obj:
-                            price_value = price_temp_obj.latest('date').price
+                            price_value = float(price_temp_obj.latest('date').price)
                             price_obj_list.append(Price(
                                 id_value=security.id_value, date=temp_date,
                                 price=price_value))
