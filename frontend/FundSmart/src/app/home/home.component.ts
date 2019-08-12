@@ -320,7 +320,6 @@ export class HomeComponent implements OnInit {
             item.security = securitylist.find(s => s.id === item.security_id).name;
             portfoliofundlist[i].security_id = securitylist.find(s => s.id === item.security_id).id;
             portfoliofundlist[i].security = securitylist.find(s => s.id === item.security_id).name;
-            console.log('change', portfoliofundlist[i]);
             let localData = JSON.parse(localStorage.getItem('securityData'));
             let index = localData.findIndex(data => data.recordId === item.p1record);
             localData[index].securityId = item.security_id;
@@ -836,7 +835,6 @@ export class HomeComponent implements OnInit {
         if (item.security_id === -1) {
             return false;
         } else {
-            // console.log(portfoliofundlist);
             portfoliofundlist[i].security_id = item.security_id;
             portfoliofundlist[i].security = item.security;
             var quantity;
