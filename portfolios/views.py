@@ -371,6 +371,8 @@ def get_holding_list(request, data, base_currency):
                                 holding_list.append(holding)
                         else:
                             holding_list.append([security.id_value, quantity])
+    if fx_rate_list:
+        FXRate.objects.bulk_create(fx_rate_list, ignore_conflicts=True)
     return holding_list
 
 
@@ -436,38 +438,58 @@ class DashboardPieChart(APIView):
             return Response(return_data, status=200)
 
 
-def get_holding_detail_data(fund):
+def get_holding_detail_data(request, fund):
     basic_price = None
     current_price = None
+    price_date = None
     fund_detail = FundDetail.objects.filter(fund_id=fund.security.id_value)
-    fx_rate_obj = FXRate.objects.filter(date=date.today(),
-                                        currency=fund.security.currency)
+    fx_rate_objects = FXRate.objects.filter(currency=fund.security.currency)
     price = Price.objects.filter(id_value=fund.security.id_value)
     try:
         basic_price = PortfolioFundPrice \
-            .objects.get(fund=fund, created_at=fund.portfolio
-                         .created_at.date()).price
+            .objects.get(fund=fund, created_at=fund.created_at.date()).price
     except Exception as e:
         basic_price_obj = price. \
             filter(id_value=fund.security.id_value,
-                   date=fund.portfolio.created_at.date())
+                   date=fund.created_at.date())
         if basic_price_obj:
             basic_price = basic_price_obj[0].price
     try:
-        current_price = PortfolioFundPrice.objects. \
-            get(fund=fund, created_at=date.today()).price
+        current_price_obj = PortfolioFundPrice.objects.get(fund=fund)\
+            .latest('created_at')
+        current_price = current_price_obj.price
+        price_date = current_price_obj.created_at
     except Exception as e:
         current_price_obj = price. \
-            filter(id_value=fund.security.id_value, date=date.today())
+            filter(id_value=fund.security.id_value)
         if current_price_obj:
-            current_price = current_price_obj[0].price
+            current_price = current_price_obj.latest('date').price
+            price_date = current_price_obj.latest('date').date
     market_value = None
     basis = None
+    base_currency = request.GET.get('currency')
+    if not base_currency == fund.security.currency:
+        fx_rate_obj = fx_rate_objects.filter(base=base_currency, date=price_date)
+        if fx_rate_obj:
+            fx_rate = fx_rate_obj[0].rate
+        else:
+            fx_list = fx_rate_objects.filter(
+                base=base_currency, date__lt=price_date,
+                currency=fund.security.currency)
+            if fx_list:
+                fx_rate = fx_list.latest('date').rate
+                new_fx_obj = FXRate(base=base_currency, date=price_date,
+                                    currency=fund.security.currency, rate=fx_rate)
+            else:
+                new_fx_obj = None
+                fx_rate = None
+    else:
+        new_fx_obj = None
+        fx_rate = 1
     if '%' in fund.quantity:
-        if current_price and fund_detail and fx_rate_obj:
+        if current_price and fund_detail and fx_rate:
             quantity = get_quantity(fund.quantity, fund.security,
-                                    fund_detail[0].aum, fx_rate_obj[0].rate,
-                                    current_price)
+                                    fund_detail[0].aum, fx_rate, current_price)
         else:
             quantity = None
     else:
@@ -497,7 +519,7 @@ def get_holding_detail_data(fund):
     return {'fund_id': fund.id, 'portfolio': fund.portfolio.name,
             'security': fund.security.name, 'isin': fund.security.isin,
             'quantity': fund.quantity, 'ticker': fund.security.ticker,
-            'basic_price': basic_price, 'basis': basis,
+            'basic_price': basic_price, 'basis': basis, 'new_fx_obj': new_fx_obj,
             'current_price': current_price, 'market_value': market_value,
             'asset_class': fund.security.asset_type, 'currency': currency,
             'country': country,  'industry': industry, 'rating': rating}
@@ -509,6 +531,7 @@ class HoldingDetailAPIView(APIView):
     def get(self, request):
         """post method in HoldingDetailAPIView"""
         data = []
+        fx_rate_list = []
         if request.GET.get('portfolio_ids'):
             portfolio_ids = request.GET.get('portfolio_ids').split(",")
             portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
@@ -517,8 +540,13 @@ class HoldingDetailAPIView(APIView):
             portfolios = Portfolio.objects.filter(created_by=request.user)
         funds = PortfolioFund.objects.filter(portfolio__in=portfolios)
         for fund in funds:
-            temp_dict = get_holding_detail_data(fund)
+            temp_dict = get_holding_detail_data(request, fund)
+            new_fx_obj = temp_dict.pop('new_fx_obj', None)
+            if new_fx_obj:
+                fx_rate_list.append(new_fx_obj)
             data.append(temp_dict)
+        if fx_rate_list:
+            FXRate.objects.bulk_create(fx_rate_list, ignore_conflicts=True)
         return Response(data, status=200)
 
     def post(self, request):
