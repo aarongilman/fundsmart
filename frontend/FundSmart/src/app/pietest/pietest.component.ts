@@ -37,7 +37,15 @@ export class PietestComponent implements OnInit {
             plotBackgroundColor: null,
             plotBorderWidth: null,
             plotShadow: false,
-        }
+        },
+        colors: [
+            '#5ace9f', '#fca622', '#1395b9', '#0e3c54',
+            '#cc0000', '#e65c00', '#ecaa39', '#eac843',
+            '#a2b86d', '#922b21', '#e74c3c', '#633974',
+            '#8e44ad', '#1a5276', '#3498db', '#0e6655',
+            '#52be80', '#f4d03f', '#dc7633', '#717d7e',
+            '#212f3c'
+        ]
     };
 
     constructor(
