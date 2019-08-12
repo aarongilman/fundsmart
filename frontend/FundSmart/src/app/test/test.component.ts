@@ -68,32 +68,34 @@ export class TestComponent implements OnInit {
     linegraph(json) {
         // const self = this, chart = this.chart;
         // chart.showLoading();
-        let firstdate = json[0]['label'][0];
-        let tempArray = [];
-        let i = 0;
-        let myseries = [];
-        json.forEach(data1 => {
-            // console.log(data);
-            let element = data1;
-            // let name = data1['portfolio'];
-            // let data = data1['series'];
-            // let mtype = 'line';
+        if (json.length > 0) {
+            let firstdate = json[0]['label'][0];
+            // let tempArray = [];
+            // let i = 0;
+            let myseries = [];
+            json.forEach(data1 => {
+                // console.log(data);
+                let element = data1;
+                // let name = data1['portfolio'];
+                // let data = data1['series'];
+                // let mtype = 'line';
 
 
-            let row = { x: element['label'], y: element['series'], type: 'scatter', mode: 'lines+points', name: element['portfolio'] }
-            myseries.push(row);
-            console.log(row);
+                let row = { x: element['label'], y: element['series'], type: 'scatter', mode: 'lines+points', name: element['portfolio'] }
+                myseries.push(row);
+                // console.log(row);
 
-            // for (let k = 0; k < element['label'].length; k++) {
-            //   const label = element['label'][k];
-            //   if (tempArray.filter(x => x === label).length === 0) {
-            //     // console.log('string datee',label.toDateString());
-            //     tempArray.push(label);
-            //   }
-            // }
-        });
-        this.graph.data = myseries;
-        this.graph.layout.xaxis.rangeslider.range = [firstdate, new Date().toString()];
+                // for (let k = 0; k < element['label'].length; k++) {
+                //   const label = element['label'][k];
+                //   if (tempArray.filter(x => x === label).length === 0) {
+                //     // console.log('string datee',label.toDateString());
+                //     tempArray.push(label);
+                //   }
+                // }
+            });
+            this.graph.data = myseries;
+            this.graph.layout.xaxis.rangeslider.range = [firstdate, new Date().toString()];
+        }
     }
 
 
@@ -116,7 +118,7 @@ export class TestComponent implements OnInit {
                 if (tempArray.filter(x => x === label).length === 0) {
                     // console.log('string datee',label.toDateString());
 
-                    console.log('date', new Date(label).getMonth())
+                    // console.log('date', new Date(label).getMonth())
 
                     tempArray.push(label);
                 }
