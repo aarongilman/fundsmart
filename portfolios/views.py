@@ -211,11 +211,14 @@ class DashboardLinePlotApi(APIView):
                                               date=temp_date).latest('date')
                         price_value = float(price.price)
                     except:
-                        price_value = float(
-                            prices.filter(id_value=security.id_value,
-                                         date__lte=temp_date).latest('date').price)
-                        price_obj_list.append(Price(
-                            id_value=security.id_value, date=temp_date, price=price_value))
+                        price_value = None
+                        price_temp_obj = prices.filter(id_value=security.id_value,
+                                                    date__lte=temp_date)
+                        if price_temp_obj:
+                            price_value = price_temp_obj.latest('date').price
+                            price_obj_list.append(Price(
+                                id_value=security.id_value, date=temp_date,
+                                price=price_value))
                     price_date = str(temp_date)
                     if not base_currency == security.currency:
                         fx_rate_obj = fx_rate_objects.filter(
