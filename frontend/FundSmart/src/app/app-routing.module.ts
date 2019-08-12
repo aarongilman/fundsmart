@@ -10,6 +10,7 @@ import { AllocationFundAnalysisComponent } from './allocation-fund-analysis/allo
 import { AllocationRecommendationComponent } from './allocation-recommendation/allocation-recommendation.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { TestComponent } from './test/test.component';
+import { PietestComponent } from './pietest/pietest.component';
 
 const routes: Routes = [
     {
@@ -56,7 +57,11 @@ const routes: Routes = [
     {
         path: 'test',
         component: TestComponent
-    }
+    },
+    {
+        path: 'pietest',
+        component: PietestComponent 
+    },
 ];
 
 @NgModule({

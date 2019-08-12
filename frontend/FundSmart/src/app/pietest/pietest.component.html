@@ -1,0 +1,21 @@
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<div class="right-panel-wrap no-padding-right">
+  <div class="dashboard-content">
+      <div class="row">
+          <div class="col-lg-12">
+              <h3> Using highchart</h3>
+              <div
+                  class="block-container no-bdrs-top-right no-bdrs-botton-right chart-wrapper pie-chart-wrap semi-block">
+                  <div>
+                      <highcharts-chart id="container" [Highcharts]="Highcharts" [constructorType]="chartConstructor"
+                          [options]="chartoptions" [callbackFunction]="chartCallback" [(update)]="updateFlag"
+                          [oneToOne]="true" style="width: 1200; height: 400px; display: block;">
+                      </highcharts-chart>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>

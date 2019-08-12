@@ -373,6 +373,8 @@ export class HomeComponent implements OnInit {
         });
 
         this.userservice.get_home_pie_chart(this.currency).toPromise().then(jsondata => {
+            console.log('pie',jsondata);
+            
             this.piedata = [];
             let arrData = [];
             let arrvalue = [];
@@ -405,6 +407,8 @@ export class HomeComponent implements OnInit {
         });
 
         this.userservice.get_deshboard_doughnut_chart(this.currency).toPromise().then(jsondata => {
+            console.log('donut',jsondata);
+            
             this.donutdata = [];
             let arrData = [];
             let arrvalue = [];

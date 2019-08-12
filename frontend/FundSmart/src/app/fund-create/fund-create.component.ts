@@ -449,8 +449,7 @@ export class FundCreateComponent implements OnInit {
             this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(res => {
                 this.getSelectedPortfolio();
             },
-                error => { }
-            );
+                error => { });
             this.modalService.dismissAll('Log in Done');
         }
     }
@@ -493,12 +492,11 @@ export class FundCreateComponent implements OnInit {
                         const blob = new Blob([filedata], { type: filedata.type });
                         const myfile = new File([blob], name, { type: filedata.type, lastModified: Date.now() });
                         formData.append('data_file', myfile);
-                        that.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
-                            resp => {
-                                this.getSelectedPortfolio();
-                                this.modalService.dismissAll('File uploaded');
-                                this.spinner.hide();
-                            });
+                        that.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(resp => {
+                            this.getSelectedPortfolio();
+                            this.modalService.dismissAll('File uploaded');
+                            this.spinner.hide();
+                        });
                     }).catch(reason => { });
                 }
             },
@@ -546,12 +544,11 @@ export class FundCreateComponent implements OnInit {
                             const myblob = new Blob([blob], { type: blob.type });
                             const myfile = new File([myblob], name, { type: blob.type, lastModified: Date.now() });
                             formData.append('data_file', myfile);
-                            this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(
-                                resp => {
-                                    this.getSelectedPortfolio();
-                                    this.modalService.dismissAll('File uploaded');
-                                    this.spinner.hide();
-                                },
+                            this.userService.uploadfile_Createfund(formData, portfolioidSelect).toPromise().then(resp => {
+                                this.getSelectedPortfolio();
+                                this.modalService.dismissAll('File uploaded');
+                                this.spinner.hide();
+                            },
                                 error => {
                                     this.spinner.hide();
                                     this.toastr.error('Improper file,Could not upload file', 'Error');
