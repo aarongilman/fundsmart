@@ -188,6 +188,8 @@ export class HomeComponent implements OnInit {
     securitylist = securitylist;
     arrayBuffer: any;
     DynamicDisable = [];
+    loginpers = 0;
+    logindollars = 0;
 
     constructor(
         private modalService: NgbModal,
@@ -213,9 +215,9 @@ export class HomeComponent implements OnInit {
             this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
             this.portfolioservice.total$.subscribe(f => {
                 this.total$ = f;
-                const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
-                this.portfolioservice.page = pageno;
             });
+            const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+            this.portfolioservice.page = pageno;
             this.spinner.hide();
         });
         this.interconn.logoutcomponentMethodCalled$.subscribe(() => {
@@ -252,7 +254,6 @@ export class HomeComponent implements OnInit {
 
     ngOnInit() {
         this.interconn.titleSettermethod("Multi Portfolio Analyzer");
-        this.setdataindeshboard();
         this.DynamicDisable[0] = false;
         if (this.userservice.currentuser) {
             this.setcurrent_user();
@@ -355,6 +356,9 @@ export class HomeComponent implements OnInit {
                 fiveyear: 0
             };
             if (result[0]) {
+                this.loginpers = Number.parseFloat(Number.parseFloat(result[0]['perc_improvement_num']).toFixed(2));
+                this.logindollars = Number.parseFloat(Number.parseFloat(result[0]['dollar_improvement_num']).toFixed(2));
+                
                 this.existing.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['existing']['annual_expense']).toFixed(2));
                 this.existing.oneyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['1-year']).toFixed(2));
                 this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
@@ -373,8 +377,6 @@ export class HomeComponent implements OnInit {
         });
 
         this.userservice.get_home_pie_chart(this.currency).toPromise().then(jsondata => {
-            console.log('pie',jsondata);
-            
             this.piedata = [];
             let arrData = [];
             let arrvalue = [];
@@ -407,8 +409,6 @@ export class HomeComponent implements OnInit {
         });
 
         this.userservice.get_deshboard_doughnut_chart(this.currency).toPromise().then(jsondata => {
-            console.log('donut',jsondata);
-            
             this.donutdata = [];
             let arrData = [];
             let arrvalue = [];

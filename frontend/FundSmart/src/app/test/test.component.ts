@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ServercommunicationService } from '../servercommunication.service';
 import * as Highcharts from 'highcharts';
+import * as moment from 'moment';
+
 
 
 @Component({
@@ -11,9 +13,10 @@ import * as Highcharts from 'highcharts';
 export class TestComponent implements OnInit {
     chart;
     Highcharts = Highcharts;
-    chartConstructor = 'chart'; 
+    chartConstructor = 'chart';
     chartoptions = {
         xAxis: {
+            type: 'datetime',
             categories: []
         },
         series: [],
@@ -21,14 +24,13 @@ export class TestComponent implements OnInit {
             enabled: true
         }
     };
-    updateFlag = false; 
-    oneToOneFlag = true; 
+    updateFlag = false;
+    oneToOneFlag = true;
     runOutsideAngular = false;
     chartCallback;
     public graph = {
         data: [],
         layout: {
-            width: 1200,
             height: 400,
             xaxis: {
                 autorange: true,
@@ -41,7 +43,6 @@ export class TestComponent implements OnInit {
                 type: 'linear'
             }
         },
-
     };
 
     constructor(private userservice: ServercommunicationService) {
@@ -58,25 +59,19 @@ export class TestComponent implements OnInit {
 
     getchart() {
         this.userservice.get_lineplot_chart('INR').toPromise().then((jsondata: any) => {
-            this.linegraph(jsondata);
-            this.linegraph2(jsondata);
+            this.plotly(jsondata);
+            this.highchart(jsondata);
         });
     }
 
-    linegraph(json) {
-       
+    plotly(json) {
         if (json.length > 0) {
             let firstdate = json[0]['label'][0];
-          
             let myseries = [];
             json.forEach(data1 => {
-              
                 let element = data1;
-             
-
                 let row = { x: element['label'], y: element['series'], type: 'scatter', mode: 'lines+points', name: element['portfolio'] }
                 myseries.push(row);
-        
             });
             this.graph.data = myseries;
             this.graph.layout.xaxis.rangeslider.range = [firstdate, new Date().toString()];
@@ -84,7 +79,7 @@ export class TestComponent implements OnInit {
     }
 
 
-    linegraph2(json) {
+    highchart(json) {
         const self = this, chart = this.chart;
         chart.showLoading();
         let tempArray = [];
@@ -94,13 +89,12 @@ export class TestComponent implements OnInit {
             let element = data1;
             let name = data1['portfolio'];
             let data = data1['series'];
-            let mtype = 'line';
-            myseries.push({ name: name, data: data, type: mtype });
+            myseries.push({ name: name, data: data });
             i++;
             for (let k = 0; k < element['label'].length; k++) {
                 const label = element['label'][k];
                 if (tempArray.filter(x => x === label).length === 0) {
-                    tempArray.push(label);
+                    tempArray.push(moment(label).format('MMM YYYY'));
                 }
             }
         });
