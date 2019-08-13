@@ -79,7 +79,7 @@
                             </table>
                         </div>
                         <div class="d-flex ">
-                            <ngb-pagination class="ml-auto" [collectionSize]="total$" [(page)]="portfolioservice.page"
+                            <ngb-pagination class="ml-auto page-item" [collectionSize]="total$" [(page)]="portfolioservice.page"
                                 [pageSize]="portfolioservice.pageSize">
                             </ngb-pagination>
                         </div>
@@ -135,7 +135,7 @@
                     <p>With the same risk profile, we can improve performance by <span>{{loginpers}}%</span> based on
                         1-year
                         returns or
-                        ${{logindollars}} in dollar terms.</p>
+                        <span> ${{logindollars}} </span> in dollar terms.</p>
                     <p>Please login or register to analyze in full details</p>
                     <div class="btn-wrap">
                         <form action="post" class="d-flex align-items-center justify-content-center">
