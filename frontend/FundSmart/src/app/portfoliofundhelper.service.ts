@@ -72,7 +72,6 @@ export class PortfoliofundhelperService {
             this._funds$.next(result.fundlist);
             this._total$.next(result.total);
         });
-
         this._search$.next();
     }
 
@@ -83,7 +82,7 @@ export class PortfoliofundhelperService {
             switchMap(() => this._search()),
             delay(200),
             tap(() => this._loading$.next(false))
-        ).subscribe(result => {
+        ).toPromise().then(result => {
             this._funds$.next(result.fundlist);
             this._total$.next(result.total);
         });

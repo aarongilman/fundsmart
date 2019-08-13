@@ -68,34 +68,34 @@ export class FundRecommendationComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.interconn.titleSettermethod('Fund Recommendation');
+        this.spinner.show();
+        this.getHistoricalPerformance();
+        this.getLinePlotChart();
+        this.getPortfolioPerformance();
+        this.getRecommendedPerformance();
+        this.getPlotFundRecommendation();
+    }
+
+    getHistoricalPerformance() {
         if (portfolioidSelect.length > 0) {
-            this.interconn.titleSettermethod('Fund Recommendation');
-            this.spinner.show();
-            this.getHistoricalPerformance();
-            this.getLinePlotChart();
-            this.getPortfolioPerformance();
-            this.getRecommendedPerformance();
-            this.getPlotFundRecommendation();
-            this.spinner.hide();
+            this.service.getHoldingSummaryFundRec(portfolioidSelect).toPromise().then((historicalData: any) => {
+                historicalData.forEach(historical => {
+                    const names = Object.keys(historical);
+                    names.forEach((key, value) => {
+                        const historicalObj = {
+                            name: names[value],
+                            value: historical[names[value]]
+                        };
+                        this.historical.push(historicalObj);
+                    });
+                });
+                this.spinner.hide();
+            });
         } else {
             this.toastr.info('Please select portfolio id/ids from Fund page', 'Information');
             this.spinner.hide();
         }
-    }
-
-    getHistoricalPerformance() {
-        this.service.getHoldingSummaryFundRec(portfolioidSelect).toPromise().then((historicalData: any) => {
-            historicalData.forEach(historical => {
-                const names = Object.keys(historical);
-                names.forEach((key, value) => {
-                    const historicalObj = {
-                        name: names[value],
-                        value: historical[names[value]]
-                    };
-                    this.historical.push(historicalObj);
-                });
-            });
-        });
     }
 
     getPortfolioPerformance() {
@@ -117,54 +117,46 @@ export class FundRecommendationComponent implements OnInit {
     getLinePlotChart() {
         this.service.fundRecommendationLineChart(portfolioidSelect).toPromise().then((jsondata: any) => {
             let totalportfolios = jsondata.length + 1;
-            if (portfolioidSelect.length === 1) {
-                this.linecolumnNames = ['label'];
-                this.linecolumnNames.push(jsondata[0]['portfolio']);
-                for (let i = 0; i < jsondata[0]['label'].length; i++) {
-                    this.linedata.push([jsondata[0]['label'][i], jsondata[0]['series'][i]]);
-                }
-            } else {
-                this.linedata = [];
-                this.linecolumnNames = ['label'];
-                const tempArray = [];
-                const mainObj = {};
-                for (let i = 0; i < jsondata.length; i++) {
-                    const element = jsondata[i];
-                    if (element['label'].length > 0) {
-                        this.linecolumnNames.push(element.portfolio);
-                        for (let k = 0; k < element['label'].length; k++) {
-                            const label = element['label'][k];
-                            if (tempArray.filter(x => x === label).length === 0) {
-                                tempArray.push(label);
-                            }
-                            if (mainObj[label]) {
-                                mainObj[label] = mainObj[label] + ',' + element.series[k];
-                            } else {
-                                mainObj[label] = element.series[k];
-                            }
+            this.linedata = [];
+            this.linecolumnNames = ['label'];
+            const tempArray = [];
+            const mainObj = {};
+            for (let i = 0; i < jsondata.length; i++) {
+                const element = jsondata[i];
+                if (element['label'].length > 0) {
+                    this.linecolumnNames.push(element.portfolio);
+                    for (let k = 0; k < element['label'].length; k++) {
+                        const label = element['label'][k];
+                        if (tempArray.filter(x => x === label).length === 0) {
+                            tempArray.push(label);
+                        }
+                        if (mainObj[label]) {
+                            mainObj[label] = mainObj[label] + ',' + element.series[k];
+                        } else {
+                            mainObj[label] = element.series[k];
                         }
                     }
                 }
-                for (let i = 0; i < tempArray.length; i++) {
-                    const element = tempArray[i];
-                    let values;
-                    const valuesCollection = [];
-                    valuesCollection.push(element.toString());
-                    if (typeof mainObj[element] === 'number') {
-                        values = mainObj[element];
-                        valuesCollection.push(parseFloat(values));
-                    } else {
-                        values = (mainObj[element].split(',')).filter(Boolean);
-                        for (const iterator of values) {
-                            valuesCollection.push(parseFloat(iterator));
-                        }
-                    }
-                    if (valuesCollection.length === totalportfolios) {
-                        this.linedata.push(valuesCollection);
-                    }
-                }
-                this.spinner.hide();
             }
+            for (let i = 0; i < tempArray.length; i++) {
+                const element = tempArray[i];
+                let values;
+                const valuesCollection = [];
+                valuesCollection.push(element.toString());
+                if (typeof mainObj[element] === 'number') {
+                    values = mainObj[element];
+                    valuesCollection.push(parseFloat(values));
+                } else {
+                    values = (mainObj[element].split(',')).filter(Boolean);
+                    for (const iterator of values) {
+                        valuesCollection.push(parseFloat(iterator));
+                    }
+                }
+                if (valuesCollection.length === totalportfolios) {
+                    this.linedata.push(valuesCollection);
+                }
+            }
+            this.spinner.hide();
         });
     }
 
@@ -172,7 +164,7 @@ export class FundRecommendationComponent implements OnInit {
         this.service.getBarPlotPerformance(portfolioidSelect).toPromise().then((historicalData: any) => {
             historicalData.forEach(historical => {
                 const name = Object.keys(historical);
-                const obj = Object.values(historical);
+                const obj: any = Object.values(historical);
                 // tslint:disable-next-line: forin
                 for (const n in name) {
                     let barobj = Object.values(obj[n]);

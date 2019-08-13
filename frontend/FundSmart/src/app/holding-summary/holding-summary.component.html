@@ -100,11 +100,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="total-desc">
-                                    <div class="total-label" style="width:200px; margin-left: 40px"
-                                        *ngFor="let data of total | keyvalue">
-                                        <p>{{data.value}}</p>
+                                    <div class="total-desc">
+                                        <div class="total-label" style="width:200px; margin-left: 40px"
+                                            *ngFor="let data of total | keyvalue">
+                                            <p>{{data.value}}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -128,11 +128,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="d-flex mt-3">
-                                    <div class="total-label" style="width:200px; margin-left: 40px"
-                                        *ngFor="let data of total | keyvalue">
-                                        <p>{{data.value}}</p>
+                                    <div class="d-flex mt-3">
+                                        <div class="total-label" style="width:200px; margin-left: 40px"
+                                            *ngFor="let data of total | keyvalue">
+                                            <p>{{data.value}}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -220,10 +220,10 @@
                                 <tbody>
                                     <tr *ngFor="let data of historical" class="blue-tr">
                                         <td>{{data.name}}</td>
-                                        <td>{{data.value['annual_expense']}}</td>
+                                        <td>{{data.value.annual_expense}}</td>
                                         <td>{{data.value['1-year']}}</td>
-                                        <td>{{data.value['5-year']}}</td>
                                         <td>{{data.value['3-year']}}</td>
+                                        <td>{{data.value['5-year']}}</td>
                                     </tr>
                                     <tr *ngFor="let data of total4" class="total-tr">
                                         <td class="gain-green">{{data.name}}</td>

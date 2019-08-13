@@ -2141,9 +2141,16 @@ google-chart {
     width: 10px;
 }
 
-.page-item.active .page-link {
+ngb-pagination .page-item.active .page-link {
     z-index: 1;
     color: #fff;
     background-color: #000034;
-    border-color: #000034
+    border-color: #000034;
+}
+
+ngb-pagination .page-link:hover {
+    color: #000034;
+    text-decoration: none;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
 }

@@ -76,7 +76,7 @@ export class FundService {
             switchMap(() => this._search()),
             delay(200),
             tap(() => this._loading$.next(false))
-        ).subscribe(result => {
+        ).toPromise().then(result => {
             this._portfolio$.next(result.portfoliolist);
             this._total$.next(result.total);
         });

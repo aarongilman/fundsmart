@@ -80,7 +80,7 @@ export class HoldingdetailsSortService {
             switchMap(() => this._search()),
             delay(200),
             tap(() => this._loading$.next(false))
-        ).subscribe(result => {
+        ).toPromise().then(result => {
             this._holdings$.next(result.holdinglist);
             this._total$.next(result.total);
         });

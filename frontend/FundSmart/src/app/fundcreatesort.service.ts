@@ -83,7 +83,7 @@ export class FundcreatesortService {
             switchMap(() => this._search()),
             delay(200),
             tap(() => this._loading$.next(false))
-        ).subscribe(result => {
+        ).toPromise().then(result => {
             this._funds$.next(result.fundlist);
             this._total$.next(result.total);
         });

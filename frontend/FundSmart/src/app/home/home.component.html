@@ -78,15 +78,15 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="d-flex ">
-                            <ngb-pagination class="ml-auto page-item" [collectionSize]="total$" [(page)]="portfolioservice.page"
+                        <div class="d-flex">
+                            <ngb-pagination class="ml-auto" [collectionSize]="total$" [(page)]="portfolioservice.page"
                                 [pageSize]="portfolioservice.pageSize">
                             </ngb-pagination>
                         </div>
                     </form>
-                    <div class="upload-wrap d-flex ">
+                    <div class="upload-wrap d-flex">
                         <form class="ml-auto d-inline-flex justify-content-end align-items-center">
-                            <div class="input-file-wrap ">
+                            <div class="input-file-wrap">
                                 <button type="button"
                                     class="upload-btn trade-btn green-btn d-flex align-items-center justify-content-center"
                                     data-toggle="modal" (click)="openmodal(upload,'upload')">
@@ -181,13 +181,15 @@
                         <div class="heading">
                             <h3>Historical Performance Difference</h3>
                         </div>
-                        Currency
-                        <select (change)="test()" [(ngModel)]="currency" class="form-control ins"
-                            style="width: 60px;margin: 0 10px">
-                            <option value="INR">INR</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                        </select>
+                        <div style="color: #000034">
+                            Currency
+                            <select (change)="test()" [(ngModel)]="currency" class="form-control ins"
+                                style="width: 60px;margin: 0 10px">
+                                <option value="INR">INR</option>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                            </select>
+                        </div>
                         <div class="responsive-table">
                             <table class="trade-table">
                                 <thead>
