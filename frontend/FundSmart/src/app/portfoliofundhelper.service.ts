@@ -90,7 +90,7 @@ export class PortfoliofundhelperService {
     }
 
     get funds$() { return this._funds$.asObservable(); }
-    get total$() { return this._total$; }
+    get total$() { return this._total$.asObservable(); }
     get loading$() { return this._loading$.asObservable(); }
     get page() { return this._state.page; }
     get pageSize() { return this._state.pageSize; }

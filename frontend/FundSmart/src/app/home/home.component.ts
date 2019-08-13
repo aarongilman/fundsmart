@@ -1,4 +1,4 @@
-import { Component, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnInit, QueryList, ViewChildren, OnDestroy } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { portfolio_fund } from '../portfolio_fund';
@@ -8,8 +8,11 @@ import { SortableDirective, SortEvent } from '../sortable.directive';
 import { security } from '../security';
 import * as $ from 'jquery';
 import { ServercommunicationService } from '../servercommunication.service';
-import { AuthService, SocialUser } from "angularx-social-login";
-import { GoogleLoginProvider, FacebookLoginProvider } from "angularx-social-login";
+
+import {
+    GoogleLoginProvider, FacebookLoginProvider,
+    AuthService, SocialUser
+} from 'angularx-social-login';
 import { IntercomponentCommunicationService } from '../intercomponent-communication.service';
 import { GetfileforuploadService } from '../getfileforupload.service';
 import { HistoricalData } from '../historicaldata';
@@ -123,7 +126,7 @@ export class HomeComponent implements OnInit {
     funds$: portfolio_fund[];
     total$;
     model: any = {};
-    currency = "INR";
+    currency = 'INR';
     tableData: any = [];
 
     existing: HistoricalData = {
@@ -214,7 +217,11 @@ export class HomeComponent implements OnInit {
             this.portfolioservice.resetfunds();
             this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
             this.portfolioservice.total$.subscribe(f => {
-                this.total$ = f;
+                let i = 1;
+                if (i === 1) {
+                    this.total$ = f + 1;
+                    i++;
+                }
             });
             const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
             this.portfolioservice.page = pageno;
@@ -249,6 +256,8 @@ export class HomeComponent implements OnInit {
                 this.setfunds(this.tableData);
                 this.setdataindeshboard();
             }
+        }).catch(error => {
+            toastrService.error('Can not fetch Security please refreash page after some time', 'Error');
         });
     }
 
@@ -364,6 +373,7 @@ export class HomeComponent implements OnInit {
                 this.existing.threeyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['3-year']).toFixed(2));
                 this.existing.fiveyear = Number.parseFloat(Number.parseFloat(result[0]['existing']['5-year']).toFixed(2));
 
+                // tslint:disable-next-line: max-line-length
                 this.recommended.annualexpense = Number.parseFloat(Number.parseFloat(result[0]['recommended']['annual_expense']).toFixed(2));
                 this.recommended.oneyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['1-year']).toFixed(2));
                 this.recommended.threeyear = Number.parseFloat(Number.parseFloat(result[0]['recommended']['3-year']).toFixed(2));
@@ -524,9 +534,14 @@ export class HomeComponent implements OnInit {
             this.funds$ = f;
         });
         this.portfolioservice.total$.subscribe(total => {
-            this.total$ = total;
+            let i = 1;
+            if (i === 1) {
+                this.total$ = total + 1;
+                console.log(total);
+                i++;
+            }
         });
-        let pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
+        const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
         this.portfolioservice.page = pageno;
     }
 
@@ -767,7 +782,11 @@ export class HomeComponent implements OnInit {
                         this.portfolioservice.resetfunds();
                         this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
                         this.portfolioservice.total$.subscribe(f => {
-                            this.total$ = f;
+                            let i = 1;
+                            if (i === 1) {
+                                this.total$ = f + 1;
+                                i++;
+                            }
                         });
                         pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
                         this.portfolioservice.page = pageno;
@@ -796,14 +815,14 @@ export class HomeComponent implements OnInit {
                 }
             }
         }
-        var securityList1 = [];
+        let securityList1 = [];
         if (secinput.length >= 1) {
             securityList1 = this.searchFromArray(securitylist, secinput);
         }
     }
 
     searchFromArray(arr, regex) {
-        let matches = [];
+        const matches = [];
         let i;
         for (i = 0; i < arr.length; i++) {
             if (arr[i].name.match(regex)) {
@@ -981,7 +1000,11 @@ export class HomeComponent implements OnInit {
                                 this.portfolioservice.resetfunds();
                                 this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
                                 this.portfolioservice.total$.subscribe(f => {
-                                    this.total$ = f;
+                                    let i = 1;
+                                    if (i === 1) {
+                                        this.total$ = f + 1;
+                                        i++;
+                                    }
                                 });
                                 const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
                                 this.portfolioservice.page = pageno;
@@ -1097,7 +1120,11 @@ export class HomeComponent implements OnInit {
                                     this.portfolioservice.resetfunds();
                                     this.portfolioservice.funds$.subscribe(f => { this.funds$ = JSON.parse(JSON.stringify(f)); });
                                     this.portfolioservice.total$.subscribe(f => {
-                                        this.total$ = f;
+                                        let i = 1;
+                                        if (i === 1) {
+                                            this.total$ = f + 1;
+                                            i++;
+                                        }
                                     });
                                     const pageno = Math.ceil(this.total$ / this.portfolioservice.pageSize);
                                     this.portfolioservice.page = pageno;
@@ -1143,6 +1170,5 @@ export class HomeComponent implements OnInit {
     test() {
         this.setdataindeshboard();
     }
-
 }
 

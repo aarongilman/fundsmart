@@ -62,6 +62,7 @@ export class AllocationRecommendationComponent implements OnInit {
             this.userservice.getCurrentAllocation(portfolioidSelect).toPromise().then((result: any) => {
                 result.forEach((resultlist: any) => {
                     const names = Object.keys(resultlist);
+                    // tslint:disable-next-line: forin
                     for (const i in names) {
                         this.currentAllocationData.push([names[i], resultlist[names[i]]]);
                     }
