@@ -19,16 +19,18 @@ def get_quantity(quantity, security, aum, rate, price):
     return quantity
 
 
-def get_line_graph_data(funds, common_date):
+def get_line_graph_data(base_currency, funds, common_date):
     data = []
     existing_fund_mkt_value = []
 
     fund_details = FundDetail.objects.all()
-    fx_rate = FXRate.objects.all()
-    price = Price.objects.all()
-    prices = price.filter(id_value__in=funds.
-                          values_list('security__id_value', flat=True))
+    fx_rate_objects = FXRate.objects.all()
+    # price = Price.objects.all()
+    prices = Price.objects.filter(id_value__in=funds.
+                                  values_list('security__id_value', flat=True))
     # get market value and % movement of existing funds
+    # date_range = list(get_date_list(common_date, date.today()))
+    fx_rate_list = []
     for fund in funds:
         price_obj = prices.filter(id_value=fund.security.id_value,
                                   date__gte=common_date,
@@ -39,14 +41,30 @@ def get_line_graph_data(funds, common_date):
         mkt_value_dict = {}
         for price in price_obj:
             if '%' in str(fund.quantity):
-                fx_rate_obj = fx_rate.filter(date=date.today(),
-                                             currency=fund.security.currency)
+                if not base_currency == fund.security.currency:
+                    try:
+                        fx_rate = fx_rate_objects.filter(
+                            base=base_currency, date=price.date,
+                            currency=fund.security.currency)[0].rate
+                    except:
+                        fx_list = fx_rate_objects.filter(
+                            base=base_currency, date__lt=price.date,
+                            currency=fund.security.currency)
+                        if fx_list:
+                            fx_rate = fx_list.latest('date').rate
+                            fx_rate_list.append(FXRate(
+                                base=base_currency, date=price.date,
+                                currency=fund.security.currency,
+                                rate=fx_rate))
+                        else:
+                            fx_rate = None
+                else:
+                    fx_rate = 1
                 quantity = None
-                if fund_detail:
+                if fund_detail and fx_rate:
                     quantity = get_quantity(fund.quantity, fund.security,
                                             fund_detail[0].aum,
-                                            fx_rate_obj[0].rate,
-                                            price.price)
+                                            fx_rate, price.price)
             else:
                 quantity = float(fund.quantity)
             if quantity:
@@ -67,7 +85,6 @@ def get_line_graph_data(funds, common_date):
             else:
                 temp_dict.update({key: 0})
         per_movement_list.append({list(item.keys())[0]: temp_dict})
-
     final_dict = {}
     for item in per_movement_list:
         value_dict = list(item.values())[0]
@@ -84,6 +101,8 @@ def get_line_graph_data(funds, common_date):
     final_dict = collections.OrderedDict(sorted(final_dict.items()))
     for k, v in final_dict.items():
         final_dict[k] = round(sum(v) / len(v), 2)
+    if fx_rate_list:
+        FXRate.objects.bulk_create(fx_rate_list, ignore_conflicts=True)
     data.append(
         {'portfolio': "Existing", 'label': final_dict.keys(),
          'series': final_dict.values()})

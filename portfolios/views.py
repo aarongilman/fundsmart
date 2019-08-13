@@ -862,8 +862,9 @@ class HoldingSummaryLineGraph(APIView):
     def get(self, request):
         data = []
         fund_details = FundDetail.objects.all()
-        fx_rate = FXRate.objects.all()
+        fx_rate_objects = FXRate.objects.all()
         base_currency = request.GET.get('currency')
+        fx_rate_list = []
         if request.GET.get('portfolio_ids'):
             portfolio_ids = request.GET.get('portfolio_ids').split(",")
             portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
@@ -871,11 +872,12 @@ class HoldingSummaryLineGraph(APIView):
             funds = PortfolioFund.objects.filter(
                 portfolio__in=portfolios, security__asset_type='Mutual Fund',
                 created_by=request.user)
-            price = Price.objects.all()
+            # price = Price.objects.all()
             try:
                 port_fund_price = PortfolioFundPrice.objects.all()
-                prices = price.filter(id_value__in=funds.
-                                      values_list('security__id_value', flat=True))
+                prices = Price.objects.filter(id_value__in=funds.
+                                              values_list('security__id_value',
+                                                          flat=True))
                 if prices:
                     date_list = prices.values_list('id_value').annotate(
                         count=Min('date')) \
@@ -886,9 +888,6 @@ class HoldingSummaryLineGraph(APIView):
                     port_mkt_values = {}
                     for fund in portfolio_funds:
                         fund_detail = fund_details.filter(fund_id=fund.security.id_value)
-                        fx_rate_obj = fx_rate.filter(base=base_currency,
-                                                     date=date.today(),
-                                                     currency=fund.security.currency)
                         price_obj = prices.filter(id_value=fund.security.id_value,
                                                   date__gte=common_date,
                                                   date__lte=date.today())\
@@ -901,13 +900,31 @@ class HoldingSummaryLineGraph(APIView):
                                 price_value = float(fund_price.price)
                             except Exception as e:
                                 price_value = float(price.price)
-                            if fx_rate_obj:
+                            if not base_currency == fund.security.currency:
+                                try:
+                                    fx_rate = fx_rate_objects.filter(
+                                        base=base_currency, date=price.date,
+                                        currency=fund.security.currency)[0].rate
+                                except Exception:
+                                    fx_list = fx_rate_objects.filter(
+                                        base=base_currency, date__lt=price.date,
+                                        currency=fund.security.currency)
+                                    if fx_list:
+                                        fx_rate = fx_list.latest('date').rate
+                                        fx_rate_list.append(FXRate(
+                                            base=base_currency, date=price.date,
+                                            currency=fund.security.currency,
+                                            rate=fx_rate))
+                                    else:
+                                        fx_rate = None
+                            else:
+                                fx_rate = 1
+                            if fx_rate:
                                 if '%' in str(fund.quantity):
                                     quantity = get_quantity(fund.quantity,
                                                             fund.security,
                                                             fund_detail[0].aum,
-                                                            fx_rate_obj[0].rate,
-                                                            price_value)
+                                                            fx_rate, price_value)
                                 else:
                                     quantity = float(fund.quantity)
                                 if port_mkt_values.get(price_date):
@@ -921,6 +938,9 @@ class HoldingSummaryLineGraph(APIView):
                     data.append({'portfolio': portfolio.name,
                                  'label': port_mkt_values.keys(),
                                  'series': port_mkt_values.values()})
+                if fx_rate_list:
+                    FXRate.objects.bulk_create(fx_rate_list,
+                                               ignore_conflicts=True)
             except Exception as e:
                 LOGGER.error("Error {} occurred while getting holding summary\
                 line graph data!".format(e))
@@ -936,11 +956,12 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
             existing_funds = PortfolioFund.objects.filter(
                 portfolio__in=portfolio_ids, security__asset_type='Mutual Fund',
                 created_by=request.user)
+            base_currency = request.GET.get('currency')
             if existing_funds:
                 existing_fund_ids = existing_funds.values_list('security__id_value',
                                                                flat=True)
                 fund_details = FundDetail.objects.all()
-                fx_rate = FXRate.objects.all()
+                fx_rate_objects = FXRate.objects.all()
                 recommended_funds = fund_details[:4]
                 recommended_fund_ids = recommended_funds.values_list('fund_id',
                                                                      flat=True)
@@ -949,21 +970,43 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
                                  list(recommended_fund_ids))
                 existing_funds_market_values = []
                 temp_list = []
+                fx_rate_list = []
                 for fund in existing_funds:
                     fund_detail = fund_details.filter(fund_id=fund.security.id_value)
-                    fx_rate_obj = fx_rate.filter(date=date.today(),
-                                                 currency=fund.security.currency)
-                    try:
-                        price_obj = price_objects.filter(
-                            id_value=fund.security.id_value).latest('date')
-                        price_value = price_obj.price
-                    except Exception as e:
+
+                    price_obj = price_objects.filter(id_value=
+                                                     fund.security.id_value)
+                    if price_obj:
+                        price_value = price_obj.latest('date').price
+                        price_date = price_obj.latest('date').date
+                        if not base_currency == fund.security.currency:
+                            fx_rate_obj = fx_rate_objects.filter(
+                                base=base_currency, date=price_date,
+                                currency=fund.security.currency)
+                            if fx_rate_obj:
+                                fx_rate = fx_rate_obj[0].rate
+                            else:
+                                fx_list = fx_rate_objects.filter(
+                                    base=base_currency, date__lt=price_date,
+                                    currency=fund.security.currency)
+                                if fx_list:
+                                    fx_rate = fx_list.latest('date').rate
+                                    fx_rate_list.append(FXRate(
+                                        base=base_currency, date=price_date,
+                                        currency=fund.security.currency,
+                                        rate=fx_rate))
+                                else:
+                                    fx_rate = None
+                        else:
+                            fx_rate = 1
+                    else:
                         price_value = None
-                    if price_value and fund_detail and fx_rate_obj:
+                        fx_rate = None
+                    if price_value and fund_detail and fx_rate:
                         if '%' in str(fund.quantity):
                             quantity = get_quantity(fund.quantity, fund.security,
                                                     fund_detail[0].aum,
-                                                    fx_rate_obj[0].rate, price_value)
+                                                    fx_rate, price_value)
                         else:
                             quantity = float(fund.quantity)
                         market_value = float(quantity) * float(price_value)
@@ -976,6 +1019,9 @@ class FundRecommendationHistoricalPerformanceDiff(APIView):
                                       '3-year': fund_detail[0].return_3_year,
                                       '5-year': fund_detail[0].return_5_year})
                     existing_funds_market_values.append(market_value)
+                if fx_rate_list:
+                    FXRate.objects.bulk_create(fx_rate_list,
+                                               ignore_conflicts=True)
                 total_mkt_value = sum(filter(None, existing_funds_market_values))
                 existing_annual_expense = 0
                 existing_return_1_year = 0
@@ -1045,27 +1091,28 @@ class BarPlotFundRecommendation(APIView):
         data = []
         if request.GET.get('portfolio_ids'):
             portfolio_ids = request.GET.get('portfolio_ids').split(',')
-            fx_rate = FXRate.objects.all()
+            fx_rate_objects = FXRate.objects.all()
             existing_funds = PortfolioFund.objects.filter(
                 portfolio__in=portfolio_ids, security__asset_type='Mutual Fund',
                 created_by=request.user)
             fund_holdings = FundHolding.objects.filter(
                 fund_id__in=existing_funds.values_list('security__id_value',
                                                        flat=True))
+            base_currency = request.GET.get("currency")
             prices = Price.objects.all()
             fund_details = FundDetail.objects.all()
             securities = Security.objects.all()
             existing_dict = {}
             for fund in existing_funds:
-                fx_rate_obj = fx_rate.filter(date=date.today(),
-                                             currency=fund.security.currency)
+                fx_rate_obj = fx_rate_objects.filter(
+                    base=base_currency, currency=fund.security.currency)
                 fund_detail = fund_details.filter(fund_id=fund.security.id_value)
                 if fx_rate_obj and fund_detail:
                     quantity = fund.quantity
                     if '%' in quantity:
                         a = float(quantity.replace("%", "")) * 1000000
                         b = float(fund_detail[0].aum * 1000000 *
-                                  (1 / fx_rate_obj[0].rate))
+                                  (1 / fx_rate_obj.latest('date').rate))
                         aum = a / b
                         holdings = list(
                             fund_holdings.values_list('id_value')
@@ -1133,32 +1180,32 @@ class BarPlotFundRecommendation(APIView):
         return Response(data, status=200)
 
 
-def get_market_values(request, funds):
-    """function to get market values"""
-    market_values = []
-    fund_details = FundDetail.objects.all()
-    fx_rate = FXRate.objects.all()
-    price = Price.objects.all()
-    for fund in funds:
-        fund_detail = fund_details.filter(fund_id=fund.security.id_value)
-        fx_rate_obj = fx_rate.filter(date=date.today(),
-                                     currency=fund.security.currency)
-        try:
-            price_obj = price.filter(
-                id_value=fund.security.id_value).latest('date')
-            price_value = price_obj.price
-        except Exception as e:
-            price_value = None
-        if price_value:
-            if '%' in str(fund.quantity):
-                quantity = get_quantity(fund.quantity, fund.security,
-                                        fund_detail[0].aum,
-                                        fx_rate_obj[0].rate, price_value)
-            else:
-                quantity = float(fund.quantity)
-            market_value = float(quantity) * float(price_value)
-            market_values.append({fund.security.id_value: market_value})
-    return market_values
+# def get_market_values(request, funds):
+#     """function to get market values"""
+#     market_values = []
+#     fund_details = FundDetail.objects.all()
+#     fx_rate = FXRate.objects.all()
+#     price = Price.objects.all()
+#     for fund in funds:
+#         fund_detail = fund_details.filter(fund_id=fund.security.id_value)
+#         fx_rate_obj = fx_rate.filter(date=date.today(),
+#                                      currency=fund.security.currency)
+#         try:
+#             price_obj = price.filter(
+#                 id_value=fund.security.id_value).latest('date')
+#             price_value = price_obj.price
+#         except Exception as e:
+#             price_value = None
+#         if price_value:
+#             if '%' in str(fund.quantity):
+#                 quantity = get_quantity(fund.quantity, fund.security,
+#                                         fund_detail[0].aum,
+#                                         fx_rate_obj[0].rate, price_value)
+#             else:
+#                 quantity = float(fund.quantity)
+#             market_value = float(quantity) * float(price_value)
+#             market_values.append({fund.security.id_value: market_value})
+#     return market_values
 
 
 class LineGraphFundRecommendation(APIView):
@@ -1172,6 +1219,7 @@ class LineGraphFundRecommendation(APIView):
             funds = PortfolioFund.objects.filter(
                 portfolio__in=portfolios, security__asset_type='Mutual Fund',
                 created_by=request.user)
+            base_currency = request.GET.get('currency')
             price = Price.objects.all()
             prices = price.filter(id_value__in=funds.
                                   values_list('security__id_value', flat=True))
@@ -1180,7 +1228,7 @@ class LineGraphFundRecommendation(APIView):
                     count=Min('date')) \
                     .distinct()
                 common_date = max([x[1] for x in date_list])
-                data = get_line_graph_data(funds, common_date)
+                data = get_line_graph_data(base_currency, funds, common_date)
                 # benchmark fund's price
                 benchmark_price = Price.objects.\
                     filter(id_value='ISIN_US78390M1053', date__gte=common_date,
@@ -1311,28 +1359,47 @@ class CurrentAllocationAPI(APIView):
     def get(self, request):
         data = []
         try:
-            fx_rate = FXRate.objects.all()
+            fx_rate_objects = FXRate.objects.all()
             fund_holdings = FundHolding.objects.all()
             fund_details = FundDetail.objects.all()
             prices = Price.objects.all()
             portfolio_ids = []
             if request.GET.get('portfolio_ids'):
                 portfolio_ids = request.GET.get('portfolio_ids').split(',')
+            base_currency = request.GET.get('currency')
             funds = PortfolioFund.objects.filter(portfolio__in=portfolio_ids,
                                                  created_by=request.user)
             holding_list = []
+            fx_rate_list = []
             for fund in funds:
-                fx_rate_obj = fx_rate.filter(date=date.today(),
-                                             currency=fund.security.currency)
-                price_obj = prices.filter(id_value=fund.security.id_value,
-                                          date=date.today())
+                price_obj = prices.filter(id_value=fund.security.id_value)
+                if price_obj:
+                    price_obj = price_obj.latest('date')
+                if price_obj and not base_currency == fund.security.currency:
+                    try:
+                        fx_rate = fx_rate_objects.filter(
+                            date=price_obj.date,
+                            currency=fund.security.currency)[0].rate
+                    except Exception:
+                        fx_list = fx_rate_objects.filter(
+                            base=base_currency, date__lt=price_obj.date,
+                            currency=fund.security.currency)
+                        if fx_list:
+                            fx_rate = fx_list.latest('date').rate
+                            fx_rate_list.append(FXRate(
+                                base=base_currency, date=price_obj.date,
+                                currency=fund.security.currency,
+                                rate=fx_rate))
+                        else:
+                            fx_rate = None
+                else:
+                    fx_rate = 1
                 fund_detail = fund_details.filter(fund_id=fund.security.id_value)
-                if fx_rate_obj and price_obj:
+                if fx_rate and price_obj:
                     if '%' in fund.quantity:
                         a = float(fund.quantity.replace("%", "")) * 1000000
                         if fund.security.asset_type == 'Mutual Fund':
-                            b = float(fund_detail[0].aum * 1000000 *
-                                      (1 / fx_rate_obj[0].rate))
+                            b = float(fund_detail[0].aum * 1000000 * (1 / fx_rate))
                             aum = a / b
                             holdings = list(
                                 fund_holdings.values_list('id_value')
@@ -1343,7 +1410,7 @@ class CurrentAllocationAPI(APIView):
                                 holding[1] = aum * holding[1]
                                 holding_list.append(holding)
                         else:
-                            quantity = a / float(price_obj[0].price)
+                            quantity = a / float(price_obj.price)
                             holding_list.append(
                                 [fund.security.id_value, quantity])
                     else:
@@ -1364,17 +1431,20 @@ class CurrentAllocationAPI(APIView):
             for item in holding_list:
                 if item[0]:
                     security_obj = securities.filter(id_value=item[0])
-                    price_obj = prices.filter(id_value=item[0],
-                                              date=date.today())
+                    price_obj = prices.filter(id_value=item[0])
+                    if price_obj:
+                        price_obj = price_obj.latest('date')
                     if security_obj and price_obj:
                         asset_type = security_obj[0].asset_type
                         country = security_obj[0].country
-                        market_value = float(item[1]) * float(price_obj[0].price)
+                        market_value = float(item[1]) * float(price_obj.price)
                         if return_dict.get("{} {}".format(country, asset_type)):
                             market_value = return_dict.get("{} {}".format(
                                 country, asset_type)) + market_value
                         return_dict.update({"{} {}".format(
                             country, asset_type): market_value})
+            if fx_rate_list:
+                FXRate.objects.bulk_create(fx_rate_list, ignore_conflicts=True)
             return Response([return_dict], status=200)
         except Exception as e:
             LOGGER.error("Error {} occurred: allocation recommendation".format(e))
@@ -1386,29 +1456,50 @@ class AllocationHistoricalPerformance(APIView):
     def get(self, request):
         data = []
         fund_details = FundDetail.objects.all()
-        fx_rate = FXRate.objects.all()
-        prices = Price.objects.all()
+        fx_rate_objects = FXRate.objects.all()
+        # prices = Price.objects.all()
         try:
             portfolio_ids = []
             if request.GET.get('portfolio_ids'):
                 portfolio_ids = request.GET.get('portfolio_ids').split(',')
+            base_currency = request.GET.get('currency')
             funds = PortfolioFund.objects.filter(portfolio__in=portfolio_ids,
                                                  created_by=request.user)
+            prices = Price.objects.filter(
+                id_value__in=funds.values_list("security__id_value"))
             existing_mkt_values = []
             temp_list = []
+            fx_rate_list = []
             for fund in funds:
                 fund_detail = fund_details.filter(fund_id=fund.security.id_value)
-
-                fx_rate_obj = fx_rate.filter(date=date.today(),
-                                             currency=fund.security.currency)
-                price_obj = prices.filter(id_value=fund.security.id_value,
-                                          date=date.today())
-                if price_obj and fx_rate_obj and fund_detail:
-                    price = float(price_obj[0].price)
+                price_obj = prices.filter(id_value=fund.security.id_value)
+                if price_obj:
+                    price_obj = price_obj.latest('date')
+                if price_obj and not base_currency == fund.security.currency:
+                    try:
+                        fx_rate = fx_rate_objects.filter(
+                            base=base_currency, date=price_obj.date,
+                            currency=fund.security.currency)[0].rate
+                    except Exception:
+                        fx_list = fx_rate_objects.filter(
+                            base=base_currency, date__lt=price_obj.date,
+                            currency=fund.security.currency)
+                        if fx_list:
+                            fx_rate = fx_list.latest('date').rate
+                            fx_rate_list.append(FXRate(
+                                base=base_currency, date=price_obj.date,
+                                currency=fund.security.currency,
+                                rate=fx_rate))
+                        else:
+                            fx_rate = None
+                else:
+                    fx_rate = 1
+                if price_obj and fx_rate and fund_detail:
+                    price = float(price_obj.price)
                     if '%' in str(fund.quantity):
                         quantity = get_quantity(fund.quantity, fund.security,
                                                 fund_detail[0].aum,
-                                                fx_rate_obj[0].rate, price)
+                                                fx_rate, price)
                     else:
                         quantity = float(fund.quantity)
                     existing_mkt_values.append(quantity * price)
@@ -1433,6 +1524,8 @@ class AllocationHistoricalPerformance(APIView):
                                      sum(filter(None, existing_mkt_values))
                                      )*float(item.get('5-year'))
                     existing_return_5_year = existing_return_5_year + return_5_year
+            if fx_rate_list:
+                FXRate.objects.bulk_create(fx_rate_list, ignore_conflicts=True)
             data.append({"Current Allocation":
                              {'1-year': existing_return_1_year,
                               '3-year': existing_return_3_year,
@@ -1454,18 +1547,18 @@ class AllocationLineGraph(APIView):
     """Allocation and Fund Analysis Page line graph API"""
     def get(self, request):
         if request.GET.get('portfolio_ids'):
+            base_currency = request.GET.get('currency')
             portfolio_ids = request.GET.get('portfolio_ids').split(",")
             portfolios = Portfolio.objects.filter(id__in=portfolio_ids,
                                                   created_by=request.user)
             funds = PortfolioFund.objects.filter(portfolio__in=portfolios,
                                                  created_by=request.user)
-            price = Price.objects.all()
-            prices = price.filter(id_value__in=funds.
-                                  values_list('security__id_value', flat=True))
+            prices = Price.objects.filter(
+                id_value__in=funds.values_list('security__id_value', flat=True))
             if prices:
                 date_list = prices.values_list('id_value').annotate(
                     count=Min('date')) \
                     .distinct()
                 common_date = max([x[1] for x in date_list])
-            data = get_line_graph_data(funds, common_date)
+            data = get_line_graph_data(base_currency, funds, common_date)
         return Response(data, status=200)
