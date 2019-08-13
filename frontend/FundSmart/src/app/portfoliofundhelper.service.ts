@@ -83,7 +83,7 @@ export class PortfoliofundhelperService {
             switchMap(() => this._search()),
             delay(200),
             tap(() => this._loading$.next(false))
-        ).subscribe(result => {
+        ).toPromise().then(result => {
             this._funds$.next(result.fundlist);
             this._total$.next(result.total);
         });
@@ -91,7 +91,7 @@ export class PortfoliofundhelperService {
     }
 
     get funds$() { return this._funds$.asObservable(); }
-    get total$() { return this._total$; }
+    get total$() { return this._total$.asObservable(); }
     get loading$() { return this._loading$.asObservable(); }
     get page() { return this._state.page; }
     get pageSize() { return this._state.pageSize; }
